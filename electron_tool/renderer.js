@@ -1,5 +1,15 @@
 // renderer.js – Task Countdown with quantity tracking, %, sound effects
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // -------------------------------------------------------
 // Sound Engine (Web Audio API – no external files needed)
 // -------------------------------------------------------

@@ -1,5 +1,5 @@
 {
-  "activeProjectId": "proj_1786870932147",
+  "activeProjectId": "proj_1",
   "projects": [
     {
       "id": "proj_1",
@@ -638,10 +638,390 @@
           "favorite": false,
           "usedCount": 0,
           "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871768184_0_600",
+          "title": "Góp ý thêm sound effect glitch khi phát hiện bẫy đảo ngữ",
+          "content": "Đoạn ad chỉ ra cấu trúc đảo ngữ 'Hardly had... when' làm bẫy trong Reading, ad chèn thêm hiệu ứng giật màn hình Glitch kèm tiếng rè TV rè gián đoạn đi, xem bao tỉnh ngủ!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "TikTok",
+          "tags": [
+            "glitch_effect",
+            "reading_traps",
+            "inversion",
+            "edit_sang_tao",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Mỗi khi lật tẩy bẫy ngữ pháp của đề thi, dùng hiệu ứng Glitch 0.3s kết hợp filter nhiễu sóng để tạo điểm nhấn thị giác.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_1_170",
+          "title": "Yêu cầu kỹ thuật 3D Camera Tracking gắn từ vựng lên mặt bàn",
+          "content": "Ad thử dùng 3D Camera Tracking gắn luôn mấy cụm Collocations nổi lơ lửng trên mặt bàn lúc di chuyển máy quay xem, nhìn cinematic như phim Marvel luôn á!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "Reels",
+          "tags": [
+            "3d_tracking",
+            "camera_motion",
+            "collocations",
+            "cinematic_edit",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Dùng After Effects hoặc CapCut 3D text tracking để cố định chữ trên không gian thực tế bàn học khi lia camera.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_2_473",
+          "title": "Thử thách giải mã accent đa vùng miền trong Listening Section 4",
+          "content": "Thách chủ kênh nghe 1 đoạn lecture giọng Úc đặc sệt (Australian Slang) tốc độ 1.25x và điền từ chính xác 10/10 không tua lại!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "australian_accent",
+            "listening_section4",
+            "speed_up",
+            "hardcore_challenge",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Bấm reply video: Phát đoạn audio giọng Úc nói nuốt âm và ghi lại phản xạ take-note tốc ký trên giấy trong thời gian thực.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_3_944",
+          "title": "Góp ý đổi filter màu Teal & Orange tone điện ảnh",
+          "content": "Đổi màu video sang tone Teal & Orange điện ảnh tối màu kiểu phim trinh thám đi ad, lúc giải đề Reading nhìn như thám tử phá án bẫy của giám khảo vậy đó.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "color_grading",
+            "teal_orange",
+            "detective_vibe",
+            "reading_logic",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Áp dụng LUT màu Teal & Orange, tạo concept 'Hồ sơ trinh thám vạch trần bẫy IELTS' để giữ chân tệp khán giả trẻ.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_4_381",
+          "title": "Hỏi xoáy về việc dùng câu phức bị lỗi Run-on sentences trong Writing",
+          "content": "Sao nhiều người cứ ham viết câu dài 4-5 dòng để khoe ngữ pháp rồi dính lỗi Run-on sentence với thiếu mạo từ vậy ad? Viết câu đơn ngắn gọn có bị trừ điểm Grammatical Range không?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "TikTok",
+          "tags": [
+            "run_on_sentence",
+            "grammar_range",
+            "writing_task2",
+            "giai_dap_chuyen_sau",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Lên video phân tích ranh giới giữa 'Complex Sentence chuẩn mực' và 'Run-on Sentence luộm thuộm', thị phạm cách ngắt dấu câu chuẩn xác.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_5_8",
+          "title": "Bắt trend POV: Đang thi Speaking thì quên từ vựng chuyên ngành",
+          "content": "Làm trend POV: Não bộ đứng hình 5 giây khi giám khảo hỏi về chủ đề 'Astrophysics' (Vật lý thiên văn) và cách dùng kỹ thuật Paraphrase cứu cánh kịp thời!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "TikTok",
+          "tags": [
+            "pov_speaking",
+            "bí_tu",
+            "circumlocution",
+            "paraphrase_tips",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Diễn tiểu phẩm biểu cảm 'đóng băng' hài hước và hướng dẫn kỹ thuật Circumlocution (vòng vo giải nghĩa) khi quên danh từ chuyên ngành.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_6_886",
+          "title": "Bình chọn xử lý dạng biểu đồ hai trục tung (Mixed Chart)",
+          "content": "Kèo khó Writing Task 1: Team gom 2 biểu đồ theo từng năm (Chronological) hay Team tách 2 biểu đồ theo từng đối tượng (Category)? Vote xem cách nào đỡ bị loạn!",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "TikTok",
+          "tags": [
+            "mixed_chart",
+            "writing_task1",
+            "grouping_data",
+            "binh_chon",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Ghim comment bình chọn, sau đó ra video thị phạm so sánh dàn ý của cả 2 cách nhóm số liệu để chỉ ra phương án tối ưu nhất.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_7_293",
+          "title": "Thách thức viết lại câu mở bài Task 2 với 3 cấu trúc C2 khác nhau",
+          "content": "Thách ad lấy 1 đề bài Task 2 gây tranh cãi nhất năm 2026 và viết 3 bản mở bài theo 3 trường phái: Cleft Sentence (Câu chẻ), Inversion (Đảo ngữ), và Nominalisation (Danh từ hóa)!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "cleft_sentence",
+            "nominalisation",
+            "inversion",
+            "writing_band8",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Thực hiện video '1 đề bài - 3 đẳng cấp mở bài' để khán giả thấy rõ sức mạnh của ngữ pháp nâng cao khi paraphrase.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_8_75",
+          "title": "Góp ý chèn hiệu ứng mắt kính tia laser khi bắt trúng Keywords",
+          "content": "Mỗi lần ad quét mắt qua đoạn văn mà 'bắt dính' được từ đồng nghĩa của câu hỏi Reading, chèn quả hiệu ứng Glowing Red Eyes (mắt phát sáng đỏ) với sound bass drop bao cháy!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "TikTok",
+          "tags": [
+            "meme_sound",
+            "glowing_eyes",
+            "reading_scanning",
+            "visual_cue",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Tăng tính giải trí bằng cách thêm hiệu ứng hoạt họa phóng to mắt quét laser khi tìm ra từ khóa biến đổi (Paraphrased Keywords).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_9_959",
+          "title": "Hỏi xoáy về việc giám khảo trừ điểm khi dùng từ informal trong Task 2",
+          "content": "Nhiều bạn bảo dùng mấy từ như 'kids', 'cop', 'a lot of' trong Writing Task 2 bị trừ sạch điểm Lexical Resource, thực hư giám khảo chấm gắt vụ này cỡ nào vậy ạ?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "informal_words",
+            "lexical_resource",
+            "academic_style",
+            "giai_dap",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Bấm reply video: Làm bảng đối chiếu từ informal vs academic equivalents (ví dụ: kids -> offspring/children, a lot of -> a considerable amount of).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_10_104",
+          "title": "Bắt trend âm thanh Slowed + Reverb đếm ngược 10 phút cuối giờ làm bài",
+          "content": "Lồng quả nhạc đếm ngược nhịp tim đập thình thịch tái hiện 10 phút cuối cùng trong phòng thi lúc chưa kịp chép đáp án Listening sang tờ Answer Sheet đi ad!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "Reels",
+          "tags": [
+            "heartbeat_sound",
+            "time_pressure",
+            "listening_sheet",
+            "exam_anxiety",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Dùng âm thanh nhịp tim dồn dập để hướng dẫn chiến thuật chuyển đáp án an toàn trong 10 phút cuối cùng của bài thi giấy.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_11_886",
+          "title": "Yêu cầu quay cận cảnh kỹ thuật Take-note tốc ký bằng ký hiệu",
+          "content": "Ad làm video cận cảnh quay tay cách viết tắt ký hiệu (shorthand symbols) lúc nghe Section 3 đi, chứ nghe không kịp viết nguyên chữ là rớt đài liền.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "shorthand_notes",
+            "listening_section3",
+            "top_down_angle",
+            "practical_skills",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Quay góc máy macro cận cảnh trang sổ tay, chia sẻ bảng mã ký hiệu viết tắt cá nhân (ví dụ: w/ = with, b/c = because, mũi tên lên = increase).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_12_810",
+          "title": "Thắc mắc xử lý tình huống giám khảo Speaking liên tục ngắt lời",
+          "content": "Lúc thi Speaking mà giám khảo cứ nói nửa câu là cắt ngang chuyển sang câu hỏi khác thì là do mình nói dở bị trừ điểm hay do hết giờ vậy anh?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "TikTok",
+          "tags": [
+            "speaking_examiner",
+            "interruption",
+            "tam_ly_phong_thi",
+            "giai_ma_ielts",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Quay video trấn an tâm lý: Giải thích lý do giám khảo ngắt lời (để kiểm tra phản xạ câu khác hoặc canh timing) không đồng nghĩa với việc bị điểm thấp.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_13_117",
+          "title": "Bình chọn học từ vựng theo Topic vs Học từ theo gốc từ Latin/Hy Lạp",
+          "content": "Mọi người thấy nạp từ vựng theo Chủ đề (Topic-based) hay nạp theo Gốc từ (Prefix/Suffix/Root words) thấm nhanh hơn? Vote để ad làm thử nghiệm 5 ngày tiếp theo!",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "TikTok",
+          "tags": [
+            "root_words",
+            "topic_vocab",
+            "phuong_phap_hoc",
+            "binh_chon",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Mở cuộc thăm dò ý kiến cộng đồng và thực hiện 5 ngày học theo phương pháp Root Words (như bio-, chrono-, auto-) phân tích từ mới dễ dàng.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_14_567",
+          "title": "Bắt trend lột xác biến hình từ Handwriting gà bới sang Chữ viết tay thanh lịch",
+          "content": "Bắt trend nhạc biến hình: Đầu clip show bài viết tay chữ như bác sĩ kê đơn bị trừ điểm Task 1, drop nhạc một phát biến hình sang chữ nét thanh nét đậm chuẩn Calligraphy!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "Reels",
+          "tags": [
+            "handwriting",
+            "bien_hinh_trend",
+            "writing_presentation",
+            "before_after",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Tạo nội dung viral về tầm quan trọng của tính rõ ràng trong chữ viết tay khi thi IELTS Paper-based.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_15_562",
+          "title": "Thách thức phát hiện 5 lỗi sai ngữ pháp ngầm trong bài luận mẫu Band 9.0 giả mạo",
+          "content": "Thách ad soi và bắt lỗi được 5 chỗ 'bẫy từ điển' (ngữ cảnh sai lệch) trong một bài văn mẫu tràn lan trên mạng được gắn mác Band 9.0!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "TikTok",
+          "tags": [
+            "debunking",
+            "fake_band9",
+            "collocation_error",
+            "thach_thuc",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Chữa đề thực tế: Lấy một bài viết mẫu sai ngữ cảnh lan truyền trên mạng và phân tích lỗi Collocation Clash bằng từ điển Oxford Collocations.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_16_127",
+          "title": "Yêu cầu phong cách Fast-Paced Video Essay phân tích tâm lý phòng thi",
+          "content": "Thử làm dạng Video Essay ngắn 90s nhịp nhanh, dùng ảnh minh họa chuyển động liên tục phân tích hội chứng 'Sương mù não' (Brain Fog) khi vừa bước vào phòng thi IELTS đi ad!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "video_essay",
+            "motion_graphics",
+            "brain_fog",
+            "psychology",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Sử dụng phong cách đồ họa chuyển động phẳng (flat motion graphics) kèm âm thanh gõ bàn phím dồn dập giải thích cách vượt qua cơn hoảng loạn đầu giờ thi.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_17_865",
+          "title": "Hỏi xoáy về việc lạm dụng Cohesive Devices làm bài viết khô cứng",
+          "content": "Em thấy nhiều người chèn 'Furthermore', 'Moreover', 'In addition' ở đầu mọi câu đọc nghe như robot. Không dùng từ nối ở đầu câu thì liên kết mạch văn bằng cách nào vậy ad?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "TikTok",
+          "tags": [
+            "cohesive_devices",
+            "referencing",
+            "coherence_cohesion",
+            "writing_tips",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Thị phạm kỹ thuật 'Implicit Cohesion' (Liên kết ẩn) thông qua Đại từ thay thế (Pronouns), Từ đồng nghĩa và Cấu trúc song hành thay vì lạm dụng liên từ máy móc.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_18_951",
+          "title": "Góp ý làm phụ đề đa ngôn ngữ song song để học dịch ngược",
+          "content": "Ad để phụ đề song ngữ Anh - Việt dạng 2 tầng chữ chớp tắt luân phiên đi ạ, vừa nghe phát âm vừa học luôn phản xạ dịch ngược (Back-translation) cực hay.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "bilingual_subtitles",
+            "back_translation",
+            "phan_xa",
+            "gop_y",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Cài đặt phụ đề kép hiển thị đồng thời tiếng Anh và tiếng Việt ở nửa dưới màn hình để phục vụ người học từ vựng theo ngữ cảnh.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
+        },
+        {
+          "id": "cm_1786871768184_19_38",
+          "title": "Bình chọn chiến thuật làm Matching Headings: Đọc tiêu đề trước hay đọc bài trước",
+          "content": "Đại chiến Reading: Team đọc lướt Heading trước rồi mới vào bài (Tim ❤️) vs Team đọc hết đoạn văn tóm ý rồi mới đối chiếu Heading (Haha 😆)?",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "TikTok",
+          "tags": [
+            "matching_headings",
+            "reading_strategy",
+            "tranh_luan",
+            "binh_chon",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Khơi mào tranh luận giữa hai trường phái làm bài Reading khó nhất, sau đó làm video phân tích độ hiệu quả dựa trên từng dạng bài cụ thể.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:16:08.184Z"
         }
       ],
       "createdAt": "2026-08-16T09:02:12.147Z",
-      "updatedAt": "2026-08-16T09:10:14.052Z"
+      "updatedAt": "2026-08-16T09:16:08.185Z"
     }
   ]
 }
