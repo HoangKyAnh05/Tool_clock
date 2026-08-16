@@ -6048,18 +6048,40 @@ function renderTkFlashcardList() {
     const isDue = !item.nextReviewDate || item.nextReviewDate <= new Date().toISOString().split('T')[0];
 
     li.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; font-size: 13.5px; color: #fff;">${escapeHtml(item.word)}</span>
-        <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; ${isDue ? 'background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);' : 'background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);'}">
-          ${isDue ? '🔴 Cần ôn' : `Lớp ${lvl}`}
-        </span>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+        <span style="font-weight: 700; font-size: 13.5px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${escapeHtml(item.word)}</span>
+        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+          <button class="tk-quick-video-btn" data-url="${escapeHtml(item.tiktokUrl || '')}" data-word="${escapeHtml(item.word)}" title="🎬 Xem video TikTok ngay" style="background: rgba(255, 0, 80, 0.15); border: 1px solid rgba(255, 0, 80, 0.4); color: #ff0050; border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: all 0.2s;">
+            🎬 Xem
+          </button>
+          <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; ${isDue ? 'background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);' : 'background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);'}">
+            ${isDue ? '🔴 Cần ôn' : `Lớp ${lvl}`}
+          </span>
+        </div>
       </div>
       <div style="font-size: 12px; color: var(--muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
         ${escapeHtml(item.translation || '(Chưa có bản dịch)')}
       </div>
     `;
 
-    li.addEventListener('click', () => {
+    li.addEventListener('click', (e) => {
+      const quickBtn = e.target.closest('.tk-quick-video-btn');
+      if (quickBtn) {
+        e.stopPropagation();
+        let url = quickBtn.getAttribute('data-url');
+        const word = quickBtn.getAttribute('data-word');
+        if (!url || !url.trim()) {
+          url = `https://www.tiktok.com/search?q=${encodeURIComponent(word || '')}`;
+        }
+        if (window.taskAPI && window.taskAPI.openExternal) {
+          window.taskAPI.openExternal(url);
+        } else {
+          window.open(url, '_blank');
+        }
+        if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+        return;
+      }
+
       activeTkCardId = item.id;
       renderTkFlashcardList();
       renderTkPlayer(item);
