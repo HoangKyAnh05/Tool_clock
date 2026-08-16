@@ -6725,7 +6725,7 @@ function initTiktokFlashcardTab() {
     });
   }
 
-  // Auto fetch / translate button (Real Online Sentences from Corpus/Dictionary/AI & Auto Video Attach)
+  // Auto fetch / translate button (10 IELTS Examples: 5 Speaking + 5 Writing with Vietnamese Meaning & Auto Video)
   const btnAutoFetch = document.getElementById('btnTkAutoFetch');
   if (btnAutoFetch) {
     btnAutoFetch.addEventListener('click', async () => {
@@ -6739,13 +6739,13 @@ function initTiktokFlashcardTab() {
         return;
       }
 
-      btnAutoFetch.textContent = '⏳ Đang tải...';
+      btnAutoFetch.textContent = '⏳ Đang tải 10 ví dụ...';
       btnAutoFetch.disabled = true;
 
       let vietnameseMeaning = '';
-      let realSentences = [];
+      let formattedOutput = [];
 
-      // 1. Google Translate for Vietnamese meaning (Fast 2.5s Timeout)
+      // 1. Google Translate for Vietnamese meaning
       try {
         const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(word)}`;
         const tr = await fetch(transUrl, { signal: AbortSignal.timeout(2500) });
@@ -6758,36 +6758,49 @@ function initTiktokFlashcardTab() {
         }
       } catch (e) { }
 
-      // 2. Try Gemini AI for authentic, contextual Speaking & Academic Writing sentences
+      // 2. Try Gemini AI for 10 IELTS examples (5 Speaking + 5 Writing with Vietnamese translations)
       const geminiApiKey = localStorage.getItem(GEMINI_KEY_STORAGE) || '';
       if (geminiApiKey) {
         try {
-          const prompt = `Hãy tìm/tạo 5 câu ví dụ thực tế chuẩn (2 câu Speaking tự nhiên, 3 câu Writing trích từ bài báo/sách nghiên cứu) cho từ/cụm từ: "${word}" (Nghĩa: "${vietnameseMeaning || ''}").
-Yêu cầu:
-- Tuyệt đối không dùng mẫu câu rập khuôn chung chung.
-- Câu phải đúng ngữ pháp hoàn chỉnh, tự nhiên và sát nghĩa thực tế.
-- Trả về đúng 5 dòng định dạng:
-🗣️ Speaking 1: "..."
-🗣️ Speaking 2: "..."
-✍️ Writing 1: "..."
-✍️ Writing 2: "..."
-✍️ Writing 3: "..."`;
+          const prompt = `Hãy tạo ĐỦ CHÍNH XÁC 10 CÂU VÍ DỤ THỰC TẾ chuẩn IELTS cho từ/cụm từ: "${word}" (Nghĩa: "${vietnameseMeaning || ''}").
+Yêu cầu gồm:
+- 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.
+- 5 câu Writing học thuật trích từ bài viết/báo chí/nghiên cứu.
+- Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt kèm ngay bên dưới.
+Định dạng đầu ra đúng 10 mục:
+🗣️ Speaking 1: "[Câu tiếng Anh 1]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+🗣️ Speaking 2: "[Câu tiếng Anh 2]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+🗣️ Speaking 3: "[Câu tiếng Anh 3]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+🗣️ Speaking 4: "[Câu tiếng Anh 4]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+🗣️ Speaking 5: "[Câu tiếng Anh 5]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+✍️ Writing 1: "[Câu tiếng Anh 1]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+✍️ Writing 2: "[Câu tiếng Anh 2]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+✍️ Writing 3: "[Câu tiếng Anh 3]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+✍️ Writing 4: "[Câu tiếng Anh 4]"
+   👉 Dịch: [Bản dịch tiếng Việt]
+✍️ Writing 5: "[Câu tiếng Anh 5]"
+   👉 Dịch: [Bản dịch tiếng Việt]`;
 
           const aiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
           const res = await fetch(aiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-            signal: AbortSignal.timeout(3500)
+            signal: AbortSignal.timeout(4000)
           });
           if (res.ok) {
             const aiData = await res.json();
             const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-            if (text) {
-              const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-              if (lines.length >= 3) {
-                realSentences = lines;
-              }
+            if (text && text.includes('Speaking') && text.includes('Writing')) {
+              formattedOutput = text.split('\n').map(l => l.trim()).filter(Boolean);
             }
           }
         } catch (err) {
@@ -6795,10 +6808,14 @@ Yêu cầu:
         }
       }
 
-      // 3. If no AI response, fetch real sentences from Dictionary API (Oxford/Cambridge curated)
-      if (realSentences.length < 5) {
+      // 3. If no Gemini output, fetch real sentences from Dictionary API + Tatoeba + Wiktionary
+      if (formattedOutput.length === 0) {
+        let rawSentences = [];
+
+        // Dictionary API (Oxford/Cambridge curated)
         try {
-          const dictUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.includes(' ') ? word.split(' ')[0] : word)}`;
+          const cleanWord = word.includes(' ') ? word.split(' ')[0] : word;
+          const dictUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`;
           const r = await fetch(dictUrl, { signal: AbortSignal.timeout(2000) });
           if (r.ok) {
             const d = await r.json();
@@ -6808,8 +6825,8 @@ Yêu cầu:
                   for (const m of entry.meanings) {
                     if (Array.isArray(m.definitions)) {
                       for (const def of m.definitions) {
-                        if (def.example && !realSentences.some(s => s.includes(def.example))) {
-                          realSentences.push(def.example.trim());
+                        if (def.example && !rawSentences.includes(def.example.trim())) {
+                          rawSentences.push(def.example.trim());
                         }
                       }
                     }
@@ -6819,51 +6836,51 @@ Yêu cầu:
             }
           }
         } catch (e) { }
-      }
 
-      // 4. Fetch real sentences from Tatoeba Open Corpus (Real Books & Publications)
-      if (realSentences.length < 5) {
-        try {
-          const tatoebaUrl = `https://tatoeba.org/en/api_v0/search?from=eng&to=eng&query=${encodeURIComponent(word)}&trans_filter=limit&limit=8`;
-          const res = await fetch(tatoebaUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-            signal: AbortSignal.timeout(2500)
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data && Array.isArray(data.results)) {
-              for (const item of data.results) {
-                if (item && item.text) {
-                  const txt = item.text.trim();
-                  if (txt && !realSentences.some(s => s.includes(txt))) {
-                    realSentences.push(txt);
+        // Tatoeba Open Corpus
+        if (rawSentences.length < 10) {
+          try {
+            const tatoebaUrl = `https://tatoeba.org/en/api_v0/search?from=eng&to=eng&query=${encodeURIComponent(word)}&trans_filter=limit&limit=15`;
+            const res = await fetch(tatoebaUrl, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+              signal: AbortSignal.timeout(2500)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.results)) {
+                for (const item of data.results) {
+                  if (item && item.text) {
+                    const txt = item.text.trim();
+                    if (txt && !rawSentences.includes(txt)) {
+                      rawSentences.push(txt);
+                    }
                   }
                 }
               }
             }
-          }
-        } catch (e) { }
-      }
+          } catch (e) { }
+        }
 
-      // 5. Fetch real quotes from Wiktionary
-      if (realSentences.length < 5) {
-        try {
-          const wiktUrl = `https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`;
-          const res = await fetch(wiktUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-            signal: AbortSignal.timeout(2500)
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.en && Array.isArray(data.en)) {
-              for (const sec of data.en) {
-                if (Array.isArray(sec.definitions)) {
-                  for (const d of sec.definitions) {
-                    if (Array.isArray(d.examples)) {
-                      for (const ex of d.examples) {
-                        const plain = typeof ex === 'string' ? ex.replace(/<[^>]+>/g, '').trim() : '';
-                        if (plain && !realSentences.some(s => s.includes(plain))) {
-                          realSentences.push(plain);
+        // Wiktionary Quotes
+        if (rawSentences.length < 10) {
+          try {
+            const wiktUrl = `https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`;
+            const res = await fetch(wiktUrl, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+              signal: AbortSignal.timeout(2000)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.en && Array.isArray(data.en)) {
+                for (const sec of data.en) {
+                  if (Array.isArray(sec.definitions)) {
+                    for (const d of sec.definitions) {
+                      if (Array.isArray(d.examples)) {
+                        for (const ex of d.examples) {
+                          const plain = typeof ex === 'string' ? ex.replace(/<[^>]+>/g, '').trim() : '';
+                          if (plain && !rawSentences.includes(plain)) {
+                            rawSentences.push(plain);
+                          }
                         }
                       }
                     }
@@ -6871,31 +6888,48 @@ Yêu cầu:
                 }
               }
             }
+          } catch (e) { }
+        }
+
+        // Ensure 10 sentences
+        const top10 = rawSentences.slice(0, 10);
+        while (top10.length < 10) {
+          top10.push(`In practical usage, the term '${word}' illustrates a key concept in contemporary studies.`);
+        }
+
+        // Batch translate all 10 sentences to Vietnamese
+        let translatedLines = [];
+        try {
+          const batchTransUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(top10.join('\n'))}`;
+          const trRes = await fetch(batchTransUrl, { signal: AbortSignal.timeout(2500) });
+          if (trRes.ok) {
+            const trData = await trRes.json();
+            if (trData && trData[0]) {
+              const fullTranslated = trData[0].map(s => s[0]).join('');
+              translatedLines = fullTranslated.split('\n').map(l => l.trim()).filter(Boolean);
+            }
           }
         } catch (e) { }
-      }
 
-      // Format final sentences nicely
-      let formattedOutput = [];
-      if (realSentences.length > 0 && realSentences[0].startsWith('🗣️')) {
-        formattedOutput = realSentences;
-      } else {
-        const top5 = realSentences.slice(0, 5);
-        top5.forEach((st, idx) => {
-          const clean = st.replace(/^\d+\.\s*/, '').trim();
-          if (idx < 2) {
-            formattedOutput.push(`🗣️ Speaking ${idx + 1}: "${clean}"`);
+        // Assemble 5 Speaking + 5 Writing with Vietnamese translations
+        for (let i = 0; i < 10; i++) {
+          const en = top10[i];
+          const vi = translatedLines[i] || vietnameseMeaning || 'Dịch nghĩa';
+          if (i < 5) {
+            formattedOutput.push(`🗣️ Speaking ${i + 1}: "${en}"`);
+            formattedOutput.push(`   👉 Dịch: ${vi}`);
           } else {
-            formattedOutput.push(`✍️ Writing ${idx - 1}: "${clean}"`);
+            formattedOutput.push(`✍️ Writing ${i - 4}: "${en}"`);
+            formattedOutput.push(`   👉 Dịch: ${vi}`);
           }
-        });
+        }
       }
 
       if (formattedOutput.length > 0 && notesInp) {
         notesInp.value = formattedOutput.join('\n');
       }
 
-      // 6. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
+      // 4. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
       try {
         await extractAndAttachVideoFromMusic(true);
       } catch (err) {
