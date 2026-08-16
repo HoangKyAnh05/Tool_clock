@@ -6349,6 +6349,53 @@ function initTiktokFlashcardTab() {
   const btnSave = document.getElementById('btnTkSaveWord');
   if (btnSave) btnSave.addEventListener('click', (e) => { e.preventDefault(); saveTkForm(); });
 
+  // Option 1 vs Option 2 Radio Switcher
+  const optDirect = document.getElementById('tkOptDirect');
+  const optSearch = document.getElementById('tkOptSearch');
+  const lblDirect = document.getElementById('lblTkOptDirect');
+  const lblSearch = document.getElementById('lblTkOptSearch');
+  const musicRow = document.getElementById('tkMusicHistoryRow');
+  const hintText = document.getElementById('tkLinkHintText');
+
+  function updateLinkOptionUI(isDirect) {
+    if (lblDirect && lblSearch) {
+      if (isDirect) {
+        lblDirect.style.background = 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)';
+        lblDirect.style.color = '#000';
+        lblSearch.style.background = 'transparent';
+        lblSearch.style.color = 'var(--muted)';
+        if (musicRow) musicRow.style.display = 'flex';
+        if (hintText) hintText.innerHTML = '🎬 <strong>Option 2</strong>: Dán link video hoặc link nhạc TikTok (Tự lưu nhạc & bốc video ngẫu nhiên).';
+      } else {
+        lblSearch.style.background = 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)';
+        lblSearch.style.color = '#000';
+        lblDirect.style.background = 'transparent';
+        lblDirect.style.color = 'var(--muted)';
+        if (musicRow) musicRow.style.display = 'none';
+        if (hintText) hintText.innerHTML = '🔍 <strong>Option 1</strong>: Tự động tìm kiếm video TikTok theo từ vựng (Nhập từ vựng rồi bấm "🎵 Tìm theo từ").';
+      }
+    }
+  }
+
+  if (lblDirect) {
+    lblDirect.addEventListener('click', () => {
+      if (optDirect) optDirect.checked = true;
+      updateLinkOptionUI(true);
+    });
+  }
+
+  if (lblSearch) {
+    lblSearch.addEventListener('click', () => {
+      if (optSearch) optSearch.checked = true;
+      updateLinkOptionUI(false);
+      const wordInp = document.getElementById('tkWordInput');
+      const urlInp = document.getElementById('tkUrlInput');
+      if (wordInp && urlInp && wordInp.value.trim()) {
+        urlInp.value = `https://www.tiktok.com/search?q=${encodeURIComponent(wordInp.value.trim())}`;
+      }
+    });
+  }
+
   // 3D Card flip listeners
   const cardWrap = document.getElementById('tk3dCardWrap');
   if (cardWrap) cardWrap.addEventListener('click', toggleTkCardFlip);
@@ -6391,6 +6438,24 @@ function initTiktokFlashcardTab() {
     });
   }
 
+  const btnEditMusic = document.getElementById('btnTkEditMusic');
+  if (btnEditMusic) {
+    btnEditMusic.addEventListener('click', async () => {
+      const select = document.getElementById('tkMusicHistorySelect');
+      const val = select?.value;
+      if (!val) return;
+      const curMusic = tkSavedMusicList.find(x => x.url === val);
+      if (!curMusic) return;
+
+      const newName = prompt('Nhập tên mới cho bài hát TikTok:', curMusic.name);
+      if (newName && newName.trim()) {
+        curMusic.name = newName.trim();
+        await saveTkSavedMusic();
+        renderTkMusicSelect();
+      }
+    });
+  }
+
   const btnDeleteMusic = document.getElementById('btnTkDeleteMusic');
   if (btnDeleteMusic) {
     btnDeleteMusic.addEventListener('click', async () => {
@@ -6402,6 +6467,25 @@ function initTiktokFlashcardTab() {
         await saveTkSavedMusic();
         renderTkMusicSelect();
       }
+    });
+  }
+
+  // Extract / test music link
+  const btnExtractMusic = document.getElementById('btnTkExtractMusic');
+  if (btnExtractMusic) {
+    btnExtractMusic.addEventListener('click', () => {
+      const urlInp = document.getElementById('tkUrlInput');
+      const url = (urlInp?.value || '').trim();
+      if (!url) {
+        alert('Vui lòng dán đường link TikTok trước!');
+        return;
+      }
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(url);
+      } else {
+        window.open(url, '_blank');
+      }
+      if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
     });
   }
 
