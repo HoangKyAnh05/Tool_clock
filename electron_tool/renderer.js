@@ -5915,11 +5915,22 @@ async function saveTkFlashcardData() {
 }
 
 async function loadTkSavedMusic() {
-  if (window.taskAPI && window.taskAPI.loadTikTokMusic) {
+  const loadFn = (window.taskAPI && (window.taskAPI.loadTiktokMusic || window.taskAPI.loadTikTokMusic));
+  if (loadFn) {
     try {
-      const data = await window.taskAPI.loadTikTokMusic();
-      if (Array.isArray(data) && data.length > 0) {
-        tkSavedMusicList = data;
+      const data = await loadFn();
+      let rawList = [];
+      if (Array.isArray(data)) {
+        rawList = data;
+      } else if (data && typeof data === 'object' && Array.isArray(data.items)) {
+        rawList = data.items;
+      }
+      if (rawList.length > 0) {
+        tkSavedMusicList = rawList.map((m, idx) => ({
+          id: m.id || ('m_' + Date.now() + '_' + idx),
+          name: (m.name || m.title || 'Nhạc TikTok').replace(/^🎵\s*/, ''),
+          url: m.url || ''
+        })).filter(m => m.url);
         return tkSavedMusicList;
       }
     } catch (e) {
@@ -5930,22 +5941,47 @@ async function loadTkSavedMusic() {
   try {
     const raw = localStorage.getItem('task_countdown_tiktok_music');
     if (raw) {
-      tkSavedMusicList = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      const rawList = Array.isArray(parsed) ? parsed : (parsed.items || []);
+      tkSavedMusicList = rawList.map((m, idx) => ({
+        id: m.id || ('m_' + Date.now() + '_' + idx),
+        name: (m.name || m.title || 'Nhạc TikTok').replace(/^🎵\s*/, ''),
+        url: m.url || ''
+      })).filter(m => m.url);
     }
   } catch (e) { }
+
+  if (tkSavedMusicList.length === 0) {
+    tkSavedMusicList = [
+      { id: 'm_1', name: 'âm thanh gốc shanghai9992', url: 'https://www.tiktok.com/music/%C3%A2m-thanh-g%E1%BB%91c-shanghai9992-7668519855653784338' },
+      { id: 'm_2', name: 'Fuera del Planeta', url: 'https://www.tiktok.com/music/Fuera-del-Planeta-7532902301028764421' },
+      { id: 'm_3', name: 'RITMO AGRESSIVO', url: 'https://www.tiktok.com/music/RITMO-AGRESSIVO-7409071300436281361' },
+      { id: 'm_4', name: 'Perfect - Ed Sheeran', url: 'https://www.tiktok.com/music/Perfect-6655492047723563778' }
+    ];
+  }
   return tkSavedMusicList;
 }
 
 async function saveTkSavedMusic() {
-  if (window.taskAPI && window.taskAPI.saveTikTokMusic) {
+  const savePayload = {
+    lastChosenUrl: document.getElementById('tkUrlInput')?.value || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : ''),
+    items: tkSavedMusicList.map(m => ({
+      id: m.id,
+      title: `🎵 ${m.name}`,
+      url: m.url
+    }))
+  };
+
+  const saveFn = (window.taskAPI && (window.taskAPI.saveTiktokMusic || window.taskAPI.saveTikTokMusic));
+  if (saveFn) {
     try {
-      await window.taskAPI.saveTikTokMusic(tkSavedMusicList);
+      await saveFn(savePayload);
     } catch (e) {
       console.error('Failed to save tiktok music via API:', e);
     }
   }
   try {
-    localStorage.setItem('task_countdown_tiktok_music', JSON.stringify(tkSavedMusicList));
+    localStorage.setItem('task_countdown_tiktok_music', JSON.stringify(savePayload));
   } catch (e) { }
 }
 
@@ -5990,6 +6026,7 @@ function renderTkMusicSelect() {
   const select = document.getElementById('tkMusicHistorySelect');
   if (!select) return;
 
+  const currentVal = select.value;
   select.innerHTML = '';
   if (tkSavedMusicList.length === 0) {
     const opt = document.createElement('option');
@@ -6003,10 +6040,10 @@ function renderTkMusicSelect() {
     const opt = document.createElement('option');
     opt.value = m.url;
     opt.textContent = `🎵 ${m.name}`;
+    if (m.url === currentVal) opt.selected = true;
     select.appendChild(opt);
   });
 }
-
 function renderTkFlashcardList() {
   const listEl = document.getElementById('tkFlashcardList');
   const emptyEl = document.getElementById('tkEmptyState');
@@ -6417,41 +6454,132 @@ function initTiktokFlashcardTab() {
     });
   }
 
-  const btnAddMusic = document.getElementById('btnTkAddMusicBatch');
-  if (btnAddMusic) {
-    btnAddMusic.addEventListener('click', async () => {
-      const name = prompt('Nhập tên gợi nhớ bài hát / giai điệu TikTok:');
-      if (!name || !name.trim()) return;
-      const url = prompt('Dán đường link TikTok của bài hát / video:');
-      if (!url || !url.trim()) return;
+  // TikTok Music Modal Logic (100% Electron-safe Modal Dialog)
+  const tkMusicModal = document.getElementById('tkMusicModal');
+  const tkModalMusicName = document.getElementById('tkModalMusicName');
+  const tkModalMusicUrl = document.getElementById('tkModalMusicUrl');
+  const tkMusicModalTitle = document.getElementById('tkMusicModalTitle');
+  const btnTkModalPaste = document.getElementById('btnTkModalPasteMusicUrl');
+  const btnTkModalCancel = document.getElementById('btnTkMusicModalCancel');
+  const btnTkModalSave = document.getElementById('btnTkMusicModalSave');
+  let currentEditingMusicId = null;
 
-      tkSavedMusicList.unshift({
-        id: 'm_' + Date.now(),
-        name: name.trim(),
-        url: url.trim()
-      });
+  function openTkMusicModal(musicItem = null) {
+    if (!tkMusicModal) return;
+    if (musicItem) {
+      currentEditingMusicId = musicItem.id;
+      if (tkMusicModalTitle) tkMusicModalTitle.textContent = '✏️ Sửa Tên Nhạc / Giai Điệu TikTok';
+      if (tkModalMusicName) tkModalMusicName.value = musicItem.name || '';
+      if (tkModalMusicUrl) tkModalMusicUrl.value = musicItem.url || '';
+    } else {
+      currentEditingMusicId = null;
+      if (tkMusicModalTitle) tkMusicModalTitle.textContent = '➕ Thêm Nhạc / Giai Điệu TikTok Mới';
+      if (tkModalMusicName) tkModalMusicName.value = '';
+      if (tkModalMusicUrl) {
+        const curUrlInp = document.getElementById('tkUrlInput');
+        tkModalMusicUrl.value = curUrlInp?.value || '';
+      }
+    }
+    tkMusicModal.classList.add('active');
+    tkMusicModal.classList.add('visible');
+    if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    setTimeout(() => {
+      if (tkModalMusicName) tkModalMusicName.focus();
+    }, 150);
+  }
+
+  function closeTkMusicModal() {
+    if (tkMusicModal) {
+      tkMusicModal.classList.remove('active');
+      tkMusicModal.classList.remove('visible');
+    }
+    currentEditingMusicId = null;
+  }
+
+  if (btnTkModalCancel) btnTkModalCancel.addEventListener('click', closeTkMusicModal);
+  if (btnTkModalPaste && tkModalMusicUrl) {
+    btnTkModalPaste.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          tkModalMusicUrl.value = text.trim();
+          if (typeof playTone === 'function') playTone(600, 0.06, 'sine', 0.1);
+        }
+      } catch (e) {
+        alert('Vui lòng nhấn Ctrl + V để dán link vào ô.');
+      }
+    });
+  }
+
+  if (btnTkModalSave) {
+    btnTkModalSave.addEventListener('click', async () => {
+      const name = (tkModalMusicName?.value || '').trim();
+      const url = (tkModalMusicUrl?.value || '').trim();
+
+      if (!name) {
+        alert('Vui lòng nhập tên bài hát / giai điệu!');
+        if (tkModalMusicName) tkModalMusicName.focus();
+        return;
+      }
+      if (!url) {
+        alert('Vui lòng nhập hoặc dán link TikTok!');
+        if (tkModalMusicUrl) tkModalMusicUrl.focus();
+        return;
+      }
+
+      if (currentEditingMusicId) {
+        const item = tkSavedMusicList.find(x => x.id === currentEditingMusicId);
+        if (item) {
+          item.name = name;
+          item.url = url;
+        }
+      } else {
+        const exists = tkSavedMusicList.find(x => x.url === url);
+        if (exists) {
+          exists.name = name;
+        } else {
+          tkSavedMusicList.unshift({
+            id: 'm_' + Date.now(),
+            name: name,
+            url: url
+          });
+        }
+      }
+
       await saveTkSavedMusic();
       renderTkMusicSelect();
+      closeTkMusicModal();
+
       const urlInp = document.getElementById('tkUrlInput');
-      if (urlInp) urlInp.value = url.trim();
+      if (urlInp) urlInp.value = url;
+
+      const select = document.getElementById('tkMusicHistorySelect');
+      if (select) select.value = url;
+
+      if (typeof playTone === 'function') playTone(700, 0.08, 'sine', 0.12);
       alert('Đã lưu bài hát TikTok thành công!');
+    });
+  }
+
+  const btnAddMusic = document.getElementById('btnTkAddMusicBatch');
+  if (btnAddMusic) {
+    btnAddMusic.addEventListener('click', () => {
+      openTkMusicModal(null);
     });
   }
 
   const btnEditMusic = document.getElementById('btnTkEditMusic');
   if (btnEditMusic) {
-    btnEditMusic.addEventListener('click', async () => {
+    btnEditMusic.addEventListener('click', () => {
       const select = document.getElementById('tkMusicHistorySelect');
       const val = select?.value;
-      if (!val) return;
+      if (!val) {
+        alert('Vui lòng chọn 1 bài hát trong danh sách để sửa!');
+        return;
+      }
       const curMusic = tkSavedMusicList.find(x => x.url === val);
-      if (!curMusic) return;
-
-      const newName = prompt('Nhập tên mới cho bài hát TikTok:', curMusic.name);
-      if (newName && newName.trim()) {
-        curMusic.name = newName.trim();
-        await saveTkSavedMusic();
-        renderTkMusicSelect();
+      if (curMusic) {
+        openTkMusicModal(curMusic);
       }
     });
   }
@@ -6462,14 +6590,17 @@ function initTiktokFlashcardTab() {
       const select = document.getElementById('tkMusicHistorySelect');
       const val = select?.value;
       if (!val) return;
-      if (confirm('Bạn có chắc muốn xóa link nhạc đang chọn khỏi danh sách đã lưu?')) {
+      const curMusic = tkSavedMusicList.find(x => x.url === val);
+      const curName = curMusic ? curMusic.name : 'bài hát này';
+      if (confirm(`Bạn có chắc muốn xóa "${curName}" khỏi danh sách nhạc đã lưu?`)) {
         tkSavedMusicList = tkSavedMusicList.filter(x => x.url !== val);
         await saveTkSavedMusic();
         renderTkMusicSelect();
+        const urlInp = document.getElementById('tkUrlInput');
+        if (urlInp && select) urlInp.value = select.value || '';
       }
     });
   }
-
   // Extract / test music link
   const btnExtractMusic = document.getElementById('btnTkExtractMusic');
   if (btnExtractMusic) {
