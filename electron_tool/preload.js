@@ -28,4 +28,9 @@ contextBridge.exposeInMainWorld('taskAPI', {
   saveMemorizeVault: (data) => ipcRenderer.invoke('save-memorize-vault', data),
   searchImages: (query) => ipcRenderer.invoke('search-images', query),
   searchYoutubeVideos: (query) => ipcRenderer.invoke('search-youtube-videos', query),
+  extractTiktokMusicVideos: (musicUrl) => ipcRenderer.invoke('extract-tiktok-music-videos', musicUrl),
+  loadTiktokMusic: () => ipcRenderer.invoke('load-tiktok-music'),
+  saveTiktokMusic: (data) => ipcRenderer.invoke('save-tiktok-music', data),
+  loadCommentsVault: () => ipcRenderer.invoke('load-comments-vault'),
+  saveCommentsVault: (data) => ipcRenderer.invoke('save-comments-vault', data),
 });

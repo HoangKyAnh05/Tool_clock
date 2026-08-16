@@ -3,9 +3,6 @@ const { app, BrowserWindow, shell, ipcMain } = require('electron');
 const path = require('path');
 const fs   = require('fs');
 
-// Disable hardware acceleration to prevent GPU-related rendering freezes on Windows
-app.disableHardwareAcceleration();
-
 let mainWin = null;
 
 function createWindow() {
@@ -13,6 +10,7 @@ function createWindow() {
     width: 980,
     height: 820,
     show: false,
+    backgroundColor: '#0f172a',
     frame: false,
     resizable: true,
     icon: path.join(__dirname, 'icon.ico'),
@@ -26,9 +24,10 @@ function createWindow() {
 
   mainWin.loadFile(path.join(__dirname, 'index.html'));
 
-  // Show only when content is ready (prevents white flash)
+  // Show as soon as window is ready
   mainWin.once('ready-to-show', () => {
     mainWin.show();
+    mainWin.focus();
   });
 
   mainWin.on('maximize', () => {
@@ -62,6 +61,10 @@ ipcMain.on('win-close',    (event) => {
   if (win) win.close();
 });
 ipcMain.on('open-external', (event, url) => { if (url) shell.openExternal(url); });
+ipcMain.on('relaunch-app', () => {
+  app.relaunch();
+  app.exit(0);
+});
 
 ipcMain.on('open-study-window', (event, id, type) => {
   createStudyWindow(id, type);
@@ -388,7 +391,7 @@ if (!fs.existsSync(baseDataDir)) {
 }
 
 if (app.isPackaged && fs.existsSync(templateDataDir)) {
-  const filesToCopy = ['ielts_vault.json', 'general_vault.json', 'speaking_vault.json', 'video_challenge.json', 'memorize_vault.json'];
+  const filesToCopy = ['ielts_vault.json', 'general_vault.json', 'speaking_vault.json', 'video_challenge.json', 'memorize_vault.json', 'tiktok_music.json', 'comments_vault.json'];
   filesToCopy.forEach(file => {
     const src = path.join(templateDataDir, file);
     const dest = path.join(baseDataDir, file);
@@ -419,6 +422,8 @@ const generalPath = path.join(baseDataDir, 'general_vault.json');
 const speakingPath = path.join(baseDataDir, 'speaking_vault.json');
 const videoChallengePath = path.join(baseDataDir, 'video_challenge.json');
 const memorizePath = path.join(baseDataDir, 'memorize_vault.json');
+const tiktokMusicPath = path.join(baseDataDir, 'tiktok_music.json');
+const commentsVaultPath = path.join(baseDataDir, 'comments_vault.json');
 const imagesDir = path.join(baseDataDir, 'ielts_images');
 
 if (!fs.existsSync(imagesDir)) {
@@ -460,6 +465,8 @@ let cachedGeneralVault = null;
 let cachedSpeakingVault = null;
 let cachedVideoChallenge = null;
 let cachedMemorizeVault = null;
+let cachedTiktokMusic = null;
+let cachedCommentsVault = null;
 
 ipcMain.handle('load-ielts-vault', async () => {
   if (cachedIeltsVault) {
@@ -1769,6 +1776,75 @@ ipcMain.handle('save-memorize-vault', async (event, data) => {
   }
 });
 
+ipcMain.handle('load-tiktok-music', async () => {
+  try {
+    if (fs.existsSync(tiktokMusicPath)) {
+      const data = await fs.promises.readFile(tiktokMusicPath, 'utf8');
+      cachedTiktokMusic = JSON.parse(data);
+      console.log('[MAIN] Loaded tiktok music from disk:', (cachedTiktokMusic.items || []).length, 'items');
+      return cachedTiktokMusic;
+    }
+  } catch (e) {
+    console.error('Failed to load tiktok music:', e);
+  }
+  cachedTiktokMusic = {
+    lastChosenUrl: 'https://www.tiktok.com/music/Perfect-6655492047723563778',
+    items: [
+      { id: 'm_perfect', title: '🎵 Perfect - Ed Sheeran', url: 'https://www.tiktok.com/music/Perfect-6655492047723563778' }
+    ]
+  };
+  try {
+    await fs.promises.writeFile(tiktokMusicPath, JSON.stringify(cachedTiktokMusic, null, 2), 'utf8');
+  } catch (err) {}
+  return cachedTiktokMusic;
+});
+
+ipcMain.handle('save-tiktok-music', async (event, data) => {
+  try {
+    cachedTiktokMusic = data;
+    await fs.promises.writeFile(tiktokMusicPath, JSON.stringify(data, null, 2), 'utf8');
+    console.log('[MAIN] Saved tiktok music to disk:', (data.items || []).length, 'items');
+    broadcastVaultUpdate('tiktok-music', data);
+    return data;
+  } catch (e) {
+    console.error('Failed to save tiktok music:', e);
+    return null;
+  }
+});
+
+ipcMain.handle('load-comments-vault', async () => {
+  if (cachedCommentsVault) {
+    return cachedCommentsVault;
+  }
+  try {
+    if (fs.existsSync(commentsVaultPath)) {
+      const data = await fs.promises.readFile(commentsVaultPath, 'utf8');
+      cachedCommentsVault = JSON.parse(data);
+      const projCount = Array.isArray(cachedCommentsVault.projects) ? cachedCommentsVault.projects.length : 1;
+      console.log('[MAIN] Loaded comments vault from disk:', projCount, 'projects');
+      return cachedCommentsVault;
+    }
+  } catch (e) {
+    console.error('Failed to load comments vault:', e);
+  }
+  cachedCommentsVault = { activeProjectId: 'proj_default', projects: [] };
+  return cachedCommentsVault;
+});
+
+ipcMain.handle('save-comments-vault', async (event, data) => {
+  try {
+    cachedCommentsVault = data;
+    await fs.promises.writeFile(commentsVaultPath, JSON.stringify(data, null, 2), 'utf8');
+    const projCount = Array.isArray(data.projects) ? data.projects.length : 1;
+    console.log('[MAIN] Saved comments vault to disk:', projCount, 'projects');
+    broadcastVaultUpdate('comments-vault', data);
+    return data;
+  } catch (e) {
+    console.error('Failed to save comments vault:', e);
+    return null;
+  }
+});
+
 ipcMain.handle('search-images', async (event, query) => {
   try {
     console.log(`[MAIN] search-images called for: ${query}`);
@@ -1828,7 +1904,105 @@ ipcMain.handle('search-youtube-videos', async (event, query) => {
   return [];
 });
 
-// Create desktop shortcut (only on packaged app, icon.ico must exist)
+
+// Extract direct video links from a TikTok music or tag page
+ipcMain.handle('extract-tiktok-music-videos', async (event, musicUrl) => {
+  if (!musicUrl || typeof musicUrl !== 'string') {
+    return { success: false, error: 'URL không hợp lệ', videos: [] };
+  }
+
+  return new Promise((resolve) => {
+    let win = null;
+    let resolved = false;
+
+    const cleanup = () => {
+      if (win) {
+        try {
+          win.destroy();
+        } catch (e) {}
+        win = null;
+      }
+    };
+
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        cleanup();
+        resolve({ success: false, error: 'Timeout khi tải trang TikTok', videos: [] });
+      }
+    }, 10000);
+
+    try {
+      win = new BrowserWindow({
+        show: false,
+        width: 1280,
+        height: 800,
+        webPreferences: {
+          offscreen: true,
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      });
+
+      win.webContents.on('did-finish-load', async () => {
+        try {
+          // Wait for TikTok React hydration
+          await new Promise(r => setTimeout(r, 1800));
+          if (resolved || !win) return;
+
+          const videoLinks = await win.webContents.executeJavaScript(`
+            (() => {
+              const links = Array.from(document.querySelectorAll('a[href*="/video/"]')).map(a => a.href);
+              const script = document.getElementById('ItemList');
+              if (script) {
+                try {
+                  const data = JSON.parse(script.textContent);
+                  if (data.itemListElement && Array.isArray(data.itemListElement)) {
+                    data.itemListElement.forEach(item => {
+                      if (item.url && item.url.includes('/video/')) links.push(item.url);
+                    });
+                  }
+                } catch (e) {}
+              }
+              return Array.from(new Set(links.filter(u => u && u.includes('/video/'))));
+            })()
+          `);
+
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            cleanup();
+            resolve({ success: true, videos: videoLinks || [] });
+          }
+        } catch (err) {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            cleanup();
+            resolve({ success: false, error: err.message, videos: [] });
+          }
+        }
+      });
+
+      win.loadURL(musicUrl).catch((err) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          cleanup();
+          resolve({ success: false, error: err.message, videos: [] });
+        }
+      });
+    } catch (err) {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timeout);
+        cleanup();
+        resolve({ success: false, error: err.message, videos: [] });
+      }
+    }
+  });
+});
+
 function createDesktopShortcut() {
   if (process.platform !== 'win32') return;
   if (!app.isPackaged) return; // Do not overwrite shortcut in dev mode!

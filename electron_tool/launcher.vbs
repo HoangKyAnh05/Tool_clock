@@ -18,7 +18,7 @@ End If
 
 strCmd = """" & strElectron & """ """ & strApp & """"
 
-objShell.Run strCmd, 0, False
+objShell.Run strCmd, 1, False
 
 If Err.Number <> 0 Then
     MsgBox "Loi khoi chay: " & Err.Description & " (Code: " & Err.Number & ")" & vbCrLf & "Lenh: " & strCmd, 16, "Task Countdown Error"

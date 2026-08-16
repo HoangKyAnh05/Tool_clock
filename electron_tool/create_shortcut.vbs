@@ -1,6 +1,6 @@
 ' create_shortcut.vbs
-' Creates a Desktop shortcut silently (no terminal window)
-Dim objShell, objFSO, strAppDir, strDesktop, strShortcutPath, objShortcut, strIconPath, strLauncherVbs
+' Creates a Desktop shortcut directly to Electron executable
+Dim objShell, objFSO, strAppDir, strDesktop, strShortcutPath, objShortcut, strIconPath, strTargetExe
 Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
@@ -10,23 +10,28 @@ objShell.CurrentDirectory = strAppDir
 
 ' Define paths
 strDesktop = objShell.SpecialFolders("Desktop")
-strShortcutPath = objFSO.BuildPath(strDesktop, "Task Countdown.lnk")
-strLauncherVbs = objFSO.BuildPath(strAppDir, "launcher.vbs")
-if objFSO.FileExists(objFSO.BuildPath(strAppDir, "icon.ico")) then
-    strIconPath = objFSO.BuildPath(strAppDir, "icon.ico")
-else
-    strIconPath = objFSO.BuildPath(strAppDir, "node_modules\electron\dist\electron.exe")
-end if
+strShortcutPath = objFSO.BuildPath(strDesktop, "Tool Clock.lnk")
+strTargetExe = objFSO.BuildPath(strAppDir, "node_modules\electron\dist\electron.exe")
 
-' Create the shortcut pointing to wscript.exe + launcher.vbs
+If objFSO.FileExists(objFSO.BuildPath(strAppDir, "icon.ico")) Then
+    strIconPath = objFSO.BuildPath(strAppDir, "icon.ico")
+Else
+    strIconPath = strTargetExe
+End If
+
+If Not objFSO.FileExists(strTargetExe) Then
+    MsgBox "Khong tim thay file electron.exe!", 16, "Loi tao Shortcut"
+    WScript.Quit 1
+End If
+
 Set objShortcut = objShell.CreateShortcut(strShortcutPath)
-objShortcut.TargetPath = objFSO.BuildPath(strAppDir, "node_modules\electron\dist\electron.exe")
+objShortcut.TargetPath = strTargetExe
 objShortcut.Arguments = "."
 objShortcut.WorkingDirectory = strAppDir
-objShortcut.WindowStyle = 1 ' Normal window when running wscript
-objShortcut.Description = "Task Countdown - Daily productivity tracker"
+objShortcut.WindowStyle = 1
+objShortcut.Description = "Tool Clock - Task Countdown Application"
 objShortcut.IconLocation = strIconPath
 
 objShortcut.Save()
 
-WScript.Echo "Da tao shortcut 'Task Countdown' tren Desktop thanh cong!"
+MsgBox "Da tao shortcut 'Tool Clock' tren Desktop thanh cong!", 64, "Task Countdown"

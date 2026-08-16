@@ -29,9 +29,9 @@ function playTone(freq, duration, type = 'sine', volume = 0.3) {
 
 // Sound presets
 const SFX = {
-  tick()      { playTone(880, 0.08, 'sine', 0.15); },
+  tick() { playTone(880, 0.08, 'sine', 0.15); },
   milestone25() {
-    playTone(523, 0.15); 
+    playTone(523, 0.15);
     setTimeout(() => playTone(659, 0.15), 120);
   },
   milestone50() {
@@ -50,7 +50,7 @@ const SFX = {
     );
   },
   delete() { playTone(220, 0.12, 'triangle', 0.2); },
-  add()    { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(550, 0.15), 80); }
+  add() { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(550, 0.15), 80); }
 };
 
 // -------------------------------------------------------
@@ -59,9 +59,9 @@ const SFX = {
 function getDayProgress() {
   const now = new Date();
   const start = new Date(now); start.setHours(7, 0, 0, 0);
-  const end   = new Date(now); end.setHours(24, 0, 0, 0);
+  const end = new Date(now); end.setHours(24, 0, 0, 0);
   if (now < start) return 0;
-  if (now >= end)  return 1;
+  if (now >= end) return 1;
   return (now - start) / (end - start);
 }
 
@@ -71,7 +71,7 @@ function formatMs(ms) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
 
 function getTimeLeft() {
@@ -79,7 +79,7 @@ function getTimeLeft() {
   const end = new Date(now); end.setHours(24, 0, 0, 0);
   const start = new Date(now); start.setHours(7, 0, 0, 0);
   if (now < start) return { elapsed: 0, left: end - now };
-  if (now >= end)  return { elapsed: end - start, left: 0 };
+  if (now >= end) return { elapsed: end - start, left: 0 };
   return { elapsed: now - start, left: end - now };
 }
 
@@ -91,8 +91,8 @@ function formatClockTime() {
 
 function formatDate() {
   const now = new Date();
-  const days = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
-  return `${days[now.getDay()]}, ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+  return `${days[now.getDay()]}, ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
 }
 
 // -------------------------------------------------------
@@ -159,9 +159,9 @@ function saveTasks(tasks) {
 // -------------------------------------------------------
 function badgeClass(pct) {
   if (pct >= 100) return 'badge-pct milestone-100';
-  if (pct >= 75)  return 'badge-pct milestone-75';
-  if (pct >= 50)  return 'badge-pct milestone-50';
-  if (pct >= 25)  return 'badge-pct milestone-25';
+  if (pct >= 75) return 'badge-pct milestone-75';
+  if (pct >= 50) return 'badge-pct milestone-50';
+  if (pct >= 25) return 'badge-pct milestone-25';
   return 'badge-pct';
 }
 
@@ -203,8 +203,8 @@ function createTaskCard(task, idx) {
     <div class="card-footer">
       <span class="time-remaining">⏱ Đã qua: ${formatMs(elapsed)} (Còn ${formatMs(left)})</span>
       ${isDone
-        ? '<span class="done-label">✅ Hoàn thành!</span>'
-        : ''}
+      ? '<span class="done-label">✅ Hoàn thành!</span>'
+      : ''}
       <button class="btn-delete" data-action="del" data-idx="${idx}" title="Xóa task">🗑</button>
     </div>
   `;
@@ -214,8 +214,8 @@ function createTaskCard(task, idx) {
 
 function escHtml(str) {
   return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // -------------------------------------------------------
@@ -245,10 +245,10 @@ function updateSummary(tasks) {
 
 function renderTasks() {
   const rawTasks = loadTasks();
-  
+
   // Attach original index so actions still target the correct index
   const tasksWithIndex = rawTasks.map((t, idx) => ({ ...t, originalIdx: idx }));
-  
+
   // Sort: incomplete first, completed (pct >= 100) last
   tasksWithIndex.sort((a, b) => {
     const aPct = a.target > 0 ? (a.completed / a.target) >= 1 : false;
@@ -258,7 +258,7 @@ function renderTasks() {
     return 0; // maintain relative order
   });
 
-  const list  = document.getElementById('taskList');
+  const list = document.getElementById('taskList');
   const empty = document.getElementById('emptyState');
   list.innerHTML = '';
   if (tasksWithIndex.length === 0) {
@@ -280,25 +280,25 @@ function updateHeader() {
   const { elapsed, left } = getTimeLeft();
   const pct = Math.round(progress * 100);
 
-  document.getElementById('clock').textContent      = formatClockTime();
-  document.getElementById('dateStr').textContent    = formatDate();
-  document.getElementById('dayPct').textContent     = `${pct}%`;
-  document.getElementById('dayFill').style.width    = `${pct}%`;
+  document.getElementById('clock').textContent = formatClockTime();
+  document.getElementById('dateStr').textContent = formatDate();
+  document.getElementById('dayPct').textContent = `${pct}%`;
+  document.getElementById('dayFill').style.width = `${pct}%`;
   document.getElementById('timeElapsed').textContent = formatMs(elapsed);
-  document.getElementById('timeLeft').textContent   = formatMs(left);
+  document.getElementById('timeLeft').textContent = formatMs(left);
 }
 
 // -------------------------------------------------------
 // Add task
 // -------------------------------------------------------
 function handleAdd() {
-  const nameEl   = document.getElementById('taskName');
+  const nameEl = document.getElementById('taskName');
   const targetEl = document.getElementById('taskTarget');
-  const unitEl   = document.getElementById('taskUnit');
+  const unitEl = document.getElementById('taskUnit');
 
-  const name   = nameEl.value.trim();
+  const name = nameEl.value.trim();
   const target = parseInt(targetEl.value) || 1;
-  const unit   = unitEl.value.trim();
+  const unit = unitEl.value.trim();
 
   if (!name) { nameEl.focus(); nameEl.style.borderColor = '#ef4444'; return; }
   nameEl.style.borderColor = '';
@@ -307,9 +307,9 @@ function handleAdd() {
   tasks.push({ name, target, completed: 0, unit });
   saveTasks(tasks);
 
-  nameEl.value   = '';
+  nameEl.value = '';
   targetEl.value = '';
-  unitEl.value   = '';
+  unitEl.value = '';
 
   SFX.add();
   renderTasks();
@@ -338,22 +338,22 @@ function showIncompleteModal() {
   const modal = document.getElementById('incompleteModal');
   const list = document.getElementById('incompleteList');
   const emptyState = document.getElementById('noIncompleteState');
-  
+
   list.innerHTML = '';
   modal.classList.add('active');
-  
+
   const grouped = loadAllTasksGrouped();
   const todayKey = getCurrentDateKey();
-  
+
   // Sort dates latest first
   const dates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
-  
+
   let count = 0;
-  
+
   dates.forEach(dateKey => {
     // Skip today's tasks
     if (dateKey === todayKey) return;
-    
+
     const dayTasks = grouped[dateKey] || [];
     dayTasks.forEach(task => {
       const pct = task.target > 0 ? Math.min(100, Math.round((task.completed / task.target) * 100)) : 0;
@@ -361,11 +361,11 @@ function showIncompleteModal() {
         count++;
         const li = document.createElement('li');
         li.className = 'incomplete-item';
-        
+
         const parts = dateKey.split('-');
         const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateKey;
         const unitLabel = task.unit ? ` ${task.unit}` : '';
-        
+
         li.innerHTML = `
           <div class="incomplete-header-row">
             <span class="incomplete-date">📅 ${formattedDate}</span>
@@ -383,7 +383,7 @@ function showIncompleteModal() {
       }
     });
   });
-  
+
   if (count === 0) {
     emptyState.classList.add('visible');
   } else {
@@ -401,9 +401,9 @@ function handleListClick(e) {
   if (!btn) return;
 
   const action = btn.dataset.action;
-  const idx    = parseInt(btn.dataset.idx);
-  const tasks  = loadTasks();
-  const task   = tasks[idx];
+  const idx = parseInt(btn.dataset.idx);
+  const tasks = loadTasks();
+  const task = tasks[idx];
   if (!task) return;
 
   const prevPct = task.target > 0 ? Math.round((task.completed / task.target) * 100) : 0;
@@ -437,8 +437,8 @@ function handleListClick(e) {
         if (card) { card.classList.add('flash-done'); setTimeout(() => card.classList.remove('flash-done'), 700); }
       }, 50);
     } else if (newPct >= 75 && prevPct < 75) { SFX.milestone75(); }
-    else if  (newPct >= 50 && prevPct < 50) { SFX.milestone50(); }
-    else if  (newPct >= 25 && prevPct < 25) { SFX.milestone25(); }
+    else if (newPct >= 50 && prevPct < 50) { SFX.milestone50(); }
+    else if (newPct >= 25 && prevPct < 25) { SFX.milestone25(); }
   }
 
   saveTasks(tasks);
@@ -452,12 +452,12 @@ function setupWindowControls() {
   const api = window.taskAPI;
   const minimize = document.getElementById('btnMinimize');
   const maximize = document.getElementById('btnMaximize');
-  const close    = document.getElementById('btnClose');
-  const reload   = document.getElementById('btnReload');
-  const openWeb  = document.getElementById('btnOpenInBrowser');
+  const close = document.getElementById('btnClose');
+  const reload = document.getElementById('btnReload');
+  const openWeb = document.getElementById('btnOpenInBrowser');
   if (minimize && api && api.minimize) minimize.addEventListener('click', () => api.minimize());
   if (maximize && api && api.maximize) maximize.addEventListener('click', () => api.maximize());
-  if (close    && api && api.close)    close.addEventListener('click',    () => api.close());
+  if (close && api && api.close) close.addEventListener('click', () => api.close());
   if (reload) reload.addEventListener('click', () => window.location.reload());
   if (openWeb) {
     if (api && api.openExternal) {
@@ -511,9 +511,9 @@ let activeSpeakingLinkId = null;
 function getChallengeDayNumber(startDateStr) {
   if (!startDateStr) return 1;
   const start = new Date(startDateStr);
-  start.setHours(0,0,0,0);
+  start.setHours(0, 0, 0, 0);
   const today = new Date();
-  today.setHours(0,0,0,0);
+  today.setHours(0, 0, 0, 0);
   const diffTime = today - start;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   return diffDays > 0 ? diffDays : 1;
@@ -542,7 +542,7 @@ async function loadIeltsData() {
       }
     }
   }
-  
+
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     ieltsVaultData = data;
   } else if (data && Array.isArray(data)) {
@@ -551,14 +551,14 @@ async function loadIeltsData() {
       items: data
     };
   }
-  
+
   if (!ieltsVaultData || typeof ieltsVaultData !== 'object' || Array.isArray(ieltsVaultData)) {
     ieltsVaultData = {
       challengeStartDate: getCurrentDateKey(),
       items: []
     };
   }
-  
+
   if (!ieltsVaultData.items || !Array.isArray(ieltsVaultData.items)) {
     ieltsVaultData.items = [];
   }
@@ -586,7 +586,7 @@ async function loadIeltsData() {
               images: f.images || [],
               image: f.image || '',
             };
-            
+
             if (skill === 'math') {
               fields.mathProblem = f.problem || '';
               fields.mathTheory = f.theory || '';
@@ -611,7 +611,7 @@ async function loadIeltsData() {
               fields.genExercise = f.exercise || '';
               fields.genSolution = f.solution || '';
             }
-            
+
             ieltsVaultData.items.push({
               id: `migrated-${genItem.id}`,
               title: genItem.title || 'Tài liệu tự học',
@@ -624,7 +624,7 @@ async function loadIeltsData() {
             });
           }
         });
-        
+
         await window.taskAPI.saveGeneralVault({ items: [] });
         const savedData = await window.taskAPI.saveIeltsVault(ieltsVaultData);
         if (savedData && typeof savedData === 'object') {
@@ -664,7 +664,7 @@ async function loadGeneralData() {
       }
     }
   }
-  
+
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     generalVaultData = data;
   } else if (data && Array.isArray(data)) {
@@ -674,7 +674,7 @@ async function loadGeneralData() {
       folders: ["Mặc định"]
     };
   }
-  
+
   if (!generalVaultData || typeof generalVaultData !== 'object' || Array.isArray(generalVaultData)) {
     generalVaultData = {
       challengeStartDate: getCurrentDateKey(),
@@ -682,7 +682,7 @@ async function loadGeneralData() {
       folders: ["Mặc định"]
     };
   }
-  
+
   if (!generalVaultData.items || !Array.isArray(generalVaultData.items)) {
     generalVaultData.items = [];
   }
@@ -721,17 +721,17 @@ async function loadSpeakingData() {
       }
     }
   }
-  
+
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     speakingVaultData = data;
   }
-  
+
   if (!speakingVaultData || typeof speakingVaultData !== 'object' || Array.isArray(speakingVaultData)) {
     speakingVaultData = {
       items: []
     };
   }
-  
+
   if (!speakingVaultData.items || !Array.isArray(speakingVaultData.items)) {
     speakingVaultData.items = [];
   }
@@ -757,13 +757,13 @@ function initApiKeyBox() {
   const settingsBox = document.getElementById('apiKeySettingsBox');
   const inputKey = document.getElementById('geminiApiKey');
   const btnSave = document.getElementById('btnSaveApiKey');
-  
+
   if (btnToggle && settingsBox && inputKey && btnSave) {
     const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE) || '';
     if (savedKey) {
       inputKey.value = savedKey;
     }
-    
+
     btnToggle.addEventListener('click', () => {
       if (settingsBox.style.display === 'none') {
         settingsBox.style.display = 'flex';
@@ -771,7 +771,7 @@ function initApiKeyBox() {
         settingsBox.style.display = 'none';
       }
     });
-    
+
     btnSave.addEventListener('click', () => {
       const key = inputKey.value.trim();
       localStorage.setItem(GEMINI_KEY_STORAGE, key);
@@ -785,11 +785,11 @@ function initApiKeyBox() {
 function updateFolderSelects(selectedFolder = 'Mặc định') {
   const filterFolder = document.getElementById('filterFolder');
   const ieltsFolder = document.getElementById('ieltsFolder');
-  
+
   if (!ieltsVaultData.folders) {
     ieltsVaultData.folders = ["Mặc định"];
   }
-  
+
   if (filterFolder) {
     const prevFilterVal = filterFolder.value || 'all';
     filterFolder.innerHTML = '<option value="all">📁 Tất cả Thư mục</option>';
@@ -801,7 +801,7 @@ function updateFolderSelects(selectedFolder = 'Mặc định') {
     });
     filterFolder.value = prevFilterVal;
   }
-  
+
   if (ieltsFolder) {
     ieltsFolder.innerHTML = '';
     ieltsVaultData.folders.forEach(folder => {
@@ -817,7 +817,7 @@ function updateFolderSelects(selectedFolder = 'Mặc định') {
 async function handleCreateFolderPrompt() {
   const name = await showCustomPrompt('Nhập tên thư mục mới:');
   if (!name) return;
-  
+
   const trimmed = name.trim();
   if (!ieltsVaultData.folders.includes(trimmed)) {
     ieltsVaultData.folders.push(trimmed);
@@ -832,11 +832,11 @@ async function handleCreateFolderPrompt() {
 function updateSkillSelects(selectedSkill = 'writing') {
   const filterSkill = document.getElementById('filterSkill');
   const ieltsSkill = document.getElementById('ieltsSkill');
-  
+
   if (!ieltsVaultData.customSkills) {
     ieltsVaultData.customSkills = [];
   }
-  
+
   const defaultSkills = [
     { value: 'writing', label: '✍️ Writing' },
     { value: 'speaking', label: '🗣️ Speaking' },
@@ -848,7 +848,7 @@ function updateSkillSelects(selectedSkill = 'writing') {
     { value: 'coding', label: '💻 Lập Trình' },
     { value: 'other', label: '📚 Môn học khác' }
   ];
-  
+
   const allSkills = [...defaultSkills];
   ieltsVaultData.customSkills.forEach(cs => {
     const val = cs.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-');
@@ -856,7 +856,7 @@ function updateSkillSelects(selectedSkill = 'writing') {
       allSkills.push({ value: val, label: `📚 ${cs}` });
     }
   });
-  
+
   if (filterSkill) {
     const currentFilterVal = filterSkill.value || 'all';
     filterSkill.innerHTML = '<option value="all">📚 Tất cả Môn học / Kỹ năng</option>';
@@ -872,7 +872,7 @@ function updateSkillSelects(selectedSkill = 'writing') {
       filterSkill.value = 'all';
     }
   }
-  
+
   if (ieltsSkill) {
     const currentFormVal = ieltsSkill.value || selectedSkill;
     ieltsSkill.innerHTML = '';
@@ -893,12 +893,12 @@ function updateSkillSelects(selectedSkill = 'writing') {
 async function handleCreateSkillPrompt() {
   const name = await showCustomPrompt('Nhập tên môn học hoặc kỹ năng mới:');
   if (!name) return;
-  
+
   const trimmed = name.trim();
   if (!ieltsVaultData.customSkills) {
     ieltsVaultData.customSkills = [];
   }
-  
+
   if (!ieltsVaultData.customSkills.includes(trimmed)) {
     ieltsVaultData.customSkills.push(trimmed);
     const val = trimmed.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-');
@@ -921,7 +921,7 @@ function updateBulkFolderActionsVisibility() {
   const container = document.getElementById('bulkFolderActions');
   const countEl = document.getElementById('selectedCount');
   if (!container || !countEl) return;
-  
+
   if (selectedIeltsItemIds.size > 0) {
     container.style.display = 'block';
     countEl.textContent = selectedIeltsItemIds.size;
@@ -932,11 +932,11 @@ function updateBulkFolderActionsVisibility() {
 
 async function handleBulkMoveToFolder() {
   if (selectedIeltsItemIds.size === 0) return;
-  
+
   if (!ieltsVaultData.folders) {
     ieltsVaultData.folders = ["Mặc định"];
   }
-  
+
   const foldersList = ieltsVaultData.folders.join(', ');
   const name = await showCustomPrompt(`Nhập tên thư mục để di chuyển các mục đã chọn:\n(Các thư mục hiện có: ${foldersList})`);
   if (name === null) return;
@@ -945,7 +945,7 @@ async function handleBulkMoveToFolder() {
     alert('Tên thư mục không được để trống!');
     return;
   }
-  
+
   const itemsToMove = ieltsVaultData.items.filter(item => selectedIeltsItemIds.has(item.id));
   if (itemsToMove.length > 0) {
     itemsToMove.forEach(item => {
@@ -966,11 +966,11 @@ async function handleBulkMoveToFolder() {
 function updateGenFolderSelects(selectedFolder = 'Mặc định') {
   const filterGenFolder = document.getElementById('filterGenFolder');
   const generalFolder = document.getElementById('generalFolder');
-  
+
   if (!generalVaultData.folders) {
     generalVaultData.folders = ["Mặc định"];
   }
-  
+
   if (filterGenFolder) {
     const currentFilterVal = filterGenFolder.value;
     filterGenFolder.innerHTML = '<option value="all">📁 Tất cả Thư mục</option>';
@@ -986,7 +986,7 @@ function updateGenFolderSelects(selectedFolder = 'Mặc định') {
       filterGenFolder.value = 'all';
     }
   }
-  
+
   if (generalFolder) {
     generalFolder.innerHTML = '';
     generalVaultData.folders.forEach(f => {
@@ -1024,35 +1024,35 @@ function showCustomPrompt(message, defaultValue = '') {
     const input = document.getElementById('customPromptInput');
     const btnCancel = document.getElementById('btnCustomPromptCancel');
     const btnOK = document.getElementById('btnCustomPromptOK');
-    
+
     if (!modal || !title || !input || !btnCancel || !btnOK) {
       resolve(prompt(message, defaultValue));
       return;
     }
-    
+
     title.textContent = message;
     input.value = defaultValue;
     modal.classList.add('active');
     input.focus();
     input.select();
-    
+
     const cleanup = () => {
       modal.classList.remove('active');
       btnOK.removeEventListener('click', onOK);
       btnCancel.removeEventListener('click', onCancel);
       input.removeEventListener('keydown', onKeyDown);
     };
-    
+
     const onOK = () => {
       cleanup();
       resolve(input.value.trim());
     };
-    
+
     const onCancel = () => {
       cleanup();
       resolve(null);
     };
-    
+
     const onKeyDown = (e) => {
       if (e.key === 'Enter') {
         onOK();
@@ -1060,7 +1060,7 @@ function showCustomPrompt(message, defaultValue = '') {
         onCancel();
       }
     };
-    
+
     btnOK.addEventListener('click', onOK);
     btnCancel.addEventListener('click', onCancel);
     input.addEventListener('keydown', onKeyDown);
@@ -1071,10 +1071,10 @@ function escapeJsonControlCharacters(jsonString) {
   let inString = false;
   let escaped = false;
   let result = '';
-  
+
   for (let i = 0; i < jsonString.length; i++) {
     const char = jsonString[i];
-    
+
     if (char === '"' && !escaped) {
       inString = !inString;
       result += char;
@@ -1099,25 +1099,25 @@ function escapeJsonControlCharacters(jsonString) {
       result += char;
     }
   }
-  
+
   return result;
 }
 
 function extractBalancedJson(text) {
   const startIdx = text.indexOf('{');
   if (startIdx === -1) return text;
-  
+
   let braceCount = 0;
   let inString = false;
   let escaped = false;
-  
+
   for (let i = startIdx; i < text.length; i++) {
     const char = text[i];
-    
+
     if (char === '"' && !escaped) {
       inString = !inString;
     }
-    
+
     if (inString) {
       if (char === '\\') {
         escaped = !escaped;
@@ -1136,7 +1136,7 @@ function extractBalancedJson(text) {
       }
     }
   }
-  
+
   const jsonMatch = text.trim().match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     return jsonMatch[0];
@@ -1148,10 +1148,10 @@ function stripJsonComments(str) {
   let inString = false;
   let escaped = false;
   let result = '';
-  
+
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
-    
+
     if (char === '"' && !escaped) {
       inString = !inString;
       result += char;
@@ -1187,7 +1187,7 @@ function stripJsonComments(str) {
 
 function parseAiJsonResponse(text) {
   let cleaned = text.trim();
-  
+
   // 1. Extract balanced JSON block { ... } starting from the first '{'
   const firstBrace = cleaned.indexOf('{');
   if (firstBrace !== -1) {
@@ -1196,7 +1196,7 @@ function parseAiJsonResponse(text) {
     let escaped = false;
     let stringChar = null;
     let foundEnd = false;
-    
+
     for (let i = firstBrace; i < cleaned.length; i++) {
       const char = cleaned[i];
       if (escaped) {
@@ -1249,7 +1249,7 @@ function parseAiJsonResponse(text) {
     let inString = false;
     let stringChar = null;
     let escaped = false;
-    
+
     let containerStack = [];
     let isExpectKey = false;
 
@@ -1298,7 +1298,7 @@ function parseAiJsonResponse(text) {
           // Check if this is the closing quote
           const remaining = cleaned.substring(i + 1).trim();
           let isClosing = false;
-          
+
           if (remaining.length === 0) {
             isClosing = true;
           } else {
@@ -1307,9 +1307,9 @@ function parseAiJsonResponse(text) {
               isClosing = remaining.startsWith(':');
             } else {
               // Value closing quote must be followed by ',' or '}' or ']'
-              isClosing = remaining.startsWith(',') || 
-                          remaining.startsWith('}') || 
-                          remaining.startsWith(']');
+              isClosing = remaining.startsWith(',') ||
+                remaining.startsWith('}') ||
+                remaining.startsWith(']');
             }
           }
 
@@ -1338,17 +1338,17 @@ function parseAiJsonResponse(text) {
     return JSON.parse(repaired);
   } catch (secondErr) {
     console.error('State-machine JSON repair failed, using ultimate split-key fallback...', secondErr);
-    
+
     // Ultimate Key-Splitting Parser Fallback
     const result = {};
     const targetKeys = [
-      'title', 'prompt', 'grammar', 'vocab', 'analysis', 'ideas', 
-      'sample', 'solution', 'question', 'outline', 'pron', 'passage', 
-      'keywords', 'sentence', 'tips', 'explanation', 'context', 
-      'spelling', 'transcript', 'problem', 'theory', 'steps', 
+      'title', 'prompt', 'grammar', 'vocab', 'analysis', 'ideas',
+      'sample', 'solution', 'question', 'outline', 'pron', 'passage',
+      'keywords', 'sentence', 'tips', 'explanation', 'context',
+      'spelling', 'transcript', 'problem', 'theory', 'steps',
       'concept', 'exercise', 'dialogue', 'translation'
     ];
-    
+
     const keyPositions = [];
     targetKeys.forEach(key => {
       const regex = new RegExp(`(["'“]?)${key}\\1\\s*:`, 'gi');
@@ -1361,37 +1361,37 @@ function parseAiJsonResponse(text) {
         });
       }
     });
-    
+
     keyPositions.sort((a, b) => a.start - b.start);
-    
+
     for (let idx = 0; idx < keyPositions.length; idx++) {
       const current = keyPositions[idx];
       const end = (idx + 1 < keyPositions.length) ? keyPositions[idx + 1].start : cleaned.length;
-      
+
       let rawVal = cleaned.substring(current.valueStart, end).trim();
-      
+
       // Clean up surrounding quotes, brackets, trailing commas, braces
       rawVal = rawVal.replace(/,[\s\n]*$/, '').trim();
       if (rawVal.endsWith('}') || rawVal.endsWith(']')) {
         rawVal = rawVal.substring(0, rawVal.length - 1).trim();
       }
       rawVal = rawVal.replace(/,[\s\n]*$/, '').trim();
-      
+
       if ((rawVal.startsWith('"') && rawVal.endsWith('"')) ||
-          (rawVal.startsWith("'") && rawVal.endsWith("'")) ||
-          (rawVal.startsWith('“') && rawVal.endsWith('”'))) {
+        (rawVal.startsWith("'") && rawVal.endsWith("'")) ||
+        (rawVal.startsWith('“') && rawVal.endsWith('”'))) {
         rawVal = rawVal.substring(1, rawVal.length - 1).trim();
       }
-      
+
       rawVal = rawVal
         .replace(/\\"/g, '"')
         .replace(/\\'/g, "'")
         .replace(/\\n/g, '\n')
         .replace(/\\t/g, '\t');
-        
+
       result[current.key] = rawVal;
     }
-    
+
     if (Object.keys(result).length > 0) {
       return result;
     }
@@ -1456,11 +1456,11 @@ function cleanHtml(html) {
   text = text.replace(/<\/tr>/gi, '\n');
   text = text.replace(/<[^>]+>/g, ' ');
   text = text.replace(/&nbsp;/g, ' ')
-             .replace(/&amp;/g, '&')
-             .replace(/&lt;/g, '<')
-             .replace(/&gt;/g, '>')
-             .replace(/&quot;/g, '"')
-             .replace(/&#39;/g, "'");
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
   text = text.replace(/[ \t]+/g, ' ');
   text = text.replace(/\n\s*\n+/g, '\n\n');
   return text.trim();
@@ -1473,13 +1473,13 @@ async function handleFetchFromLink(type) {
     linkEl.focus();
     return;
   }
-  
+
   const url = linkEl.value.trim();
   const btn = document.getElementById(type === 'ielts' ? 'btnFetchLink' : 'btnGenFetchLink');
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = '⏳ Đang tải...';
-  
+
   try {
     if (!window.taskAPI || !window.taskAPI.fetchUrl) {
       throw new Error('Tính năng tải link chỉ khả dụng trong ứng dụng Electron.');
@@ -1494,7 +1494,7 @@ async function handleFetchFromLink(type) {
       const generalSubjectEl = document.getElementById('generalSubject');
       subject = generalSubjectEl ? generalSubjectEl.value : '';
     }
-    
+
     const fetchResult = await window.taskAPI.fetchUrl(url, { skill, subject });
     let html = '';
     let fetchedImages = [];
@@ -1504,15 +1504,15 @@ async function handleFetchFromLink(type) {
     } else {
       html = fetchResult || '';
     }
-    
+
     const cleanText = cleanHtml(html);
-    
+
     if (!cleanText) {
       throw new Error('Không thể trích xuất nội dung văn bản từ trang web này.');
     }
-    
+
     let inputEl = null;
-    
+
     if (type === 'ielts') {
       if (skill === 'writing') inputEl = document.getElementById('writePrompt');
       else if (skill === 'speaking') inputEl = document.getElementById('speakQuestion');
@@ -1526,18 +1526,18 @@ async function handleFetchFromLink(type) {
       else if (subject === 'coding') inputEl = document.getElementById('codingProblem');
       else if (subject === 'other') inputEl = document.getElementById('genTheory');
     }
-    
+
     if (inputEl) {
       inputEl.value = cleanText;
-      
+
       // Auto-populate extracted images for Writing
       if (type === 'ielts' && skill === 'writing' && fetchedImages.length > 0) {
         uploadedImages = [...uploadedImages, ...fetchedImages];
         renderImagePreviews();
       }
-      
+
       playTone(550, 0.1, 'sine', 0.15);
-      
+
       alert('Đã tải thành công nội dung trang web!');
     }
   } catch (err) {
@@ -1670,10 +1670,10 @@ async function handleAiAnalyze() {
     if (settingsBox) settingsBox.style.display = 'flex';
     return;
   }
-  
+
   const skill = document.getElementById('ieltsSkill').value;
   let rawInput = '';
-  
+
   if (skill === 'writing') {
     rawInput = document.getElementById('writePrompt').value.trim();
     if (!rawInput) rawInput = document.getElementById('writeSample').value.trim();
@@ -1707,16 +1707,16 @@ async function handleAiAnalyze() {
       return;
     }
   }
-  
+
   const btn = document.getElementById('btnAiAnalyze');
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = '🤖 Đang phân tích...';
-  
+
   const bandEl = document.getElementById('selectAiBand');
   const targetBand = bandEl ? bandEl.value : '9.0';
   const fullPrompt = compileIeltsPrompt(skill, rawInput, targetBand);
-  
+
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
@@ -1736,7 +1736,7 @@ async function handleAiAnalyze() {
         ]
       })
     });
-    
+
     if (!response.ok) {
       let errorMsg = `HTTP error! status: ${response.status}`;
       try {
@@ -1744,17 +1744,17 @@ async function handleAiAnalyze() {
         if (errJson && errJson.error && errJson.error.message) {
           errorMsg = errJson.error.message;
         }
-      } catch (e) {}
+      } catch (e) { }
       throw new Error(errorMsg);
     }
-    
+
     const result = await response.json();
     const rawText = result.candidates[0].content.parts[0].text.trim();
     const data = parseAiJsonResponse(rawText);
     if (data.title) {
       setInputValue('ieltsTitle', data.title);
     }
-    
+
     if (skill === 'writing') {
       if (data.prompt) setInputValue('writePrompt', data.prompt);
       if (data.grammar) setInputValue('writeGrammar', data.grammar);
@@ -1786,7 +1786,7 @@ async function handleAiAnalyze() {
     playTone(800, 0.15, 'sine', 0.2);
     SFX.complete();
     alert('AI đã tự động phân tích, phân tách và điền vào các ô nội dung thành công!');
-    
+
   } catch (err) {
     console.error('AI Error:', err);
     alert(`Lỗi AI Gemini: ${err.message}\n\nVui lòng kiểm tra lại API Key (Key hợp lệ của Google thường bắt đầu bằng chữ "AIzaSy") hoặc kết nối mạng của bạn.`);
@@ -1874,7 +1874,7 @@ function handleWebAiImageCopy() {
 function handleWebAiAssist() {
   const skill = document.getElementById('ieltsSkill').value;
   let rawInput = '';
-  
+
   if (skill === 'writing') {
     rawInput = document.getElementById('writePrompt').value.trim();
     if (!rawInput) rawInput = document.getElementById('writeSample').value.trim();
@@ -1912,7 +1912,7 @@ function handleWebAiAssist() {
   const bandEl = document.getElementById('selectAiBand');
   const targetBand = bandEl ? bandEl.value : '9.0';
   activeWebAiPrompt = compileIeltsPrompt(skill, rawInput, targetBand);
-  
+
   const copyImageBtn = document.getElementById('btnCopyWebAiImage');
   if (copyImageBtn) {
     if (skill === 'writing' && uploadedImages.length > 0) {
@@ -1952,7 +1952,7 @@ function handleWebAiApply() {
     if (data.title) {
       setInputValue('ieltsTitle', data.title);
     }
-    
+
     if (skill === 'writing') {
       if (data.prompt) setInputValueIfEmpty('writePrompt', data.prompt);
       if (data.grammar) setInputValue('writeGrammar', data.grammar);
@@ -1996,60 +1996,60 @@ function saveInputStateForReload() {
     paneIeltsActive: document.getElementById('paneIelts') ? document.getElementById('paneIelts').classList.contains('active') : false,
     ieltsSkill: document.getElementById('ieltsSkill') ? document.getElementById('ieltsSkill').value : 'writing',
     generalSubject: document.getElementById('generalSubject') ? document.getElementById('generalSubject').value : 'math',
-    
+
     writePrompt: document.getElementById('writePrompt') ? document.getElementById('writePrompt').value : '',
     speakQuestion: document.getElementById('speakQuestion') ? document.getElementById('speakQuestion').value : '',
     readPassage: document.getElementById('readPassage') ? document.getElementById('readPassage').value : '',
     listenContext: document.getElementById('listenContext') ? document.getElementById('listenContext').value : '',
-    
+
     mathProblem: document.getElementById('mathProblem') ? document.getElementById('mathProblem').value : '',
     codingProblem: document.getElementById('codingProblem') ? document.getElementById('codingProblem').value : '',
     koreanVocab: document.getElementById('koreanVocab') ? document.getElementById('koreanVocab').value : '',
     japaneseVocab: document.getElementById('japaneseVocab') ? document.getElementById('japaneseVocab').value : '',
     genTheory: document.getElementById('genTheory') ? document.getElementById('genTheory').value : '',
-    
+
     uploadedImages: uploadedImages || [],
-    
+
     ieltsTitle: document.getElementById('ieltsTitle') ? document.getElementById('ieltsTitle').value : '',
     generalTitle: document.getElementById('generalTitle') ? document.getElementById('generalTitle').value : '',
-    
+
     ieltsLink: document.getElementById('ieltsLink') ? document.getElementById('ieltsLink').value : '',
     generalLink: document.getElementById('generalLink') ? document.getElementById('generalLink').value : ''
   };
-  
+
   localStorage.setItem('reload_preserved_state', JSON.stringify(state));
 }
 
 function restoreInputStateAfterReload() {
   const saved = localStorage.getItem('reload_preserved_state');
   if (!saved) return;
-  
+
   try {
     const state = JSON.parse(saved);
     if (!state) return;
-    
+
     if (state.writePrompt && document.getElementById('writePrompt')) document.getElementById('writePrompt').value = state.writePrompt;
     if (state.speakQuestion && document.getElementById('speakQuestion')) document.getElementById('speakQuestion').value = state.speakQuestion;
     if (state.readPassage && document.getElementById('readPassage')) document.getElementById('readPassage').value = state.readPassage;
     if (state.listenContext && document.getElementById('listenContext')) document.getElementById('listenContext').value = state.listenContext;
-    
+
     if (state.mathProblem && document.getElementById('mathProblem')) document.getElementById('mathProblem').value = state.mathProblem;
     if (state.codingProblem && document.getElementById('codingProblem')) document.getElementById('codingProblem').value = state.codingProblem;
     if (state.koreanVocab && document.getElementById('koreanVocab')) document.getElementById('koreanVocab').value = state.koreanVocab;
     if (state.japaneseVocab && document.getElementById('japaneseVocab')) document.getElementById('japaneseVocab').value = state.japaneseVocab;
     if (state.genTheory && document.getElementById('genTheory')) document.getElementById('genTheory').value = state.genTheory;
-    
+
     if (state.ieltsTitle && document.getElementById('ieltsTitle')) document.getElementById('ieltsTitle').value = state.ieltsTitle;
     if (state.generalTitle && document.getElementById('generalTitle')) document.getElementById('generalTitle').value = state.generalTitle;
-    
+
     if (state.ieltsLink && document.getElementById('ieltsLink')) document.getElementById('ieltsLink').value = state.ieltsLink;
     if (state.generalLink && document.getElementById('generalLink')) document.getElementById('generalLink').value = state.generalLink;
-    
+
     if (Array.isArray(state.uploadedImages) && state.uploadedImages.length > 0) {
       uploadedImages = state.uploadedImages;
       renderImagePreviews();
     }
-    
+
     if (state.ieltsSkill && document.getElementById('ieltsSkill')) {
       document.getElementById('ieltsSkill').value = state.ieltsSkill;
       document.getElementById('ieltsSkill').dispatchEvent(new Event('change'));
@@ -2058,17 +2058,17 @@ function restoreInputStateAfterReload() {
       document.getElementById('generalSubject').value = state.generalSubject;
       document.getElementById('generalSubject').dispatchEvent(new Event('change'));
     }
-    
+
     if (state.paneGeneralActive && document.getElementById('tabBtnGeneral')) {
       document.getElementById('tabBtnGeneral').click();
     } else if (state.paneIeltsActive && document.getElementById('tabBtnIelts')) {
       document.getElementById('tabBtnIelts').click();
     }
-    
+
     setTimeout(() => {
       document.getElementById('webAiModal').classList.add('active');
     }, 100);
-    
+
   } catch (e) {
     console.error('Failed to restore state after reload:', e);
   } finally {
@@ -2136,7 +2136,7 @@ function initVideoChallenge() {
   });
   if (btnVideoDaySave) btnVideoDaySave.addEventListener('click', handleSaveVideoDayChanges);
   if (btnCopyVideoPrompt) btnCopyVideoPrompt.addEventListener('click', handleCopyVideoPrompt);
-  
+
   renderVideoProjectsList();
 }
 
@@ -2156,10 +2156,10 @@ function renderVideoProjectsList() {
     if (proj.id === activeVideoProjectId) {
       li.classList.add('active');
     }
-    
+
     // Calculate progress
     const completedCount = proj.days ? proj.days.filter(d => d.completed).length : 0;
-    
+
     li.innerHTML = `
       <div style="flex: 1; min-width: 0;">
         <div style="font-weight: 600; font-size: 12px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escHtml(proj.name)}</div>
@@ -2225,7 +2225,7 @@ function renderVideoProjectDetail() {
   const welcome = document.getElementById('videoWelcomeState');
   const activeState = document.getElementById('videoActiveState');
   const formContainer = document.getElementById('videoProjectFormContainer');
-  
+
   if (!activeVideoProjectId) {
     if (welcome) welcome.classList.add('active');
     if (activeState) activeState.style.display = 'none';
@@ -2272,7 +2272,7 @@ function renderVideoProjectDetail() {
   const grid = document.getElementById('videoDaysGrid');
   if (grid) {
     grid.innerHTML = '';
-    
+
     // Make sure days array has elements
     if (!proj.days || proj.days.length === 0) {
       proj.days = [];
@@ -2493,13 +2493,13 @@ Hãy trả về chính xác chuỗi JSON để tôi có thể sao chép trực t
         if (errJson && errJson.error && errJson.error.message) {
           errorMsg = errJson.error.message;
         }
-      } catch (e) {}
+      } catch (e) { }
       throw new Error(errorMsg);
     }
 
     const result = await response.json();
     const rawText = result.candidates[0].content.parts[0].text.trim();
-    
+
     const startIdx = rawText.indexOf('[');
     const endIdx = rawText.lastIndexOf(']');
     if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) {
@@ -2541,7 +2541,7 @@ Hãy trả về chính xác chuỗi JSON để tôi có thể sao chép trực t
     proj.days = cleanedDays;
     saveVideoData();
     renderVideoProjectDetail();
-    
+
     if (typeof playTone === 'function') {
       playTone(800, 0.15, 'sine', 0.2);
     }
@@ -2582,7 +2582,7 @@ function handleLoadVideoJson() {
       throw new Error(`Không tìm thấy ký tự đóng tương ứng (${endChar}).`);
     }
     const cleanJson = jsonText.substring(startIdx, endIdx + 1);
-    
+
     const parsed = JSON.parse(cleanJson);
     let daysArray = null;
 
@@ -2720,145 +2720,65 @@ function handleSaveVideoDayChanges() {
 }
 
 function initTabs() {
-  const tabBtnTasks = document.getElementById('tabBtnTasks');
-  const tabBtnIelts = document.getElementById('tabBtnIelts');
-  const tabBtnSpeaking = document.getElementById('tabBtnSpeaking');
-  const tabBtnVideoChallenge = document.getElementById('tabBtnVideoChallenge');
-  const tabBtnMemorize = document.getElementById('tabBtnMemorize');
-  
-  const paneTasks = document.getElementById('paneTasks');
-  const paneIelts = document.getElementById('paneIelts');
-  const paneSpeaking = document.getElementById('paneSpeaking');
-  const paneVideoChallenge = document.getElementById('paneVideoChallenge');
-  const paneMemorize = document.getElementById('paneMemorize');
-  
-  if (tabBtnTasks && paneTasks) {
-    tabBtnTasks.addEventListener('click', () => {
-      tabBtnTasks.classList.add('active');
-      if (tabBtnIelts) tabBtnIelts.classList.remove('active');
-      if (tabBtnSpeaking) tabBtnSpeaking.classList.remove('active');
-      if (tabBtnVideoChallenge) tabBtnVideoChallenge.classList.remove('active');
-      if (tabBtnMemorize) tabBtnMemorize.classList.remove('active');
-      
-      paneTasks.classList.add('active');
-      if (paneIelts) paneIelts.classList.remove('active');
-      if (paneSpeaking) paneSpeaking.classList.remove('active');
-      if (paneVideoChallenge) paneVideoChallenge.classList.remove('active');
-      if (paneMemorize) paneMemorize.classList.remove('active');
-      playTone(700, 0.08, 'sine', 0.1);
-    });
-  }
-  
-  if (tabBtnIelts && paneIelts) {
-    tabBtnIelts.addEventListener('click', () => {
-      tabBtnIelts.classList.add('active');
-      if (tabBtnTasks) tabBtnTasks.classList.remove('active');
-      if (tabBtnSpeaking) tabBtnSpeaking.classList.remove('active');
-      if (tabBtnVideoChallenge) tabBtnVideoChallenge.classList.remove('active');
-      if (tabBtnMemorize) tabBtnMemorize.classList.remove('active');
-      
-      paneIelts.classList.add('active');
-      if (paneTasks) paneTasks.classList.remove('active');
-      if (paneSpeaking) paneSpeaking.classList.remove('active');
-      if (paneVideoChallenge) paneVideoChallenge.classList.remove('active');
-      if (paneMemorize) paneMemorize.classList.remove('active');
-      playTone(700, 0.08, 'sine', 0.1);
-      
-      renderChallengeGrid();
-      renderIeltsList();
-    });
-  }
-  
-  if (tabBtnSpeaking && paneSpeaking) {
-    tabBtnSpeaking.addEventListener('click', () => {
-      tabBtnSpeaking.classList.add('active');
-      if (tabBtnTasks) tabBtnTasks.classList.remove('active');
-      if (tabBtnIelts) tabBtnIelts.classList.remove('active');
-      if (tabBtnVideoChallenge) tabBtnVideoChallenge.classList.remove('active');
-      if (tabBtnMemorize) tabBtnMemorize.classList.remove('active');
-      
-      paneSpeaking.classList.add('active');
-      if (paneTasks) paneTasks.classList.remove('active');
-      if (paneIelts) paneIelts.classList.remove('active');
-      if (paneVideoChallenge) paneVideoChallenge.classList.remove('active');
-      if (paneMemorize) paneMemorize.classList.remove('active');
-      playTone(700, 0.08, 'sine', 0.1);
-      
-      renderSpeakingList();
-    });
-  }
+  const tabs = [
+    { btn: document.getElementById('tabBtnTasks'), pane: document.getElementById('paneTasks') },
+    { btn: document.getElementById('tabBtnIelts'), pane: document.getElementById('paneIelts'), onOpen: () => { renderChallengeGrid(); renderIeltsList(); } },
+    { btn: document.getElementById('tabBtnSpeaking'), pane: document.getElementById('paneSpeaking'), onOpen: () => { renderSpeakingList(); } },
+    { btn: document.getElementById('tabBtnVideoChallenge'), pane: document.getElementById('paneVideoChallenge'), onOpen: () => { renderVideoProjectsList(); } },
+    { btn: document.getElementById('tabBtnTiktokFlashcard'), pane: document.getElementById('paneTiktokFlashcard'), onOpen: () => { if (typeof initTiktokFlashcardTab === 'function') initTiktokFlashcardTab(); } },
+    { btn: document.getElementById('tabBtnCommentsVault'), pane: document.getElementById('paneCommentsVault'), onOpen: () => { if (typeof initCommentsVaultTab === 'function') initCommentsVaultTab(); } }
+  ];
 
-  if (tabBtnVideoChallenge && paneVideoChallenge) {
-    tabBtnVideoChallenge.addEventListener('click', () => {
-      tabBtnVideoChallenge.classList.add('active');
-      if (tabBtnTasks) tabBtnTasks.classList.remove('active');
-      if (tabBtnIelts) tabBtnIelts.classList.remove('active');
-      if (tabBtnSpeaking) tabBtnSpeaking.classList.remove('active');
-      if (tabBtnMemorize) tabBtnMemorize.classList.remove('active');
-      
-      paneVideoChallenge.classList.add('active');
-      if (paneTasks) paneTasks.classList.remove('active');
-      if (paneIelts) paneIelts.classList.remove('active');
-      if (paneSpeaking) paneSpeaking.classList.remove('active');
-      if (paneMemorize) paneMemorize.classList.remove('active');
-      playTone(700, 0.08, 'sine', 0.1);
-      
-      renderVideoProjectsList();
-    });
-  }
-
-  if (tabBtnMemorize && paneMemorize) {
-    tabBtnMemorize.addEventListener('click', () => {
-      tabBtnMemorize.classList.add('active');
-      if (tabBtnTasks) tabBtnTasks.classList.remove('active');
-      if (tabBtnIelts) tabBtnIelts.classList.remove('active');
-      if (tabBtnSpeaking) tabBtnSpeaking.classList.remove('active');
-      if (tabBtnVideoChallenge) tabBtnVideoChallenge.classList.remove('active');
-      
-      paneMemorize.classList.add('active');
-      if (paneTasks) paneTasks.classList.remove('active');
-      if (paneIelts) paneIelts.classList.remove('active');
-      if (paneSpeaking) paneSpeaking.classList.remove('active');
-      if (paneVideoChallenge) paneVideoChallenge.classList.remove('active');
-      playTone(700, 0.08, 'sine', 0.1);
-      
-      initMemorizeTab();
-    });
-  }
+  tabs.forEach(tab => {
+    if (tab.btn && tab.pane) {
+      tab.btn.addEventListener('click', () => {
+        tabs.forEach(t => {
+          if (t.btn) t.btn.classList.remove('active');
+          if (t.pane) t.pane.classList.remove('active');
+        });
+        tab.btn.classList.add('active');
+        tab.pane.classList.add('active');
+        if (typeof playTone === 'function') playTone(700, 0.08, 'sine', 0.1);
+        if (tab.onOpen) {
+          try { tab.onOpen(); } catch (e) { console.error('Tab onOpen error:', e); }
+        }
+      });
+    }
+  });
 }
 
 function renderChallengeGrid() {
   const grid = document.getElementById('challengeGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  
+
   const startStr = ieltsVaultData.challengeStartDate || getCurrentDateKey();
   const todayStr = getCurrentDateKey();
   const dayNum = getChallengeDayNumber(startStr);
-  
+
   document.getElementById('challengeDaysText').textContent = `Ngày ${dayNum > 0 ? dayNum : 1} / 60`;
-  
+
   const itemsByDate = {};
   ieltsVaultData.items.forEach(item => {
     const d = item.date;
     itemsByDate[d] = (itemsByDate[d] || 0) + 1;
   });
-  
+
   let targetDaysMet = 0;
   const fragment = document.createDocumentFragment();
-  
+
   for (let i = 0; i < 60; i++) {
     const cellDate = addDays(startStr, i);
     const count = itemsByDate[cellDate] || 0;
-    
+
     if (count >= 100) {
       targetDaysMet++;
     }
-    
+
     const cell = document.createElement('div');
     cell.className = 'grid-cell';
     cell.textContent = i + 1;
-    
+
     if (count === 0) {
       cell.classList.add('level-0');
     } else if (count < 50) {
@@ -2868,16 +2788,16 @@ function renderChallengeGrid() {
     } else {
       cell.classList.add('level-3');
     }
-    
+
     // Highlight if selected
     if (selectedFilterDate === cellDate) {
       cell.classList.add('selected-cell');
     }
-    
+
     const parts = cellDate.split('-');
     const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : cellDate;
     cell.title = `Ngày ${i + 1} (${formattedDate}): Đã lưu ${count} / 100 tài liệu`;
-    
+
     cell.addEventListener('click', () => {
       // Toggle date filter
       if (selectedFilterDate === cellDate) {
@@ -2885,7 +2805,7 @@ function renderChallengeGrid() {
       } else {
         selectedFilterDate = cellDate;
       }
-      
+
       const dateInp = document.getElementById('ieltsDate');
       if (dateInp) {
         dateInp.value = cellDate;
@@ -2894,19 +2814,19 @@ function renderChallengeGrid() {
       renderChallengeGrid();
       renderIeltsList();
     });
-    
+
     fragment.appendChild(cell);
   }
   grid.appendChild(fragment);
-  
+
   const todayCount = itemsByDate[todayStr] || 0;
-  
+
   const activeDate = selectedFilterDate || todayStr;
   const activeCount = itemsByDate[activeDate] || 0;
   const activePct = Math.min(100, Math.round((activeCount / 100) * 100));
   const activeParts = activeDate.split('-');
   const formattedActiveDate = activeParts.length === 3 ? `${activeParts[2]}/${activeParts[1]}/${activeParts[0]}` : activeDate;
-  
+
   const todayLbl = document.querySelector('.ielts-challenge-card .stat-box:nth-child(1) .stat-lbl');
   if (todayLbl) {
     if (selectedFilterDate) {
@@ -2916,7 +2836,7 @@ function renderChallengeGrid() {
       todayLbl.textContent = "Lưu hôm nay";
     }
   }
-  
+
   document.getElementById('ieltsTodayCount').textContent = `${activeCount} / 100`;
   document.getElementById('ieltsTodayProgress').style.width = `${activePct}%`;
   document.getElementById('ieltsGoalDays').textContent = `${targetDaysMet} / 60`;
@@ -2928,10 +2848,10 @@ function renderIeltsList() {
   const skillFilter = document.getElementById('filterSkill');
   const masteryFilter = document.getElementById('filterMastery');
   const list = document.getElementById('ieltsList');
-  
+
   if (!list) return;
   list.innerHTML = '';
-  
+
   // Date filter indicator update
   const dateFilterStatus = document.getElementById('ieltsDateFilterStatus');
   const selectedDateText = document.getElementById('ieltsSelectedDateText');
@@ -2949,47 +2869,47 @@ function renderIeltsList() {
   const filterSkill = skillFilter ? skillFilter.value : 'all';
   const filterMastery = masteryFilter ? masteryFilter.value : 'all';
   const filterFolder = document.getElementById('filterFolder') ? document.getElementById('filterFolder').value : 'all';
-  
+
   const filtered = ieltsVaultData.items.filter(item => {
     const f = item.fields || {};
-    const searchMatch = !searchVal || 
-                        item.title.toLowerCase().includes(searchVal) ||
-                        (f.prompt && f.prompt.toLowerCase().includes(searchVal)) ||
-                        (f.question && f.question.toLowerCase().includes(searchVal)) ||
-                        (f.vocab && f.vocab.toLowerCase().includes(searchVal)) ||
-                        (f.mathProblem && f.mathProblem.toLowerCase().includes(searchVal)) ||
-                        (f.koreanVocab && f.koreanVocab.toLowerCase().includes(searchVal)) ||
-                        (f.japaneseVocab && f.japaneseVocab.toLowerCase().includes(searchVal)) ||
-                        (f.codingProblem && f.codingProblem.toLowerCase().includes(searchVal)) ||
-                        (f.genTheory && f.genTheory.toLowerCase().includes(searchVal));
-    
+    const searchMatch = !searchVal ||
+      item.title.toLowerCase().includes(searchVal) ||
+      (f.prompt && f.prompt.toLowerCase().includes(searchVal)) ||
+      (f.question && f.question.toLowerCase().includes(searchVal)) ||
+      (f.vocab && f.vocab.toLowerCase().includes(searchVal)) ||
+      (f.mathProblem && f.mathProblem.toLowerCase().includes(searchVal)) ||
+      (f.koreanVocab && f.koreanVocab.toLowerCase().includes(searchVal)) ||
+      (f.japaneseVocab && f.japaneseVocab.toLowerCase().includes(searchVal)) ||
+      (f.codingProblem && f.codingProblem.toLowerCase().includes(searchVal)) ||
+      (f.genTheory && f.genTheory.toLowerCase().includes(searchVal));
+
     const skillMatch = filterSkill === 'all' || item.skill === filterSkill;
     const mVal = item.mastery || 0;
-    const masteryMatch = filterMastery === 'all' || 
-                         (filterMastery === '3' ? mVal >= 3 : mVal === parseInt(filterMastery));
-    
+    const masteryMatch = filterMastery === 'all' ||
+      (filterMastery === '3' ? mVal >= 3 : mVal === parseInt(filterMastery));
+
     const itemFolder = item.folder || 'Mặc định';
     const folderMatch = filterFolder === 'all' || itemFolder === filterFolder;
-    
+
     const dateMatch = !selectedFilterDate || item.date === selectedFilterDate;
-    
+
     return searchMatch && skillMatch && masteryMatch && folderMatch && dateMatch;
   });
-  
+
   filtered.sort((a, b) => {
     if (a.date !== b.date) {
       return b.date.localeCompare(a.date);
     }
     return b.id.localeCompare(a.id);
   });
-  
+
   const empty = document.getElementById('ieltsEmptyState');
   if (filtered.length === 0) {
     if (empty) empty.classList.add('visible');
     return;
   }
   if (empty) empty.classList.remove('visible');
-  
+
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
@@ -3001,7 +2921,7 @@ function renderIeltsList() {
     coding: '💻 Lập Trình',
     other: '📚 Môn khác'
   };
-  
+
   const fragment = document.createDocumentFragment();
   filtered.forEach(item => {
     const li = document.createElement('li');
@@ -3009,12 +2929,12 @@ function renderIeltsList() {
     if (item.id === activeIeltsItemId) {
       li.classList.add('active');
     }
-    
+
     const parts = item.date.split('-');
     const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : item.date;
-    
+
     const isChecked = selectedIeltsItemIds.has(item.id);
-    
+
     li.innerHTML = `
       <div style="display: flex; align-items: flex-start; gap: 8px; width: 100%;">
         <input type="checkbox" class="ielts-item-checkbox" data-id="${item.id}" ${isChecked ? 'checked' : ''} style="margin-top: 5px; cursor: pointer; width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--purple2);" />
@@ -3033,7 +2953,7 @@ function renderIeltsList() {
         </div>
       </div>
     `;
-    
+
     const cb = li.querySelector('.ielts-item-checkbox');
     cb.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -3046,7 +2966,7 @@ function renderIeltsList() {
       }
       updateBulkFolderActionsVisibility();
     });
-    
+
     li.addEventListener('click', () => {
       document.querySelectorAll('.ielts-item-card').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
@@ -3054,7 +2974,7 @@ function renderIeltsList() {
       renderIeltsDetail(item.id);
       playTone(500, 0.08, 'sine', 0.1);
     });
-    
+
     fragment.appendChild(li);
   });
   list.appendChild(fragment);
@@ -3070,13 +2990,13 @@ function showIeltsState(state) {
   const welcome = document.getElementById('ieltsWelcomeState');
   const form = document.getElementById('ieltsFormState');
   const detail = document.getElementById('ieltsDetailState');
-  
+
   if (!welcome || !form || !detail) return;
-  
+
   welcome.classList.remove('active');
   form.classList.remove('active');
   detail.classList.remove('active');
-  
+
   if (state === 'welcome') {
     welcome.classList.add('active');
     activeIeltsItemId = null;
@@ -3112,17 +3032,17 @@ function initSkillFormToggle() {
 
 function compressImage(file, callback) {
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const img = new Image();
-    img.onload = function() {
+    img.onload = function () {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       const MAX_WIDTH = 800;
       const MAX_HEIGHT = 800;
       let width = img.width;
       let height = img.height;
-      
+
       if (width > height) {
         if (width > MAX_WIDTH) {
           height *= MAX_WIDTH / width;
@@ -3134,11 +3054,11 @@ function compressImage(file, callback) {
           height = MAX_HEIGHT;
         }
       }
-      
+
       canvas.width = width;
       canvas.height = height;
       ctx.drawImage(img, 0, 0, width, height);
-      
+
       const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
       callback(compressedDataUrl);
     };
@@ -3151,22 +3071,22 @@ function setupImageUpload() {
   const uploadArea = document.getElementById('imageUploadArea');
   const fileInput = document.getElementById('writeImageFile');
   const previewContainer = document.getElementById('imagePreviewContainer');
-  
+
   if (!uploadArea || !fileInput || !previewContainer) return;
-  
+
   uploadArea.addEventListener('click', () => fileInput.click());
-  
+
   uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadArea.style.borderColor = 'var(--purple)';
     uploadArea.style.background = 'rgba(139, 92, 246, 0.08)';
   });
-  
+
   uploadArea.addEventListener('dragleave', () => {
     uploadArea.style.borderColor = 'rgba(139, 92, 246, 0.3)';
     uploadArea.style.background = 'rgba(255, 255, 255, 0.01)';
   });
-  
+
   uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadArea.style.borderColor = 'rgba(139, 92, 246, 0.3)';
@@ -3178,7 +3098,7 @@ function setupImageUpload() {
       }
     });
   });
-  
+
   fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files);
     files.forEach(file => {
@@ -3188,7 +3108,7 @@ function setupImageUpload() {
     });
     fileInput.value = '';
   });
-  
+
   const handlePaste = (e) => {
     const form = document.getElementById('ieltsFormState');
     if (form && form.classList.contains('active')) {
@@ -3201,10 +3121,10 @@ function setupImageUpload() {
       }
     }
   };
-  
+
   document.removeEventListener('paste', handlePaste);
   document.addEventListener('paste', handlePaste);
-  
+
   function processImageFile(file) {
     compressImage(file, (base64) => {
       uploadedImages.push(base64);
@@ -3216,42 +3136,42 @@ function setupImageUpload() {
 function renderImagePreviews() {
   const previewContainer = document.getElementById('imagePreviewContainer');
   if (!previewContainer) return;
-  
+
   previewContainer.innerHTML = '';
-  
+
   if (uploadedImages.length === 0) {
     previewContainer.style.display = 'none';
     return;
   }
-  
+
   previewContainer.style.display = 'flex';
-  
+
   uploadedImages.forEach((imgBase64, idx) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'image-preview-thumbnail-wrapper';
-    
+
     const img = document.createElement('img');
     img.src = imgBase64;
     img.className = 'image-preview-thumbnail';
-    
+
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'btn-remove-thumbnail';
     removeBtn.textContent = '✕';
     removeBtn.title = 'Xóa ảnh này';
-    
+
     removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       uploadedImages.splice(idx, 1);
       renderImagePreviews();
     });
-    
+
     const copyBtn = document.createElement('button');
     copyBtn.type = 'button';
     copyBtn.className = 'btn-copy-thumbnail';
     copyBtn.innerHTML = '📋';
     copyBtn.title = 'Sao chép ảnh này vào Clipboard';
-    
+
     copyBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       try {
@@ -3272,7 +3192,7 @@ function renderImagePreviews() {
         console.error('Failed to copy preview image:', err);
       }
     });
-    
+
     wrapper.appendChild(img);
     wrapper.appendChild(removeBtn);
     wrapper.appendChild(copyBtn);
@@ -3287,27 +3207,27 @@ function resetIeltsForm() {
   const dateEl = document.getElementById('ieltsDate');
   const masteryEl = document.getElementById('ieltsMastery');
   const folderEl = document.getElementById('ieltsFolder');
-  
+
   if (idEl) idEl.value = '';
   if (titleEl) titleEl.value = '';
   if (skillEl) skillEl.value = 'writing';
   if (dateEl) dateEl.value = getCurrentDateKey();
   if (masteryEl) masteryEl.value = '0';
   if (folderEl) folderEl.value = 'Mặc định';
-  
+
   const linkEl = document.getElementById('ieltsLink');
   if (linkEl) linkEl.value = '';
-  
+
   document.querySelectorAll('#ieltsForm textarea').forEach(textarea => {
     textarea.value = '';
   });
-  
+
   uploadedImages = [];
   const fileInput = document.getElementById('writeImageFile');
   if (fileInput) fileInput.value = '';
-  
+
   renderImagePreviews();
-  
+
   document.querySelectorAll('.skill-fields-group').forEach(el => {
     el.classList.remove('active');
   });
@@ -3331,9 +3251,9 @@ function handleSaveIelts() {
   const editIdEl = document.getElementById('editItemId');
   const folderEl = document.getElementById('ieltsFolder');
   const linkEl = document.getElementById('ieltsLink');
-  
+
   if (!titleEl || !skillEl) return;
-  
+
   const title = titleEl.value.trim();
   const skill = skillEl.value;
   const date = (dateEl && dateEl.value) ? dateEl.value : getCurrentDateKey();
@@ -3341,14 +3261,14 @@ function handleSaveIelts() {
   const editId = editIdEl ? editIdEl.value : '';
   const folder = folderEl ? folderEl.value : 'Mặc định';
   const link = linkEl ? linkEl.value.trim() : '';
-  
+
   if (!title) {
     titleEl.focus();
     titleEl.style.borderColor = '#ef4444';
     return;
   }
   titleEl.style.borderColor = '';
-  
+
   const fields = {};
   if (skill === 'writing') {
     fields.prompt = document.getElementById('writePrompt').value.trim();
@@ -3433,7 +3353,7 @@ function handleSaveIelts() {
     ieltsVaultData.items.push(newItem);
     activeIeltsItemId = newItemId;
   }
-  
+
   saveIeltsData();
   SFX.add();
   renderIeltsDetail(activeIeltsItemId);
@@ -3442,34 +3362,34 @@ function handleSaveIelts() {
 function handleEditIelts() {
   const item = ieltsVaultData.items.find(item => item.id === activeIeltsItemId);
   if (!item) return;
-  
+
   resetIeltsForm();
   const formTitle = document.getElementById('formTitle');
   if (formTitle) formTitle.textContent = '✏️ Chỉnh sửa tài liệu IELTS';
-  
+
   document.getElementById('editItemId').value = item.id;
   document.getElementById('ieltsTitle').value = item.title;
   document.getElementById('ieltsSkill').value = item.skill;
   document.getElementById('ieltsDate').value = item.date;
   document.getElementById('ieltsMastery').value = item.mastery;
-  
+
   const linkEl = document.getElementById('ieltsLink');
   if (linkEl) {
     linkEl.value = item.link || '';
   }
-  
+
   const folderEl = document.getElementById('ieltsFolder');
   if (folderEl) {
     folderEl.value = item.folder || 'Mặc định';
   }
-  
+
   const skillSelect = document.getElementById('ieltsSkill');
   if (skillSelect) {
     skillSelect.dispatchEvent(new Event('change'));
   }
-  
+
   const f = item.fields;
-  
+
   uploadedImages = f.images || (f.image ? [f.image] : []);
   renderImagePreviews();
 
@@ -3531,7 +3451,7 @@ function handleEditIelts() {
 function handleDeleteIelts() {
   const item = ieltsVaultData.items.find(item => item.id === activeIeltsItemId);
   if (!item) return;
-  
+
   showConfirm('Xóa tài liệu', `Bạn có chắc chắn muốn xóa tài liệu "${item.title}" không?`, () => {
     const idx = ieltsVaultData.items.findIndex(el => el.id === activeIeltsItemId);
     if (idx !== -1) {
@@ -3553,9 +3473,9 @@ function renderIeltsDetail(itemId) {
     showIeltsState('welcome');
     return;
   }
-  
+
   showIeltsState('detail');
-  
+
   const f = item.fields;
   let vocabText = '';
   if (f.vocab) vocabText += '\n' + f.vocab;
@@ -3566,7 +3486,7 @@ function renderIeltsDetail(itemId) {
   if (f.koreanVocab) vocabText += '\n' + f.koreanVocab;
   if (f.japaneseVocab) vocabText += '\n' + f.japaneseVocab;
   currentVocabMap = buildVocabMap(vocabText);
-  
+
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
@@ -3578,23 +3498,23 @@ function renderIeltsDetail(itemId) {
     coding: '💻 Lập Trình',
     other: '📚 Môn học khác'
   };
-  
+
   const detailSkill = document.getElementById('detailSkill');
   if (detailSkill) {
     detailSkill.className = `skill-badge ${item.skill}`;
     detailSkill.textContent = skillIcons[item.skill] || item.skill;
   }
-  
+
   const titleEl = document.getElementById('detailTitle');
   if (titleEl) titleEl.textContent = item.title;
-  
+
   const parts = item.date.split('-');
   const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : item.date;
   const dateEl = document.getElementById('detailDate');
   if (dateEl) dateEl.textContent = `📅 Ngày lưu: ${formattedDate}`;
   const detailFolderEl = document.getElementById('detailFolder');
   if (detailFolderEl) detailFolderEl.textContent = `📁 Thư mục: ${item.folder || 'Mặc định'}`;
-  
+
   const linkContainer = document.getElementById('detailLinkContainer');
   const linkEl = document.getElementById('detailLink');
   if (linkContainer && linkEl) {
@@ -3607,23 +3527,23 @@ function renderIeltsDetail(itemId) {
       linkEl.removeAttribute('data-url');
     }
   }
-  
+
   const lblReadCountMain = document.getElementById('lblReadCountMain');
   if (lblReadCountMain) {
     lblReadCountMain.textContent = item.mastery || 0;
   }
-  
+
   const scroll = document.getElementById('detailContentScroll');
   if (!scroll) return;
   scroll.innerHTML = '';
-  
+
   const detailImages = f.images || (f.image ? [f.image] : []);
   if (detailImages && detailImages.length > 0) {
     detailImages.forEach(imgBase64 => {
       scroll.appendChild(createDetailSectionImage(imgBase64));
     });
   }
-  
+
   if (item.skill === 'writing') {
     if (f.prompt) scroll.appendChild(createDetailSection('Đề bài / Prompt', f.prompt));
     if (f.grammar) scroll.appendChild(createDetailSection('Cấu trúc ngữ pháp hay dùng', f.grammar));
@@ -3699,7 +3619,7 @@ function renderIeltsDetail(itemId) {
     }
   };
   scroll.addEventListener('click', ieltsScrollClickHandler);
-  
+
   setupTextSelectionSearch(scroll, 'ielts');
   setupVocabHoverTooltips(scroll);
 }
@@ -3709,7 +3629,7 @@ let currentVocabMap = {};
 function buildVocabMap(vocabText) {
   const map = {};
   if (!vocabText) return map;
-  
+
   const lines = vocabText.split('\n');
   lines.forEach(line => {
     if (line.trim() === '') return;
@@ -3726,31 +3646,31 @@ function buildVocabMap(vocabText) {
       map[term.toLowerCase()] = definition;
     }
   });
-  
+
   return map;
 }
 
 function shouldEnrichSection(label) {
   const lbl = label.toLowerCase();
-  return lbl.includes('bài mẫu') || 
-         lbl.includes('bài nói mẫu') || 
-         lbl.includes('đoạn văn đọc') || 
-         lbl.includes('transcript') || 
-         lbl.includes('hội thoại') || 
-         lbl.includes('lý thuyết');
+  return lbl.includes('bài mẫu') ||
+    lbl.includes('bài nói mẫu') ||
+    lbl.includes('đoạn văn đọc') ||
+    lbl.includes('transcript') ||
+    lbl.includes('hội thoại') ||
+    lbl.includes('lý thuyết');
 }
 
 function enrichScriptWithVocab(scriptText, vocabMap) {
   const keys = Object.keys(vocabMap).sort((a, b) => b.length - a.length);
   if (keys.length === 0) return escHtml(scriptText);
-  
+
   let text = scriptText;
   const placeholders = [];
-  
+
   keys.forEach((key, index) => {
     const escapedKey = key.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     const regex = new RegExp(`\\b(${escapedKey})\\b`, 'gi');
-    
+
     text = text.replace(regex, (match) => {
       const placeholder = `___VOCAB_${index}_${placeholders.length}___`;
       placeholders.push({
@@ -3762,14 +3682,14 @@ function enrichScriptWithVocab(scriptText, vocabMap) {
       return placeholder;
     });
   });
-  
+
   let escapedHtml = escHtml(text);
-  
+
   placeholders.forEach(p => {
     const spanHtml = `<span class="vocab-inline-hover" data-vocab="${escHtml(p.vocabKey)}" data-definition="${escHtml(p.definition)}">${escHtml(p.word)}</span>`;
     escapedHtml = escapedHtml.replace(p.placeholder, spanHtml);
   });
-  
+
   return escapedHtml;
 }
 
@@ -3788,26 +3708,26 @@ function setupVocabHoverTooltips(containerEl) {
   const handleMouseEnter = (e) => {
     const el = e.target.closest('.vocab-inline-hover');
     if (!el) return;
-    
+
     const def = el.dataset.definition;
     if (!def) return;
-    
+
     showHoverTooltip(el, def);
   };
-  
+
   const handleMouseLeave = (e) => {
     const el = e.target.closest('.vocab-inline-hover');
     if (!el) return;
-    
+
     hideHoverTooltip();
   };
-  
+
   currentMouseEnterHandler = handleMouseEnter;
   currentMouseLeaveHandler = handleMouseLeave;
-  
+
   containerEl.addEventListener('mouseenter', handleMouseEnter, { capture: true });
   containerEl.addEventListener('mouseleave', handleMouseLeave, { capture: true });
-  
+
   function showHoverTooltip(targetEl, text) {
     if (!hoverTooltip) {
       hoverTooltip = document.createElement('div');
@@ -3834,29 +3754,29 @@ function setupVocabHoverTooltips(containerEl) {
       });
       document.body.appendChild(hoverTooltip);
     }
-    
+
     hoverTooltip.textContent = text;
-    
+
     const rect = targetEl.getBoundingClientRect();
-    
+
     const tooltipHeight = hoverTooltip.offsetHeight || 42;
     const tooltipWidth = hoverTooltip.offsetWidth || 220;
-    
+
     let top = rect.top - tooltipHeight - 8;
     let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-    
+
     if (top < 8) {
       top = rect.bottom + 8;
     }
     if (left < 8) left = 8;
     if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 8;
-    
+
     hoverTooltip.style.top = `${top}px`;
     hoverTooltip.style.left = `${left}px`;
     hoverTooltip.style.opacity = '1';
     hoverTooltip.style.transform = 'translateY(0)';
   }
-  
+
   function hideHoverTooltip() {
     if (hoverTooltip) {
       hoverTooltip.style.opacity = '0';
@@ -3868,9 +3788,9 @@ function setupVocabHoverTooltips(containerEl) {
 function createDetailSection(label, val) {
   const div = document.createElement('div');
   div.className = 'detail-section';
-  
+
   const isVocab = label.toLowerCase().includes('từ vựng') || label.toLowerCase().includes('vocab');
-  
+
   if (isVocab && val) {
     const lines = val.split('\n');
     let htmlContent = '';
@@ -3891,7 +3811,7 @@ function createDetailSection(label, val) {
         htmlContent += `<div style="padding: 4px 8px; margin-bottom: 2px;">${escHtml(line)}</div>`;
       }
     });
-    
+
     div.innerHTML = `
       <div class="detail-section-lbl">${escHtml(label)}</div>
       <div class="detail-section-val" style="white-space: normal;">${htmlContent}</div>
@@ -3903,19 +3823,19 @@ function createDetailSection(label, val) {
     } else {
       contentHtml = escHtml(val);
     }
-    
+
     div.innerHTML = `
       <div class="detail-section-lbl">${escHtml(label)}</div>
       <div class="detail-section-val">${contentHtml}</div>
     `;
   }
-  
+
   return div;
 }
 
 function extractSearchTerm(line) {
   let clean = line.trim();
-  
+
   if (clean.startsWith('|') && clean.endsWith('|')) {
     const parts = clean.split('|').map(p => p.trim()).filter(Boolean);
     if (parts.length >= 2) {
@@ -3925,7 +3845,7 @@ function extractSearchTerm(line) {
       return parts[0];
     }
   }
-  
+
   clean = clean.replace(/^[\d\s.\-*•+]+/g, '');
   const parts = clean.split(/[:\-–—(（]/);
   if (parts.length > 0) {
@@ -3936,34 +3856,34 @@ function extractSearchTerm(line) {
 
 function highlightWordInDetailSection(sectionEl, word) {
   if (!word || word.trim() === "") return false;
-  
+
   const valDiv = sectionEl.querySelector('.detail-section-val');
   if (!valDiv) return false;
-  
+
   if (!valDiv.dataset.originalText) {
     valDiv.dataset.originalText = valDiv.innerText;
   }
-  
+
   const originalText = valDiv.dataset.originalText;
   const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   const regex = new RegExp(`(${escapedWord})`, 'gi');
-  
+
   if (!regex.test(originalText)) {
     return false;
   }
-  
+
   const highlightedHtml = escHtml(originalText).replace(
-    new RegExp(`(${escHtml(word)})`, 'gi'), 
+    new RegExp(`(${escHtml(word)})`, 'gi'),
     '<mark class="search-highlight" style="background: #f59e0b; color: #000; font-weight: bold; border-radius: 4px; padding: 2px 4px; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">$1</mark>'
   );
-  
+
   valDiv.innerHTML = highlightedHtml;
-  
+
   const mark = valDiv.querySelector('.search-highlight');
   if (mark) {
     mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
     mark.style.animation = 'pulse-highlight 1.5s infinite';
-    
+
     if (!document.getElementById('pulse-highlight-style')) {
       const style = document.createElement('style');
       style.id = 'pulse-highlight-style';
@@ -3977,7 +3897,7 @@ function highlightWordInDetailSection(sectionEl, word) {
       document.head.appendChild(style);
     }
   }
-  
+
   return true;
 }
 
@@ -3993,18 +3913,18 @@ function clearHighlights(containerEl) {
 
 function performSearch(word, containerEl) {
   if (!word || word.trim() === "") return;
-  
+
   clearHighlights(containerEl);
-  
+
   const sections = containerEl.querySelectorAll('.detail-section');
   const targetKeywords = [
-    "bài mẫu", "sample", "transcript", "đoạn văn đọc", "passage", 
-    "hội thoại", "dialogue", "đề bài", "problem", "mã nguồn", 
+    "bài mẫu", "sample", "transcript", "đoạn văn đọc", "passage",
+    "hội thoại", "dialogue", "đề bài", "problem", "mã nguồn",
     "solution", "lý thuyết", "theory"
   ];
-  
+
   let targetSection = null;
-  
+
   for (const keyword of targetKeywords) {
     for (const section of sections) {
       const lblEl = section.querySelector('.detail-section-lbl');
@@ -4026,7 +3946,7 @@ function performSearch(word, containerEl) {
     }
     if (targetSection) break;
   }
-  
+
   if (!targetSection) {
     for (const section of sections) {
       const valDiv = section.querySelector('.detail-section-val');
@@ -4041,7 +3961,7 @@ function performSearch(word, containerEl) {
       }
     }
   }
-  
+
   if (targetSection) {
     highlightWordInDetailSection(targetSection, word);
   } else {
@@ -4052,13 +3972,13 @@ function performSearch(word, containerEl) {
 async function addWordToVocabularyDirect(word, translation, type) {
   const activeId = type === 'ielts' ? activeIeltsItemId : activeGeneralItemId;
   if (!activeId) return;
-  
+
   const vaultData = type === 'ielts' ? ieltsVaultData : generalVaultData;
   const item = vaultData.items.find(i => i.id === activeId);
   if (!item) return;
-  
+
   const isReading = type === 'ielts' && item.skill === 'reading';
-  
+
   if (isReading) {
     const newRow = `| ${word} | ${translation} |`;
     if (!item.fields.keywords || !item.fields.keywords.trim()) {
@@ -4092,7 +4012,7 @@ async function addWordToVocabularyDirect(word, translation, type) {
       item.fields.vocab = item.fields.vocab.trim() + '\n' + newVocabLine;
     }
   }
-  
+
   if (type === 'ielts') {
     await saveIeltsData();
     renderIeltsDetail(activeId);
@@ -4100,7 +4020,7 @@ async function addWordToVocabularyDirect(word, translation, type) {
     await saveGeneralData();
     renderGeneralDetail(activeId);
   }
-  
+
   playTone(800, 0.1, 'sine', 0.2);
   alert(`Đã thêm thành công "${word}" vào ${isReading ? 'bảng từ khóa' : 'danh sách từ vựng'}!`);
 }
@@ -4123,12 +4043,12 @@ function setupTextSelectionSearch(containerEl, type) {
       return;
     }
     const selectedText = selection.toString().trim();
-    
+
     if (!selectedText || selectedText.length < 1) {
       hideTooltip();
       return;
     }
-    
+
     let node = selection.anchorNode;
     let isInsideValue = false;
     while (node) {
@@ -4138,19 +4058,19 @@ function setupTextSelectionSearch(containerEl, type) {
       }
       node = node.parentNode;
     }
-    
+
     if (!isInsideValue) {
       hideTooltip();
       return;
     }
-    
+
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       showTooltip(rect, selectedText, containerEl);
     }
   };
-  
+
   let hideSelectionTimeout = null;
 
   const handleMouseDown = (e) => {
@@ -4159,13 +4079,13 @@ function setupTextSelectionSearch(containerEl, type) {
       hideSelectionTimeout = setTimeout(hideTooltip, 150);
     }
   };
-  
+
   currentSelectionHandler = handleSelection;
   currentMouseDownHandler = handleMouseDown;
-  
+
   document.addEventListener('selectionchange', handleSelection);
   document.addEventListener('mousedown', handleMouseDown);
-  
+
   async function showTooltip(rect, text, containerEl) {
     if (hideSelectionTimeout) {
       clearTimeout(hideSelectionTimeout);
@@ -4194,21 +4114,21 @@ function setupTextSelectionSearch(containerEl, type) {
       });
       document.body.appendChild(selectionTooltip);
     }
-    
+
     const tooltipHeight = 85;
     const tooltipWidth = 240;
-    
+
     let top = rect.top + window.scrollY - tooltipHeight - 10;
     let left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2);
-    
+
     if (top < window.scrollY) top = rect.bottom + window.scrollY + 10;
     if (left < 8) left = 8;
     if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 8;
-    
+
     selectionTooltip.style.top = `${top}px`;
     selectionTooltip.style.left = `${left}px`;
     selectionTooltip.style.display = 'flex';
-    
+
     selectionTooltip.innerHTML = `
       <div style="font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Dịch nghĩa</div>
       <div class="translation-text" style="font-size: 13px; font-weight: 500; color: #f8fafc; line-height: 1.4;">⏳ Đang dịch...</div>
@@ -4217,7 +4137,7 @@ function setupTextSelectionSearch(containerEl, type) {
         <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; display: none; outline: none; transition: transform 0.2s;">➕ Thêm từ</button>
       </div>
     `;
-    
+
     const searchBtn = selectionTooltip.querySelector('.tooltip-search-btn');
     searchBtn.onclick = (e) => {
       e.stopPropagation();
@@ -4225,7 +4145,7 @@ function setupTextSelectionSearch(containerEl, type) {
       performSearch(text, containerEl);
       hideTooltip();
     };
-    
+
     try {
       let resJson;
       if (window.taskAPI && window.taskAPI.translateText) {
@@ -4252,7 +4172,7 @@ function setupTextSelectionSearch(containerEl, type) {
             if (res.ok) {
               const data = await res.json();
               if (data && data.responseData && data.responseData.translatedText) {
-                resJson = [ [ [ data.responseData.translatedText, text ] ], null, 'en' ];
+                resJson = [[[data.responseData.translatedText, text]], null, 'en'];
                 success = true;
               }
             }
@@ -4265,12 +4185,12 @@ function setupTextSelectionSearch(containerEl, type) {
           throw new Error('All browser-side translation fallbacks failed');
         }
       }
-      
+
       const translation = resJson && resJson[0] && resJson[0][0] && resJson[0][0][0];
       if (translation && translation.toLowerCase().trim() !== text.toLowerCase().trim()) {
         const transEl = selectionTooltip.querySelector('.translation-text');
         if (transEl) transEl.textContent = translation;
-        
+
         const addBtn = selectionTooltip.querySelector('.tooltip-add-btn');
         if (addBtn) {
           addBtn.style.display = 'block';
@@ -4291,7 +4211,7 @@ function setupTextSelectionSearch(containerEl, type) {
       if (transEl) transEl.textContent = 'Lỗi kết nối dịch thuật.';
     }
   }
-  
+
   function hideTooltip() {
     if (selectionTooltip) {
       selectionTooltip.style.display = 'none';
@@ -4303,11 +4223,11 @@ function createDetailSectionImage(base64) {
   const div = document.createElement('div');
   div.className = 'detail-image-box';
   div.style.position = 'relative';
-  
+
   const img = document.createElement('img');
   img.src = base64;
   img.alt = 'Biểu đồ đính kèm';
-  
+
   img.addEventListener('click', () => {
     if (img.style.transform === 'scale(1.5)') {
       img.style.transform = 'scale(1)';
@@ -4372,7 +4292,7 @@ function createDetailSectionImage(base64) {
       alert('Không thể sao chép ảnh: ' + err.message);
     }
   });
-  
+
   div.appendChild(img);
   div.appendChild(copyBtn);
   return div;
@@ -4385,13 +4305,13 @@ function showGeneralState(state) {
   const welcome = document.getElementById('generalWelcomeState');
   const form = document.getElementById('generalFormState');
   const detail = document.getElementById('generalDetailState');
-  
+
   if (!welcome || !form || !detail) return;
-  
+
   welcome.classList.remove('active');
   form.classList.remove('active');
   detail.classList.remove('active');
-  
+
   if (state === 'welcome') {
     welcome.classList.add('active');
     activeGeneralItemId = null;
@@ -4427,7 +4347,7 @@ function resetGeneralForm() {
   const masteryEl = document.getElementById('generalMastery');
   const folderEl = document.getElementById('generalFolder');
   const linkEl = document.getElementById('generalLink');
-  
+
   if (idEl) idEl.value = '';
   if (titleEl) titleEl.value = '';
   if (subjectEl) subjectEl.value = 'korean';
@@ -4435,11 +4355,11 @@ function resetGeneralForm() {
   if (masteryEl) masteryEl.value = '0';
   if (folderEl) folderEl.value = 'Mặc định';
   if (linkEl) linkEl.value = '';
-  
+
   document.querySelectorAll('#generalForm textarea').forEach(textarea => {
     textarea.value = '';
   });
-  
+
   document.querySelectorAll('.skill-fields-group').forEach(el => {
     el.classList.remove('active');
   });
@@ -4463,9 +4383,9 @@ function handleSaveGeneral() {
   const editIdEl = document.getElementById('editGenItemId');
   const folderEl = document.getElementById('generalFolder');
   const linkEl = document.getElementById('generalLink');
-  
+
   if (!titleEl || !subjectEl) return;
-  
+
   const title = titleEl.value.trim();
   const subject = subjectEl.value;
   const date = (dateEl && dateEl.value) ? dateEl.value : getCurrentDateKey();
@@ -4473,14 +4393,14 @@ function handleSaveGeneral() {
   const editId = editIdEl ? editIdEl.value : '';
   const folder = folderEl ? folderEl.value : 'Mặc định';
   const link = linkEl ? linkEl.value.trim() : '';
-  
+
   if (!title) {
     titleEl.focus();
     titleEl.style.borderColor = '#ef4444';
     return;
   }
   titleEl.style.borderColor = '';
-  
+
   const fields = {};
   if (subject === 'math') {
     fields.problem = document.getElementById('mathProblem').value.trim();
@@ -4506,7 +4426,7 @@ function handleSaveGeneral() {
     fields.exercise = document.getElementById('genExercise').value.trim();
     fields.solution = document.getElementById('genSolution').value.trim();
   }
-  
+
   if (editId) {
     const idx = generalVaultData.items.findIndex(item => item.id === editId);
     if (idx !== -1) {
@@ -4537,7 +4457,7 @@ function handleSaveGeneral() {
     generalVaultData.items.push(newItem);
     activeGeneralItemId = newItemId;
   }
-  
+
   saveGeneralData();
   SFX.add();
   renderGeneralDetail(activeGeneralItemId);
@@ -4546,32 +4466,32 @@ function handleSaveGeneral() {
 function handleEditGeneral() {
   const item = generalVaultData.items.find(item => item.id === activeGeneralItemId);
   if (!item) return;
-  
+
   resetGeneralForm();
   const formTitle = document.getElementById('genFormTitle');
   if (formTitle) formTitle.textContent = '✏️ Chỉnh sửa tài liệu học tập';
-  
+
   document.getElementById('editGenItemId').value = item.id;
   document.getElementById('generalTitle').value = item.title;
   document.getElementById('generalSubject').value = item.subject;
   document.getElementById('generalDate').value = item.date;
   document.getElementById('generalMastery').value = item.mastery;
-  
+
   const linkEl = document.getElementById('generalLink');
   if (linkEl) {
     linkEl.value = item.link || '';
   }
-  
+
   const folderEl = document.getElementById('generalFolder');
   if (folderEl) {
     folderEl.value = item.folder || 'Mặc định';
   }
-  
+
   const subjectSelect = document.getElementById('generalSubject');
   if (subjectSelect) {
     subjectSelect.dispatchEvent(new Event('change'));
   }
-  
+
   const f = item.fields;
   if (item.subject === 'math') {
     document.getElementById('mathProblem').value = f.problem || '';
@@ -4604,7 +4524,7 @@ function handleEditGeneral() {
 function handleDeleteGeneral() {
   const item = generalVaultData.items.find(item => item.id === activeGeneralItemId);
   if (!item) return;
-  
+
   showConfirm('Xóa tài liệu', `Bạn có chắc chắn muốn xóa tài liệu "${item.title}" không?`, () => {
     const idx = generalVaultData.items.findIndex(el => el.id === activeGeneralItemId);
     if (idx !== -1) {
@@ -4620,34 +4540,34 @@ function renderGenChallengeGrid() {
   const grid = document.getElementById('genChallengeGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  
+
   const startStr = generalVaultData.challengeStartDate || getCurrentDateKey();
   const todayStr = getCurrentDateKey();
   const dayNum = getChallengeDayNumber(startStr);
-  
+
   const daysText = document.getElementById('genChallengeDaysText');
   if (daysText) daysText.textContent = `Ngày ${dayNum > 0 ? dayNum : 1} / 60`;
-  
+
   const itemsByDate = {};
   generalVaultData.items.forEach(item => {
     const d = item.date;
     itemsByDate[d] = (itemsByDate[d] || 0) + 1;
   });
-  
+
   let targetDaysMet = 0;
-  
+
   for (let i = 0; i < 60; i++) {
     const cellDate = addDays(startStr, i);
     const count = itemsByDate[cellDate] || 0;
-    
+
     if (count >= 100) {
       targetDaysMet++;
     }
-    
+
     const cell = document.createElement('div');
     cell.className = 'grid-cell';
     cell.textContent = i + 1;
-    
+
     if (count === 0) {
       cell.classList.add('level-0');
     } else if (count < 50) {
@@ -4657,11 +4577,11 @@ function renderGenChallengeGrid() {
     } else {
       cell.classList.add('level-3');
     }
-    
+
     const parts = cellDate.split('-');
     const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : cellDate;
     cell.title = `Ngày ${i + 1} (${formattedDate}): Đã lưu ${count} / 100 tài liệu`;
-    
+
     cell.addEventListener('click', () => {
       const dateInp = document.getElementById('generalDate');
       if (dateInp) {
@@ -4669,22 +4589,22 @@ function renderGenChallengeGrid() {
         playTone(600, 0.1, 'sine', 0.1);
       }
     });
-    
+
     grid.appendChild(cell);
   }
-  
+
   const todayCount = itemsByDate[todayStr] || 0;
   const todayPct = Math.min(100, Math.round((todayCount / 100) * 100));
-  
+
   const todayCountEl = document.getElementById('genTodayCount');
   if (todayCountEl) todayCountEl.textContent = `${todayCount} / 100`;
-  
+
   const todayProgressEl = document.getElementById('genTodayProgress');
   if (todayProgressEl) todayProgressEl.style.width = `${todayPct}%`;
-  
+
   const goalDaysEl = document.getElementById('genGoalDays');
   if (goalDaysEl) goalDaysEl.textContent = `${targetDaysMet} / 60`;
-  
+
   const totalSavedEl = document.getElementById('genTotalSaved');
   if (totalSavedEl) totalSavedEl.textContent = generalVaultData.items.length;
 }
@@ -4695,46 +4615,46 @@ function renderGeneralList() {
   const masteryFilter = document.getElementById('filterGenMastery');
   const folderFilter = document.getElementById('filterGenFolder');
   const list = document.getElementById('generalList');
-  
+
   if (!list) return;
   list.innerHTML = '';
-  
+
   const searchVal = searchInp ? searchInp.value.toLowerCase() : '';
   const filterSubject = subjectFilter ? subjectFilter.value : 'all';
   const filterMastery = masteryFilter ? masteryFilter.value : 'all';
   const filterFolder = folderFilter ? folderFilter.value : 'all';
-  
+
   const filtered = generalVaultData.items.filter(item => {
-    const searchMatch = !searchVal || 
-                        item.title.toLowerCase().includes(searchVal) ||
-                        (item.fields.problem && item.fields.problem.toLowerCase().includes(searchVal)) ||
-                        (item.fields.vocab && item.fields.vocab.toLowerCase().includes(searchVal)) ||
-                        (item.fields.theory && item.fields.theory.toLowerCase().includes(searchVal)) ||
-                        (item.fields.concept && item.fields.concept.toLowerCase().includes(searchVal));
-    
+    const searchMatch = !searchVal ||
+      item.title.toLowerCase().includes(searchVal) ||
+      (item.fields.problem && item.fields.problem.toLowerCase().includes(searchVal)) ||
+      (item.fields.vocab && item.fields.vocab.toLowerCase().includes(searchVal)) ||
+      (item.fields.theory && item.fields.theory.toLowerCase().includes(searchVal)) ||
+      (item.fields.concept && item.fields.concept.toLowerCase().includes(searchVal));
+
     const subjectMatch = filterSubject === 'all' || item.subject === filterSubject;
     const masteryMatch = filterMastery === 'all' || item.mastery === parseInt(filterMastery);
-    
+
     const itemFolder = item.folder || 'Mặc định';
     const folderMatch = filterFolder === 'all' || itemFolder === filterFolder;
-    
+
     return searchMatch && subjectMatch && masteryMatch && folderMatch;
   });
-  
+
   filtered.sort((a, b) => {
     if (a.date !== b.date) {
       return b.date.localeCompare(a.date);
     }
     return b.id.localeCompare(a.id);
   });
-  
+
   const empty = document.getElementById('generalEmptyState');
   if (filtered.length === 0) {
     if (empty) empty.classList.add('visible');
     return;
   }
   if (empty) empty.classList.remove('visible');
-  
+
   const subjectIcons = {
     math: '📐 Toán',
     korean: '🗣️ Tiếng Hàn',
@@ -4742,17 +4662,17 @@ function renderGeneralList() {
     coding: '💻 Lập trình',
     other: '📚 Môn khác'
   };
-  
+
   filtered.forEach(item => {
     const li = document.createElement('li');
     li.className = 'ielts-item-card';
     if (item.id === activeGeneralItemId) {
       li.classList.add('active');
     }
-    
+
     const parts = item.date.split('-');
     const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : item.date;
-    
+
     li.innerHTML = `
       <div class="item-card-header">
         <span class="skill-badge ${item.subject}">${subjectIcons[item.subject] || item.subject}</span>
@@ -4766,7 +4686,7 @@ function renderGeneralList() {
         </span>
       </div>
     `;
-    
+
     li.addEventListener('click', () => {
       document.querySelectorAll('#generalList .ielts-item-card').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
@@ -4774,7 +4694,7 @@ function renderGeneralList() {
       renderGeneralDetail(item.id);
       playTone(500, 0.08, 'sine', 0.1);
     });
-    
+
     list.appendChild(li);
   });
 }
@@ -4784,13 +4704,13 @@ function handleGenQuickMasterySelect(e) {
   if (!btn) return;
   const level = parseInt(btn.dataset.level);
   if (isNaN(level)) return;
-  
+
   const item = generalVaultData.items.find(el => el.id === activeGeneralItemId);
   if (!item) return;
-  
+
   item.mastery = level;
   saveGeneralData();
-  
+
   document.querySelectorAll('#generalDetailState .m-gen-select-btn').forEach(b => {
     if (parseInt(b.dataset.level) === level) {
       b.classList.add('active');
@@ -4798,7 +4718,7 @@ function handleGenQuickMasterySelect(e) {
       b.classList.remove('active');
     }
   });
-  
+
   playTone(550, 0.08, 'sine', 0.15);
 }
 
@@ -4810,17 +4730,17 @@ function renderGeneralDetail(itemId) {
     showGeneralState('welcome');
     return;
   }
-  
+
   showGeneralState('detail');
-  
+
   const f = item.fields;
   let vocabText = '';
   if (f.vocab) vocabText += '\n' + f.vocab;
   currentVocabMap = buildVocabMap(vocabText);
-  
+
   const detailTitleEl = document.getElementById('detailGenTitle');
   if (detailTitleEl) detailTitleEl.textContent = item.title;
-  
+
   const detailSubjectEl = document.getElementById('detailGenSubject');
   if (detailSubjectEl) {
     const subjectIcons = {
@@ -4840,10 +4760,10 @@ function renderGeneralDetail(itemId) {
     const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : item.date;
     detailDateEl.textContent = `📅 Ngày lưu: ${formattedDate}`;
   }
-  
+
   const detailFolderEl = document.getElementById('detailGenFolder');
   if (detailFolderEl) detailFolderEl.textContent = `📁 Thư mục: ${item.folder || 'Mặc định'}`;
-  
+
   const linkContainer = document.getElementById('detailGenLinkContainer');
   const linkEl = document.getElementById('detailGenLink');
   if (linkContainer && linkEl) {
@@ -4856,7 +4776,7 @@ function renderGeneralDetail(itemId) {
       linkEl.removeAttribute('data-url');
     }
   }
-  
+
   document.querySelectorAll('#generalDetailState .m-gen-select-btn').forEach(btn => {
     const btnLvl = parseInt(btn.dataset.level);
     if (btnLvl === item.mastery) {
@@ -4865,12 +4785,12 @@ function renderGeneralDetail(itemId) {
       btn.classList.remove('active');
     }
   });
-  
+
   const scroll = document.getElementById('detailGenContentScroll');
   if (!scroll) return;
   scroll.innerHTML = '';
-  
-  
+
+
   if (item.subject === 'math') {
     if (f.problem) scroll.appendChild(createDetailSection('Đề bài / Bài toán mẫu', f.problem));
     if (f.theory) scroll.appendChild(createDetailSection('Công thức & Lý thuyết liên quan', f.theory));
@@ -4920,7 +4840,7 @@ function renderGeneralDetail(itemId) {
     }
   };
   scroll.addEventListener('click', generalScrollClickHandler);
-  
+
   setupTextSelectionSearch(scroll, 'general');
   setupVocabHoverTooltips(scroll);
 }
@@ -5039,10 +4959,10 @@ async function handleGenAiAnalyze() {
     if (settingsBox) settingsBox.style.display = 'flex';
     return;
   }
-  
+
   const subject = document.getElementById('generalSubject').value;
   let rawInput = '';
-  
+
   if (subject === 'math') {
     rawInput = document.getElementById('mathProblem').value.trim();
     if (!rawInput) rawInput = document.getElementById('mathSolution').value.trim();
@@ -5084,14 +5004,14 @@ async function handleGenAiAnalyze() {
       return;
     }
   }
-  
+
   const btn = document.getElementById('btnGenAiAnalyze');
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = '🤖 Đang phân tích...';
-  
+
   const fullPrompt = compileGeneralPrompt(subject, rawInput);
-  
+
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
@@ -5111,7 +5031,7 @@ async function handleGenAiAnalyze() {
         ]
       })
     });
-    
+
     if (!response.ok) {
       let errorMsg = `HTTP error! status: ${response.status}`;
       try {
@@ -5119,18 +5039,18 @@ async function handleGenAiAnalyze() {
         if (errJson && errJson.error && errJson.error.message) {
           errorMsg = errJson.error.message;
         }
-      } catch (e) {}
+      } catch (e) { }
       throw new Error(errorMsg);
     }
-    
+
     const result = await response.json();
     const rawText = result.candidates[0].content.parts[0].text.trim();
     const data = parseAiJsonResponse(rawText);
-    
+
     if (data.title) {
       setInputValue('generalTitle', data.title);
     }
-    
+
     if (subject === 'math') {
       if (data.problem) setInputValue('mathProblem', data.problem);
       if (data.theory) setInputValue('mathTheory', data.theory);
@@ -5158,7 +5078,7 @@ async function handleGenAiAnalyze() {
     playTone(800, 0.15, 'sine', 0.2);
     SFX.complete();
     alert('AI đã tự động phân tích, phân tách và điền vào các ô nội dung thành công!');
-    
+
   } catch (err) {
     console.error('AI Error:', err);
     alert(`Lỗi AI Gemini: ${err.message}\n\nVui lòng kiểm tra lại API Key hoặc kết nối mạng.`);
@@ -5171,7 +5091,7 @@ async function handleGenAiAnalyze() {
 function handleGenWebAiAssist() {
   const subject = document.getElementById('generalSubject').value;
   let rawInput = '';
-  
+
   if (subject === 'math') {
     rawInput = document.getElementById('mathProblem').value.trim();
     if (!rawInput) rawInput = document.getElementById('mathSolution').value.trim();
@@ -5215,7 +5135,7 @@ function handleGenWebAiAssist() {
   }
 
   activeGenWebAiPrompt = compileGeneralPrompt(subject, rawInput);
-  
+
   const copyImageBtn = document.getElementById('btnCopyWebAiImage');
   if (copyImageBtn) {
     copyImageBtn.style.display = 'none';
@@ -5245,7 +5165,7 @@ function handleGenWebAiApply() {
     if (data.title) {
       setInputValue('generalTitle', data.title);
     }
-    
+
     if (subject === 'math') {
       if (data.problem) setInputValueIfEmpty('mathProblem', data.problem);
       if (data.theory) setInputValue('mathTheory', data.theory);
@@ -5295,7 +5215,7 @@ function getCategoryBadgeLabel(cat) {
 function showSpeakingState(state) {
   const welcome = document.getElementById('speakingWelcomeState');
   const detail = document.getElementById('speakingDetailState');
-  
+
   if (state === 'welcome') {
     if (welcome) welcome.style.display = 'block';
     if (detail) detail.style.display = 'none';
@@ -5322,23 +5242,23 @@ function renderSpeakingList() {
   const list = document.getElementById('speakingList');
   const emptyState = document.getElementById('speakingEmptyState');
   const totalSavedText = document.getElementById('speakingTotalSaved');
-  
+
   if (!list) return;
   list.innerHTML = '';
-  
+
   const searchVal = document.getElementById('speakingSearch').value.trim().toLowerCase();
   const filterCatEl = document.getElementById('filterSpeakCategory');
   const filterCat = filterCatEl ? filterCatEl.value : 'all';
-  
+
   const totalCount = speakingVaultData.items.length;
   if (totalSavedText) totalSavedText.textContent = `Đã lưu: ${totalCount} trang web`;
-  
+
   const filtered = speakingVaultData.items.filter(item => {
     // 1. Search Query filter
     const titleMatch = item.title.toLowerCase().includes(searchVal);
     const urlMatch = item.url.toLowerCase().includes(searchVal);
     const textMatch = titleMatch || urlMatch;
-    
+
     // 2. Category filter
     let catMatch = true;
     if (filterCat !== 'all') {
@@ -5349,22 +5269,22 @@ function renderSpeakingList() {
         catMatch = itemCat === filterCat;
       }
     }
-    
+
     return textMatch && catMatch;
   });
-  
+
   if (filtered.length === 0) {
     if (emptyState) emptyState.style.display = 'block';
   } else {
     if (emptyState) emptyState.style.display = 'none';
-    
+
     filtered.forEach(item => {
       const li = document.createElement('li');
       li.className = 'ielts-item' + (item.id === activeSpeakingLinkId ? ' active' : '');
       li.dataset.id = item.id;
-      
+
       const catLabel = getCategoryBadgeLabel(item.category);
-      
+
       li.innerHTML = `
         <div class="item-title" style="font-weight: 600; color: #fff;">${escHtml(item.title)}</div>
         <div class="item-meta" style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 11px; color: var(--muted);">
@@ -5372,7 +5292,7 @@ function renderSpeakingList() {
           <button class="open-link-btn" data-url="${escHtml(item.url)}" title="Mở liên kết trực tiếp" style="background: transparent; border: none; color: #ec4899; cursor: pointer; font-size: 12px; padding: 2px 5px;">🌐 Mở nhanh</button>
         </div>
       `;
-      
+
       li.addEventListener('click', (e) => {
         if (e.target.classList.contains('open-link-btn')) {
           e.stopPropagation();
@@ -5380,13 +5300,13 @@ function renderSpeakingList() {
           if (url) openExternalLink(url);
           return;
         }
-        
+
         activeSpeakingLinkId = item.id;
         document.querySelectorAll('#speakingList li').forEach(el => el.classList.remove('active'));
         li.classList.add('active');
         renderSpeakingDetail(item.id);
       });
-      
+
       list.appendChild(li);
     });
   }
@@ -5398,22 +5318,22 @@ function renderSpeakingDetail(itemId) {
     showSpeakingState('welcome');
     return;
   }
-  
+
   document.getElementById('detailSpeakTitle').textContent = item.title;
   document.getElementById('detailSpeakDate').textContent = `📅 Ngày lưu: ${item.date}`;
-  
+
   const catBadge = document.getElementById('detailSpeakCategory');
   if (catBadge) {
     catBadge.textContent = getCategoryBadgeLabel(item.category);
   }
-  
+
   const linkAnchor = document.getElementById('detailSpeakLink');
   if (linkAnchor) {
     linkAnchor.textContent = item.url;
     linkAnchor.setAttribute('data-url', item.url);
     linkAnchor.href = '#';
   }
-  
+
   showSpeakingState('detail');
 }
 
@@ -5422,14 +5342,14 @@ async function handleSaveSpeaking() {
   const urlInput = document.getElementById('speakLinkUrl');
   const categoryInput = document.getElementById('speakLinkCategory');
   const editIdInput = document.getElementById('editSpeakLinkId');
-  
+
   const title = titleInput.value.trim();
   const url = urlInput.value.trim();
   const category = categoryInput ? categoryInput.value : 'all';
   const editId = editIdInput.value;
-  
+
   if (!title || !url) return;
-  
+
   if (editId) {
     const idx = speakingVaultData.items.findIndex(item => item.id === editId);
     if (idx !== -1) {
@@ -5447,25 +5367,25 @@ async function handleSaveSpeaking() {
     };
     speakingVaultData.items.push(newItem);
   }
-  
+
   await saveSpeakingData();
   resetSpeakingForm();
-  
+
   if (editId) {
     renderSpeakingDetail(editId);
   } else {
     showSpeakingState('welcome');
   }
-  
+
   playTone(800, 0.15, 'sine', 0.2);
 }
 
 function handleDeleteSpeaking() {
   if (!activeSpeakingLinkId) return;
-  
+
   const item = speakingVaultData.items.find(el => el.id === activeSpeakingLinkId);
   if (!item) return;
-  
+
   showConfirm(
     'Xóa trang web',
     `Bạn có chắc chắn muốn xóa liên kết trang web "${item.title}"?`,
@@ -5484,19 +5404,19 @@ function handleDeleteSpeaking() {
 
 function handleEditSpeaking() {
   if (!activeSpeakingLinkId) return;
-  
+
   const item = speakingVaultData.items.find(el => el.id === activeSpeakingLinkId);
   if (!item) return;
-  
+
   document.getElementById('speakLinkTitle').value = item.title;
   document.getElementById('speakLinkUrl').value = item.url;
   document.getElementById('editSpeakLinkId').value = item.id;
-  
+
   const categoryEl = document.getElementById('speakLinkCategory');
   if (categoryEl) {
     categoryEl.value = item.category || 'all';
   }
-  
+
   document.getElementById('btnCancelSpeakLink').style.display = 'inline-block';
   document.getElementById('btnSaveSpeakLink').textContent = 'Cập nhật';
   document.getElementById('speakLinkTitle').focus();
@@ -5564,7 +5484,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initSkillFormToggle();
   setupImageUpload();
-  
+
   // Listeners for IELTS Vault
   const btnNewIelts = document.getElementById('btnNewIelts');
   const btnCancelIelts = document.getElementById('btnCancelIelts');
@@ -5572,7 +5492,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnEditIelts = document.getElementById('btnEditIelts');
   const btnDeleteIelts = document.getElementById('btnDeleteIelts');
   const btnExpandIelts = document.getElementById('btnExpandIelts');
-  
+
   if (btnNewIelts) btnNewIelts.addEventListener('click', handleNewIeltsClick);
   if (btnCancelIelts) btnCancelIelts.addEventListener('click', () => showIeltsState('welcome'));
   if (btnSaveIelts) btnSaveIelts.addEventListener('click', handleSaveIelts);
@@ -5585,10 +5505,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  
+
   const btnDecReadCountMain = document.getElementById('btnDecReadCountMain');
   const btnIncReadCountMain = document.getElementById('btnIncReadCountMain');
-  
+
   if (btnDecReadCountMain && btnIncReadCountMain) {
     btnDecReadCountMain.addEventListener('click', () => {
       const item = ieltsVaultData.items.find(el => el.id === activeIeltsItemId);
@@ -5605,7 +5525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
-    
+
     btnIncReadCountMain.addEventListener('click', () => {
       const item = ieltsVaultData.items.find(el => el.id === activeIeltsItemId);
       if (item) {
@@ -5620,33 +5540,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  
+
   // Search & Filter listeners
   const searchInp = document.getElementById('ieltsSearch');
   const filterSkill = document.getElementById('filterSkill');
   const filterMastery = document.getElementById('filterMastery');
   const filterFolder = document.getElementById('filterFolder');
-  
+
   if (searchInp) searchInp.addEventListener('input', debounce(renderIeltsList, 250));
   if (filterSkill) filterSkill.addEventListener('change', renderIeltsList);
   if (filterMastery) filterMastery.addEventListener('change', renderIeltsList);
   if (filterFolder) filterFolder.addEventListener('change', renderIeltsList);
-  
+
   // Folder Creation Listeners
   const btnCreateFolder = document.getElementById('btnCreateFolder');
   const btnFormNewFolder = document.getElementById('btnFormNewFolder');
   if (btnCreateFolder) btnCreateFolder.addEventListener('click', handleCreateFolderPrompt);
   if (btnFormNewFolder) btnFormNewFolder.addEventListener('click', handleCreateFolderPrompt);
-  
+
   const btnFormNewSkill = document.getElementById('btnFormNewSkill');
   if (btnFormNewSkill) btnFormNewSkill.addEventListener('click', handleCreateSkillPrompt);
-  
+
   const btnBulkMove = document.getElementById('btnBulkMove');
   if (btnBulkMove) btnBulkMove.addEventListener('click', handleBulkMoveToFolder);
-  
+
   const btnBulkExportHtml = document.getElementById('btnBulkExportHtml');
   if (btnBulkExportHtml) btnBulkExportHtml.addEventListener('click', handleBulkExportHtml);
-  
+
   const btnCopyExportUrl = document.getElementById('btnCopyExportUrl');
   if (btnCopyExportUrl) {
     btnCopyExportUrl.addEventListener('click', () => {
@@ -5670,7 +5590,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modal) modal.classList.remove('active');
     });
   }
-  
+
   const btnCancelBulk = document.getElementById('btnCancelBulk');
   if (btnCancelBulk) {
     btnCancelBulk.addEventListener('click', () => {
@@ -5679,7 +5599,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateBulkFolderActionsVisibility();
     });
   }
-  
+
   // AI Analyze listener
   const btnAiAnalyze = document.getElementById('btnAiAnalyze');
   if (btnAiAnalyze) btnAiAnalyze.addEventListener('click', handleAiAnalyze);
@@ -5693,10 +5613,10 @@ document.addEventListener('DOMContentLoaded', () => {
       renderIeltsList();
     });
   }
-  
+
   const btnFetchLink = document.getElementById('btnFetchLink');
   if (btnFetchLink) btnFetchLink.addEventListener('click', () => handleFetchFromLink('ielts'));
-  
+
   // Web AI Assist listeners
   const btnWebAiAssist = document.getElementById('btnWebAiAssist');
   if (btnWebAiAssist) btnWebAiAssist.addEventListener('click', handleWebAiAssist);
@@ -5741,71 +5661,6 @@ document.addEventListener('DOMContentLoaded', () => {
     detailLink.addEventListener('click', (e) => {
       e.preventDefault();
       const url = detailLink.getAttribute('data-url');
-      if (url) {
-        openExternalLink(url);
-      }
-    });
-  }
-  
-  // Listeners for General Study Vault
-  initGeneralSkillFormToggle();
-
-  const btnNewGeneral = document.getElementById('btnNewGeneral');
-  const btnCancelGeneral = document.getElementById('btnCancelGeneral');
-  const btnSaveGeneral = document.getElementById('btnSaveGeneral');
-  const btnEditGeneral = document.getElementById('btnEditGeneral');
-  const btnDeleteGeneral = document.getElementById('btnDeleteGeneral');
-  const btnExpandGeneral = document.getElementById('btnExpandGeneral');
-
-  if (btnNewGeneral) btnNewGeneral.addEventListener('click', handleNewGeneralClick);
-  if (btnCancelGeneral) btnCancelGeneral.addEventListener('click', () => showGeneralState('welcome'));
-  if (btnSaveGeneral) btnSaveGeneral.addEventListener('click', handleSaveGeneral);
-  if (btnEditGeneral) btnEditGeneral.addEventListener('click', handleEditGeneral);
-  if (btnDeleteGeneral) btnDeleteGeneral.addEventListener('click', handleDeleteGeneral);
-  if (btnExpandGeneral) {
-    btnExpandGeneral.addEventListener('click', () => {
-      if (activeGeneralItemId && window.taskAPI && window.taskAPI.openStudyWindow) {
-        window.taskAPI.openStudyWindow(activeGeneralItemId, 'general');
-      }
-    });
-  }
-
-  const quickGenMastery = document.querySelector('#generalDetailState .mastery-quick-select');
-  if (quickGenMastery) quickGenMastery.addEventListener('click', handleGenQuickMasterySelect);
-
-  // Search & Filter listeners for General Vault
-  const searchGenInp = document.getElementById('generalSearch');
-  const filterGenSubject = document.getElementById('filterGenSubject');
-  const filterGenMastery = document.getElementById('filterGenMastery');
-  const filterGenFolder = document.getElementById('filterGenFolder');
-
-  if (searchGenInp) searchGenInp.addEventListener('input', debounce(renderGeneralList, 250));
-  if (filterGenSubject) filterGenSubject.addEventListener('change', renderGeneralList);
-  if (filterGenMastery) filterGenMastery.addEventListener('change', renderGeneralList);
-  if (filterGenFolder) filterGenFolder.addEventListener('change', renderGeneralList);
-
-  // General Folder Creation Listeners
-  const btnGenCreateFolder = document.getElementById('btnGenCreateFolder');
-  const btnFormNewGenFolder = document.getElementById('btnFormNewGenFolder');
-  if (btnGenCreateFolder) btnGenCreateFolder.addEventListener('click', handleGenCreateFolderPrompt);
-  if (btnFormNewGenFolder) btnFormNewGenFolder.addEventListener('click', handleGenCreateFolderPrompt);
-
-  // AI Analyze listener for General Vault
-  const btnGenAiAnalyze = document.getElementById('btnGenAiAnalyze');
-  if (btnGenAiAnalyze) btnGenAiAnalyze.addEventListener('click', handleGenAiAnalyze);
-  
-  const btnGenFetchLink = document.getElementById('btnGenFetchLink');
-  if (btnGenFetchLink) btnGenFetchLink.addEventListener('click', () => handleFetchFromLink('general'));
-
-  // Web AI Assist listeners for General Vault
-  const btnGenWebAiAssist = document.getElementById('btnGenWebAiAssist');
-  if (btnGenWebAiAssist) btnGenWebAiAssist.addEventListener('click', handleGenWebAiAssist);
-
-  const detailGenLink = document.getElementById('detailGenLink');
-  if (detailGenLink) {
-    detailGenLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      const url = detailGenLink.getAttribute('data-url');
       if (url) {
         openExternalLink(url);
       }
@@ -5856,23 +5711,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize API Key box
   initApiKeyBox();
-  
-  // Load data & initial render
-  Promise.all([loadIeltsData(), loadGeneralData(), loadSpeakingData(), loadVideoData(), loadMemorizeData()]).then(() => {
+
+  // Load data & initial render for all tabs
+  Promise.all([
+    loadIeltsData(),
+    loadSpeakingData(),
+    loadVideoData(),
+    loadTkFlashcardData(),
+    loadTkSavedMusic(),
+    loadCommentsVaultData()
+  ]).then(() => {
     try { updateFolderSelects(); } catch (e) { console.error('Folder selects error:', e); }
     try { updateSkillSelects(); } catch (e) { console.error('Skill selects error:', e); }
     try { initVideoChallenge(); } catch (e) { console.error('Video challenge error:', e); }
     try { renderChallengeGrid(); } catch (e) { console.error('Challenge grid error:', e); }
     try { renderIeltsList(); } catch (e) { console.error('Ielts list error:', e); }
-
-    try { updateGenFolderSelects(); } catch (e) { console.error('Gen folder selects error:', e); }
-    try { renderGenChallengeGrid(); } catch (e) { console.error('Gen challenge grid error:', e); }
-    try { renderGeneralList(); } catch (e) { console.error('General list error:', e); }
-
     try { renderSpeakingList(); } catch (e) { console.error('Speaking list error:', e); }
-    
-    // Initialize Memorization module
-    try { initMemorizeTab(); } catch (e) { console.error('Memorize tab initialization error:', e); }
+
+    // Initialize TikTok Flashcard tab
+    try { initTiktokFlashcardTab(); } catch (e) { console.error('TikTok Flashcard tab error:', e); }
+
+    // Initialize Comments Vault tab
+    try { initCommentsVaultTab(); } catch (e) { console.error('Comments Vault tab error:', e); }
 
     // Restore preserved inputs if we just reloaded
     try { restoreInputStateAfterReload(); } catch (e) { console.error('Restore state error:', e); }
@@ -5889,13 +5749,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         renderIeltsList();
         renderChallengeGrid();
-      } else if (info.type === 'general') {
-        generalVaultData = info.data;
-        if (activeGeneralItemId) {
-          renderGeneralDetail(activeGeneralItemId);
-        }
-        renderGeneralList();
-        renderGenChallengeGrid();
       } else if (info.type === 'speaking') {
         speakingVaultData = info.data;
         if (activeSpeakingLinkId) {
@@ -5907,10 +5760,18 @@ document.addEventListener('DOMContentLoaded', () => {
         renderVideoProjectsList();
         renderVideoProjectDetail();
       } else if (info.type === 'memorize') {
-        memorizeVaultData = info.data;
-        updateMemoDashboardStats();
-        renderMemorizeList();
-        renderStickyWall();
+        tkFlashcardData = info.data || { items: [] };
+        updateTkDashboardStats();
+        renderTkFlashcardList();
+        const currentItem = (tkFlashcardData.items || []).find(x => x.id === activeTkCardId) || tkFlashcardData.items[0];
+        if (currentItem) renderTkPlayer(currentItem);
+      } else if (info.type === 'comments-vault') {
+        commentsVaultData = info.data || { activeProjectId: 'proj_1', projects: [] };
+        ensureCmProjectsInitialized();
+        renderCmProjectSelect();
+        updateCmDashboardStats();
+        updateCmCategorySelects();
+        renderCmCommentsList();
       }
     });
   }
@@ -5921,28 +5782,28 @@ async function handleBulkExportHtml() {
     alert('Vui lòng chọn ít nhất một đề thi để xuất bản!');
     return;
   }
-  
+
   const btn = document.getElementById('btnBulkExportHtml');
   const oldText = btn.textContent;
   btn.disabled = true;
   btn.textContent = '⏳ Đang xuất bản...';
-  
+
   try {
     const itemIds = Array.from(selectedIeltsItemIds);
     console.log('[RENDER] Exporting items to mobile page:', itemIds);
-    
+
     const result = await window.taskAPI.exportMobilePage(itemIds);
-    
+
     if (result && result.success && result.url) {
       const modal = document.getElementById('exportMobileModal');
       const qrImg = document.getElementById('exportMobileQr');
       const urlInput = document.getElementById('exportMobileUrl');
-      
+
       if (modal && qrImg && urlInput) {
         urlInput.value = result.url;
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(result.url)}`;
         modal.classList.add('active');
-        
+
         if (typeof playTone === 'function') {
           playTone(523, 0.08, 'sine', 0.15);
           setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
@@ -5962,1266 +5823,2245 @@ async function handleBulkExportHtml() {
 }
 
 // =========================================================
-// Memorize & Learn Tab Logic
+// 🎵 TIKTOK FLASHCARD MODULE (Học từ vựng & câu qua Video)
 // =========================================================
 
-let memorizeVaultData = { items: [] };
-let activeMemoId = null;
-let activeMemoSubTab = 'sticky';
-let activeMemoColor = '#fef08a'; // yellow default
+let tkFlashcardData = { items: [] };
+let tkSavedMusicList = [
+  { id: 'm_1', name: 'Nhạc Hot TikTok #1 (Viral Beat)', url: 'https://www.tiktok.com/music/original-sound-7123456789' },
+  { id: 'm_2', name: 'Nhạc Chill Lofi Học Tiếng Anh', url: 'https://www.tiktok.com/music/lofi-english-study-7234567890' }
+];
 
-async function loadMemorizeData() {
+let activeTkCardId = null;
+let tkInitialized = false;
+
+async function loadTkFlashcardData() {
   if (window.taskAPI && window.taskAPI.loadMemorizeVault) {
-    memorizeVaultData = await window.taskAPI.loadMemorizeVault();
-  }
-  if (!memorizeVaultData || !memorizeVaultData.items) {
-    memorizeVaultData = { items: [] };
-  }
-}
-
-async function saveMemorizeData() {
-  if (window.taskAPI && window.taskAPI.saveMemorizeVault) {
-    await window.taskAPI.saveMemorizeVault(memorizeVaultData);
-  }
-}
-
-function initMemorizeTab() {
-  // Reset active state
-  activeMemoId = null;
-  activeMemoSubTab = 'sticky';
-  showMemorizeState('welcome');
-  
-  // Update stats & render list
-  updateMemoDashboardStats();
-  renderMemorizeList();
-  renderStickyWall();
-
-  // Color picker selection
-  const pills = document.querySelectorAll('#paneMemorize .color-pill');
-  pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      activeMemoColor = pill.getAttribute('data-color');
-    });
-  });
-
-  // Buttons and actions
-  const btnNew = document.getElementById('btnNewMemorize');
-  if (btnNew) btnNew.addEventListener('click', handleNewMemorizeClick);
-  
-  const btnCancel = document.getElementById('btnCancelMemorize');
-  if (btnCancel) btnCancel.addEventListener('click', () => showMemorizeState('welcome'));
-
-  const form = document.getElementById('memorizeForm');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      handleSaveMemorize();
-    });
-  }
-
-  const btnAutoFetch = document.getElementById('btnAutoFetchData');
-  if (btnAutoFetch) btnAutoFetch.addEventListener('click', handleAutoFetchData);
-
-  const btnSpeak = document.getElementById('btnSpeakWord');
-  if (btnSpeak) btnSpeak.addEventListener('click', handleSpeakWord);
-
-  const btnEdit = document.getElementById('btnEditMemorize');
-  if (btnEdit) btnEdit.addEventListener('click', handleEditMemorize);
-
-  const btnDelete = document.getElementById('btnDeleteMemorize');
-  if (btnDelete) btnDelete.addEventListener('click', handleDeleteMemorize);
-
-  const btnViewSticky = document.getElementById('btnViewStickyWall');
-  if (btnViewSticky) {
-    btnViewSticky.addEventListener('click', () => {
-      if (memorizeVaultData.items.length > 0) {
-        // load first item or just open sticky wall panel
-        activeMemoId = memorizeVaultData.items[0].id;
-        showMemorizeState('detail');
-        switchSubTab('sticky');
-      } else {
-        handleNewMemorizeClick();
+    try {
+      const data = await window.taskAPI.loadMemorizeVault();
+      if (data && Array.isArray(data.items)) {
+        tkFlashcardData = data;
+        return tkFlashcardData;
       }
-    });
-  }
-
-  const btnClearPositions = document.getElementById('btnClearStickyPositions');
-  if (btnClearPositions) {
-    btnClearPositions.addEventListener('click', () => {
-      memorizeVaultData.items.forEach(item => {
-        delete item.x;
-        delete item.y;
-      });
-      saveMemorizeData();
-      renderStickyWall();
-    });
-  }
-
-  // Setup subtab switching in Practice Center
-  const subtabBtns = document.querySelectorAll('#paneMemorize [data-subtab]');
-  subtabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const subtab = btn.getAttribute('data-subtab');
-      switchSubTab(subtab);
-    });
-  });
-
-  // Typing Game key listener
-  const typingInput = document.getElementById('typingGameInput');
-  if (typingInput) {
-    typingInput.addEventListener('input', handleTypingInput);
-  }
-
-  // Handwriting canvas options
-  const btnToggleTrace = document.getElementById('btnToggleTraceFont');
-  if (btnToggleTrace) {
-    btnToggleTrace.addEventListener('click', () => {
-      const trace = document.getElementById('lblCanvasTraceWord');
-      if (trace) {
-        trace.style.opacity = trace.style.opacity === '0' ? '0.07' : '0';
-      }
-    });
-  }
-  
-  const btnClearCanvas = document.getElementById('btnClearWritingCanvas');
-  if (btnClearCanvas) {
-    btnClearCanvas.addEventListener('click', () => {
-      const canvas = document.getElementById('handwritingCanvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawNotebookLines(canvas);
-      }
-    });
-  }
-
-  // Quiz submission & navigation
-  const btnSubmitQ = document.getElementById('btnSubmitQuiz');
-  if (btnSubmitQ) btnSubmitQ.addEventListener('click', submitQuiz);
-
-  const btnNextQ = document.getElementById('btnNextQuiz');
-  if (btnNextQ) btnNextQ.addEventListener('click', generateQuiz);
-
-  // SRS Rating buttons
-  const rateBtns = document.querySelectorAll('#paneMemorize .btn-srs-rate');
-  rateBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const rate = parseInt(btn.getAttribute('data-rate'));
-      updateSrsLevel(rate);
-    });
-  });
-
-  // AI Example Sentence Button
-  const btnGenSentences = document.getElementById('btnGenerateAiSentences');
-  if (btnGenSentences) btnGenSentences.addEventListener('click', generateAiSentences);
-
-  // Search filter
-  const searchInp = document.getElementById('memorizeSearch');
-  if (searchInp) {
-    searchInp.addEventListener('input', debounce(() => {
-      renderMemorizeList();
-    }, 200));
-  }
-  
-  const statusFilter = document.getElementById('filterMemorizeStatus');
-  if (statusFilter) {
-    statusFilter.addEventListener('change', renderMemorizeList);
-  }
-}
-
-function showMemorizeState(state) {
-  const welcome = document.getElementById('memorizeWelcomeState');
-  const form = document.getElementById('memorizeFormState');
-  const detail = document.getElementById('memorizeDetailState');
-  
-  welcome.style.display = state === 'welcome' ? 'flex' : 'none';
-  form.style.display = state === 'form' ? 'block' : 'none';
-  detail.style.display = state === 'detail' ? 'flex' : 'none';
-}
-
-function updateMemoDashboardStats() {
-  const memoDueCount = document.getElementById('memoDueCount');
-  const memoTotalCount = document.getElementById('memoTotalCount');
-  if (!memoDueCount || !memoTotalCount) return;
-
-  const todayStr = new Date().toISOString().split('T')[0];
-  let dueCount = 0;
-  
-  memorizeVaultData.items.forEach(item => {
-    if (!item.nextReviewDate || item.nextReviewDate <= todayStr) {
-      dueCount++;
+    } catch (e) {
+      console.error('Failed to load flashcards via API:', e);
     }
-  });
-
-  memoTotalCount.textContent = memorizeVaultData.items.length;
-  memoDueCount.textContent = dueCount;
-}
-
-function renderMemorizeList() {
-  const list = document.getElementById('memorizeList');
-  const empty = document.getElementById('memorizeEmptyState');
-  if (!list || !empty) return;
-
-  list.innerHTML = '';
-  
-  const searchVal = (document.getElementById('memorizeSearch').value || '').toLowerCase().trim();
-  const filterVal = document.getElementById('filterMemorizeStatus').value || 'all';
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  const filteredItems = memorizeVaultData.items.filter(item => {
-    // Search filter
-    const matchesSearch = item.word.toLowerCase().includes(searchVal) || 
-                          item.translation.toLowerCase().includes(searchVal);
-    if (!matchesSearch) return false;
-
-    // Status filter
-    if (filterVal === 'due') {
-      return !item.nextReviewDate || item.nextReviewDate <= todayStr;
-    } else if (filterVal === 'learning') {
-      return item.level && item.level < 5;
-    } else if (filterVal === 'mastered') {
-      return item.level === 5;
-    }
-    return true;
-  });
-
-  if (filteredItems.length === 0) {
-    empty.style.display = 'block';
-    return;
   }
-  
-  empty.style.display = 'none';
-
-  filteredItems.forEach(item => {
-    const li = document.createElement('li');
-    li.className = `ielts-item ${activeMemoId === item.id ? 'active' : ''}`;
-    li.style.borderLeft = `4px solid ${item.color || '#fef08a'}`;
-    li.style.padding = '10px';
-    li.style.borderRadius = '6px';
-    li.style.marginBottom = '8px';
-    li.style.cursor = 'pointer';
-
-    const contentDiv = document.createElement('div');
-    contentDiv.style.display = 'flex';
-    contentDiv.style.justifyContent = 'space-between';
-    contentDiv.style.alignItems = 'center';
-
-    const textDiv = document.createElement('div');
-    const wordP = document.createElement('p');
-    wordP.style.fontWeight = 'bold';
-    wordP.style.fontSize = '13.5px';
-    wordP.style.color = '#fff';
-    wordP.textContent = item.word;
-
-    const transP = document.createElement('p');
-    transP.style.fontSize = '12px';
-    transP.style.color = 'var(--muted)';
-    transP.textContent = item.translation;
-
-    textDiv.appendChild(wordP);
-    textDiv.appendChild(transP);
-
-    const metaDiv = document.createElement('div');
-    metaDiv.style.display = 'flex';
-    metaDiv.style.alignItems = 'center';
-    metaDiv.style.gap = '6px';
-
-    const srsBadge = document.createElement('span');
-    srsBadge.className = 'badge';
-    srsBadge.style.fontSize = '9px';
-    srsBadge.style.padding = '2px 6px';
-    srsBadge.style.background = 'rgba(255,255,255,0.08)';
-    srsBadge.style.color = 'var(--purple2)';
-    srsBadge.textContent = `Lớp ${item.level || 1}`;
-
-    const playBtn = document.createElement('button');
-    playBtn.textContent = '🔊';
-    playBtn.style.background = 'none';
-    playBtn.style.border = 'none';
-    playBtn.style.cursor = 'pointer';
-    playBtn.style.fontSize = '12px';
-    playBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      speakNativeText(item.word, 1.0);
-    });
-
-    metaDiv.appendChild(srsBadge);
-    metaDiv.appendChild(playBtn);
-
-    contentDiv.appendChild(textDiv);
-    contentDiv.appendChild(metaDiv);
-    li.appendChild(contentDiv);
-
-    li.addEventListener('click', () => {
-      activeMemoId = item.id;
-      renderMemorizeList(); // update active class
-      renderMemorizeDetail(item);
-    });
-
-    list.appendChild(li);
-  });
-}
-
-function renderStickyWall() {
-  const wall = document.getElementById('stickyNoteWall');
-  if (!wall) return;
-
-  wall.innerHTML = '';
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  if (memorizeVaultData.items.length === 0) {
-    wall.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:13px;">Chưa có thẻ ghi nhớ nào. Thêm từ mới để dán lên tường!</div>';
-    return;
-  }
-
-  // Render notes
-  memorizeVaultData.items.forEach((item, index) => {
-    const isDue = !item.nextReviewDate || item.nextReviewDate <= todayStr;
-    
-    const note = document.createElement('div');
-    note.className = `sticky-note ${isDue ? 'due' : ''}`;
-    note.setAttribute('data-id', item.id);
-
-    // Randomize initial position if not saved
-    if (item.x === undefined || item.y === undefined) {
-      // Calculate random positions bounded by container size
-      const maxLeft = Math.max(50, wall.clientWidth - 130);
-      const maxTop = Math.max(50, wall.clientHeight - 120);
-      item.x = Math.floor(Math.random() * maxLeft) || 10;
-      item.y = Math.floor(Math.random() * maxTop) || 10;
-    }
-
-    note.style.left = `${item.x}px`;
-    note.style.top = `${item.y}px`;
-
-    // Slight random rotation angle for realism
-    const rot = item.rotation !== undefined ? item.rotation : (Math.random() * 8 - 4).toFixed(1);
-    item.rotation = parseFloat(rot);
-    note.style.transform = `rotate(${rot}deg)`;
-
-    const inner = document.createElement('div');
-    inner.className = 'sticky-note-inner';
-    inner.style.setProperty('--note-bg', item.color || '#fef08a');
-
-    const front = document.createElement('div');
-    front.className = 'sticky-note-front';
-    front.innerHTML = `
-      <div style="font-size: 13px; font-weight:700; word-break:break-word; max-height: 80px; overflow:hidden;">${escapeHtml(item.word)}</div>
-      <div style="font-size: 8.5px; opacity:0.6; margin-top:6px; font-weight:bold;">Lớp ${item.level || 1}</div>
-    `;
-
-    const back = document.createElement('div');
-    back.className = 'sticky-note-back';
-    back.innerHTML = `
-      <div style="font-size: 11px; font-weight:600; word-break:break-word; max-height:85px; overflow:hidden;">${escapeHtml(item.translation)}</div>
-    `;
-
-    inner.appendChild(front);
-    inner.appendChild(back);
-    note.appendChild(inner);
-    wall.appendChild(note);
-
-    // Double-click to flip note
-    note.addEventListener('dblclick', (e) => {
-      e.stopPropagation();
-      note.classList.toggle('flipped');
-      if (typeof playTone === 'function') {
-        playTone(600, 0.05, 'triangle', 0.1);
-      }
-    });
-
-    // Single click selects and opens detail
-    note.addEventListener('click', (e) => {
-      if (note.classList.contains('dragging')) return;
-      activeMemoId = item.id;
-      renderMemorizeList();
-      renderMemorizeDetail(item);
-    });
-
-    // Make note draggable
-    makeStickyDraggable(note, item);
-  });
-}
-
-function renderMemorizeDetail(item) {
-  showMemorizeState('detail');
-  
-  // Set elements
-  const detailHeader = document.getElementById('memoDetailHeader');
-  detailHeader.style.background = item.color || '#fef08a';
-  
-  const colors = ['#fef08a', '#fbcfe8', '#bbf7d0', '#bfdbfe', '#e9d5ff'];
-  const textColors = ['#1e293b', '#1e293b', '#1e293b', '#1e293b', '#1e293b'];
-  const idx = colors.indexOf(item.color || '#fef08a');
-  detailHeader.style.color = idx !== -1 ? textColors[idx] : '#1e293b';
-
-  document.getElementById('lblDetailWord').textContent = item.word;
-  document.getElementById('lblDetailTranslation').textContent = item.translation;
-  document.getElementById('lblDetailSrsBadge').textContent = `Lớp ${item.level || 1}`;
-  document.getElementById('lblDetailNotes').textContent = item.notes || 'Không có ghi chú nào.';
-
-  // Render Image
-  const img = document.getElementById('imgDetailImage');
-  if (item.image) {
-    img.src = item.image;
-    img.style.display = 'block';
-  } else {
-    img.style.display = 'none';
-  }
-
-  // Render Synonyms
-  const synonymsBox = document.getElementById('lblDetailSynonymsBox');
-  const synonymsVal = document.getElementById('lblDetailSynonyms');
-  if (item.synonyms) {
-    synonymsVal.textContent = item.synonyms;
-    synonymsBox.style.display = 'block';
-  } else {
-    synonymsBox.style.display = 'none';
-  }
-
-  // YouTube Embed Video
-  const iframe = document.getElementById('ytDetailIframe');
-  const placeholder = document.getElementById('ytDetailPlaceholder');
-  if (item.youtubeId) {
-    iframe.src = `https://www.youtube.com/embed/${item.youtubeId}`;
-    iframe.style.display = 'block';
-    placeholder.style.display = 'none';
-  } else {
-    iframe.src = '';
-    iframe.style.display = 'none';
-    placeholder.style.display = 'block';
-  }
-
-  // Switch to the active subtab, reset canvas/typing/quiz
-  switchSubTab(activeMemoSubTab);
-}
-
-function switchSubTab(subtab) {
-  activeMemoSubTab = subtab;
-
-  // Set buttons active state
-  const btns = document.querySelectorAll('#paneMemorize [data-subtab]');
-  btns.forEach(btn => {
-    if (btn.getAttribute('data-subtab') === subtab) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-
-  // Display active pane
-  const panes = document.querySelectorAll('#paneMemorize .sub-pane');
-  panes.forEach(pane => {
-    if (pane.id === `subPane${subtab.charAt(0).toUpperCase() + subtab.slice(1)}`) {
-      pane.classList.add('active');
-    } else {
-      pane.classList.remove('active');
-    }
-  });
-
-  // Custom initialization for subtabs
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem) return;
-
-  if (subtab === 'writing') {
-    initHandwritingCanvas(activeItem.word);
-  } else if (subtab === 'typing') {
-    initTypingGame(activeItem.word);
-  } else if (subtab === 'quiz') {
-    generateQuiz();
-  } else if (subtab === 'ai') {
-    document.getElementById('memoAiOutput').innerHTML = `<div style="text-align:center; color:var(--muted); margin-top:30px;">Bấm nút phía trên để sinh câu ví dụ cho từ "${activeItem.word}".</div>`;
-  }
-}
-
-function handleNewMemorizeClick() {
-  showMemorizeState('form');
-  document.getElementById('memoFormTitle').textContent = '➕ Thêm từ vựng mới';
-  document.getElementById('editMemoId').value = '';
-  document.getElementById('memoWord').value = '';
-  document.getElementById('memoTranslation').value = '';
-  document.getElementById('memoNotes').value = '';
-  document.getElementById('memoSynonyms').value = '';
-  document.getElementById('memoSelectedImageUrl').value = '';
-  
-  // Set default color picker active
-  const pills = document.querySelectorAll('#paneMemorize .color-pill');
-  pills.forEach(p => {
-    if (p.getAttribute('data-color') === '#fef08a') {
-      p.classList.add('active');
-      activeMemoColor = '#fef08a';
-    } else {
-      p.classList.remove('active');
-    }
-  });
-
-  document.getElementById('memoYoutubeSelect').innerHTML = '<option value="">-- Chọn video YouTube nhúng --</option>';
-  document.getElementById('memoImageSearchGrid').innerHTML = '<span style="grid-column: span 4; font-size: 11px; color: var(--muted); text-align: center; line-height: 75px;">Nhập từ vựng và bấm Tải dữ liệu để tìm ảnh...</span>';
-}
-
-async function handleAutoFetchData() {
-  const wordInput = document.getElementById('memoWord');
-  const word = wordInput.value.trim();
-  if (!word) {
-    alert('Vui lòng nhập từ vựng/câu gốc trước!');
-    wordInput.focus();
-    return;
-  }
-
-  const btn = document.getElementById('btnAutoFetchData');
-  btn.disabled = true;
-  btn.textContent = '⏳ Đang tải...';
 
   try {
-    // 1. Fetch synonyms from Datamuse
-    const syns = await fetchSynonyms(word);
-    document.getElementById('memoSynonyms').value = syns || 'Không tìm thấy từ đồng nghĩa';
+    const raw = localStorage.getItem('task_countdown_tiktok_flashcards');
+    if (raw) {
+      tkFlashcardData = JSON.parse(raw);
+    } else {
+      tkFlashcardData = {
+        items: [
+          {
+            id: 'tk_1',
+            word: 'Consistency is key',
+            translation: 'Sự kiên trì là chìa khóa thành công',
+            phonetic: '/kənˈsɪs.tən.si ɪz kiː/',
+            notes: '1. Consistency is key to mastering any new language.\n2. In workout routines, consistency is key.\n3. Keep going every day because consistency is key.',
+            linkType: 'direct',
+            tiktokUrl: 'https://www.tiktok.com/search?q=Consistency%20is%20key',
+            level: 1,
+            interval: 1,
+            nextReviewDate: new Date().toISOString().split('T')[0],
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'tk_2',
+            word: 'Out of the blue',
+            translation: 'Bất ngờ, không báo trước (từ trên trời rơi xuống)',
+            phonetic: '/aʊt əv ðə bluː/',
+            notes: '1. She called me out of the blue yesterday.\n2. Good news came completely out of the blue.\n3. He suddenly resigned out of the blue.',
+            linkType: 'direct',
+            tiktokUrl: 'https://www.tiktok.com/search?q=Out%20of%20the%20blue',
+            level: 1,
+            interval: 1,
+            nextReviewDate: new Date().toISOString().split('T')[0],
+            createdAt: new Date().toISOString()
+          }
+        ]
+      };
+      localStorage.setItem('task_countdown_tiktok_flashcards', JSON.stringify(tkFlashcardData));
+    }
+  } catch (e) {
+    tkFlashcardData = { items: [] };
+  }
+  return tkFlashcardData;
+}
 
-    // 2. Fetch images online from Unsplash
-    document.getElementById('memoImageSearchGrid').innerHTML = '<span style="grid-column: span 4; font-size:11px; color:var(--muted); text-align:center; line-height:75px;">Đang tìm ảnh trên Unsplash...</span>';
-    if (window.taskAPI && window.taskAPI.searchImages) {
-      const results = await window.taskAPI.searchImages(word);
-      const grid = document.getElementById('memoImageSearchGrid');
-      grid.innerHTML = '';
-      if (results && results.length > 0) {
-        results.forEach(img => {
-          const imgEl = document.createElement('img');
-          imgEl.src = img.thumb;
-          imgEl.className = 'memo-search-img-item';
-          imgEl.title = img.description;
-          imgEl.addEventListener('click', () => {
-            grid.querySelectorAll('img').forEach(el => el.classList.remove('active'));
-            imgEl.classList.add('active');
-            document.getElementById('memoSelectedImageUrl').value = img.url;
-          });
-          grid.appendChild(imgEl);
-        });
-      } else {
-        grid.innerHTML = '<span style="grid-column: span 4; font-size: 11px; color: var(--muted); text-align: center; line-height: 75px;">Không tìm thấy ảnh nào.</span>';
+async function saveTkFlashcardData() {
+  if (window.taskAPI && window.taskAPI.saveMemorizeVault) {
+    try {
+      await window.taskAPI.saveMemorizeVault(tkFlashcardData);
+    } catch (e) {
+      console.error('Failed to save flashcards via API:', e);
+    }
+  }
+  try {
+    localStorage.setItem('task_countdown_tiktok_flashcards', JSON.stringify(tkFlashcardData));
+  } catch (e) { }
+}
+
+async function loadTkSavedMusic() {
+  if (window.taskAPI && window.taskAPI.loadTikTokMusic) {
+    try {
+      const data = await window.taskAPI.loadTikTokMusic();
+      if (Array.isArray(data) && data.length > 0) {
+        tkSavedMusicList = data;
+        return tkSavedMusicList;
       }
+    } catch (e) {
+      console.error('Failed to load tiktok music via API:', e);
     }
+  }
 
-    // 3. Fetch YouTube videos
-    if (window.taskAPI && window.taskAPI.searchYoutubeVideos) {
-      const videos = await window.taskAPI.searchYoutubeVideos(word + ' pronunciation');
-      const select = document.getElementById('memoYoutubeSelect');
-      select.innerHTML = '<option value="">-- Chọn video YouTube nhúng --</option>';
-      if (videos && videos.length > 0) {
-        videos.forEach(video => {
-          const opt = document.createElement('option');
-          opt.value = video.id;
-          opt.textContent = `YouTube Video ID: ${video.id}`;
-          select.appendChild(opt);
-        });
-      } else {
-        select.innerHTML = '<option value="">-- Không tìm thấy video --</option>';
-      }
+  try {
+    const raw = localStorage.getItem('task_countdown_tiktok_music');
+    if (raw) {
+      tkSavedMusicList = JSON.parse(raw);
     }
+  } catch (e) { }
+  return tkSavedMusicList;
+}
 
-    if (typeof playTone === 'function') {
-      playTone(660, 0.08, 'sine', 0.1);
+async function saveTkSavedMusic() {
+  if (window.taskAPI && window.taskAPI.saveTikTokMusic) {
+    try {
+      await window.taskAPI.saveTikTokMusic(tkSavedMusicList);
+    } catch (e) {
+      console.error('Failed to save tiktok music via API:', e);
     }
-  } catch (err) {
-    console.error('Auto fetch data error:', err);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '✨ Tải dữ liệu';
+  }
+  try {
+    localStorage.setItem('task_countdown_tiktok_music', JSON.stringify(tkSavedMusicList));
+  } catch (e) { }
+}
+
+function updateTkDashboardStats() {
+  const total = (tkFlashcardData.items || []).length;
+  const today = new Date().toISOString().split('T')[0];
+  const due = (tkFlashcardData.items || []).filter(x => !x.nextReviewDate || x.nextReviewDate <= today).length;
+
+  const totalEl = document.getElementById('tkTotalCount');
+  if (totalEl) totalEl.textContent = total;
+
+  const dueEl = document.getElementById('tkDueCount');
+  if (dueEl) dueEl.textContent = due;
+}
+
+function getTkFilteredItems() {
+  const query = (document.getElementById('tkSearchInput')?.value || '').trim().toLowerCase();
+  const filterStatus = document.getElementById('tkFilterStatus')?.value || 'all';
+  const today = new Date().toISOString().split('T')[0];
+
+  let items = (tkFlashcardData.items || []).slice();
+
+  if (filterStatus === 'due') {
+    items = items.filter(x => !x.nextReviewDate || x.nextReviewDate <= today);
+  } else if (filterStatus === 'mastered') {
+    items = items.filter(x => (x.level || 1) >= 5);
+  }
+
+  if (query) {
+    items = items.filter(x => {
+      const w = (x.word || '').toLowerCase();
+      const t = (x.translation || '').toLowerCase();
+      const n = (x.notes || '').toLowerCase();
+      return w.includes(query) || t.includes(query) || n.includes(query);
+    });
+  }
+
+  return items;
+}
+
+function renderTkMusicSelect() {
+  const select = document.getElementById('tkMusicHistorySelect');
+  if (!select) return;
+
+  select.innerHTML = '';
+  if (tkSavedMusicList.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '-- Chưa có nhạc nào được lưu --';
+    select.appendChild(opt);
+    return;
+  }
+
+  tkSavedMusicList.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.url;
+    opt.textContent = `🎵 ${m.name}`;
+    select.appendChild(opt);
+  });
+}
+
+function renderTkFlashcardList() {
+  const listEl = document.getElementById('tkFlashcardList');
+  const emptyEl = document.getElementById('tkEmptyState');
+  if (!listEl) return;
+
+  const items = getTkFilteredItems();
+
+  if (items.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    const playerState = document.getElementById('tkPlayerState');
+    if (playerState) playerState.style.display = 'none';
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = 'none';
+  listEl.innerHTML = '';
+
+  items.forEach(item => {
+    const li = document.createElement('li');
+    li.className = `ielts-item-card ${item.id === activeTkCardId ? 'active' : ''}`;
+
+    const lvl = item.level || 1;
+    const isDue = !item.nextReviewDate || item.nextReviewDate <= new Date().toISOString().split('T')[0];
+
+    li.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; font-size: 13.5px; color: #fff;">${escapeHtml(item.word)}</span>
+        <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; ${isDue ? 'background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);' : 'background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);'}">
+          ${isDue ? '🔴 Cần ôn' : `Lớp ${lvl}`}
+        </span>
+      </div>
+      <div style="font-size: 12px; color: var(--muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        ${escapeHtml(item.translation || '(Chưa có bản dịch)')}
+      </div>
+    `;
+
+    li.addEventListener('click', () => {
+      activeTkCardId = item.id;
+      renderTkFlashcardList();
+      renderTkPlayer(item);
+    });
+
+    listEl.appendChild(li);
+  });
+
+  if (!activeTkCardId && items.length > 0) {
+    activeTkCardId = items[0].id;
+    renderTkPlayer(items[0]);
+  } else if (activeTkCardId) {
+    const current = items.find(x => x.id === activeTkCardId);
+    if (current) renderTkPlayer(current);
   }
 }
 
-async function handleSaveMemorize() {
-  const word = document.getElementById('memoWord').value.trim();
-  const translation = document.getElementById('memoTranslation').value.trim();
-  const notes = document.getElementById('memoNotes').value.trim();
-  const editId = document.getElementById('editMemoId').value;
-  const synonyms = document.getElementById('memoSynonyms').value;
-  const youtubeId = document.getElementById('memoYoutubeSelect').value;
-  const image = document.getElementById('memoSelectedImageUrl').value;
-  
-  if (!word || !translation) return;
+function renderTkPlayer(item) {
+  const playerState = document.getElementById('tkPlayerState');
+  const formState = document.getElementById('tkFormState');
+  if (!playerState || !item) return;
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  if (formState) formState.style.display = 'none';
+  playerState.style.display = 'flex';
+
+  const items = getTkFilteredItems();
+  const curIdx = items.findIndex(x => x.id === item.id);
+  const totalCount = items.length;
+
+  const idxBadge = document.getElementById('tkPlayerIndexBadge');
+  if (idxBadge) idxBadge.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${totalCount}`;
+
+  const srsBadge = document.getElementById('tkPlayerSrsBadge');
+  if (srsBadge) srsBadge.textContent = `Lớp ${item.level || 1}`;
+
+  const wordEl = document.getElementById('lblTkWord');
+  if (wordEl) wordEl.textContent = item.word || '---';
+
+  const backWordMini = document.getElementById('lblTkBackWordMini');
+  if (backWordMini) backWordMini.textContent = item.word || '---';
+
+  const transEl = document.getElementById('lblTkTrans');
+  if (transEl) transEl.textContent = item.translation || '(Chưa có bản dịch)';
+
+  const notesEl = document.getElementById('lblTkNotes');
+  if (notesEl) notesEl.textContent = item.notes || 'Chưa có ghi chú ví dụ.';
+
+  // Reset 3D card rotation
+  const cardInner = document.getElementById('tk3dCardInner');
+  if (cardInner) {
+    cardInner.style.transform = 'rotateY(0deg)';
+  }
+
+  // Open TikTok Video / Search function
+  const openTikTokHandler = () => {
+    let targetUrl = item.tiktokUrl;
+    if (!targetUrl || !targetUrl.trim()) {
+      targetUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(item.word)}`;
+    }
+    if (window.taskAPI && window.taskAPI.openExternal) {
+      window.taskAPI.openExternal(targetUrl);
+    } else {
+      window.open(targetUrl, '_blank');
+    }
+    if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+  };
+
+  const btnOpenFront = document.getElementById('btnTkOpenTiktokFront');
+  if (btnOpenFront) btnOpenFront.onclick = (e) => { e.stopPropagation(); openTikTokHandler(); };
+
+  const btnOpenBack = document.getElementById('btnTkOpenTiktokBack');
+  if (btnOpenBack) btnOpenBack.onclick = (e) => { e.stopPropagation(); openTikTokHandler(); };
+
+  // Audio Pronunciation
+  const speakHandler = () => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(item.word);
+      utt.lang = 'en-US';
+      utt.rate = 0.9;
+      window.speechSynthesis.speak(utt);
+    }
+  };
+
+  const btnSpeak = document.getElementById('btnTkSpeakFront');
+  if (btnSpeak) btnSpeak.onclick = (e) => { e.stopPropagation(); speakHandler(); };
+
+  // Edit / Delete Buttons
+  const btnEdit = document.getElementById('btnTkPlayerEdit');
+  if (btnEdit) btnEdit.onclick = () => openTkForm(item);
+
+  const btnDel = document.getElementById('btnTkPlayerDelete');
+  if (btnDel) {
+    btnDel.onclick = async () => {
+      if (confirm(`Bạn có chắc muốn xóa thẻ "${item.word}"?`)) {
+        tkFlashcardData.items = (tkFlashcardData.items || []).filter(x => x.id !== item.id);
+        await saveTkFlashcardData();
+        activeTkCardId = null;
+        updateTkDashboardStats();
+        renderTkFlashcardList();
+      }
+    };
+  }
+
+  // Navigation Prev / Next
+  const btnPrev = document.getElementById('btnTkPrev');
+  if (btnPrev) {
+    btnPrev.onclick = () => {
+      if (items.length <= 1) return;
+      const prevIdx = curIdx > 0 ? curIdx - 1 : items.length - 1;
+      activeTkCardId = items[prevIdx].id;
+      renderTkFlashcardList();
+      renderTkPlayer(items[prevIdx]);
+      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+    };
+  }
+
+  const btnNext = document.getElementById('btnTkNext');
+  if (btnNext) {
+    btnNext.onclick = () => {
+      if (items.length <= 1) return;
+      const nextIdx = curIdx < items.length - 1 ? curIdx + 1 : 0;
+      activeTkCardId = items[nextIdx].id;
+      renderTkFlashcardList();
+      renderTkPlayer(items[nextIdx]);
+      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+    };
+  }
+
+  // Shuffle button
+  const btnShuffle = document.getElementById('btnTkPlayerShuffle');
+  if (btnShuffle) {
+    btnShuffle.onclick = () => {
+      if ((tkFlashcardData.items || []).length <= 1) return;
+      for (let i = tkFlashcardData.items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tkFlashcardData.items[i], tkFlashcardData.items[j]] = [tkFlashcardData.items[j], tkFlashcardData.items[i]];
+      }
+      activeTkCardId = tkFlashcardData.items[0].id;
+      saveTkFlashcardData();
+      renderTkFlashcardList();
+      renderTkPlayer(tkFlashcardData.items[0]);
+      if (typeof playTone === 'function') playTone(700, 0.08, 'sine', 0.1);
+    };
+  }
+
+  // SRS Rating Buttons
+  const rateBtns = document.querySelectorAll('.btn-tk-rate');
+  rateBtns.forEach(btn => {
+    btn.onclick = async () => {
+      const rate = parseInt(btn.getAttribute('data-rate'), 10) || 3;
+      let lvl = item.level || 1;
+      let interval = 1;
+
+      if (rate === 1) {
+        lvl = 1;
+        interval = 1;
+      } else if (rate === 3) {
+        lvl = Math.max(1, lvl);
+        interval = 2;
+      } else if (rate === 5) {
+        lvl = Math.min(5, lvl + 1);
+        interval = lvl === 2 ? 3 : lvl === 3 ? 7 : lvl === 4 ? 14 : 30;
+      }
+
+      const nextDate = new Date();
+      nextDate.setDate(nextDate.getDate() + interval);
+      item.level = lvl;
+      item.interval = interval;
+      item.nextReviewDate = nextDate.toISOString().split('T')[0];
+
+      await saveTkFlashcardData();
+      updateTkDashboardStats();
+      renderTkFlashcardList();
+      if (srsBadge) srsBadge.textContent = `Lớp ${lvl}`;
+      if (typeof playTone === 'function') playTone(784, 0.1, 'sine', 0.15);
+      alert(`Đã chấm điểm! Thẻ xếp vào Lớp ${lvl}. Lần ôn tiếp theo: ${item.nextReviewDate.split('-').reverse().join('/')}`);
+    };
+  });
+}
+
+function toggleTkCardFlip() {
+  const cardInner = document.getElementById('tk3dCardInner');
+  if (!cardInner) return;
+  const isFlipped = cardInner.style.transform === 'rotateY(180deg)';
+  cardInner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
+  if (typeof playTone === 'function') playTone(550, 0.05, 'sine', 0.1);
+}
+
+function openTkForm(itemToEdit = null) {
+  const playerState = document.getElementById('tkPlayerState');
+  const formState = document.getElementById('tkFormState');
+  if (!formState) return;
+
+  if (playerState) playerState.style.display = 'none';
+  formState.style.display = 'flex';
+
+  const formTitle = document.getElementById('tkFormTitle');
+  const editId = document.getElementById('tkEditId');
+  const wordInp = document.getElementById('tkWordInput');
+  const transInp = document.getElementById('tkTransInput');
+  const notesInp = document.getElementById('tkNotesInput');
+  const urlInp = document.getElementById('tkUrlInput');
+
+  if (itemToEdit) {
+    if (formTitle) formTitle.textContent = '✏️ Chỉnh Sửa Thẻ Flashcard';
+    if (editId) editId.value = itemToEdit.id;
+    if (wordInp) wordInp.value = itemToEdit.word || '';
+    if (transInp) transInp.value = itemToEdit.translation || '';
+    if (notesInp) notesInp.value = itemToEdit.notes || '';
+    if (urlInp) urlInp.value = itemToEdit.tiktokUrl || '';
+  } else {
+    if (formTitle) formTitle.textContent = '➕ Thêm Thẻ Flashcard Mới';
+    if (editId) editId.value = '';
+    if (wordInp) wordInp.value = '';
+    if (transInp) transInp.value = '';
+    if (notesInp) notesInp.value = '';
+    if (urlInp) urlInp.value = '';
+  }
+
+  renderTkMusicSelect();
+  if (wordInp) wordInp.focus();
+}
+
+function closeTkForm() {
+  const formState = document.getElementById('tkFormState');
+  const playerState = document.getElementById('tkPlayerState');
+  if (formState) formState.style.display = 'none';
+  if (playerState) playerState.style.display = 'flex';
+}
+
+async function saveTkForm() {
+  const editId = document.getElementById('tkEditId')?.value || '';
+  const word = (document.getElementById('tkWordInput')?.value || '').trim();
+  const trans = (document.getElementById('tkTransInput')?.value || '').trim();
+  const notes = (document.getElementById('tkNotesInput')?.value || '').trim();
+  let url = (document.getElementById('tkUrlInput')?.value || '').trim();
+
+  if (!word) {
+    alert('Vui lòng nhập từ vựng hoặc câu tiếng Anh!');
+    return;
+  }
+
+  if (!url) {
+    url = `https://www.tiktok.com/search?q=${encodeURIComponent(word)}`;
+  }
 
   if (editId) {
-    // Edit existing
-    const item = memorizeVaultData.items.find(x => x.id === editId);
+    const item = (tkFlashcardData.items || []).find(x => x.id === editId);
     if (item) {
       item.word = word;
-      item.translation = translation;
+      item.translation = trans;
       item.notes = notes;
-      item.color = activeMemoColor;
-      item.synonyms = synonyms && !synonyms.startsWith('Không') && !synonyms.startsWith('Chờ') ? synonyms : item.synonyms;
-      item.youtubeId = youtubeId || item.youtubeId;
-      item.image = image || item.image;
+      item.tiktokUrl = url;
     }
   } else {
-    // Add new
     const newItem = {
-      id: 'memo_' + Date.now() + '_' + Math.floor(Math.random()*1000),
-      word,
-      translation,
-      notes,
-      color: activeMemoColor,
-      synonyms: synonyms && !synonyms.startsWith('Không') && !synonyms.startsWith('Chờ') ? synonyms : '',
-      youtubeId,
-      image,
+      id: 'tk_' + Date.now(),
+      word: word,
+      translation: trans,
+      notes: notes,
+      linkType: 'direct',
+      tiktokUrl: url,
       level: 1,
       interval: 1,
-      nextReviewDate: todayStr
+      nextReviewDate: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
     };
-    memorizeVaultData.items.push(newItem);
-    activeMemoId = newItem.id;
+    if (!tkFlashcardData.items) tkFlashcardData.items = [];
+    tkFlashcardData.items.unshift(newItem);
+    activeTkCardId = newItem.id;
   }
 
-  await saveMemorizeData();
-  updateMemoDashboardStats();
-  renderMemorizeList();
-  renderStickyWall();
-  
-  // Show detail view for saved item
-  const savedItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (savedItem) {
-    renderMemorizeDetail(savedItem);
-  } else {
-    showMemorizeState('welcome');
-  }
+  await saveTkFlashcardData();
+  closeTkForm();
+  updateTkDashboardStats();
+  renderTkFlashcardList();
 
-  if (typeof playTone === 'function') {
-    playTone(523, 0.06, 'sine', 0.1);
-    setTimeout(() => playTone(659, 0.08, 'sine', 0.1), 60);
+  if (activeTkCardId) {
+    const current = (tkFlashcardData.items || []).find(x => x.id === activeTkCardId);
+    if (current) renderTkPlayer(current);
   }
 }
 
-function handleEditMemorize() {
-  if (!activeMemoId) return;
-  const item = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!item) return;
+function initTiktokFlashcardTab() {
+  if (tkInitialized) {
+    updateTkDashboardStats();
+    renderTkFlashcardList();
+    return;
+  }
+  tkInitialized = true;
 
-  showMemorizeState('form');
-  document.getElementById('memoFormTitle').textContent = '✏️ Chỉnh sửa từ vựng';
-  document.getElementById('editMemoId').value = item.id;
-  document.getElementById('memoWord').value = item.word;
-  document.getElementById('memoTranslation').value = item.translation;
-  document.getElementById('memoNotes').value = item.notes || '';
-  document.getElementById('memoSynonyms').value = item.synonyms || '';
-  document.getElementById('memoSelectedImageUrl').value = item.image || '';
+  const btnNew = document.getElementById('btnTkNewWord');
+  if (btnNew) btnNew.addEventListener('click', () => openTkForm(null));
 
-  // Select color pill
-  const pills = document.querySelectorAll('#paneMemorize .color-pill');
-  pills.forEach(p => {
-    if (p.getAttribute('data-color') === item.color) {
-      p.classList.add('active');
-      activeMemoColor = item.color;
-    } else {
-      p.classList.remove('active');
+  const btnCancelForm = document.getElementById('btnTkCancelForm');
+  if (btnCancelForm) btnCancelForm.addEventListener('click', closeTkForm);
+
+  const btnCancelSave = document.getElementById('btnTkCancelSave');
+  if (btnCancelSave) btnCancelSave.addEventListener('click', closeTkForm);
+
+  const btnSave = document.getElementById('btnTkSaveWord');
+  if (btnSave) btnSave.addEventListener('click', (e) => { e.preventDefault(); saveTkForm(); });
+
+  // 3D Card flip listeners
+  const cardWrap = document.getElementById('tk3dCardWrap');
+  if (cardWrap) cardWrap.addEventListener('click', toggleTkCardFlip);
+
+  const btnFlipToggle = document.getElementById('btnTkFlipToggle');
+  if (btnFlipToggle) btnFlipToggle.addEventListener('click', toggleTkCardFlip);
+
+  const btnFlipBack = document.getElementById('btnTkFlipBack');
+  if (btnFlipBack) btnFlipBack.addEventListener('click', (e) => { e.stopPropagation(); toggleTkCardFlip(); });
+
+  // Music select dropdown
+  const musicSelect = document.getElementById('tkMusicHistorySelect');
+  if (musicSelect) {
+    musicSelect.addEventListener('change', (e) => {
+      const urlInp = document.getElementById('tkUrlInput');
+      if (urlInp && e.target.value) {
+        urlInp.value = e.target.value;
+      }
+    });
+  }
+
+  const btnAddMusic = document.getElementById('btnTkAddMusicBatch');
+  if (btnAddMusic) {
+    btnAddMusic.addEventListener('click', async () => {
+      const name = prompt('Nhập tên gợi nhớ bài hát / giai điệu TikTok:');
+      if (!name || !name.trim()) return;
+      const url = prompt('Dán đường link TikTok của bài hát / video:');
+      if (!url || !url.trim()) return;
+
+      tkSavedMusicList.unshift({
+        id: 'm_' + Date.now(),
+        name: name.trim(),
+        url: url.trim()
+      });
+      await saveTkSavedMusic();
+      renderTkMusicSelect();
+      const urlInp = document.getElementById('tkUrlInput');
+      if (urlInp) urlInp.value = url.trim();
+      alert('Đã lưu bài hát TikTok thành công!');
+    });
+  }
+
+  const btnDeleteMusic = document.getElementById('btnTkDeleteMusic');
+  if (btnDeleteMusic) {
+    btnDeleteMusic.addEventListener('click', async () => {
+      const select = document.getElementById('tkMusicHistorySelect');
+      const val = select?.value;
+      if (!val) return;
+      if (confirm('Bạn có chắc muốn xóa link nhạc đang chọn khỏi danh sách đã lưu?')) {
+        tkSavedMusicList = tkSavedMusicList.filter(x => x.url !== val);
+        await saveTkSavedMusic();
+        renderTkMusicSelect();
+      }
+    });
+  }
+
+  // Paste clipboard
+  const btnPaste = document.getElementById('btnTkPasteClipboard');
+  if (btnPaste) {
+    btnPaste.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          const urlInp = document.getElementById('tkUrlInput');
+          if (urlInp) urlInp.value = text;
+          if (typeof playTone === 'function') playTone(600, 0.06, 'sine', 0.1);
+        }
+      } catch (e) { }
+    });
+  }
+
+  // Gen URL button
+  const btnGenUrl = document.getElementById('btnTkGenUrl');
+  if (btnGenUrl) {
+    btnGenUrl.addEventListener('click', () => {
+      const wordInp = document.getElementById('tkWordInput');
+      const word = (wordInp?.value || '').trim();
+      if (!word) {
+        alert('Vui lòng nhập từ vựng trước!');
+        return;
+      }
+      const urlInp = document.getElementById('tkUrlInput');
+      if (urlInp) urlInp.value = `https://www.tiktok.com/search?q=${encodeURIComponent(word)}`;
+      if (typeof playTone === 'function') playTone(600, 0.06, 'sine', 0.1);
+    });
+  }
+
+  // Auto fetch / translate button (AI & Dictionary)
+  const btnAutoFetch = document.getElementById('btnTkAutoFetch');
+  if (btnAutoFetch) {
+    btnAutoFetch.addEventListener('click', async () => {
+      const wordInp = document.getElementById('tkWordInput');
+      const transInp = document.getElementById('tkTransInput');
+      const notesInp = document.getElementById('tkNotesInput');
+      const word = (wordInp?.value || '').trim();
+      if (!word) {
+        alert('Vui lòng nhập từ vựng trước khi tải dữ liệu!');
+        return;
+      }
+
+      btnAutoFetch.textContent = '⏳ Đang tải...';
+
+      // 1. Google Translate for Vietnamese meaning
+      try {
+        const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(word)}`;
+        const tr = await fetch(transUrl);
+        if (tr.ok) {
+          const td = await tr.json();
+          if (td && td[0] && transInp) {
+            transInp.value = td[0].map(s => s[0]).join('');
+          }
+        }
+      } catch (e) { }
+
+      // 2. Fetch 5 real example sentences for notes
+      try {
+        const dictUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
+        const r = await fetch(dictUrl);
+        if (r.ok) {
+          const d = await r.json();
+          const examples = [];
+          if (d && d[0] && Array.isArray(d[0].meanings)) {
+            d[0].meanings.forEach(m => {
+              if (Array.isArray(m.definitions)) {
+                m.definitions.forEach(def => {
+                  if (def.example && examples.length < 5) examples.push(def.example);
+                });
+              }
+            });
+          }
+          if (examples.length > 0 && notesInp) {
+            notesInp.value = examples.map((ex, i) => `${i + 1}. ${ex}`).join('\n');
+          }
+        }
+      } catch (e) { }
+
+      btnAutoFetch.textContent = '✨ Tải dữ liệu';
+    });
+  }
+
+  // Search & Filter
+  const searchInp = document.getElementById('tkSearchInput');
+  if (searchInp) {
+    searchInp.addEventListener('input', () => {
+      renderTkFlashcardList();
+    });
+  }
+
+  const filterStatus = document.getElementById('tkFilterStatus');
+  if (filterStatus) {
+    filterStatus.addEventListener('change', () => {
+      renderTkFlashcardList();
+    });
+  }
+
+  // Keyboard shortcut listeners (Space = Flip, ArrowLeft/Right = Prev/Next, T = TikTok, S = Speak)
+  window.addEventListener('keydown', (e) => {
+    const pane = document.getElementById('paneTiktokFlashcard');
+    if (!pane || !pane.classList.contains('active')) return;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      toggleTkCardFlip();
+    } else if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      document.getElementById('btnTkPrev')?.click();
+    } else if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      document.getElementById('btnTkNext')?.click();
+    } else if (e.key === 't' || e.key === 'T') {
+      e.preventDefault();
+      document.getElementById('btnTkOpenTiktokFront')?.click();
+    } else if (e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      document.getElementById('btnTkSpeakFront')?.click();
     }
   });
 
-  // Setup selector for youtube
-  const select = document.getElementById('memoYoutubeSelect');
-  select.innerHTML = '<option value="">-- Chọn video YouTube nhúng --</option>';
-  if (item.youtubeId) {
-    const opt = document.createElement('option');
-    opt.value = item.youtubeId;
-    opt.textContent = `YouTube Video ID: ${item.youtubeId}`;
-    opt.selected = true;
-    select.appendChild(opt);
+  // Initial load and render
+  updateTkDashboardStats();
+  renderTkMusicSelect();
+  renderTkFlashcardList();
+}
+
+// =========================================================
+// 💬 1000 COMMENTS VAULT MODULE (Đa Dự Án & Nạp JSON)
+// =========================================================
+
+const DEFAULT_PRESET_COMMENTS = [
+  { title: "Hook xem đêm", content: "Ai xem video này lúc 2h sáng giơ tay xem có cô đơn không nào ✋🥺", category: "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video", platform: "TikTok", tags: ["hook", "đêm", "trend"], context: "Kích thích người xem để lại bình luận điểm danh.", favorite: true },
+  { title: "Quay xe bất ngờ", content: "Ủa alo đoạn cuối quay xe khét lẹt vậy shop, suýt thì tin là thật 😂💯", category: "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ", platform: "TikTok", tags: ["twist", "hài", "viral"], context: "Dùng cho video có plot twist.", favorite: true },
+  { title: "Thuật toán đẩy", content: "Thuật toán TikTok đẩy video này đến là có lý do cả... đúng thứ tôi đang tìm kiếm bấy lâu nay! 🙏✨", category: "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra", platform: "TikTok", tags: ["algorithm", "hữu_ích"], context: "Tán thưởng video kiến thức chất lượng.", favorite: false },
+  { title: "Giữ chỗ hóng drama", content: "Đặt nhẹ chiếc dép ở đây hóng part 2, không ra part 2 là giận tím người á nha! 🩴😂", category: "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời", platform: "TikTok", tags: ["part2", "hóng", "drama"], context: "Tăng tỷ lệ đòi ra phần tiếp theo.", favorite: false },
+  { title: "Khen nội dung cuốn", content: "Cứ ngỡ lướt qua xem 3 giây thôi, ai ngờ xem hết video lúc nào không hay. 10 điểm cuốn!", category: "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot", platform: "TikTok", tags: ["cuốn", "xem_hết"], context: "Bình luận tăng retention rate.", favorite: true }
+];
+
+let commentsVaultData = {
+  activeProjectId: 'proj_1',
+  projects: []
+};
+
+let activeCmId = null;
+let cmCurrentViewMode = 'detail'; // 'detail' | 'grid'
+let cmInitialized = false;
+
+function ensureCmProjectsInitialized() {
+  if (!commentsVaultData || typeof commentsVaultData !== 'object') {
+    commentsVaultData = { activeProjectId: 'proj_1', projects: [] };
   }
 
-  // Pre-load images grid with selected one
-  const grid = document.getElementById('memoImageSearchGrid');
-  grid.innerHTML = '';
-  if (item.image) {
-    const imgEl = document.createElement('img');
-    imgEl.src = item.image;
-    imgEl.className = 'memo-search-img-item active';
-    grid.appendChild(imgEl);
-  } else {
-    grid.innerHTML = '<span style="grid-column: span 4; font-size: 11px; color: var(--muted); text-align: center; line-height: 75px;">Nhấp Tải dữ liệu để tìm ảnh online...</span>';
+  if (!Array.isArray(commentsVaultData.projects)) {
+    const oldItems = Array.isArray(commentsVaultData.items) ? commentsVaultData.items : [];
+    const oldTopic = commentsVaultData.targetTopic || 'Dự án Mặc định (Kho chung)';
+    commentsVaultData.projects = [
+      {
+        id: 'proj_1',
+        name: oldTopic,
+        target: commentsVaultData.target || 1000,
+        categories: [
+          '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+          '✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ',
+          '💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra',
+          '📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot',
+          '❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời',
+          '🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng'
+        ],
+        items: oldItems,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+    commentsVaultData.activeProjectId = 'proj_1';
+  }
+
+  if (commentsVaultData.projects.length === 0) {
+    commentsVaultData.projects.push({
+      id: 'proj_1',
+      name: 'Dự án 100 Ngày (Mặc định)',
+      target: 1000,
+      categories: [
+        '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+        '✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ',
+        '💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra',
+        '📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot',
+        '❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời',
+        '🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng'
+      ],
+      items: DEFAULT_PRESET_COMMENTS.map((item, idx) => ({
+        id: 'cm_' + Date.now() + '_' + idx,
+        title: item.title,
+        content: item.content,
+        translation: item.translation || '',
+        category: item.category || '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+        platform: item.platform || 'TikTok',
+        tags: item.tags || [],
+        context: item.context || '',
+        favorite: !!item.favorite,
+        usedCount: item.favorite ? 3 : 0,
+        createdAt: new Date().toISOString()
+      })),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+    commentsVaultData.activeProjectId = 'proj_1';
+  }
+
+  if (!commentsVaultData.activeProjectId || !commentsVaultData.projects.some(p => p.id === commentsVaultData.activeProjectId)) {
+    commentsVaultData.activeProjectId = commentsVaultData.projects[0].id;
   }
 }
 
-async function handleDeleteMemorize() {
-  if (!activeMemoId) return;
-  if (!confirm('Bạn có chắc chắn muốn xóa từ vựng này khỏi sổ tay?')) return;
+function getActiveCmProject() {
+  ensureCmProjectsInitialized();
+  return commentsVaultData.projects.find(p => p.id === commentsVaultData.activeProjectId) || commentsVaultData.projects[0];
+}
 
-  memorizeVaultData.items = memorizeVaultData.items.filter(x => x.id !== activeMemoId);
-  activeMemoId = null;
+async function loadCommentsVaultData() {
+  if (window.taskAPI && window.taskAPI.loadCommentsVault) {
+    try {
+      const data = await window.taskAPI.loadCommentsVault();
+      if (data && typeof data === 'object') {
+        commentsVaultData = data;
+        ensureCmProjectsInitialized();
+        return commentsVaultData;
+      }
+    } catch (e) {
+      console.error('Failed to load comments vault via API:', e);
+    }
+  }
 
-  await saveMemorizeData();
-  updateMemoDashboardStats();
-  renderMemorizeList();
-  renderStickyWall();
-  showMemorizeState('welcome');
+  try {
+    const raw = localStorage.getItem('task_countdown_comments_vault');
+    if (raw) {
+      commentsVaultData = JSON.parse(raw);
+      ensureCmProjectsInitialized();
+    } else {
+      commentsVaultData = { activeProjectId: 'proj_1', projects: [] };
+      ensureCmProjectsInitialized();
+      localStorage.setItem('task_countdown_comments_vault', JSON.stringify(commentsVaultData));
+    }
+  } catch (e) {
+    commentsVaultData = { activeProjectId: 'proj_1', projects: [] };
+    ensureCmProjectsInitialized();
+  }
+  return commentsVaultData;
+}
+
+async function saveCommentsVaultData() {
+  ensureCmProjectsInitialized();
+  if (window.taskAPI && window.taskAPI.saveCommentsVault) {
+    try {
+      await window.taskAPI.saveCommentsVault(commentsVaultData);
+    } catch (e) {
+      console.error('Failed to save comments vault via API:', e);
+    }
+  }
+  try {
+    localStorage.setItem('task_countdown_comments_vault', JSON.stringify(commentsVaultData));
+  } catch (e) { }
+}
+
+function renderCmProjectSelect() {
+  ensureCmProjectsInitialized();
+  const select = document.getElementById('cmProjectSelect');
+  if (!select) return;
+
+  select.innerHTML = '';
+  commentsVaultData.projects.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `📁 ${p.name} (${(p.items || []).length}/${p.target || 1000} câu)`;
+    if (p.id === commentsVaultData.activeProjectId) {
+      opt.selected = true;
+    }
+    select.appendChild(opt);
+  });
+}
+
+async function handleSwitchCmProject(projectId) {
+  ensureCmProjectsInitialized();
+  if (commentsVaultData.activeProjectId === projectId) return;
+  commentsVaultData.activeProjectId = projectId;
+  activeCmId = null;
+  await saveCommentsVaultData();
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+  updateCmCategorySelects();
+  renderCmCommentsList();
+  if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+  if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+}
+
+function openNewProjectModal() {
+  const modal = document.getElementById('cmNewProjectModal');
+  const nameInput = document.getElementById('cmNewProjNameInput');
+  const targetInput = document.getElementById('cmNewProjTargetInput');
+  if (nameInput) nameInput.value = '';
+  if (targetInput) targetInput.value = '1000';
+  if (modal) {
+    modal.classList.add('active');
+    modal.classList.add('visible');
+    setTimeout(() => { if (nameInput) nameInput.focus(); }, 100);
+  }
+}
+
+function closeNewProjectModal() {
+  const modal = document.getElementById('cmNewProjectModal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.classList.remove('visible');
+  }
+}
+
+async function saveNewProjectModal() {
+  const nameInput = document.getElementById('cmNewProjNameInput');
+  const targetInput = document.getElementById('cmNewProjTargetInput');
+  const name = (nameInput?.value || '').trim();
+  const target = parseInt(targetInput?.value || '1000', 10) || 1000;
+
+  if (!name) {
+    alert('Vui lòng nhập tên dự án / chủ đề 100 ngày!');
+    return;
+  }
+
+  const newProj = {
+    id: 'proj_' + Date.now(),
+    name: name,
+    target: target,
+    categories: [
+      '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+      '✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ',
+      '💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra',
+      '📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot',
+      '❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời',
+      '🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng'
+    ],
+    items: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  commentsVaultData.projects.push(newProj);
+  commentsVaultData.activeProjectId = newProj.id;
+  activeCmId = null;
+  await saveCommentsVaultData();
+  closeNewProjectModal();
+
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+  updateCmCategorySelects();
+  renderCmCommentsList();
+  if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+  if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.1);
+
+  setTimeout(() => {
+    openTopicJsonModal();
+  }, 200);
+}
+
+function openRenameProjectModal() {
+  const modal = document.getElementById('cmRenameProjectModal');
+  const input = document.getElementById('cmRenameProjInput');
+  const activeProj = getActiveCmProject();
+  if (input) input.value = activeProj.name;
+  if (modal) {
+    modal.classList.add('active');
+    modal.classList.add('visible');
+    setTimeout(() => { if (input) { input.focus(); input.select(); } }, 100);
+  }
+}
+
+function closeRenameProjectModal() {
+  const modal = document.getElementById('cmRenameProjectModal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.classList.remove('visible');
+  }
+}
+
+async function saveRenameProjectModal() {
+  const input = document.getElementById('cmRenameProjInput');
+  const newName = (input?.value || '').trim();
+  if (!newName) {
+    alert('Vui lòng nhập tên mới cho dự án!');
+    return;
+  }
+
+  const activeProj = getActiveCmProject();
+  activeProj.name = newName;
+  activeProj.updatedAt = new Date().toISOString();
+  await saveCommentsVaultData();
+  closeRenameProjectModal();
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+}
+
+async function handleDeleteCmProject() {
+  ensureCmProjectsInitialized();
+  if (commentsVaultData.projects.length <= 1) {
+    alert('Bạn phải giữ lại ít nhất một dự án trong kho!');
+    return;
+  }
+  const activeProj = getActiveCmProject();
+  if (!confirm(`Bạn có chắc chắn muốn xóa dự án "${activeProj.name}" cùng toàn bộ ${(activeProj.items || []).length} bình luận bên trong?`)) {
+    return;
+  }
+
+  commentsVaultData.projects = commentsVaultData.projects.filter(p => p.id !== activeProj.id);
+  commentsVaultData.activeProjectId = commentsVaultData.projects[0].id;
+  activeCmId = null;
+  await saveCommentsVaultData();
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+  updateCmCategorySelects();
+  renderCmCommentsList();
+  if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+}
+
+function updateCmDashboardStats() {
+  const activeProj = getActiveCmProject();
+  const total = (activeProj.items || []).length;
+  const target = activeProj.target || 1000;
+  const used = (activeProj.items || []).reduce((acc, x) => acc + (x.usedCount || 0), 0);
+  const favs = (activeProj.items || []).filter(x => x.favorite).length;
+
+  const totalEl = document.getElementById('cmTotalCount');
+  if (totalEl) totalEl.textContent = `${total} / ${target}`;
+
+  const usedEl = document.getElementById('cmUsedCount');
+  if (usedEl) usedEl.textContent = used;
+
+  const favEl = document.getElementById('cmFavCount');
+  if (favEl) favEl.textContent = favs;
+
+  const pct = Math.min(100, Math.round((total / target) * 100));
+  const pctEl = document.getElementById('cmProgressPct');
+  if (pctEl) pctEl.textContent = `${pct}% (${total}/${target} • ${activeProj.name})`;
+
+  const fillEl = document.getElementById('cmProgressFill');
+  if (fillEl) fillEl.style.width = `${pct}%`;
+}
+
+function getCmFilteredItems() {
+  const query = (document.getElementById('cmSearchInput')?.value || '').trim().toLowerCase();
+  const categoryFilter = document.getElementById('cmFilterCategory')?.value || 'all';
+  const platformFilter = document.getElementById('cmFilterPlatform')?.value || 'all';
+  const statusFilter = document.getElementById('cmFilterStatus')?.value || 'all';
+
+  const activeProj = getActiveCmProject();
+  let items = (activeProj.items || []).slice();
+
+  if (categoryFilter !== 'all') {
+    items = items.filter(x => (x.category || '').trim() === categoryFilter);
+  }
+
+  if (platformFilter !== 'all') {
+    items = items.filter(x => {
+      const p = (x.platform || '').toLowerCase();
+      if (platformFilter === 'Other') {
+        return !['tiktok', 'facebook', 'youtube', 'x', 'shopee'].includes(p);
+      }
+      return p.includes(platformFilter.toLowerCase()) || p === 'all';
+    });
+  }
+
+  if (statusFilter === 'favorite') {
+    items = items.filter(x => x.favorite);
+  } else if (statusFilter === 'mostUsed') {
+    items.sort((a, b) => (b.usedCount || 0) - (a.usedCount || 0));
+  } else if (statusFilter === 'newest') {
+    items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+
+  if (query) {
+    items = items.filter(x => {
+      const t = (x.title || '').toLowerCase();
+      const c = (x.content || '').toLowerCase();
+      const tr = (x.translation || '').toLowerCase();
+      const cat = (x.category || '').toLowerCase();
+      const tags = Array.isArray(x.tags) ? x.tags.join(' ').toLowerCase() : '';
+      return t.includes(query) || c.includes(query) || tr.includes(query) || cat.includes(query) || tags.includes(query);
+    });
+  }
+
+  return items;
+}
+
+function updateCmCategorySelects() {
+  const catSelect = document.getElementById('cmFilterCategory');
+  const catDatalist = document.getElementById('cmCategoryDatalist');
+  if (!catSelect) return;
+
+  const currentVal = catSelect.value;
+  const categories = new Set([
+    '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+    '✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ',
+    '💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra',
+    '📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot',
+    '❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời',
+    '🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng'
+  ]);
+
+  const activeProj = getActiveCmProject();
+  (activeProj.items || []).forEach(x => {
+    if (x.category && x.category.trim()) categories.add(x.category.trim());
+  });
+
+  catSelect.innerHTML = '<option value="all">📁 Tất cả danh mục</option>';
+  if (catDatalist) catDatalist.innerHTML = '';
+
+  Array.from(categories).sort().forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    catSelect.appendChild(opt);
+
+    if (catDatalist) {
+      const dataOpt = document.createElement('option');
+      dataOpt.value = cat;
+      catDatalist.appendChild(dataOpt);
+    }
+  });
+
+  if (currentVal && Array.from(categories).includes(currentVal)) {
+    catSelect.value = currentVal;
+  }
+}
+
+function renderCmCommentsList() {
+  const listEl = document.getElementById('cmCommentsList');
+  const emptyEl = document.getElementById('cmEmptyState');
+  const countBadge = document.getElementById('cmActiveItemCountBadge');
+  if (!listEl) return;
+
+  const items = getCmFilteredItems();
+  if (countBadge) countBadge.textContent = `Hiển thị: ${items.length} bình luận`;
+
+  if (items.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    const detailContent = document.getElementById('cmDetailContent');
+    const detailPrompt = document.getElementById('cmDetailEmptyPrompt');
+    if (detailContent) detailContent.style.display = 'none';
+    if (detailPrompt) detailPrompt.style.display = 'flex';
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = 'none';
+  listEl.innerHTML = '';
+
+  items.forEach(item => {
+    const li = document.createElement('li');
+    li.className = `cm-item-card ${item.id === activeCmId ? 'active' : ''}`;
+
+    let pIcon = '🌐';
+    const pl = (item.platform || '').toLowerCase();
+    if (pl.includes('tiktok')) pIcon = '🎵';
+    else if (pl.includes('facebook')) pIcon = '👥';
+    else if (pl.includes('youtube')) pIcon = '📹';
+    else if (pl.includes('x') || pl.includes('twitter')) pIcon = '🐦';
+    else if (pl.includes('shopee')) pIcon = '🛍️';
+
+    li.innerHTML = `
+      <div class="cm-item-title-row">
+        <span class="cm-item-title">${escapeHtml(item.title || item.content.substring(0, 30))}</span>
+        <div style="display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 11px; cursor: pointer; opacity: ${item.favorite ? '1' : '0.3'}; transition: transform 0.2s;" class="cm-fav-star" title="Yêu thích">⭐</span>
+        </div>
+      </div>
+      <div class="cm-item-preview">${escapeHtml(item.content)}</div>
+      <div class="cm-item-footer">
+        <span style="font-size: 10.5px; color: var(--purple2); background: rgba(139,92,246,0.12); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(139,92,246,0.25);">${pIcon} ${escapeHtml(item.category || 'Chung')}</span>
+        <button type="button" class="cm-quick-copy-btn" title="Sao chép nhanh">📋 Copy</button>
+      </div>
+    `;
+
+    li.addEventListener('click', (e) => {
+      if (e.target.closest('.cm-quick-copy-btn') || e.target.closest('.cm-fav-star')) return;
+      activeCmId = item.id;
+      renderCmCommentsList();
+      renderCmDetail(item);
+    });
+
+    const starEl = li.querySelector('.cm-fav-star');
+    if (starEl) {
+      starEl.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        item.favorite = !item.favorite;
+        await saveCommentsVaultData();
+        updateCmDashboardStats();
+        renderCmCommentsList();
+        if (activeCmId === item.id) renderCmDetail(item);
+      });
+    }
+
+    const copyBtn = li.querySelector('.cm-quick-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await copyCmText(item.content, item.id);
+        copyBtn.classList.add('copied');
+        copyBtn.innerHTML = '✔️ Đã chép!';
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = '📋 Copy';
+        }, 1500);
+      });
+    }
+
+    listEl.appendChild(li);
+  });
+
+  if (!activeCmId && items.length > 0) {
+    activeCmId = items[0].id;
+    renderCmDetail(items[0]);
+  } else if (activeCmId) {
+    const cur = items.find(x => x.id === activeCmId);
+    if (cur) renderCmDetail(cur);
+  }
+}
+
+function renderCmDetail(item) {
+  const detailContent = document.getElementById('cmDetailContent');
+  const detailPrompt = document.getElementById('cmDetailEmptyPrompt');
+  if (!item || !detailContent) return;
+
+  if (detailPrompt) detailPrompt.style.display = 'none';
+  detailContent.style.display = 'flex';
+
+  const titleEl = document.getElementById('cmDetailTitle');
+  if (titleEl) titleEl.textContent = item.title || 'Mẫu bình luận';
+
+  const catBadge = document.getElementById('cmDetailCategoryBadge');
+  if (catBadge) catBadge.textContent = item.category || 'Bình luận chung';
+
+  const platBadge = document.getElementById('cmDetailPlatformBadge');
+  if (platBadge) platBadge.textContent = item.platform ? `🌐 ${item.platform}` : '🌐 Đa kênh';
+
+  const usedBadge = document.getElementById('cmDetailUsedBadge');
+  if (usedBadge) usedBadge.textContent = `Đã dùng ${item.usedCount || 0} lần`;
+
+  const timeEl = document.getElementById('cmDetailTime');
+  if (timeEl && item.createdAt) {
+    const d = new Date(item.createdAt);
+    timeEl.textContent = `Lưu: ${d.toLocaleDateString('vi-VN')}`;
+  }
+
+  const contentText = document.getElementById('cmDetailContentText');
+  if (contentText) contentText.textContent = item.content || '';
+
+  const transWrap = document.getElementById('cmDetailTranslationWrap');
+  const transText = document.getElementById('cmDetailTranslationText');
+  if (transWrap && transText) {
+    if (item.translation && item.translation.trim()) {
+      transWrap.style.display = 'block';
+      transText.textContent = item.translation;
+    } else {
+      transWrap.style.display = 'none';
+      transText.textContent = '';
+    }
+  }
+
+  const tagsWrap = document.getElementById('cmDetailTagsWrap');
+  if (tagsWrap) {
+    tagsWrap.innerHTML = '';
+    if (Array.isArray(item.tags) && item.tags.length > 0) {
+      item.tags.forEach(t => {
+        if (t.trim()) {
+          const span = document.createElement('span');
+          span.className = 'cm-tag-pill';
+          span.textContent = `#${t.trim()}`;
+          tagsWrap.appendChild(span);
+        }
+      });
+    }
+  }
+
+  const contextWrap = document.getElementById('cmDetailContextWrap');
+  const contextText = document.getElementById('cmDetailContextText');
+  if (contextWrap && contextText) {
+    if (item.context && item.context.trim()) {
+      contextWrap.style.display = 'block';
+      contextText.textContent = item.context;
+    } else {
+      contextWrap.style.display = 'none';
+      contextText.textContent = '';
+    }
+  }
+
+  const favBtn = document.getElementById('btnCmToggleFav');
+  if (favBtn) {
+    favBtn.textContent = item.favorite ? '⭐ Đã thích' : '☆ Thích';
+    favBtn.style.color = item.favorite ? '#fde047' : '#fff';
+    favBtn.onclick = async () => {
+      item.favorite = !item.favorite;
+      await saveCommentsVaultData();
+      updateCmDashboardStats();
+      renderCmCommentsList();
+      renderCmDetail(item);
+    };
+  }
+
+  const editBtn = document.getElementById('btnCmEdit');
+  if (editBtn) {
+    editBtn.onclick = () => openCmForm(item);
+  }
+
+  const deleteBtn = document.getElementById('btnCmDelete');
+  if (deleteBtn) {
+    deleteBtn.onclick = async () => {
+      if (confirm(`Bạn có chắc muốn xóa bình luận "${item.title || item.content.substring(0, 25)}"?`)) {
+        const activeProj = getActiveCmProject();
+        activeProj.items = (activeProj.items || []).filter(x => x.id !== item.id);
+        await saveCommentsVaultData();
+        activeCmId = null;
+        renderCmProjectSelect();
+        updateCmDashboardStats();
+        updateCmCategorySelects();
+        renderCmCommentsList();
+        if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+      }
+    };
+  }
+
+  const speakBtn = document.getElementById('btnCmSpeak');
+  if (speakBtn) {
+    speakBtn.onclick = () => speakCmText(item.content);
+  }
+
+  const bigCopyBtn = document.getElementById('btnCmBigCopy');
+  const copyMsg = document.getElementById('cmCopySuccessMsg');
+  if (bigCopyBtn) {
+    bigCopyBtn.onclick = async () => {
+      await copyCmText(item.content, item.id);
+      if (copyMsg) {
+        copyMsg.style.display = 'block';
+        setTimeout(() => { copyMsg.style.display = 'none'; }, 2500);
+      }
+      if (usedBadge) usedBadge.textContent = `Đã dùng ${item.usedCount || 0} lần`;
+    };
+  }
+}
+
+function renderCmFastGrid() {
+  const gridEl = document.getElementById('cmFastCopyGrid');
+  const countBadge = document.getElementById('cmGridCountBadge');
+  if (!gridEl) return;
+
+  const items = getCmFilteredItems();
+  if (countBadge) countBadge.textContent = `${items.length} thẻ`;
+
+  gridEl.innerHTML = '';
+  if (items.length === 0) {
+    gridEl.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 40px 10px;">
+        <div style="font-size: 36px; margin-bottom: 8px;">💬</div>
+        <p>Không tìm thấy bình luận nào phù hợp trong bộ lọc của dự án này.</p>
+      </div>
+    `;
+    return;
+  }
+
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'cm-fast-card';
+
+    let pIcon = '🌐';
+    const pl = (item.platform || '').toLowerCase();
+    if (pl.includes('tiktok')) pIcon = '🎵';
+    else if (pl.includes('facebook')) pIcon = '👥';
+    else if (pl.includes('youtube')) pIcon = '📹';
+    else if (pl.includes('x') || pl.includes('twitter')) pIcon = '🐦';
+    else if (pl.includes('shopee')) pIcon = '🛍️';
+
+    card.innerHTML = `
+      <div>
+        <div class="cm-fast-card-header">
+          <span style="font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3;">${escapeHtml(item.title || 'Mẫu bình luận')}</span>
+          <span style="font-size: 10px; color: #38bdf8; background: rgba(14,165,233,0.15); border: 1px solid rgba(14,165,233,0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap;">${pIcon} ${escapeHtml(item.platform || 'All')}</span>
+        </div>
+        <div class="cm-fast-card-content" style="margin-top: 8px;">${escapeHtml(item.content)}</div>
+        ${item.translation ? `<div class="cm-fast-card-trans">🇻🇳 ${escapeHtml(item.translation)}</div>` : ''}
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 6px;">
+        <span style="font-size: 10.5px; color: var(--muted);">${item.usedCount || 0} lượt copy</span>
+        <button type="button" class="btn-primary-glow cm-grid-copy-btn" style="padding: 0 12px; height: 30px; font-size: 11.5px; font-weight: 700; width: auto; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">📋 Copy</button>
+      </div>
+    `;
+
+    const copyBtn = card.querySelector('.cm-grid-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await copyCmText(item.content, item.id);
+        copyBtn.innerHTML = '✔️ Đã chép!';
+        copyBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        setTimeout(() => {
+          copyBtn.innerHTML = '📋 Copy';
+          copyBtn.style.background = 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)';
+        }, 1500);
+      });
+    }
+
+    gridEl.appendChild(card);
+  });
+}
+
+async function copyCmText(text, itemId = null) {
+  if (!text) return;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    }
+  } catch (e) { }
+
+  if (window.taskAPI && window.taskAPI.writeClipboardText) {
+    try { window.taskAPI.writeClipboardText(text); } catch (e) { }
+  }
 
   if (typeof playTone === 'function') {
-    playTone(330, 0.15, 'sawtooth', 0.2);
+    playTone(659, 0.06, 'sine', 0.1);
+    setTimeout(() => playTone(880, 0.08, 'sine', 0.12), 60);
+  }
+
+  if (itemId) {
+    const activeProj = getActiveCmProject();
+    const item = (activeProj.items || []).find(x => x.id === itemId);
+    if (item) {
+      item.usedCount = (item.usedCount || 0) + 1;
+      await saveCommentsVaultData();
+      updateCmDashboardStats();
+    }
   }
 }
 
-function handleSpeakWord() {
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem) return;
-  const speed = parseFloat(document.getElementById('selectVoiceSpeed').value) || 1.0;
-  speakNativeText(activeItem.word, speed);
-}
-
-function speakNativeText(text, speed = 1.0) {
-  if (!text) return;
+function speakCmText(text) {
+  if (!text || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = speed;
-
-  const viRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-  const lang = viRegex.test(text) ? 'vi-VN' : 'en-US';
-  utterance.lang = lang;
-
-  const voices = window.speechSynthesis.getVoices();
-  const voice = voices.find(v => v.lang.toLowerCase().startsWith(lang.substring(0, 2)));
-  if (voice) utterance.voice = voice;
-
+  const isEn = /[a-zA-Z]/.test(text) && !/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(text);
+  utterance.lang = isEn ? 'en-US' : 'vi-VN';
+  utterance.rate = 1.0;
   window.speechSynthesis.speak(utterance);
 }
 
-// DRAG AND DROP NOTE
-function makeStickyDraggable(el, item) {
-  let isDragging = false;
-  let startX, startY;
-  let startLeft, startTop;
-  const wall = document.getElementById('stickyNoteWall');
+function openCmForm(itemToEdit = null) {
+  const formState = document.getElementById('cmFormState');
+  const detailState = document.getElementById('cmDetailState');
+  const gridState = document.getElementById('cmGridState');
+  if (!formState) return;
 
-  el.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
-    if (e.target.closest('button') || e.target.closest('input')) return;
+  if (detailState) detailState.style.display = 'none';
+  if (gridState) gridState.style.display = 'none';
+  formState.style.display = 'flex';
 
-    isDragging = false;
-    startX = e.clientX;
-    startY = e.clientY;
-    startLeft = parseInt(el.style.left) || 0;
-    startTop = parseInt(el.style.top) || 0;
+  const formTitle = document.getElementById('cmFormTitle');
+  const editId = document.getElementById('cmEditId');
+  const titleInput = document.getElementById('cmFormTitleInput');
+  const platformInput = document.getElementById('cmFormPlatformInput');
+  const contentInput = document.getElementById('cmFormContentInput');
+  const transInput = document.getElementById('cmFormTranslationInput');
+  const catInput = document.getElementById('cmFormCategoryInput');
+  const tagsInput = document.getElementById('cmFormTagsInput');
+  const contextInput = document.getElementById('cmFormContextInput');
 
-    el.setPointerCapture(e.pointerId);
-    
-    function onPointerMove(ev) {
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-        if (!isDragging) {
-          isDragging = true;
-          el.classList.add('dragging');
-        }
-      }
-
-      if (isDragging) {
-        let newLeft = startLeft + dx;
-        let newTop = startTop + dy;
-
-        const wallRect = wall.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
-
-        newLeft = Math.max(0, Math.min(newLeft, wallRect.width - elRect.width));
-        newTop = Math.max(0, Math.min(newTop, wallRect.height - elRect.height));
-
-        el.style.left = `${newLeft}px`;
-        el.style.top = `${newTop}px`;
-      }
-    }
-
-    // Capture dragging and drag-end
-    function onPointerUp(ev) {
-      el.releasePointerCapture(ev.pointerId);
-      el.classList.remove('dragging');
-      el.removeEventListener('pointermove', onPointerMove);
-      el.removeEventListener('pointerup', onPointerUp);
-
-      if (isDragging) {
-        const finalLeft = parseInt(el.style.left);
-        const finalTop = parseInt(el.style.top);
-        
-        const dbItem = memorizeVaultData.items.find(x => x.id === item.id);
-        if (dbItem) {
-          dbItem.x = finalLeft;
-          dbItem.y = finalTop;
-          saveMemorizeData();
-        }
-      }
-    }
-
-    el.addEventListener('pointermove', onPointerMove);
-    el.addEventListener('pointerup', onPointerUp);
-  });
-}
-
-// CANVAS DRAWING (Handwriting Practice)
-function initHandwritingCanvas(word) {
-  const canvas = document.getElementById('handwritingCanvas');
-  const trace = document.getElementById('lblCanvasTraceWord');
-  if (!canvas || !trace) return;
-
-  trace.textContent = word;
-  trace.style.opacity = '0.07';
-
-  const ctx = canvas.getContext('2d');
-  
-  const parent = canvas.parentNode;
-  canvas.width = parent.clientWidth || 450;
-  canvas.height = parent.clientHeight || 210;
-
-  drawNotebookLines(canvas);
-
-  let drawing = false;
-
-  canvas.addEventListener('pointerdown', (e) => {
-    drawing = true;
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.strokeStyle = '#8b5cf6';
-    ctx.lineWidth = 3.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-  });
-
-  canvas.addEventListener('pointermove', (e) => {
-    if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
-  });
-
-  canvas.addEventListener('pointerup', () => drawing = false);
-  canvas.addEventListener('pointerleave', () => drawing = false);
-}
-
-function drawNotebookLines(canvas) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.strokeStyle = 'rgba(59, 130, 246, 0.12)';
-  ctx.lineWidth = 1;
-  const lineSpacing = 30;
-  for (let y = lineSpacing; y < canvas.height; y += lineSpacing) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-    ctx.stroke();
-  }
-
-  ctx.strokeStyle = 'rgba(239, 68, 68, 0.15)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(50, 0);
-  ctx.lineTo(50, canvas.height);
-  ctx.stroke();
-}
-
-// TYPING PRACTICE DRILL
-let typingStartTime = null;
-let typingCompleted = false;
-
-function initTypingGame(word) {
-  const display = document.getElementById('typingDrillDisplay');
-  const input = document.getElementById('typingGameInput');
-  if (!display || !input) return;
-
-  input.value = '';
-  input.disabled = false;
-  typingStartTime = null;
-  typingCompleted = false;
-  document.getElementById('typingAccuracyText').textContent = '100%';
-  document.getElementById('typingSpeedText').textContent = '0.0s';
-
-  display.innerHTML = '';
-  for (let i = 0; i < word.length; i++) {
-    const span = document.createElement('span');
-    span.className = 'typing-char';
-    if (i === 0) span.classList.add('char-current');
-    span.textContent = word[i] === ' ' ? ' ' : word[i];
-    if (word[i] === ' ') span.style.marginRight = '6px';
-    display.appendChild(span);
-  }
-  input.focus();
-}
-
-function handleTypingInput() {
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem || typingCompleted) return;
-
-  const target = activeItem.word;
-  const input = document.getElementById('typingGameInput');
-  const typed = input.value;
-  const spans = document.querySelectorAll('#typingDrillDisplay .typing-char');
-
-  if (!typingStartTime && typed.length > 0) {
-    typingStartTime = Date.now();
-  }
-
-  let correctCount = 0;
-  
-  for (let i = 0; i < spans.length; i++) {
-    const span = spans[i];
-    span.className = 'typing-char';
-
-    if (i < typed.length) {
-      if (typed[i] === target[i]) {
-        span.classList.add('char-correct');
-        correctCount++;
-      } else {
-        span.classList.add('char-incorrect');
-      }
-    } else if (i === typed.length) {
-      span.classList.add('char-current');
-    }
-  }
-
-  const accuracy = typed.length > 0 ? Math.round((correctCount / typed.length) * 100) : 100;
-  document.getElementById('typingAccuracyText').textContent = `${accuracy}%`;
-
-  if (typingStartTime) {
-    const elapsed = ((Date.now() - typingStartTime) / 1000).toFixed(1);
-    document.getElementById('typingSpeedText').textContent = `${elapsed}s`;
-  }
-
-  if (typed === target) {
-    typingCompleted = true;
-    input.disabled = true;
-    
-    if (typeof playTone === 'function') {
-      playTone(523, 0.08, 'sine', 0.1);
-      setTimeout(() => playTone(659, 0.12, 'sine', 0.1), 80);
-    }
-    
-    const display = document.getElementById('typingDrillDisplay');
-    display.style.color = 'var(--green)';
-    setTimeout(() => {
-      display.style.color = '';
-    }, 1500);
-  }
-}
-
-// QUIZ GENERATOR
-let currentQuizData = null;
-
-function generateQuiz() {
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem) return;
-
-  const mcqBox = document.getElementById('quizMcqOptions');
-  const scrambleBox = document.getElementById('quizScrambleBox');
-  const feedback = document.getElementById('quizFeedback');
-  const btnSubmit = document.getElementById('btnSubmitQuiz');
-  const btnNext = document.getElementById('btnNextQuiz');
-
-  mcqBox.style.display = 'none';
-  scrambleBox.style.display = 'none';
-  feedback.textContent = '';
-  feedback.className = '';
-  btnSubmit.style.display = 'inline-block';
-  btnNext.style.display = 'none';
-
-  const quizType = Math.floor(Math.random() * 2);
-  currentQuizData = { type: quizType, item: activeItem };
-
-  if (quizType === 0) {
-    document.getElementById('lblQuizTypeBadge').textContent = 'TRẮC NGHIỆM';
-    document.getElementById('lblQuizQuestion').textContent = `Từ/Câu "${activeItem.word}" có nghĩa tiếng Việt là gì?`;
-    mcqBox.style.display = 'flex';
-    mcqBox.innerHTML = '';
-
-    const correctAns = activeItem.translation;
-    const options = [correctAns];
-
-    const otherTranslations = memorizeVaultData.items
-      .filter(x => x.id !== activeItem.id)
-      .map(x => x.translation);
-    
-    const defaultWrongs = ['tuyệt vời', 'chính xác', 'nhanh chóng', 'phát âm chuẩn', 'học thuộc lòng', 'ghi nhớ'];
-    
-    while (options.length < 4) {
-      let wrong = '';
-      if (otherTranslations.length > 0) {
-        const randIdx = Math.floor(Math.random() * otherTranslations.length);
-        wrong = otherTranslations[randIdx];
-        otherTranslations.splice(randIdx, 1);
-      } else {
-        const randIdx = Math.floor(Math.random() * defaultWrongs.length);
-        wrong = defaultWrongs[randIdx];
-        defaultWrongs.splice(randIdx, 1);
-      }
-      if (wrong && !options.includes(wrong)) {
-        options.push(wrong);
-      }
-    }
-
-    options.sort(() => Math.random() - 0.5);
-
-    options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-mcq-btn';
-      btn.innerHTML = `<span>⚪</span> ${escapeHtml(opt)}`;
-      btn.addEventListener('click', () => {
-        mcqBox.querySelectorAll('button').forEach(b => {
-          b.classList.remove('selected');
-          b.querySelector('span').textContent = '⚪';
-        });
-        btn.classList.add('selected');
-        btn.querySelector('span').textContent = '🔵';
-        currentQuizData.selectedAnswer = opt;
-      });
-      mcqBox.appendChild(btn);
-    });
-    
-    btnSubmit.disabled = false;
+  if (itemToEdit) {
+    if (formTitle) formTitle.textContent = '✏️ Chỉnh Sửa Mẫu Bình Luận';
+    if (editId) editId.value = itemToEdit.id;
+    if (titleInput) titleInput.value = itemToEdit.title || '';
+    if (platformInput) platformInput.value = itemToEdit.platform || 'TikTok';
+    if (contentInput) contentInput.value = itemToEdit.content || '';
+    if (transInput) transInput.value = itemToEdit.translation || '';
+    if (catInput) catInput.value = itemToEdit.category || '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+    if (tagsInput) tagsInput.value = Array.isArray(itemToEdit.tags) ? itemToEdit.tags.join(', ') : '';
+    if (contextInput) contextInput.value = itemToEdit.context || '';
   } else {
-    document.getElementById('lblQuizTypeBadge').textContent = 'SẮP XẾP CHỮ';
-    document.getElementById('lblQuizQuestion').textContent = `Sắp xếp các chữ cái để tạo thành từ đúng với nghĩa: "${activeItem.translation}"`;
-    scrambleBox.style.display = 'flex';
-    
-    const word = activeItem.word.toUpperCase().replace(/\s+/g, '');
-    let scrambled = word.split('').sort(() => Math.random() - 0.5).join('-');
-    
-    if (scrambled === word.split('').join('-') && word.length > 1) {
-      scrambled = word.split('').reverse().join('-');
-    }
-    
-    document.getElementById('quizScrambledLetters').textContent = scrambled;
-    
-    const input = document.getElementById('quizScrambleInput');
-    input.value = '';
-    input.focus();
-    btnSubmit.disabled = false;
+    if (formTitle) formTitle.textContent = '➕ Thêm Mẫu Bình Luận Mới';
+    if (editId) editId.value = '';
+    if (titleInput) titleInput.value = '';
+    if (platformInput) platformInput.value = 'TikTok';
+    if (contentInput) contentInput.value = '';
+    if (transInput) transInput.value = '';
+    if (catInput) catInput.value = '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+    if (tagsInput) tagsInput.value = '';
+    if (contextInput) contextInput.value = '';
   }
+
+  if (contentInput) contentInput.focus();
 }
 
-function submitQuiz() {
-  if (!currentQuizData) return;
-  
-  const feedback = document.getElementById('quizFeedback');
-  const btnSubmit = document.getElementById('btnSubmitQuiz');
-  const btnNext = document.getElementById('btnNextQuiz');
+function closeCmForm() {
+  const formState = document.getElementById('cmFormState');
+  const detailState = document.getElementById('cmDetailState');
+  const gridState = document.getElementById('cmGridState');
+  if (!formState) return;
 
-  let isCorrect = false;
-
-  if (currentQuizData.type === 0) {
-    const selected = currentQuizData.selectedAnswer;
-    if (!selected) {
-      alert('Vui lòng chọn một đáp án!');
-      return;
-    }
-
-    const correct = currentQuizData.item.translation;
-    const btns = document.querySelectorAll('#quizMcqOptions button');
-    
-    btns.forEach(btn => {
-      const text = btn.textContent.slice(2).trim();
-      if (text === correct) {
-        btn.classList.add('correct');
-        btn.querySelector('span').textContent = '✔️';
-      } else if (text === selected) {
-        btn.classList.add('incorrect');
-        btn.querySelector('span').textContent = '❌';
-      }
-    });
-
-    isCorrect = (selected === correct);
+  formState.style.display = 'none';
+  if (cmCurrentViewMode === 'grid') {
+    if (gridState) gridState.style.display = 'flex';
+    if (detailState) detailState.style.display = 'none';
   } else {
-    const input = document.getElementById('quizScrambleInput');
-    const typed = input.value.trim().toLowerCase();
-    const correct = currentQuizData.item.word.toLowerCase();
-    
-    isCorrect = (typed === correct);
+    if (detailState) detailState.style.display = 'flex';
+    if (gridState) gridState.style.display = 'none';
   }
-
-  if (isCorrect) {
-    feedback.textContent = '🎉 Chính xác! Bạn làm rất tốt.';
-    feedback.style.color = 'var(--green)';
-    if (typeof playTone === 'function') {
-      playTone(523, 0.08, 'sine', 0.1);
-      setTimeout(() => playTone(659, 0.12, 'sine', 0.1), 80);
-    }
-  } else {
-    const ansWord = currentQuizData.item.word;
-    const ansTrans = currentQuizData.item.translation;
-    feedback.textContent = `❌ Sai rồi! Đáp án đúng là: "${ansWord}" (${ansTrans})`;
-    feedback.style.color = 'var(--red)';
-    if (typeof playTone === 'function') {
-      playTone(330, 0.15, 'sawtooth', 0.15);
-    }
-  }
-
-  btnSubmit.style.display = 'none';
-  btnNext.style.display = 'inline-block';
 }
 
-// SRS UPDATE PROGRESS
-async function updateSrsLevel(rate) {
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem) return;
+async function saveCmForm() {
+  const editId = document.getElementById('cmEditId')?.value || '';
+  const title = (document.getElementById('cmFormTitleInput')?.value || '').trim();
+  const platform = document.getElementById('cmFormPlatformInput')?.value || 'TikTok';
+  const content = (document.getElementById('cmFormContentInput')?.value || '').trim();
+  const translation = (document.getElementById('cmFormTranslationInput')?.value || '').trim();
+  const category = (document.getElementById('cmFormCategoryInput')?.value || '').trim() || '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+  const rawTags = (document.getElementById('cmFormTagsInput')?.value || '').trim();
+  const context = (document.getElementById('cmFormContextInput')?.value || '').trim();
 
-  const result = calculateSrs(activeItem.level, activeItem.interval, rate);
-  activeItem.level = result.level;
-  activeItem.interval = result.interval;
-  activeItem.nextReviewDate = result.nextReviewDate;
-
-  await saveMemorizeData();
-  updateMemoDashboardStats();
-  renderMemorizeList();
-  renderStickyWall();
-
-  document.getElementById('lblDetailSrsBadge').textContent = `Lớp ${activeItem.level}`;
-
-  const header = document.getElementById('memoDetailHeader');
-  const origShadow = header.style.boxShadow;
-  header.style.boxShadow = `0 0 15px ${rate === 5 ? 'var(--green)' : rate === 3 ? 'var(--orange)' : 'var(--red)'}`;
-  setTimeout(() => {
-    header.style.boxShadow = origShadow;
-  }, 1000);
-
-  if (typeof playTone === 'function') {
-    playTone(600, 0.06, 'sine', 0.1);
-    setTimeout(() => playTone(800, 0.06, 'sine', 0.1), 60);
-  }
-  
-  alert(`Đã cập nhật cấp độ: Lớp ${activeItem.level}. Lần ôn tiếp theo vào ngày: ${activeItem.nextReviewDate.split('-').reverse().join('/')}`);
-}
-
-function calculateSrs(currentLevel, currentInterval, rate) {
-  let level = currentLevel || 1;
-  let interval = currentInterval || 1;
-  const nextReview = new Date();
-
-  if (rate === 1) {
-    level = 1;
-    interval = 1;
-  } else if (rate === 3) {
-    level = Math.max(1, level);
-    interval = 2;
-  } else if (rate === 5) {
-    if (level === 1) {
-      interval = 1;
-    } else if (level === 2) {
-      interval = 3;
-    } else if (level === 3) {
-      interval = 7;
-    } else if (level === 4) {
-      interval = 14;
-    } else {
-      interval = 30;
-    }
-    level = Math.min(5, level + 1);
-  }
-
-  nextReview.setDate(nextReview.getDate() + interval);
-  const yyyy = nextReview.getFullYear();
-  const mm = String(nextReview.getMonth() + 1).padStart(2, '0');
-  const dd = String(nextReview.getDate()).padStart(2, '0');
-
-  return { level, interval, nextReviewDate: `${yyyy}-${mm}-${dd}` };
-}
-
-// AI CONTEXT EXAMPLE SENTENCE GENERATION (GEMINI API)
-async function generateAiSentences() {
-  const activeItem = memorizeVaultData.items.find(x => x.id === activeMemoId);
-  if (!activeItem) return;
-
-  const apiKey = localStorage.getItem('ielts_gemini_api_key') || '';
-  const output = document.getElementById('memoAiOutput');
-  
-  if (!apiKey) {
-    output.innerHTML = `
-      <div style="text-align: center; color: var(--red); padding: 15px; border: 1px solid rgba(239,68,68,0.2); border-radius: 8px;">
-        ⚠️ Không tìm thấy Gemini API Key. Vui lòng vào tab <strong>IELTS & Study Vault</strong>, nhấp nút "Thiết lập" ở ô API Key bên trái để lưu key trước khi sử dụng tính năng này.
-      </div>
-    `;
+  if (!content) {
+    alert('Vui lòng nhập nội dung câu bình luận!');
     return;
   }
 
-  output.innerHTML = `
-    <div style="text-align: center; color: var(--purple2); padding: 30px;">
-      <span style="display:inline-block; animation: spin 1.2s infinite linear; font-size: 24px; margin-bottom:8px;">⏳</span>
-      <p style="font-size:13px;">AI đang sáng tạo 3 câu ví dụ cho từ "${activeItem.word}"...</p>
-    </div>
-  `;
+  const tags = rawTags ? rawTags.split(',').map(t => t.trim().replace(/^#/, '')).filter(Boolean) : [];
+  const activeProj = getActiveCmProject();
 
-  const fullPrompt = `Generate exactly 3 short, natural English communication sentences using the word or phrase "${activeItem.word}" (Vietnamese meaning: "${activeItem.translation}"). For each sentence, provide the English text, and its natural Vietnamese translation. Format the output directly as clean HTML list items (<li>) styled for dark mode (use <strong style="color: #a78bfa;"> for English sentences and <em style="color: #a7f3d0;"> for translation segments). Do not output markdown codeblock headers like \`\`\`html. Keep sentences simple and highly practical.`;
+  if (editId) {
+    const item = (activeProj.items || []).find(x => x.id === editId);
+    if (item) {
+      item.title = title || content.substring(0, 30);
+      item.platform = platform;
+      item.content = content;
+      item.translation = translation;
+      item.category = category;
+      item.tags = tags;
+      item.context = context;
+    }
+  } else {
+    const newItem = {
+      id: 'cm_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      title: title || content.substring(0, 30),
+      platform: platform,
+      content: content,
+      translation: translation,
+      category: category,
+      tags: tags,
+      context: context,
+      favorite: false,
+      usedCount: 0,
+      createdAt: new Date().toISOString()
+    };
+    if (!activeProj.items) activeProj.items = [];
+    activeProj.items.unshift(newItem);
+    activeCmId = newItem.id;
+  }
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: fullPrompt
-              }
-            ]
-          }
-        ]
-      })
+  await saveCommentsVaultData();
+  closeCmForm();
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+  updateCmCategorySelects();
+  renderCmCommentsList();
+
+  if (cmCurrentViewMode === 'grid') {
+    renderCmFastGrid();
+  } else if (activeCmId) {
+    const cur = (activeProj.items || []).find(x => x.id === activeCmId);
+    if (cur) renderCmDetail(cur);
+  }
+}
+
+function initCommentsVaultTab() {
+  if (cmInitialized) {
+    renderCmProjectSelect();
+    updateCmDashboardStats();
+    updateCmCategorySelects();
+    renderCmCommentsList();
+    if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+    return;
+  }
+  cmInitialized = true;
+
+  const projectSelect = document.getElementById('cmProjectSelect');
+  if (projectSelect) {
+    projectSelect.addEventListener('change', (e) => {
+      handleSwitchCmProject(e.target.value);
+    });
+  }
+
+  const btnNewProj = document.getElementById('btnCmNewProject');
+  if (btnNewProj) btnNewProj.addEventListener('click', openNewProjectModal);
+
+  const btnNewProjCancel = document.getElementById('btnCmNewProjCancel');
+  if (btnNewProjCancel) btnNewProjCancel.addEventListener('click', closeNewProjectModal);
+
+  const btnNewProjSave = document.getElementById('btnCmNewProjSave');
+  if (btnNewProjSave) btnNewProjSave.addEventListener('click', saveNewProjectModal);
+
+  const btnRenameProj = document.getElementById('btnCmRenameProject');
+  if (btnRenameProj) btnRenameProj.addEventListener('click', openRenameProjectModal);
+
+  const btnRenameProjCancel = document.getElementById('btnCmRenameProjCancel');
+  if (btnRenameProjCancel) btnRenameProjCancel.addEventListener('click', closeRenameProjectModal);
+
+  const btnRenameProjSave = document.getElementById('btnCmRenameProjSave');
+  if (btnRenameProjSave) btnRenameProjSave.addEventListener('click', saveRenameProjectModal);
+
+  const btnDeleteProj = document.getElementById('btnCmDeleteProject');
+  if (btnDeleteProj) btnDeleteProj.addEventListener('click', handleDeleteCmProject);
+
+  const btnNew = document.getElementById('btnCmNewComment');
+  if (btnNew) btnNew.addEventListener('click', () => openCmForm(null));
+
+  const btnCancelForm = document.getElementById('btnCmCancelForm');
+  if (btnCancelForm) btnCancelForm.addEventListener('click', closeCmForm);
+
+  const btnCancelSave = document.getElementById('btnCmCancelSave');
+  if (btnCancelSave) btnCancelSave.addEventListener('click', closeCmForm);
+
+  const btnSave = document.getElementById('btnCmSaveComment');
+  if (btnSave) btnSave.addEventListener('click', saveCmForm);
+
+  const btnDetailMode = document.getElementById('btnCmViewDetailMode');
+  const btnGridMode = document.getElementById('btnCmViewGridMode');
+  const detailState = document.getElementById('cmDetailState');
+  const gridState = document.getElementById('cmGridState');
+  const formState = document.getElementById('cmFormState');
+
+  if (btnDetailMode && btnGridMode) {
+    btnDetailMode.addEventListener('click', () => {
+      cmCurrentViewMode = 'detail';
+      btnDetailMode.className = 'btn-modal btn-confirm';
+      btnDetailMode.style.background = 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)';
+      btnGridMode.className = 'btn-modal btn-cancel';
+      btnGridMode.style.background = '';
+      if (formState) formState.style.display = 'none';
+      if (gridState) gridState.style.display = 'none';
+      if (detailState) detailState.style.display = 'flex';
+      renderCmCommentsList();
     });
 
-    if (!response.ok) {
-      throw new Error(`Google API returned status ${response.status}`);
+    btnGridMode.addEventListener('click', () => {
+      cmCurrentViewMode = 'grid';
+      btnGridMode.className = 'btn-modal btn-confirm';
+      btnGridMode.style.background = 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)';
+      btnDetailMode.className = 'btn-modal btn-cancel';
+      btnDetailMode.style.background = '';
+      if (formState) formState.style.display = 'none';
+      if (detailState) detailState.style.display = 'none';
+      if (gridState) gridState.style.display = 'flex';
+      renderCmFastGrid();
+    });
+  }
+
+  const searchInp = document.getElementById('cmSearchInput');
+  if (searchInp) {
+    searchInp.addEventListener('input', () => {
+      renderCmCommentsList();
+      if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+    });
+  }
+
+  const filterCat = document.getElementById('cmFilterCategory');
+  if (filterCat) {
+    filterCat.addEventListener('change', () => {
+      renderCmCommentsList();
+      if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+    });
+  }
+
+  const filterPlat = document.getElementById('cmFilterPlatform');
+  if (filterPlat) {
+    filterPlat.addEventListener('change', () => {
+      renderCmCommentsList();
+      if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+    });
+  }
+
+  const filterStat = document.getElementById('cmFilterStatus');
+  if (filterStat) {
+    filterStat.addEventListener('change', () => {
+      renderCmCommentsList();
+      if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+    });
+  }
+
+  const btnLoadPresets = document.getElementById('btnCmLoadPresets');
+  if (btnLoadPresets) {
+    btnLoadPresets.addEventListener('click', async () => {
+      const activeProj = getActiveCmProject();
+      if (confirm(`Bạn có muốn nạp thêm bộ mẫu bình luận vào dự án "${activeProj.name}" không?`)) {
+        DEFAULT_PRESET_COMMENTS.forEach((item, idx) => {
+          const exists = (activeProj.items || []).some(x => x.content === item.content);
+          if (!exists) {
+            activeProj.items.push({
+              id: 'cm_preset_' + Date.now() + '_' + idx,
+              title: item.title,
+              content: item.content,
+              translation: item.translation || '',
+              category: item.category || '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video',
+              platform: item.platform || 'TikTok',
+              tags: item.tags || [],
+              context: item.context || '',
+              favorite: !!item.favorite,
+              usedCount: 0,
+              createdAt: new Date().toISOString()
+            });
+          }
+        });
+        await saveCommentsVaultData();
+        renderCmProjectSelect();
+        updateCmDashboardStats();
+        updateCmCategorySelects();
+        renderCmCommentsList();
+        if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+        alert('Đã nạp thành công bộ mẫu bình luận có sẵn!');
+      }
+    });
+  }
+
+  const btnBulk = document.getElementById('btnCmBulkImport');
+  const bulkModal = document.getElementById('cmBulkModal');
+  const btnBulkCancel = document.getElementById('btnCmBulkCancel');
+  const btnBulkConfirm = document.getElementById('btnCmBulkConfirm');
+
+  if (btnBulk && bulkModal) {
+    btnBulk.addEventListener('click', () => {
+      const catInp = document.getElementById('cmBulkCategoryInput');
+      const textInp = document.getElementById('cmBulkTextInput');
+      if (catInp) catInp.value = '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+      if (textInp) textInp.value = '';
+      bulkModal.classList.add('active');
+      bulkModal.classList.add('visible');
+    });
+  }
+  if (btnBulkCancel && bulkModal) {
+    btnBulkCancel.addEventListener('click', () => {
+      bulkModal.classList.remove('active');
+      bulkModal.classList.remove('visible');
+    });
+  }
+  if (btnBulkConfirm && bulkModal) {
+    btnBulkConfirm.addEventListener('click', async () => {
+      const cat = (document.getElementById('cmBulkCategoryInput')?.value || '').trim() || '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+      const plat = document.getElementById('cmBulkPlatformInput')?.value || 'TikTok';
+      const text = (document.getElementById('cmBulkTextInput')?.value || '').trim();
+
+      if (!text) {
+        alert('Vui lòng dán ít nhất 1 dòng bình luận!');
+        return;
+      }
+
+      const activeProj = getActiveCmProject();
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let count = 0;
+      lines.forEach((line, idx) => {
+        const cleanLine = line.replace(/^\d+[\.\)\-]\s*/, '').replace(/^[-*•]\s*/, '').trim();
+        if (cleanLine) {
+          activeProj.items.unshift({
+            id: 'cm_bulk_' + Date.now() + '_' + idx,
+            title: cleanLine.length > 30 ? cleanLine.substring(0, 30) + '...' : cleanLine,
+            content: cleanLine,
+            translation: '',
+            category: cat,
+            platform: plat,
+            tags: ['bulk_import'],
+            context: '',
+            favorite: false,
+            usedCount: 0,
+            createdAt: new Date().toISOString()
+          });
+          count++;
+        }
+      });
+
+      await saveCommentsVaultData();
+      bulkModal.classList.remove('active');
+      bulkModal.classList.remove('visible');
+      renderCmProjectSelect();
+      updateCmDashboardStats();
+      updateCmCategorySelects();
+      renderCmCommentsList();
+      if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+      alert(`Đã thêm thành công ${count} bình luận vào dự án "${activeProj.name}"!`);
+    });
+  }
+
+  const btnBackup = document.getElementById('btnCmBackupRestore');
+  const backupModal = document.getElementById('cmBackupModal');
+  const btnBackupClose = document.getElementById('btnCmBackupClose');
+  const btnExportJson = document.getElementById('btnCmExportJson');
+  const btnImportJson = document.getElementById('btnCmImportJson');
+  const btnClearAll = document.getElementById('btnCmClearAll');
+  const backupJsonInput = document.getElementById('cmBackupJsonInput');
+
+  if (btnBackup && backupModal) {
+    btnBackup.addEventListener('click', () => {
+      if (backupJsonInput) {
+        backupJsonInput.value = JSON.stringify(commentsVaultData, null, 2);
+      }
+      backupModal.classList.add('active');
+      backupModal.classList.add('visible');
+    });
+  }
+  if (btnBackupClose && backupModal) {
+    btnBackupClose.addEventListener('click', () => {
+      backupModal.classList.remove('active');
+      backupModal.classList.remove('visible');
+    });
+  }
+  if (btnExportJson) {
+    btnExportJson.addEventListener('click', async () => {
+      const jsonStr = JSON.stringify(commentsVaultData, null, 2);
+      await copyCmText(jsonStr);
+      alert('Đã sao chép toàn bộ mã JSON kho bình luận (tất cả các dự án) vào Clipboard!');
+    });
+  }
+  if (btnImportJson && backupModal) {
+    btnImportJson.addEventListener('click', async () => {
+      try {
+        const raw = backupJsonInput?.value?.trim();
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          commentsVaultData = parsed;
+          ensureCmProjectsInitialized();
+          await saveCommentsVaultData();
+          backupModal.classList.remove('active');
+          backupModal.classList.remove('visible');
+          renderCmProjectSelect();
+          updateCmDashboardStats();
+          updateCmCategorySelects();
+          renderCmCommentsList();
+          if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+          alert('Đã khôi phục toàn bộ kho bình luận thành công!');
+        } else {
+          alert('Cấu trúc JSON không hợp lệ.');
+        }
+      } catch (e) {
+        alert('Lỗi phân tích cú pháp JSON: ' + e.message);
+      }
+    });
+  }
+  if (btnClearAll && backupModal) {
+    btnClearAll.addEventListener('click', async () => {
+      const activeProj = getActiveCmProject();
+      if (confirm(`CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ bình luận trong dự án "${activeProj.name}"?`)) {
+        activeProj.items = [];
+        await saveCommentsVaultData();
+        backupModal.classList.remove('active');
+        backupModal.classList.remove('visible');
+        activeCmId = null;
+        renderCmProjectSelect();
+        updateCmDashboardStats();
+        updateCmCategorySelects();
+        renderCmCommentsList();
+        if (cmCurrentViewMode === 'grid') renderCmFastGrid();
+      }
+    });
+  }
+
+  // Topic JSON Import Modal
+  const btnPasteJsonMain = document.getElementById('btnCmPasteJsonMain');
+  const btnPasteJsonSidebar = document.getElementById('btnCmPasteJsonSidebar');
+  const topicJsonModal = document.getElementById('cmTopicJsonModal');
+  const btnTopicJsonCancel = document.getElementById('btnCmTopicJsonCancel');
+  const btnTopicJsonApply = document.getElementById('btnCmTopicJsonApply');
+  const btnCopyAiPrompt = document.getElementById('btnCmCopyAiPrompt');
+  const btnCopyAppendAiPrompt = document.getElementById('btnCmCopyAppendAiPrompt');
+  const btnPasteClipboard = document.getElementById('btnCmPasteClipboard');
+  const topicJsonInput = document.getElementById('cmTopicJsonInput');
+
+  const btnOpenChatGPT = document.getElementById('btnCmOpenChatGPT');
+  const btnOpenGemini = document.getElementById('btnCmOpenGemini');
+  const btnOpenClaude = document.getElementById('btnCmOpenClaude');
+
+  const modalCurrentProjectBadge = document.getElementById('cmModalCurrentProjectBadge');
+  const btnCopyAppendPromptText = document.getElementById('btnCmCopyAppendPromptText');
+  const modalTopicNameInput = document.getElementById('cmModalTopicNameInput');
+
+  function openTopicJsonModal() {
+    if (!topicJsonModal) return;
+    if (topicJsonInput) topicJsonInput.value = '';
+
+    const activeProj = getActiveCmProject();
+    if (modalTopicNameInput) {
+      modalTopicNameInput.value = activeProj.name || 'Dự án 100 Ngày Video';
+    }
+    if (modalCurrentProjectBadge) {
+      modalCurrentProjectBadge.textContent = `(Đã có: ${(activeProj.items || []).length}/${activeProj.target || 1000} câu)`;
+    }
+    if (btnCopyAppendPromptText) {
+      btnCopyAppendPromptText.textContent = `PROMPT NẠP TIẾP (TỪ CÂU ${(activeProj.items || []).length + 1})`;
     }
 
-    const data = await response.json();
-    if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-      let htmlText = data.candidates[0].content.parts[0].text.trim();
-      
-      if (htmlText.startsWith('```html')) {
-        htmlText = htmlText.substring(7);
+    topicJsonModal.classList.add('active');
+    topicJsonModal.classList.add('visible');
+    if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    setTimeout(() => { if (modalTopicNameInput) modalTopicNameInput.focus(); }, 150);
+  }
+
+  function closeTopicJsonModal() {
+    if (topicJsonModal) {
+      topicJsonModal.classList.remove('active');
+      topicJsonModal.classList.remove('visible');
+    }
+  }
+
+  window.openTopicJsonModal = openTopicJsonModal;
+  window.closeTopicJsonModal = closeTopicJsonModal;
+
+  if (btnPasteJsonMain) btnPasteJsonMain.addEventListener('click', openTopicJsonModal);
+  if (btnPasteJsonSidebar) btnPasteJsonSidebar.addEventListener('click', openTopicJsonModal);
+  if (btnTopicJsonCancel) btnTopicJsonCancel.addEventListener('click', closeTopicJsonModal);
+
+  function openExternalUrl(url) {
+    if (window.taskAPI && window.taskAPI.openExternal) {
+      window.taskAPI.openExternal(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+
+  if (btnOpenChatGPT) btnOpenChatGPT.addEventListener('click', () => openExternalUrl('https://chatgpt.com'));
+  if (btnOpenGemini) btnOpenGemini.addEventListener('click', () => openExternalUrl('https://gemini.google.com'));
+  if (btnOpenClaude) btnOpenClaude.addEventListener('click', () => openExternalUrl('https://claude.ai'));
+
+  // Prompt Generator 1: Full 1000 from Scratch
+  if (btnCopyAiPrompt) {
+    btnCopyAiPrompt.addEventListener('click', async () => {
+      const activeProj = getActiveCmProject();
+      const topicDisplay = (document.getElementById('cmModalTopicNameInput')?.value || '').trim() || activeProj.name || 'Dự án 100 Ngày Video';
+
+      const promptText = `Hãy đóng vai một chuyên gia Social Media Strategy và cộng đồng hàng triệu khán giả chân thực trên TikTok, Reels, YouTube Shorts. Tôi đang thực hiện chuỗi thử thách 100 ngày làm video ngắn.
+Chủ đề dự án 100 ngày của tôi là: "${topicDisplay}"
+
+MỤC TIÊU CỐT LÕI CỦA BỘ 1000 BÌNH LUẬN NÀY:
+Bộ bình luận này đóng vai trò như "kim chỉ nam" từ cộng đồng người xem thực tế, chứa các ý kiến đóng góp, thử thách, gợi ý đổi mới, yêu cầu bắt trend và phong cách edit mới để giúp tôi:
+1. Nâng cấp chất lượng video ngày càng hay hơn, giữ chân người xem tốt hơn.
+2. Đổi mới phong cách edit (nhịp cắt ngắn, hiệu ứng âm thanh meme, zoom biểu cảm, kinetic typography, phong cách ASMR, màu phim...).
+3. Đa dạng hóa nội dung theo đúng ý muốn và thị hiếu của số đông khán giả.
+4. Bắt kịp các trend và trào lưu âm thanh hot nhất hiện nay.
+5. Tạo cớ để quay các video tiếp theo trả lời bình luận (Reply to Comment).
+
+HÃY PHÂN BỔ BÌNH LUẬN THEO 6 NHÓM DANH MỤC THỰC TẾ SAU:
+
+1. 🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video
+(Các bình luận từ khán giả tinh tế góp ý về: đổi góc quay, ánh sáng, giảm âm lượng nhạc nền để nghe rõ giọng, nhịp nói nhanh/chậm hơn, thêm phụ đề nổi bật, thời lượng video...)
+
+2. ✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ
+(Yêu cầu thử các phong cách edit hiện đại: CapCut giật theo beat, fast-cut nhịp nhanh, zoom-in biểu cảm, chèn meme sound effect, phong cách ASMR thực tế, retro VHS, typography động...)
+
+3. 💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra
+("Thách chủ kênh làm thử...", "Làm chủ đề X đi ad", "Top comment chọn kịch bản ngày mai", "Thử giải quyết tình huống khó này xem sao", "Làm cho người mới bắt đầu...")
+
+4. 📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot
+(Gợi ý lồng nhạc viral đang top 1 TikTok, format POV, Before & After lột xác, diễn tiểu phẩm hài hước ngắn, bắt trend hot trend...)
+
+5. ❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời
+(Đặt các câu hỏi hóc búa, thắc mắc phản biện hoặc tình huống thực tế để kích thích chủ kênh làm video phần sau bấm nút Reply trả lời bình luận)
+
+6. 🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng
+(Khán giả chia phe tranh luận A vs B, bình chọn hướng phát triển tiếp theo của kênh, vote thử thách cho các ngày tiếp theo trong 100 ngày)
+
+YÊU CẦU ĐỊNH DẠNG ĐẦU RA:
+Trả về CHÍNH XÁC một chuỗi JSON hợp lệ (Valid JSON), không có bất kỳ lời dẫn hay văn bản giải thích nào ngoài khối JSON.
+Cấu trúc JSON như sau:
+{
+  "topic": "${topicDisplay}",
+  "comments": [
+    {
+      "title": "[Tiêu đề ngắn gọn mô tả góc nhìn góp ý / thử thách]",
+      "content": "[Nội dung câu bình luận chân thực, sinh động, chuẩn ngôn ngữ mạng xã hội]",
+      "translation": "[Bản dịch tiếng Việt nếu comment tiếng Anh, hoặc để trống]",
+      "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+      "platform": "TikTok",
+      "tags": ["gop_y", "cai_tien", "video100ngay", "trend"],
+      "context": "[Gợi ý cách áp dụng bình luận này để cải thiện hoặc quay video trả lời]"
+    }
+  ]
+}`;
+
+      await copyCmText(promptText);
+      btnCopyAiPrompt.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      btnCopyAiPrompt.innerHTML = '✔️ ĐÃ CHÉP PROMPT TẠO TỪ ĐẦU!';
+      setTimeout(() => {
+        btnCopyAiPrompt.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)';
+        btnCopyAiPrompt.innerHTML = '<span>📋</span> <span>PROMPT TẠO TỪ ĐẦU (1000 CÂU MỚI)</span>';
+      }, 2500);
+
+      alert(`✅ ĐÃ SAO CHÉP PROMPT AI TẠO TỪ ĐẦU CHO CHỦ ĐỀ:\n"${topicDisplay}"\n\n👉 Bạn hãy mở ChatGPT / Gemini / Claude và dán (Ctrl + V) vào nhé!`);
+    });
+  }
+
+  // Prompt Generator 2: Incremental Append (Fresh, Non-Duplicating)
+  if (btnCopyAppendAiPrompt) {
+    btnCopyAppendAiPrompt.addEventListener('click', async () => {
+      const activeProj = getActiveCmProject();
+      const currentCount = (activeProj.items || []).length;
+      const topicDisplay = (document.getElementById('cmModalTopicNameInput')?.value || '').trim() || activeProj.name || 'Dự án 100 Ngày Video';
+
+      const promptText = `Tôi đang tiếp tục thực hiện chuỗi 100 ngày làm video ngắn cho dự án: "${topicDisplay}".
+Hiện tại trong kho dữ liệu của tôi ĐÃ CÓ ${currentCount} BÌNH LUẬN từ các đợt trước.
+
+HÃY TIẾP TỤC TẠO THÊM 100 - 200 BÌNH LUẬN MỚI TIẾP THEO (từ câu thứ ${currentCount + 1}), VỚI CÁC YÊU CẦU ĐẶC BIỆT SAU:
+1. TUYỆT ĐỐI KHÔNG LẶP LẠI các ý tưởng hay câu từ phổ biến đã xuất hiện ở các đợt trước.
+2. Tập trung vào các NGÁCH NỘI DUNG SÂU HƠN, các trường hợp oái oăm / tình huống thực tế khó đỡ.
+3. Đề xuất các KỸ THUẬT EDIT MỚI LẠ hơn (ví dụ: chuyển cảnh sound effect glitch, hiệu ứng 3D text tracking, đổi filter màu điện ảnh, format POV độc đáo).
+4. Các câu hỏi hóc búa, thử thách gay cấn hơn từ khán giả để tôi làm video phần tiếp theo giải thích ("Reply to Comment").
+5. Bắt các trend mới nhất đang thịnh hành trên TikTok / Reels / Shorts.
+
+YÊU CẦU ĐỊNH DẠNG:
+Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), không bọc thêm văn bản giải thích nào ngoài JSON. Cấu trúc:
+{
+  "topic": "${topicDisplay}",
+  "comments": [
+    {
+      "title": "[Tiêu đề góc nhìn mới lạ]",
+      "content": "[Nội dung câu bình luận độc đáo, không trùng lặp]",
+      "translation": "[Bản dịch tiếng Việt nếu là tiếng Anh]",
+      "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+      "platform": "TikTok",
+      "tags": ["nang_cao", "edit_moi", "trend"],
+      "context": "[Gợi ý cách phản hồi hoặc áp dụng]"
+    }
+  ]
+}`;
+
+      await copyCmText(promptText);
+      btnCopyAppendAiPrompt.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      btnCopyAppendAiPrompt.innerHTML = `✔️ ĐÃ CHÉP PROMPT NẠP TIẾP (TỪ CÂU ${currentCount + 1})!`;
+      setTimeout(() => {
+        btnCopyAppendAiPrompt.style.background = 'linear-gradient(135deg, #0ea5e9 0%, #059669 100%)';
+        btnCopyAppendAiPrompt.innerHTML = `<span>⚡</span> <span>PROMPT NẠP TIẾP (KHÔNG TRÙNG)</span>`;
+      }, 2500);
+
+      alert(`⚡ ĐÃ SAO CHÉP PROMPT NẠP TIẾP CHO DỰ ÁN "${topicDisplay}"!\n(Yêu cầu AI sinh các ý tưởng hoàn toàn mới từ câu ${currentCount + 1} trở đi)`);
+    });
+  }
+
+  // Paste from clipboard button
+  if (btnPasteClipboard && topicJsonInput) {
+    btnPasteClipboard.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          topicJsonInput.value = text;
+          if (typeof playTone === 'function') playTone(600, 0.06, 'sine', 0.1);
+        }
+      } catch (err) {
+        alert('Vui lòng nhấn Ctrl + V để dán trực tiếp vào ô văn bản.');
       }
-      if (htmlText.endsWith('```')) {
-        htmlText = htmlText.substring(0, htmlText.length - 3);
+    });
+  }
+
+  // Apply Topic JSON Button (Ultra-Resilient & Bulletproof Parser)
+  if (btnTopicJsonApply && topicJsonModal) {
+    btnTopicJsonApply.addEventListener('click', async () => {
+      let raw = (document.getElementById('cmTopicJsonInput')?.value || '').trim();
+      if (!raw) {
+        alert('Vui lòng dán chuỗi JSON hoặc danh sách bình luận vào ô nhập liệu!');
+        return;
       }
-      
-      output.innerHTML = `
-        <div style="padding: 5px;">
-          <h4 style="margin: 0 0 10px 0; font-size:13.5px; color:#a78bfa; font-weight:700;">🗣️ 3 Câu ví dụ đàm thoại (AI Generated):</h4>
-          <ul style="padding-left:18px; display:flex; flex-direction:column; gap:10px; font-size:12.5px;">
-            ${htmlText}
-          </ul>
-        </div>
-      `;
-      
+
+      // 1. Strip Markdown code blocks
+      raw = raw.replace(/^\`\`\`(?:json)?\s*/i, '').replace(/\s*\`\`\`$/i, '').trim();
+
+      let extractedItems = [];
+      let parsedTopic = '';
+
+      // 2. Try Standard & Cleaned JSON Parse
+      try {
+        let cleanRaw = raw;
+        // Fix trailing commas
+        cleanRaw = cleanRaw.replace(/,\s*([\}\]])/g, '$1');
+        const parsed = JSON.parse(cleanRaw);
+
+        if (Array.isArray(parsed)) {
+          extractedItems = parsed;
+        } else if (parsed && typeof parsed === 'object') {
+          parsedTopic = parsed.topic || parsed.name || parsed.title || '';
+          if (Array.isArray(parsed.comments)) {
+            extractedItems = parsed.comments;
+          } else if (Array.isArray(parsed.items)) {
+            extractedItems = parsed.items;
+          } else if (Array.isArray(parsed.data)) {
+            extractedItems = parsed.data;
+          } else if (Array.isArray(parsed.days)) {
+            parsed.days.forEach(d => {
+              if (Array.isArray(d.comments)) {
+                d.comments.forEach(c => {
+                  if (typeof c === 'string') {
+                    extractedItems.push({ content: c, category: `Ngày ${d.day}: ${d.title || parsedTopic}` });
+                  } else if (typeof c === 'object') {
+                    if (!c.category && d.title) c.category = `Ngày ${d.day}: ${d.title}`;
+                    extractedItems.push(c);
+                  }
+                });
+              }
+            });
+          } else {
+            for (const key of Object.keys(parsed)) {
+              if (Array.isArray(parsed[key]) && key !== 'categories' && key !== 'projects') {
+                parsed[key].forEach(subItem => {
+                  if (typeof subItem === 'string') {
+                    extractedItems.push({ content: subItem, category: key });
+                  } else if (typeof subItem === 'object') {
+                    if (!subItem.category) subItem.category = key;
+                    extractedItems.push(subItem);
+                  }
+                });
+              } else if (parsed[key] && typeof parsed[key] === 'object' && parsed[key].content) {
+                extractedItems.push(parsed[key]);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Standard JSON.parse failed, trying Regex object extraction:', e.message);
+        
+        // 3. Fallback: Extract individual JSON objects via Regex
+        const objRegex = /\{[^{}]*"content"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"[^{}]*\}/g;
+        let match;
+        while ((match = objRegex.exec(raw)) !== null) {
+          try {
+            const fixedObjStr = match[0].replace(/,\s*\}/g, '}');
+            const itemObj = JSON.parse(fixedObjStr);
+            if (itemObj && itemObj.content) {
+              extractedItems.push(itemObj);
+            }
+          } catch (err) {
+            const contentMatch = match[0].match(/"content"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+            const titleMatch = match[0].match(/"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+            const catMatch = match[0].match(/"category"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+            const platMatch = match[0].match(/"platform"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+            const transMatch = match[0].match(/"translation"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+            const contextMatch = match[0].match(/"context"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+
+            if (contentMatch) {
+              extractedItems.push({
+                title: titleMatch ? titleMatch[1] : '',
+                content: contentMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'),
+                translation: transMatch ? transMatch[1] : '',
+                category: catMatch ? catMatch[1] : '',
+                platform: platMatch ? platMatch[1] : 'TikTok',
+                context: contextMatch ? contextMatch[1] : ''
+              });
+            }
+          }
+        }
+
+        // 4. Fallback: Plain text lines if JSON extraction returned nothing
+        if (extractedItems.length === 0) {
+          const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+          lines.forEach(l => {
+            const clean = l.replace(/^\d+[\.\)\-]\s*/, '').replace(/^[-*•]\s*/, '').replace(/^"|"$/g, '').trim();
+            if (clean.length > 5 && !clean.startsWith('{') && !clean.startsWith('}') && !clean.startsWith('[') && !clean.startsWith(']')) {
+              extractedItems.push({ content: clean });
+            }
+          });
+        }
+      }
+
+      if (!extractedItems || extractedItems.length === 0) {
+        alert('Không tìm thấy nội dung bình luận nào trong văn bản dán vào! Vui lòng sao chép lại chuỗi JSON từ AI.');
+        return;
+      }
+
+      const enteredProjName = (document.getElementById('cmModalTopicNameInput')?.value || '').trim();
+      let targetProj = getActiveCmProject();
+      if (enteredProjName && enteredProjName !== targetProj.name) {
+        const existingProj = commentsVaultData.projects.find(p => p.name.toLowerCase() === enteredProjName.toLowerCase());
+        if (existingProj) {
+          targetProj = existingProj;
+          commentsVaultData.activeProjectId = targetProj.id;
+        } else {
+          targetProj.name = enteredProjName;
+        }
+      }
+      const projectCategoryDefault = '🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video';
+
+      const normalizedList = extractedItems.map((rawItem, idx) => {
+        if (typeof rawItem === 'string') {
+          return {
+            id: 'cm_' + Date.now() + '_' + idx + '_' + Math.floor(Math.random() * 1000),
+            title: rawItem.length > 35 ? rawItem.substring(0, 35) + '...' : rawItem,
+            content: rawItem,
+            translation: '',
+            category: projectCategoryDefault,
+            platform: 'TikTok',
+            tags: ['video100ngay', targetProj.name.replace(/\s+/g, '_')].filter(Boolean),
+            context: `Bình luận đóng góp cho dự án: ${targetProj.name}`,
+            favorite: false,
+            usedCount: 0,
+            createdAt: new Date().toISOString()
+          };
+        }
+
+        const content = (rawItem.content || rawItem.text || rawItem.comment || rawItem.body || rawItem.context || rawItem.title || '').trim();
+        const title = (rawItem.title || rawItem.name || rawItem.hook || (content ? content.substring(0, 35) + '...' : 'Bình luận')).trim();
+        const translation = (rawItem.translation || rawItem.trans || rawItem.vietnamese || rawItem.meaning || '').trim();
+        const category = (rawItem.category || rawItem.group || rawItem.type || projectCategoryDefault).trim();
+        const platform = (rawItem.platform || rawItem.channel || 'TikTok').trim();
+        let tags = rawItem.tags || [];
+        if (typeof tags === 'string') tags = tags.split(',').map(t => t.trim().replace(/^#/, ''));
+        if (!Array.isArray(tags)) tags = [];
+        if (!tags.includes(targetProj.name)) tags.push(targetProj.name.replace(/\s+/g, '_'));
+
+        const context = (rawItem.context || rawItem.note || rawItem.tips || '').trim();
+
+        return {
+          id: 'cm_' + Date.now() + '_' + idx + '_' + Math.floor(Math.random() * 1000),
+          title: title || 'Mẫu bình luận',
+          content: content || title,
+          translation: translation,
+          category: category,
+          platform: platform,
+          tags: tags.filter(Boolean),
+          context: context,
+          favorite: !!rawItem.favorite,
+          usedCount: rawItem.usedCount || 0,
+          createdAt: rawItem.createdAt || new Date().toISOString()
+        };
+      }).filter(item => item.content && item.content.length > 0);
+
+      if (normalizedList.length === 0) {
+        alert('Không tìm thấy nội dung bình luận hợp lệ nào!');
+        return;
+      }
+
+      const importMode = document.querySelector('input[name="cmJsonImportMode"]:checked')?.value || 'append';
+      if (importMode === 'replace') {
+        targetProj.items = normalizedList;
+      } else {
+        const existingContents = new Set((targetProj.items || []).map(x => x.content.trim()));
+        const newUniqueItems = normalizedList.filter(x => !existingContents.has(x.content.trim()));
+        targetProj.items = [...(targetProj.items || []), ...newUniqueItems];
+      }
+
+      targetProj.updatedAt = new Date().toISOString();
+      await saveCommentsVaultData();
+      closeTopicJsonModal();
+      activeCmId = targetProj.items[0]?.id || null;
+
+      try { renderCmProjectSelect(); } catch (e) {}
+      try { updateCmDashboardStats(); } catch (e) {}
+      try { updateCmCategorySelects(); } catch (e) {}
+      try { renderCmCommentsList(); } catch (e) {}
+      if (cmCurrentViewMode === 'grid') {
+        try { renderCmFastGrid(); } catch (e) {}
+      }
+
       if (typeof playTone === 'function') {
         playTone(523, 0.08, 'sine', 0.1);
-        setTimeout(() => playTone(784, 0.1, 'sine', 0.15), 100);
+        setTimeout(() => playTone(659, 0.08, 'sine', 0.12), 80);
+        setTimeout(() => playTone(784, 0.12, 'sine', 0.15), 160);
       }
-    } else {
-      throw new Error('Dữ liệu trả về từ Gemini không đúng cấu trúc.');
-    }
-  } catch (err) {
-    console.error('Gemini AI Sentence Generation failed:', err);
-    output.innerHTML = `
-      <div style="text-align: center; color: var(--red); padding: 15px;">
-        ❌ Lỗi sinh câu bằng AI: ${err.message}<br>
-        <span style="font-size:11px; color:var(--muted);">(Vui lòng kiểm tra lại kết nối mạng hoặc tính hợp lệ của API Key).</span>
-      </div>
-    `;
-  }
-}
 
-async function fetchSynonyms(word) {
-  try {
-    const url = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      return data.slice(0, 5).map(item => item.word).join(', ');
-    }
-  } catch (err) {
-    console.error('Datamuse API error:', err);
+      alert(`🎉 THÀNH CÔNG!\nĐã nạp ${normalizedList.length} bình luận vào dự án "${targetProj.name}"!\nTổng số bình luận hiện có trong dự án: ${targetProj.items.length}/${targetProj.target || 1000}.`);
+    });
   }
-  return '';
-}
 
+  renderCmProjectSelect();
+  updateCmDashboardStats();
+  updateCmCategorySelects();
+  renderCmCommentsList();
+}

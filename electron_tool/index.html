@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -9,13 +10,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <!-- Custom titlebar for frameless window -->
   <div class="titlebar" id="titlebar">
     <span class="titlebar-icon">⏱</span>
     <span class="titlebar-title">Task Countdown</span>
     <div class="titlebar-controls">
-      <button class="ctrl-btn open-web" id="btnOpenInBrowser" title="Mở ứng dụng trên Trình duyệt Web của bạn (Chrome, Edge...)">🌐 Bản Web</button>
+      <button class="ctrl-btn open-web" id="btnOpenInBrowser"
+        title="Mở ứng dụng trên Trình duyệt Web của bạn (Chrome, Edge...)">🌐 Bản Web</button>
       <button class="ctrl-btn reload" id="btnReload" title="Tải lại ứng dụng">🔄</button>
       <button class="ctrl-btn minimize" id="btnMinimize" title="Thu nhỏ">─</button>
       <button class="ctrl-btn maximize" id="btnMaximize" title="Phóng to">▢</button>
@@ -28,7 +31,8 @@
     <button class="tab-btn" id="tabBtnIelts" data-tab="ielts">🎓 IELTS & Study Vault</button>
     <button class="tab-btn" id="tabBtnSpeaking" data-tab="speaking">🌐 Kho Web Lấy Đề</button>
     <button class="tab-btn" id="tabBtnVideoChallenge" data-tab="videoChallenge">🎬 Hành Trình 100 Ngày Video</button>
-    <button class="tab-btn" id="tabBtnMemorize" data-tab="memorize">🧠 Flashcard & Học Thuộc</button>
+    <button class="tab-btn" id="tabBtnTiktokFlashcard" data-tab="tiktokFlashcard">🎵 Flashcard TikTok</button>
+    <button class="tab-btn" id="tabBtnCommentsVault" data-tab="commentsVault">💬 1000 Comment</button>
   </div>
   <div class="app-container">
 
@@ -59,7 +63,7 @@
         </div>
         <div class="form-row triple">
           <input type="number" id="taskTarget" class="inp" placeholder="Số lượng" min="1" />
-          <input type="text"   id="taskUnit"   class="inp" placeholder="Đơn vị (trang, bài…)" />
+          <input type="text" id="taskUnit" class="inp" placeholder="Đơn vị (trang, bài…)" />
           <button id="addBtn" class="btn-add">+ Thêm</button>
         </div>
       </div>
@@ -103,13 +107,16 @@
           <h3>🎯 HÀNH TRÌNH CHINH PHỤC IELTS 9.0</h3>
           <span id="challengeDaysText" class="challenge-badge">Ngày 1/60</span>
         </div>
-        <p class="challenge-desc">Thách thức bản thân lưu đủ <strong style="color: var(--green);">100 tài liệu mỗi ngày</strong> liên tục trong 60 ngày để đạt band 9.0!</p>
-        
+        <p class="challenge-desc">Thách thức bản thân lưu đủ <strong style="color: var(--green);">100 tài liệu mỗi
+            ngày</strong> liên tục trong 60 ngày để đạt band 9.0!</p>
+
         <div class="challenge-stats-grid">
           <div class="stat-box">
             <span class="stat-lbl">Lưu hôm nay</span>
             <span id="ieltsTodayCount" class="stat-val">0 / 100</span>
-            <div class="mini-progress-bar"><div id="ieltsTodayProgress" class="mini-progress-fill" style="width: 0%;"></div></div>
+            <div class="mini-progress-bar">
+              <div id="ieltsTodayProgress" class="mini-progress-fill" style="width: 0%;"></div>
+            </div>
           </div>
           <div class="stat-box">
             <span class="stat-lbl">Ngày đạt mục tiêu</span>
@@ -143,16 +150,19 @@
         <!-- Sidebar: List & Filters -->
         <div class="vault-sidebar">
           <button id="btnNewIelts" class="btn-primary-glow">+ Thêm tài liệu mới</button>
-          
+
           <!-- API Key Settings -->
           <div class="search-filter-box" style="border-color: rgba(139, 92, 246, 0.2);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 11px; font-weight: 700; color: var(--purple2);">🔑 Gemini API Key</span>
-              <button id="btnToggleApiKey" style="background: transparent; border: none; color: var(--purple2); cursor: pointer; font-size: 11px;">Thiết lập</button>
+              <button id="btnToggleApiKey"
+                style="background: transparent; border: none; color: var(--purple2); cursor: pointer; font-size: 11px;">Thiết
+                lập</button>
             </div>
             <div id="apiKeySettingsBox" style="display: none; flex-direction: column; gap: 6px; margin-top: 6px;">
               <input type="password" id="geminiApiKey" class="inp" placeholder="Dán Gemini API Key..." />
-              <button id="btnSaveApiKey" class="btn-primary-glow" style="padding: 6px; font-size: 11px; margin-top: 2px;">Lưu Key</button>
+              <button id="btnSaveApiKey" class="btn-primary-glow"
+                style="padding: 6px; font-size: 11px; margin-top: 2px;">Lưu Key</button>
             </div>
           </div>
 
@@ -162,25 +172,34 @@
               <select id="filterFolder" class="inp select-inp" style="flex: 1;">
                 <option value="all">📁 Tất cả Thư mục</option>
               </select>
-              <button id="btnCreateFolder" class="btn-modal btn-confirm" style="padding: 0 10px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 32px; border-radius: 6px; line-height: 1;">📁 Thư mục mới</button>
+              <button id="btnCreateFolder" class="btn-modal btn-confirm"
+                style="padding: 0 10px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 32px; border-radius: 6px; line-height: 1;">📁
+                Thư mục mới</button>
             </div>
           </div>
 
           <!-- Bulk Actions Box -->
-          <div class="search-filter-box" id="bulkFolderActions" style="display: none; border: 1px solid var(--purple2); background: rgba(139, 92, 246, 0.05);">
+          <div class="search-filter-box" id="bulkFolderActions"
+            style="display: none; border: 1px solid var(--purple2); background: rgba(139, 92, 246, 0.05);">
             <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
-              <span style="font-size: 11px; color: var(--purple2); font-weight: bold;">Đã chọn: <span id="selectedCount">0</span> mục</span>
+              <span style="font-size: 11px; color: var(--purple2); font-weight: bold;">Đã chọn: <span
+                  id="selectedCount">0</span> mục</span>
               <div style="display: flex; gap: 4px;">
-                <button id="btnBulkExportHtml" class="btn-modal btn-confirm" style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #059669;">📱 Học trên ĐT (3 ngày)</button>
-                <button id="btnBulkMove" class="btn-modal btn-confirm" style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2;">📁 Lưu thư mục riêng</button>
-                <button id="btnCancelBulk" class="btn-modal btn-cancel" style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: rgba(255,255,255,0.05);">Hủy</button>
+                <button id="btnBulkExportHtml" class="btn-modal btn-confirm"
+                  style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #059669;">📱
+                  Học trên ĐT (3 ngày)</button>
+                <button id="btnBulkMove" class="btn-modal btn-confirm"
+                  style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2;">📁 Lưu thư mục
+                  riêng</button>
+                <button id="btnCancelBulk" class="btn-modal btn-cancel"
+                  style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: rgba(255,255,255,0.05);">Hủy</button>
               </div>
             </div>
           </div>
 
           <div class="search-filter-box">
             <input type="text" id="ieltsSearch" class="inp" placeholder="🔍 Tìm kiếm tài liệu..." />
-            
+
             <div class="filter-row-pair">
               <select id="filterSkill" class="inp select-inp">
                 <option value="all">📚 Tất cả Kỹ năng</option>
@@ -189,7 +208,7 @@
                 <option value="reading">📖 Reading</option>
                 <option value="listening">🎧 Listening</option>
               </select>
-              
+
               <select id="filterMastery" class="inp select-inp">
                 <option value="all">💎 Tất cả số lần đọc</option>
                 <option value="0">🔴 Chưa đọc (0 lần)</option>
@@ -201,9 +220,13 @@
           </div>
 
           <!-- Active Date Filter Indicator -->
-          <div id="ieltsDateFilterStatus" style="display: none; align-items: center; justify-content: space-between; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; color: var(--text);">
-            <span>📅 Ngày xem: <strong id="ieltsSelectedDateText" style="color: var(--purple2);">--/--/----</strong></span>
-            <button type="button" id="btnClearIeltsDateFilter" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 11px;">✕ Hủy lọc</button>
+          <div id="ieltsDateFilterStatus"
+            style="display: none; align-items: center; justify-content: space-between; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; color: var(--text);">
+            <span>📅 Ngày xem: <strong id="ieltsSelectedDateText"
+                style="color: var(--purple2);">--/--/----</strong></span>
+            <button type="button" id="btnClearIeltsDateFilter"
+              style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 11px;">✕
+              Hủy lọc</button>
           </div>
 
           <div class="sidebar-list-container">
@@ -223,14 +246,19 @@
           <div id="ieltsWelcomeState" class="vault-welcome-state active">
             <div class="welcome-icon">🎓</div>
             <h2>IELTS 9.0 Study Library</h2>
-            <p>Học tập thông minh và đều đặn mỗi ngày. Hãy chọn một tài liệu từ danh sách bên trái để học, hoặc bấm nút thêm mới để lưu trữ kiến thức.</p>
+            <p>Học tập thông minh và đều đặn mỗi ngày. Hãy chọn một tài liệu từ danh sách bên trái để học, hoặc bấm nút
+              thêm mới để lưu trữ kiến thức.</p>
             <div class="study-tips">
               <h4>💡 Gợi ý lưu trữ để đạt IELTS 9.0:</h4>
               <ul>
-                <li><strong>Writing:</strong> Lưu cấu trúc ngữ pháp nâng cao, từ vựng theo chủ đề, các ý bài mẫu, cách phân tích biểu đồ kèm ảnh minh họa.</li>
-                <li><strong>Speaking:</strong> Lưu từ vựng B2/C1/C2, collocations đắt giá, cấu trúc trả lời ghi điểm và các bài nói mẫu.</li>
-                <li><strong>Reading:</strong> Lập bảng keyword paraphrase câu hỏi - văn bản, ghi chép phân tích các câu phức khó.</li>
-                <li><strong>Listening:</strong> Phân tích lỗi sai do spelling, bẫy từ đồng âm, ghi chép từ vựng quan trọng nghe được.</li>
+                <li><strong>Writing:</strong> Lưu cấu trúc ngữ pháp nâng cao, từ vựng theo chủ đề, các ý bài mẫu, cách
+                  phân tích biểu đồ kèm ảnh minh họa.</li>
+                <li><strong>Speaking:</strong> Lưu từ vựng B2/C1/C2, collocations đắt giá, cấu trúc trả lời ghi điểm và
+                  các bài nói mẫu.</li>
+                <li><strong>Reading:</strong> Lập bảng keyword paraphrase câu hỏi - văn bản, ghi chép phân tích các câu
+                  phức khó.</li>
+                <li><strong>Listening:</strong> Phân tích lỗi sai do spelling, bẫy từ đồng âm, ghi chép từ vựng quan
+                  trọng nghe được.</li>
               </ul>
             </div>
           </div>
@@ -240,11 +268,12 @@
             <h3 id="formTitle">📝 Thêm tài liệu IELTS mới</h3>
             <form id="ieltsForm" onsubmit="return false;">
               <input type="hidden" id="editItemId" />
-              
+
               <div class="form-grid-2">
                 <div class="form-group">
                   <label for="ieltsTitle">Tiêu đề / Chủ đề</label>
-                  <input type="text" id="ieltsTitle" class="inp" placeholder="Ví dụ: Line Graph - Carbon Emissions, Speaking Part 2..." required />
+                  <input type="text" id="ieltsTitle" class="inp"
+                    placeholder="Ví dụ: Line Graph - Carbon Emissions, Speaking Part 2..." required />
                 </div>
                 <div class="form-group">
                   <label for="ieltsSkill">Kỹ năng / Môn học</label>
@@ -255,7 +284,9 @@
                       <option value="reading">📖 Reading</option>
                       <option value="listening">🎧 Listening</option>
                     </select>
-                    <button type="button" id="btnFormNewSkill" class="btn-modal btn-confirm" style="padding: 0 12px; font-size: 14px; font-weight: bold; width: auto; height: 32px; border-radius: 6px; line-height: 1;" title="Thêm môn học/kỹ năng mới">+</button>
+                    <button type="button" id="btnFormNewSkill" class="btn-modal btn-confirm"
+                      style="padding: 0 12px; font-size: 14px; font-weight: bold; width: auto; height: 32px; border-radius: 6px; line-height: 1;"
+                      title="Thêm môn học/kỹ năng mới">+</button>
                   </div>
                 </div>
               </div>
@@ -275,31 +306,38 @@
                 <div class="form-group">
                   <label for="ieltsLink">Link đề thi (Nếu có)</label>
                   <div style="display: flex; gap: 6px;">
-                    <input type="url" id="ieltsLink" class="inp" placeholder="Nhập liên kết bài test..." style="flex: 1;" />
-                    <button type="button" id="btnFetchLink" class="btn-primary-glow" style="padding: 0 12px; font-size: 11px; font-weight: 700; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); box-shadow: 0 0 10px rgba(236, 72, 153, 0.2); border-radius: 8px; width: auto; height: 38px; white-space: nowrap;">🌐 Tải từ Link</button>
+                    <input type="url" id="ieltsLink" class="inp" placeholder="Nhập liên kết bài test..."
+                      style="flex: 1;" />
+                    <button type="button" id="btnFetchLink" class="btn-primary-glow"
+                      style="padding: 0 12px; font-size: 11px; font-weight: 700; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); box-shadow: 0 0 10px rgba(236, 72, 153, 0.2); border-radius: 8px; width: auto; height: 38px; white-space: nowrap;">🌐
+                      Tải từ Link</button>
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="ieltsFolder">Thư mục / Folder</label>
                   <div style="display: flex; gap: 6px;">
                     <select id="ieltsFolder" class="inp select-inp" style="flex: 1;"></select>
-                    <button type="button" id="btnFormNewFolder" class="btn-modal btn-confirm" style="padding: 0 12px; font-size: 14px; font-weight: bold; width: auto; height: 32px; border-radius: 6px; line-height: 1;">+</button>
+                    <button type="button" id="btnFormNewFolder" class="btn-modal btn-confirm"
+                      style="padding: 0 12px; font-size: 14px; font-weight: bold; width: auto; height: 32px; border-radius: 6px; line-height: 1;">+</button>
                   </div>
                 </div>
               </div>
 
               <!-- AI Actions Row -->
               <div style="display: flex; gap: 10px; margin-bottom: 15px; margin-top: 5px; align-items: center;">
-                <select id="selectAiBand" class="inp select-inp" style="height: 38px; border-radius: 8px; flex: 0.8; font-size: 12px; padding: 0 10px; margin: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff;">
+                <select id="selectAiBand" class="inp select-inp"
+                  style="height: 38px; border-radius: 8px; flex: 0.8; font-size: 12px; padding: 0 10px; margin: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff;">
                   <option value="9.0" selected>🎓 Band 9.0 (Thành thạo)</option>
                   <option value="8.0">💎 Band 8.0 (Xuất sắc)</option>
                   <option value="7.0">🟢 Band 7.0 (Tốt)</option>
                   <option value="6.0">🟡 Band 6.0 (Khá)</option>
                 </select>
-                <button type="button" id="btnAiAnalyze" class="btn-primary-glow" style="padding: 10px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); flex: 1.1; height: 38px; border-radius: 8px;">
+                <button type="button" id="btnAiAnalyze" class="btn-primary-glow"
+                  style="padding: 10px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); flex: 1.1; height: 38px; border-radius: 8px;">
                   ✨ AI Auto-Fill (API)
                 </button>
-                <button type="button" id="btnWebAiAssist" class="btn-primary-glow" style="padding: 10px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); flex: 1.1; height: 38px; border-radius: 8px;">
+                <button type="button" id="btnWebAiAssist" class="btn-primary-glow"
+                  style="padding: 10px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); flex: 1.1; height: 38px; border-radius: 8px;">
                   🌐 Web AI Assist (Free)
                 </button>
               </div>
@@ -314,7 +352,8 @@
                     <span class="upload-text">Nhấp vào đây, kéo thả, hoặc dán (Ctrl+V) ảnh để tải lên</span>
                     <input type="file" id="writeImageFile" accept="image/*" class="file-hidden-input" multiple />
                   </div>
-                  <div class="images-preview-grid" id="imagePreviewContainer" style="display: none; gap: 10px; flex-wrap: wrap; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                  <div class="images-preview-grid" id="imagePreviewContainer"
+                    style="display: none; gap: 10px; flex-wrap: wrap; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
                     <!-- Previews populated dynamically -->
                   </div>
                 </div>
@@ -322,31 +361,38 @@
                 <div id="fields-writing" class="skill-fields-group active">
                   <div class="form-group">
                     <label>Đề bài / Prompt</label>
-                    <textarea id="writePrompt" class="inp textarea-inp" placeholder="Nhập đề bài Writing Task 1 hoặc Task 2..."></textarea>
+                    <textarea id="writePrompt" class="inp textarea-inp"
+                      placeholder="Nhập đề bài Writing Task 1 hoặc Task 2..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Cấu trúc ngữ pháp hay dùng</label>
-                    <textarea id="writeGrammar" class="inp textarea-inp" placeholder="Ví dụ: The graph outlines a stark contrast between... / Having witnessed a dramatic surge, the figure..."></textarea>
+                    <textarea id="writeGrammar" class="inp textarea-inp"
+                      placeholder="Ví dụ: The graph outlines a stark contrast between... / Having witnessed a dramatic surge, the figure..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Từ vựng chủ đề (Band 8.0 - 9.0)</label>
-                    <textarea id="writeVocab" class="inp textarea-inp" placeholder="Nhập từ vựng kèm nghĩa..."></textarea>
+                    <textarea id="writeVocab" class="inp textarea-inp"
+                      placeholder="Nhập từ vựng kèm nghĩa..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Cách phân tích biểu đồ / Đề bài</label>
-                    <textarea id="writeAnalysis" class="inp textarea-inp" placeholder="Quy tắc phân tích, hướng so sánh số liệu, phân chia đoạn thân bài..."></textarea>
+                    <textarea id="writeAnalysis" class="inp textarea-inp"
+                      placeholder="Quy tắc phân tích, hướng so sánh số liệu, phân chia đoạn thân bài..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Các ý cần triển khai (Brainstorming)</label>
-                    <textarea id="writeIdeas" class="inp textarea-inp" placeholder="Mở bài -> Tổng quan -> Chi tiết 1 -> Chi tiết 2..."></textarea>
+                    <textarea id="writeIdeas" class="inp textarea-inp"
+                      placeholder="Mở bài -> Tổng quan -> Chi tiết 1 -> Chi tiết 2..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Bài mẫu Sample Band 9.0</label>
-                    <textarea id="writeSample" class="inp textarea-inp-large" placeholder="Dán bài mẫu chất lượng cao vào đây..."></textarea>
+                    <textarea id="writeSample" class="inp textarea-inp-large"
+                      placeholder="Dán bài mẫu chất lượng cao vào đây..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Phân tích hướng giải & Nhận xét</label>
-                    <textarea id="writeSolution" class="inp textarea-inp" placeholder="Tại sao cấu trúc này tốt? Điểm nhấn từ vựng trong bài..."></textarea>
+                    <textarea id="writeSolution" class="inp textarea-inp"
+                      placeholder="Tại sao cấu trúc này tốt? Điểm nhấn từ vựng trong bài..."></textarea>
                   </div>
                 </div>
 
@@ -358,23 +404,28 @@
                   </div>
                   <div class="form-group">
                     <label>Từ vựng hay dùng (B2 - C2)</label>
-                    <textarea id="speakVocab" class="inp textarea-inp" placeholder="Ví dụ: meticulously (cẩn thận), off the beaten track (hẻo lánh)..."></textarea>
+                    <textarea id="speakVocab" class="inp textarea-inp"
+                      placeholder="Ví dụ: meticulously (cẩn thận), off the beaten track (hẻo lánh)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Collocations & Idioms nổi bật</label>
-                    <textarea id="speakColloc" class="inp textarea-inp" placeholder="Cụm từ cố định giúp tăng điểm Lexical Resource..."></textarea>
+                    <textarea id="speakColloc" class="inp textarea-inp"
+                      placeholder="Cụm từ cố định giúp tăng điểm Lexical Resource..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Ý tưởng & Dàn bài nói</label>
-                    <textarea id="speakOutline" class="inp textarea-inp" placeholder="Cách triển khai trả lời theo cấu trúc A.R.E.A (Answer, Reason, Example, Alternative)..."></textarea>
+                    <textarea id="speakOutline" class="inp textarea-inp"
+                      placeholder="Cách triển khai trả lời theo cấu trúc A.R.E.A (Answer, Reason, Example, Alternative)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Bài nói mẫu (Sample Answer)</label>
-                    <textarea id="speakSample" class="inp textarea-inp-large" placeholder="Bài trả lời mẫu lý tưởng..."></textarea>
+                    <textarea id="speakSample" class="inp textarea-inp-large"
+                      placeholder="Bài trả lời mẫu lý tưởng..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Ghi chú phát âm & Ngữ điệu</label>
-                    <textarea id="speakPron" class="inp textarea-inp" placeholder="Lưu ý nối âm, trọng âm từ quan trọng, ngữ điệu nhấn nhá..."></textarea>
+                    <textarea id="speakPron" class="inp textarea-inp"
+                      placeholder="Lưu ý nối âm, trọng âm từ quan trọng, ngữ điệu nhấn nhá..."></textarea>
                   </div>
                 </div>
 
@@ -382,23 +433,28 @@
                 <div id="fields-reading" class="skill-fields-group">
                   <div class="form-group">
                     <label>Đoạn văn đọc / Tiêu đề bài đọc</label>
-                    <textarea id="readPassage" class="inp textarea-inp" placeholder="Nhập đoạn văn khó hoặc tiêu đề..."></textarea>
+                    <textarea id="readPassage" class="inp textarea-inp"
+                      placeholder="Nhập đoạn văn khó hoặc tiêu đề..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Bảng Từ khóa & Paraphrase (Keyword Table)</label>
-                    <textarea id="readKeywords" class="inp textarea-inp" placeholder="Câu hỏi: 'A decline in number' -> Văn bản: 'The population plummeted' ..."></textarea>
+                    <textarea id="readKeywords" class="inp textarea-inp"
+                      placeholder="Câu hỏi: 'A decline in number' -> Văn bản: 'The population plummeted' ..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Phân tích câu phức tạp / Dịch nghĩa</label>
-                    <textarea id="readSentence" class="inp textarea-inp" placeholder="Bẻ nhỏ cấu trúc câu phức, dịch nghĩa tiếng Việt chi tiết..."></textarea>
+                    <textarea id="readSentence" class="inp textarea-inp"
+                      placeholder="Bẻ nhỏ cấu trúc câu phức, dịch nghĩa tiếng Việt chi tiết..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Mẹo làm bài & Bẫy đề cần tránh</label>
-                    <textarea id="readTips" class="inp textarea-inp" placeholder="Các lỗi thường gặp, cách nhận diện đáp án nhiễu..."></textarea>
+                    <textarea id="readTips" class="inp textarea-inp"
+                      placeholder="Các lỗi thường gặp, cách nhận diện đáp án nhiễu..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Giải đề chi tiết (Đáp án & Câu chứa đáp án)</label>
-                    <textarea id="readExplanation" class="inp textarea-inp-large" placeholder="Đáp án từng câu kèm câu trích từ bài đọc chứa đáp án đó và giải thích chi tiết..."></textarea>
+                    <textarea id="readExplanation" class="inp textarea-inp-large"
+                      placeholder="Đáp án từng câu kèm câu trích từ bài đọc chứa đáp án đó và giải thích chi tiết..."></textarea>
                   </div>
                 </div>
 
@@ -406,23 +462,28 @@
                 <div id="fields-listening" class="skill-fields-group">
                   <div class="form-group">
                     <label>Nội dung câu hỏi nghe / Bối cảnh</label>
-                    <textarea id="listenContext" class="inp textarea-inp" placeholder="Chủ đề bài nghe, ví dụ: Section 3 - Seminar Discussion..."></textarea>
+                    <textarea id="listenContext" class="inp textarea-inp"
+                      placeholder="Chủ đề bài nghe, ví dụ: Section 3 - Seminar Discussion..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Từ vựng & Cạm bẫy phát âm (Luyện phát âm/Chính tả)</label>
-                    <textarea id="listenSpelling" class="inp textarea-inp" placeholder="Ví dụ: bẫy double letters (committee), âm câm, nối âm dễ nhầm (fifteen vs fifty)..."></textarea>
+                    <textarea id="listenSpelling" class="inp textarea-inp"
+                      placeholder="Ví dụ: bẫy double letters (committee), âm câm, nối âm dễ nhầm (fifteen vs fifty)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Từ vựng trọng tâm bài nghe</label>
-                    <textarea id="listenVocab" class="inp textarea-inp" placeholder="Nhập từ vựng quan trọng nghe được..."></textarea>
+                    <textarea id="listenVocab" class="inp textarea-inp"
+                      placeholder="Nhập từ vựng quan trọng nghe được..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Phân tích Transcript / Lỗi sai của bản thân</label>
-                    <textarea id="listenTranscript" class="inp textarea-inp-large" placeholder="Trích đoạn transcript chứa đáp án, phân tích vì sao mình làm sai..."></textarea>
+                    <textarea id="listenTranscript" class="inp textarea-inp-large"
+                      placeholder="Trích đoạn transcript chứa đáp án, phân tích vì sao mình làm sai..."></textarea>
                   </div>
                   <div class="form-group">
                     <label>Giải đề chi tiết (Đáp án & Lời thoại chứa đáp án)</label>
-                    <textarea id="listenExplanation" class="inp textarea-inp-large" placeholder="Đáp án từng câu kèm lời thoại chứa đáp án đó và giải thích chi tiết..."></textarea>
+                    <textarea id="listenExplanation" class="inp textarea-inp-large"
+                      placeholder="Đáp án từng câu kèm lời thoại chứa đáp án đó và giải thích chi tiết..."></textarea>
                   </div>
                 </div>
 
@@ -430,19 +491,23 @@
                 <div id="fields-math" class="skill-fields-group">
                   <div class="form-group">
                     <label for="mathProblem">Đề bài / Bài toán mẫu</label>
-                    <textarea id="mathProblem" class="inp textarea-inp" placeholder="Dán đề toán hoặc bài tập mẫu cần giải quyết..."></textarea>
+                    <textarea id="mathProblem" class="inp textarea-inp"
+                      placeholder="Dán đề toán hoặc bài tập mẫu cần giải quyết..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="mathTheory">Công thức & Lý thuyết liên quan</label>
-                    <textarea id="mathTheory" class="inp textarea-inp" placeholder="Các định lý, công thức toán áp dụng..."></textarea>
+                    <textarea id="mathTheory" class="inp textarea-inp"
+                      placeholder="Các định lý, công thức toán áp dụng..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="mathSteps">Phương pháp & Các bước giải quyết</label>
-                    <textarea id="mathSteps" class="inp textarea-inp" placeholder="Các bước tư duy và thuật toán giải quyết..."></textarea>
+                    <textarea id="mathSteps" class="inp textarea-inp"
+                      placeholder="Các bước tư duy và thuật toán giải quyết..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="mathSolution">Lời giải chi tiết & Lưu ý quan trọng</label>
-                    <textarea id="mathSolution" class="inp textarea-inp" placeholder="Lời giải đầy đủ, các bẫy toán học cần tránh..."></textarea>
+                    <textarea id="mathSolution" class="inp textarea-inp"
+                      placeholder="Lời giải đầy đủ, các bẫy toán học cần tránh..."></textarea>
                   </div>
                 </div>
 
@@ -450,19 +515,23 @@
                 <div id="fields-korean" class="skill-fields-group">
                   <div class="form-group">
                     <label for="koreanVocab">Từ vựng & Ngữ pháp mới</label>
-                    <textarea id="koreanVocab" class="inp textarea-inp" placeholder="Từ vựng, ngữ pháp kèm phân tích cấu trúc câu..."></textarea>
+                    <textarea id="koreanVocab" class="inp textarea-inp"
+                      placeholder="Từ vựng, ngữ pháp kèm phân tích cấu trúc câu..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="koreanDialogue">Hội thoại mẫu & Ví dụ</label>
-                    <textarea id="koreanDialogue" class="inp textarea-inp" placeholder="Các đoạn hội thoại ngắn hoặc mẫu câu giao tiếp..."></textarea>
+                    <textarea id="koreanDialogue" class="inp textarea-inp"
+                      placeholder="Các đoạn hội thoại ngắn hoặc mẫu câu giao tiếp..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="koreanPron">Ghi chú phát âm & Ngữ điệu</label>
-                    <textarea id="koreanPron" class="inp textarea-inp" placeholder="Nối âm, biến âm, ngữ điệu giọng đọc chuẩn..."></textarea>
+                    <textarea id="koreanPron" class="inp textarea-inp"
+                      placeholder="Nối âm, biến âm, ngữ điệu giọng đọc chuẩn..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="koreanTranslation">Bản dịch nghĩa tiếng Việt & Văn hóa</label>
-                    <textarea id="koreanTranslation" class="inp textarea-inp" placeholder="Dịch nghĩa chi tiết và các lưu ý văn hóa Hàn Quốc..."></textarea>
+                    <textarea id="koreanTranslation" class="inp textarea-inp"
+                      placeholder="Dịch nghĩa chi tiết và các lưu ý văn hóa Hàn Quốc..."></textarea>
                   </div>
                 </div>
 
@@ -470,15 +539,18 @@
                 <div id="fields-japanese" class="skill-fields-group">
                   <div class="form-group">
                     <label for="japaneseVocab">Kanji, Từ vựng & Ngữ pháp (N5 - N1)</label>
-                    <textarea id="japaneseVocab" class="inp textarea-inp" placeholder="Hán tự (Kanji), từ vựng âm Hán Việt, cấu trúc ngữ pháp..."></textarea>
+                    <textarea id="japaneseVocab" class="inp textarea-inp"
+                      placeholder="Hán tự (Kanji), từ vựng âm Hán Việt, cấu trúc ngữ pháp..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="japaneseDialogue">Hội thoại / Câu ví dụ thực tế</label>
-                    <textarea id="japaneseDialogue" class="inp textarea-inp" placeholder="Mẫu câu ví dụ, hội thoại kaiwa thông dụng..."></textarea>
+                    <textarea id="japaneseDialogue" class="inp textarea-inp"
+                      placeholder="Mẫu câu ví dụ, hội thoại kaiwa thông dụng..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="japaneseTranslation">Dịch nghĩa & Giải thích chi tiết</label>
-                    <textarea id="japaneseTranslation" class="inp textarea-inp" placeholder="Dịch nghĩa tiếng Việt kèm giải thích ngữ cảnh..."></textarea>
+                    <textarea id="japaneseTranslation" class="inp textarea-inp"
+                      placeholder="Dịch nghĩa tiếng Việt kèm giải thích ngữ cảnh..."></textarea>
                   </div>
                 </div>
 
@@ -486,19 +558,23 @@
                 <div id="fields-coding" class="skill-fields-group">
                   <div class="form-group">
                     <label for="codingProblem">Yêu cầu thuật toán / Bài toán code</label>
-                    <textarea id="codingProblem" class="inp textarea-inp" placeholder="Mô tả bài toán (ví dụ: LeetCode, Codeforces)..."></textarea>
+                    <textarea id="codingProblem" class="inp textarea-inp"
+                      placeholder="Mô tả bài toán (ví dụ: LeetCode, Codeforces)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="codingConcept">Khái niệm cốt lõi & Cấu trúc dữ liệu</label>
-                    <textarea id="codingConcept" class="inp textarea-inp" placeholder="Giải thuật áp dụng (DFS/BFS, Quy hoạch động, Hash Map)..."></textarea>
+                    <textarea id="codingConcept" class="inp textarea-inp"
+                      placeholder="Giải thuật áp dụng (DFS/BFS, Quy hoạch động, Hash Map)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="codingSolution">Mã nguồn mẫu / Snippet Code</label>
-                    <textarea id="codingSolution" class="inp textarea-inp" style="font-family: monospace;" placeholder="Mã nguồn (Javascript, Python, C++...)..."></textarea>
+                    <textarea id="codingSolution" class="inp textarea-inp" style="font-family: monospace;"
+                      placeholder="Mã nguồn (Javascript, Python, C++...)..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="codingAnalysis">Giải thích thuật toán & Độ phức tạp (Big O)</label>
-                    <textarea id="codingAnalysis" class="inp textarea-inp" placeholder="Giải thích logic chạy, độ phức tạp thời gian/không gian..."></textarea>
+                    <textarea id="codingAnalysis" class="inp textarea-inp"
+                      placeholder="Giải thích logic chạy, độ phức tạp thời gian/không gian..."></textarea>
                   </div>
                 </div>
 
@@ -506,15 +582,18 @@
                 <div id="fields-other" class="skill-fields-group">
                   <div class="form-group">
                     <label for="genTheory">Lý thuyết trọng tâm & Nội dung bài học</label>
-                    <textarea id="genTheory" class="inp textarea-inp" placeholder="Nội dung bài học, định nghĩa, ghi chú lý thuyết..."></textarea>
+                    <textarea id="genTheory" class="inp textarea-inp"
+                      placeholder="Nội dung bài học, định nghĩa, ghi chú lý thuyết..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="genExercise">Bài tập tự luyện & Câu hỏi</label>
-                    <textarea id="genExercise" class="inp textarea-inp" placeholder="Các câu hỏi củng cố hoặc bài tập vận dụng..."></textarea>
+                    <textarea id="genExercise" class="inp textarea-inp"
+                      placeholder="Các câu hỏi củng cố hoặc bài tập vận dụng..."></textarea>
                   </div>
                   <div class="form-group">
                     <label for="genSolution">Đáp án & Giải thích chi tiết</label>
-                    <textarea id="genSolution" class="inp textarea-inp" placeholder="Hướng dẫn giải chi tiết và đáp án bài tập..."></textarea>
+                    <textarea id="genSolution" class="inp textarea-inp"
+                      placeholder="Hướng dẫn giải chi tiết và đáp án bài tập..."></textarea>
                   </div>
                 </div>
               </div>
@@ -535,15 +614,21 @@
                 <div class="detail-date" id="detailDate">📅 Ngày lưu: 06/07/2026</div>
                 <div class="detail-date" id="detailFolder" style="margin-top: 4px;">📁 Thư mục: Mặc định</div>
                 <div class="detail-date" id="detailLinkContainer" style="margin-top: 4px; display: none;">
-                  🔗 Link đề: <a href="#" id="detailLink" style="color: #60a5fa; text-decoration: underline; font-weight: bold; cursor: pointer;">Mở đề thi</a>
+                  🔗 Link đề: <a href="#" id="detailLink"
+                    style="color: #60a5fa; text-decoration: underline; font-weight: bold; cursor: pointer;">Mở đề
+                    thi</a>
                 </div>
               </div>
               <div class="detail-mastery-actions">
                 <span class="mastery-lbl">Số lần đọc:</span>
-                <div class="read-count-controls" style="display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px;">
-                  <button class="read-count-btn dec-btn" id="btnDecReadCountMain" style="background: transparent; border: none; color: #ef4444; font-size: 14px; font-weight: bold; cursor: pointer; padding: 0 4px; outline: none; transition: transform 0.1s;">➖</button>
-                  <span class="read-count-val" id="lblReadCountMain" style="font-size: 14px; font-weight: 700; color: #fff; min-width: 20px; text-align: center;">0</span>
-                  <button class="read-count-btn inc-btn" id="btnIncReadCountMain" style="background: transparent; border: none; color: #10b981; font-size: 14px; font-weight: bold; cursor: pointer; padding: 0 4px; outline: none; transition: transform 0.1s;">➕</button>
+                <div class="read-count-controls"
+                  style="display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px;">
+                  <button class="read-count-btn dec-btn" id="btnDecReadCountMain"
+                    style="background: transparent; border: none; color: #ef4444; font-size: 14px; font-weight: bold; cursor: pointer; padding: 0 4px; outline: none; transition: transform 0.1s;">➖</button>
+                  <span class="read-count-val" id="lblReadCountMain"
+                    style="font-size: 14px; font-weight: 700; color: #fff; min-width: 20px; text-align: center;">0</span>
+                  <button class="read-count-btn inc-btn" id="btnIncReadCountMain"
+                    style="background: transparent; border: none; color: #10b981; font-size: 14px; font-weight: bold; cursor: pointer; padding: 0 4px; outline: none; transition: transform 0.1s;">➕</button>
                 </div>
               </div>
             </div>
@@ -553,7 +638,9 @@
             </div>
 
             <div class="detail-actions">
-              <button id="btnExpandIelts" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); width: auto; padding: 0 16px;">🔍 Mở rộng màn hình học</button>
+              <button id="btnExpandIelts" class="btn-modal btn-confirm"
+                style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); width: auto; padding: 0 16px;">🔍
+                Mở rộng màn hình học</button>
               <button id="btnEditIelts" class="btn-modal btn-cancel">✏️ Chỉnh sửa</button>
               <button id="btnDeleteIelts" class="btn-modal btn-delete-red">🗑 Xóa tài liệu</button>
             </div>
@@ -565,33 +652,48 @@
     <!-- Tab 4: Web Links Vault -->
     <div id="paneSpeaking" class="tab-pane">
       <!-- Header Card -->
-      <div class="speaking-header-card" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4); color: white;">
+      <div class="speaking-header-card"
+        style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4); color: white;">
         <div class="challenge-title-row" style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff;">🌐 KHO LƯU TRỮ WEB LẤY ĐỀ</h3>
-          <span id="speakingTotalSaved" class="challenge-badge" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;">Đã lưu: 0 trang web</span>
+          <h3
+            style="margin: 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff;">
+            🌐 KHO LƯU TRỮ WEB LẤY ĐỀ</h3>
+          <span id="speakingTotalSaved" class="challenge-badge"
+            style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;">Đã
+            lưu: 0 trang web</span>
         </div>
-        <p class="challenge-desc" style="margin-top: 8px; font-size: 13px; opacity: 0.9; line-height: 1.5;">Nơi lưu trữ tất cả các liên kết trang web, đề thi thử IELTS (Speaking, Writing, Reading, Listening) và các tài liệu khác. Nhấn vào để mở nhanh hoặc sao chép liên kết.</p>
+        <p class="challenge-desc" style="margin-top: 8px; font-size: 13px; opacity: 0.9; line-height: 1.5;">Nơi lưu trữ
+          tất cả các liên kết trang web, đề thi thử IELTS (Speaking, Writing, Reading, Listening) và các tài liệu khác.
+          Nhấn vào để mở nhanh hoặc sao chép liên kết.</p>
       </div>
 
       <!-- Split Layout: Sidebar & Main Workspace -->
       <div class="vault-layout" style="display: flex; gap: 20px; min-height: 500px;">
         <!-- Sidebar: Add Form & List -->
-        <div class="vault-sidebar" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px;">
+        <div class="vault-sidebar"
+          style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px;">
           <!-- Form to add new link -->
-          <div class="search-filter-box" style="border-color: rgba(236, 72, 153, 0.25); padding: 15px; background: rgba(30, 27, 75, 0.3); border-radius: var(--radius);">
-            <h4 style="margin: 0 0 10px 0; font-size: 12px; font-weight: 700; color: #ec4899; text-transform: uppercase; letter-spacing: 0.5px;">➕ Thêm web lấy đề</h4>
+          <div class="search-filter-box"
+            style="border-color: rgba(236, 72, 153, 0.25); padding: 15px; background: rgba(30, 27, 75, 0.3); border-radius: var(--radius);">
+            <h4
+              style="margin: 0 0 10px 0; font-size: 12px; font-weight: 700; color: #ec4899; text-transform: uppercase; letter-spacing: 0.5px;">
+              ➕ Thêm web lấy đề</h4>
             <form id="speakingForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
               <input type="hidden" id="editSpeakLinkId" value="" />
               <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                <label for="speakLinkTitle" style="font-size: 11px; font-weight: 600; color: var(--muted);">Tên trang web / Tiêu đề đề thi</label>
-                <input type="text" id="speakLinkTitle" class="inp" placeholder="Ví dụ: IELTS Online Tests Mock Jan..." required />
+                <label for="speakLinkTitle" style="font-size: 11px; font-weight: 600; color: var(--muted);">Tên trang
+                  web / Tiêu đề đề thi</label>
+                <input type="text" id="speakLinkTitle" class="inp" placeholder="Ví dụ: IELTS Online Tests Mock Jan..."
+                  required />
               </div>
               <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                <label for="speakLinkUrl" style="font-size: 11px; font-weight: 600; color: var(--muted);">Đường dẫn link (URL)</label>
+                <label for="speakLinkUrl" style="font-size: 11px; font-weight: 600; color: var(--muted);">Đường dẫn link
+                  (URL)</label>
                 <input type="url" id="speakLinkUrl" class="inp" placeholder="Dán link https://..." required />
               </div>
               <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                <label for="speakLinkCategory" style="font-size: 11px; font-weight: 600; color: var(--muted);">Kỹ năng / Phân loại</label>
+                <label for="speakLinkCategory" style="font-size: 11px; font-weight: 600; color: var(--muted);">Kỹ năng /
+                  Phân loại</label>
                 <select id="speakLinkCategory" class="inp select-inp" style="height: 38px;">
                   <option value="all">🌐 Tổng hợp / Khác</option>
                   <option value="speaking">🗣️ Speaking</option>
@@ -601,8 +703,11 @@
                 </select>
               </div>
               <div style="display: flex; gap: 8px; margin-top: 5px;">
-                <button type="button" id="btnCancelSpeakLink" class="btn-modal btn-cancel" style="flex: 1; height: 34px; font-size: 12px; display: none; line-height: 1;">Hủy</button>
-                <button type="submit" id="btnSaveSpeakLink" class="btn-primary-glow" style="flex: 2; height: 34px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); line-height: 1; border-radius: 8px; color: white;">Lưu lại</button>
+                <button type="button" id="btnCancelSpeakLink" class="btn-modal btn-cancel"
+                  style="flex: 1; height: 34px; font-size: 12px; display: none; line-height: 1;">Hủy</button>
+                <button type="submit" id="btnSaveSpeakLink" class="btn-primary-glow"
+                  style="flex: 2; height: 34px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); line-height: 1; border-radius: 8px; color: white;">Lưu
+                  lại</button>
               </div>
             </form>
           </div>
@@ -633,40 +738,61 @@
         </div>
 
         <!-- Main Workspace: Detail or Welcome -->
-        <div class="vault-main" id="speakingMain" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 25px; display: flex; flex-direction: column;">
-          
+        <div class="vault-main" id="speakingMain"
+          style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 25px; display: flex; flex-direction: column;">
+
           <!-- Welcome State -->
           <div id="speakingWelcomeState" class="vault-welcome-state active">
-            <div class="welcome-icon" style="color: #ec4899; font-size: 48px; text-align: center; margin-bottom: 15px;">🌐</div>
+            <div class="welcome-icon" style="color: #ec4899; font-size: 48px; text-align: center; margin-bottom: 15px;">
+              🌐</div>
             <h2 style="text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 10px;">Web Links Vault</h2>
-            <p style="text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px;">Bấm chọn một liên kết trang web ở danh sách bên trái để xem chi tiết, chỉnh sửa hoặc mở liên kết đó trực tiếp.</p>
-            <div class="study-tips" style="border-left: 3px solid #ec4899; background: rgba(236, 72, 153, 0.05); padding: 15px; border-radius: 0 var(--radius) var(--radius) 0;">
-              <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #ec4899;">💡 Hướng dẫn sử dụng:</h4>
-              <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--text); display: flex; flex-direction: column; gap: 8px;">
-                <li><strong>Thêm nhanh:</strong> Điền Tên trang web, Link và chọn Kỹ năng phân loại rồi bấm <strong>Lưu lại</strong>.</li>
-                <li><strong>Nhấn để mở:</strong> Trong danh sách hoặc màn hình chi tiết, bạn chỉ cần bấm nút mở để ứng dụng tự động tải trang web trên trình duyệt mặc định.</li>
-                <li><strong>Chỉnh sửa/Xóa:</strong> Chọn trang web cần thay đổi và sử dụng các nút thao tác tương ứng.</li>
+            <p
+              style="text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px;">
+              Bấm chọn một liên kết trang web ở danh sách bên trái để xem chi tiết, chỉnh sửa hoặc mở liên kết đó trực
+              tiếp.</p>
+            <div class="study-tips"
+              style="border-left: 3px solid #ec4899; background: rgba(236, 72, 153, 0.05); padding: 15px; border-radius: 0 var(--radius) var(--radius) 0;">
+              <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #ec4899;">💡 Hướng dẫn sử dụng:
+              </h4>
+              <ul
+                style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--text); display: flex; flex-direction: column; gap: 8px;">
+                <li><strong>Thêm nhanh:</strong> Điền Tên trang web, Link và chọn Kỹ năng phân loại rồi bấm <strong>Lưu
+                    lại</strong>.</li>
+                <li><strong>Nhấn để mở:</strong> Trong danh sách hoặc màn hình chi tiết, bạn chỉ cần bấm nút mở để ứng
+                  dụng tự động tải trang web trên trình duyệt mặc định.</li>
+                <li><strong>Chỉnh sửa/Xóa:</strong> Chọn trang web cần thay đổi và sử dụng các nút thao tác tương ứng.
+                </li>
               </ul>
             </div>
           </div>
 
           <!-- Detail View State -->
           <div id="speakingDetailState" class="vault-detail-state" style="display: none;">
-            <div class="detail-header" style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
+            <div class="detail-header"
+              style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
               <div class="detail-title-block">
-                <span id="detailSpeakCategory" class="skill-badge" style="background: rgba(236, 72, 153, 0.2); color: #f472b6; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;">🌐 Web Link</span>
-                <h2 id="detailSpeakTitle" style="margin-top: 8px; font-size: 20px; font-weight: 700; color: #fff;">IELTS Online Tests</h2>
-                <div class="detail-date" id="detailSpeakDate" style="color: var(--muted); font-size: 12px; margin-top: 6px;">📅 Ngày lưu: 06/07/2026</div>
+                <span id="detailSpeakCategory" class="skill-badge"
+                  style="background: rgba(236, 72, 153, 0.2); color: #f472b6; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;">🌐
+                  Web Link</span>
+                <h2 id="detailSpeakTitle" style="margin-top: 8px; font-size: 20px; font-weight: 700; color: #fff;">IELTS
+                  Online Tests</h2>
+                <div class="detail-date" id="detailSpeakDate"
+                  style="color: var(--muted); font-size: 12px; margin-top: 6px;">📅 Ngày lưu: 06/07/2026</div>
                 <div class="detail-date" style="margin-top: 15px; font-size: 13px;">
-                  🔗 Liên kết: <a href="#" id="detailSpeakLink" style="color: #f472b6; text-decoration: underline; font-weight: bold; cursor: pointer; word-break: break-all;"></a>
+                  🔗 Liên kết: <a href="#" id="detailSpeakLink"
+                    style="color: #f472b6; text-decoration: underline; font-weight: bold; cursor: pointer; word-break: break-all;"></a>
                 </div>
               </div>
             </div>
 
             <div class="detail-actions" style="margin-top: auto; display: flex; gap: 10px; justify-content: flex-end;">
-              <button id="btnOpenSpeakLink" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); width: auto; padding: 0 20px; font-weight: bold; height: 38px; border-radius: 8px;">🌐 Mở Link Trên Trình Duyệt</button>
-              <button id="btnEditSpeakLink" class="btn-modal btn-cancel" style="height: 38px; border-radius: 8px;">✏️ Chỉnh sửa</button>
-              <button id="btnDeleteSpeakLink" class="btn-modal btn-delete-red" style="height: 38px; border-radius: 8px;">🗑 Xóa trang web</button>
+              <button id="btnOpenSpeakLink" class="btn-modal btn-confirm"
+                style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); width: auto; padding: 0 20px; font-weight: bold; height: 38px; border-radius: 8px;">🌐
+                Mở Link Trên Trình Duyệt</button>
+              <button id="btnEditSpeakLink" class="btn-modal btn-cancel" style="height: 38px; border-radius: 8px;">✏️
+                Chỉnh sửa</button>
+              <button id="btnDeleteSpeakLink" class="btn-modal btn-delete-red"
+                style="height: 38px; border-radius: 8px;">🗑 Xóa trang web</button>
             </div>
           </div>
         </div>
@@ -677,430 +803,886 @@
     <div id="paneVideoChallenge" class="tab-pane">
       <div class="vault-layout">
         <!-- Sidebar: Projects & Setup -->
-        <div class="vault-sidebar" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px;">
-          <button id="btnNewVideoProject" class="btn-primary-glow" style="width: 100%;">+ Tạo dự án 100 Ngày mới</button>
-          
+        <div class="vault-sidebar"
+          style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px;">
+          <button id="btnNewVideoProject" class="btn-primary-glow" style="width: 100%;">+ Tạo dự án 100 Ngày
+            mới</button>
+
           <!-- Projects List -->
           <div class="search-filter-box" style="margin: 0; max-height: 120px; overflow-y: auto; padding: 10px;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--purple2); text-transform: uppercase; display: block; margin-bottom: 6px;">📋 Danh sách dự án</span>
+            <span
+              style="font-size: 11px; font-weight: 700; color: var(--purple2); text-transform: uppercase; display: block; margin-bottom: 6px;">📋
+              Danh sách dự án</span>
             <ul id="videoProjectList" class="ielts-list" style="max-height: 80px; overflow-y: auto;">
               <!-- Dynamically populated projects list -->
             </ul>
           </div>
 
           <!-- Project Settings Form -->
-          <div class="search-filter-box" id="videoProjectFormContainer" style="display: none; flex-direction: column; gap: 8px; margin: 0; border-color: rgba(139, 92, 246, 0.2); overflow-y: auto; flex: 1; padding: 12px; scrollbar-width: thin;">
-            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: var(--purple2); text-transform: uppercase; text-align: center;">⚙️ Cấu hình dự án</h4>
-            
+          <div class="search-filter-box" id="videoProjectFormContainer"
+            style="display: none; flex-direction: column; gap: 8px; margin: 0; border-color: rgba(139, 92, 246, 0.2); overflow-y: auto; flex: 1; padding: 12px; scrollbar-width: thin;">
+            <h4
+              style="margin: 0 0 4px 0; font-size: 12px; color: var(--purple2); text-transform: uppercase; text-align: center;">
+              ⚙️ Cấu hình dự án</h4>
+
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjName" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Tên dự án</label>
-              <input type="text" id="videoProjName" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Ví dụ: Lập trình 100 ngày..." />
+              <label for="videoProjName"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Tên
+                dự án</label>
+              <input type="text" id="videoProjName" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;"
+                placeholder="Ví dụ: Lập trình 100 ngày..." />
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjTopic" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Chủ đề chính</label>
-              <input type="text" id="videoProjTopic" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Nấu ăn, học JS, v.v." />
+              <label for="videoProjTopic"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Chủ
+                đề chính</label>
+              <input type="text" id="videoProjTopic" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;"
+                placeholder="Nấu ăn, học JS, v.v." />
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjBudget" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Tổng ngân sách (VND)</label>
-              <input type="number" id="videoProjBudget" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Ví dụ: 1000000" />
+              <label for="videoProjBudget"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Tổng
+                ngân sách (VND)</label>
+              <input type="number" id="videoProjBudget" class="inp"
+                style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Ví dụ: 1000000" />
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjSources" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Nguồn tài nguyên / Các chủ đề làm được</label>
-              <textarea id="videoProjSources" class="inp" style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;" placeholder="Source video có sẵn..."></textarea>
+              <label for="videoProjSources"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Nguồn
+                tài nguyên / Các chủ đề làm được</label>
+              <textarea id="videoProjSources" class="inp"
+                style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;"
+                placeholder="Source video có sẵn..."></textarea>
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjSkills" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Khả năng / Kỹ năng của tôi</label>
-              <textarea id="videoProjSkills" class="inp" style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;" placeholder="Thuyết trình tốt, edit phim cơ bản..."></textarea>
+              <label for="videoProjSkills"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Khả
+                năng / Kỹ năng của tôi</label>
+              <textarea id="videoProjSkills" class="inp"
+                style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;"
+                placeholder="Thuyết trình tốt, edit phim cơ bản..."></textarea>
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjProps" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Đạo cụ / Vật phẩm sẵn có</label>
-              <textarea id="videoProjProps" class="inp" style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;" placeholder="Điện thoại, mic, đèn led..."></textarea>
+              <label for="videoProjProps"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Đạo
+                cụ / Vật phẩm sẵn có</label>
+              <textarea id="videoProjProps" class="inp"
+                style="height: 38px; font-size: 11px; resize: none; padding: 4px 8px;"
+                placeholder="Điện thoại, mic, đèn led..."></textarea>
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjEnv" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Môi trường & Địa điểm quay</label>
-              <input type="text" id="videoProjEnv" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Phòng ngủ, quán cafe..." />
+              <label for="videoProjEnv"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Môi
+                trường & Địa điểm quay</label>
+              <input type="text" id="videoProjEnv" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;"
+                placeholder="Phòng ngủ, quán cafe..." />
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjEdit" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Cách edit video / Phần mềm dùng</label>
-              <input type="text" id="videoProjEdit" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="CapCut, Premiere..." />
+              <label for="videoProjEdit"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Cách
+                edit video / Phần mềm dùng</label>
+              <input type="text" id="videoProjEdit" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;"
+                placeholder="CapCut, Premiere..." />
             </div>
 
             <div class="form-group" style="margin-bottom: 6px;">
-              <label for="videoProjTech" style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Cách làm video tôi biết</label>
-              <input type="text" id="videoProjTech" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;" placeholder="Lồng tiếng, quay vlog..." />
+              <label for="videoProjTech"
+                style="font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Cách
+                làm video tôi biết</label>
+              <input type="text" id="videoProjTech" class="inp" style="height: 28px; font-size: 12px; padding: 0 8px;"
+                placeholder="Lồng tiếng, quay vlog..." />
             </div>
 
-            <button type="button" id="btnSaveVideoProj" class="btn-primary-glow" style="padding: 8px; font-size: 12px; margin-top: 4px; font-weight: bold;">Lưu Cấu Hình</button>
+            <button type="button" id="btnSaveVideoProj" class="btn-primary-glow"
+              style="padding: 8px; font-size: 12px; margin-top: 4px; font-weight: bold;">Lưu Cấu Hình</button>
 
             <!-- JSON Import Section -->
-            <div style="border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-              <span style="font-size: 11px; font-weight: 700; color: var(--orange); text-transform: uppercase;">🚀 Tự động điền bằng JSON</span>
-              <button type="button" id="btnCopyVideoPrompt" class="btn-primary-glow" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); padding: 8px; font-size: 11px; font-weight: bold; box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);">📋 Copy Prompt gợi ý cho AI</button>
+            <div
+              style="border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--orange); text-transform: uppercase;">🚀 Tự
+                động điền bằng JSON</span>
+              <button type="button" id="btnCopyVideoPrompt" class="btn-primary-glow"
+                style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); padding: 8px; font-size: 11px; font-weight: bold; box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);">📋
+                Copy Prompt gợi ý cho AI</button>
               <div class="form-group">
-                <label for="videoJsonInput" style="font-size: 9.5px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Dán mảng JSON của bạn vào đây:</label>
-                <textarea id="videoJsonInput" class="inp" style="height: 120px; font-family: monospace; font-size: 11px; resize: vertical; padding: 6px;" placeholder="{&#10;  &quot;name&quot;: &quot;Tên dự án...&quot;,&#10;  &quot;topic&quot;: &quot;Chủ đề...&quot;,&#10;  &quot;days&quot;: [&#10;    {&#10;      &quot;day&quot;: 1,&#10;      &quot;title&quot;: &quot;Tiêu đề...&quot;,&#10;      &quot;outline&quot;: &quot;Kịch bản chi tiết...&quot;,&#10;      &quot;cost&quot;: 0,&#10;      &quot;props&quot;: &quot;đạo cụ...&quot;,&#10;      &quot;filter&quot;: &quot;tên filter...&quot;,&#10;      &quot;sound&quot;: &quot;âm thanh...&quot;,&#10;      &quot;hook&quot;: &quot;mở đầu video...&quot;&#10;    }&#10;  ]&#10;}"></textarea>
+                <label for="videoJsonInput"
+                  style="font-size: 9.5px; font-weight: 600; color: var(--muted); margin-bottom: 2px; display: block;">Dán
+                  mảng JSON của bạn vào đây:</label>
+                <textarea id="videoJsonInput" class="inp"
+                  style="height: 120px; font-family: monospace; font-size: 11px; resize: vertical; padding: 6px;"
+                  placeholder="{&#10;  &quot;name&quot;: &quot;Tên dự án...&quot;,&#10;  &quot;topic&quot;: &quot;Chủ đề...&quot;,&#10;  &quot;days&quot;: [&#10;    {&#10;      &quot;day&quot;: 1,&#10;      &quot;title&quot;: &quot;Tiêu đề...&quot;,&#10;      &quot;outline&quot;: &quot;Kịch bản chi tiết...&quot;,&#10;      &quot;cost&quot;: 0,&#10;      &quot;props&quot;: &quot;đạo cụ...&quot;,&#10;      &quot;filter&quot;: &quot;tên filter...&quot;,&#10;      &quot;sound&quot;: &quot;âm thanh...&quot;,&#10;      &quot;hook&quot;: &quot;mở đầu video...&quot;&#10;    }&#10;  ]&#10;}"></textarea>
               </div>
-              <button type="button" id="btnLoadVideoJson" class="btn-primary-glow" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px; font-size: 11px; font-weight: bold; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">🚀 Nhập Lịch Trình 100 Ngày</button>
+              <button type="button" id="btnLoadVideoJson" class="btn-primary-glow"
+                style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px; font-size: 11px; font-weight: bold; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">🚀
+                Nhập Lịch Trình 100 Ngày</button>
             </div>
           </div>
         </div>
 
         <!-- Main Area: Grid & Days -->
-        <div class="vault-main" id="videoProjectMain" style="padding: 16px; display: flex; flex-direction: column; flex: 1; min-width: 0;">
+        <div class="vault-main" id="videoProjectMain"
+          style="padding: 16px; display: flex; flex-direction: column; flex: 1; min-width: 0;">
           <!-- Welcome / Choose Project State -->
-          <div id="videoWelcomeState" class="vault-welcome-state active" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div id="videoWelcomeState" class="vault-welcome-state active"
+            style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
             <div class="welcome-icon" style="font-size: 48px;">🎬</div>
             <h2>Hành Trình 100 Ngày Video</h2>
-            <p style="max-width: 480px; margin-top: 8px;">Tạo hoặc chọn một dự án 100 ngày từ danh sách bên trái để bắt đầu lập lịch trình, tối ưu ngân sách và theo dõi chuỗi thử thách 100 video của bạn.</p>
+            <p style="max-width: 480px; margin-top: 8px;">Tạo hoặc chọn một dự án 100 ngày từ danh sách bên trái để bắt
+              đầu lập lịch trình, tối ưu ngân sách và theo dõi chuỗi thử thách 100 video của bạn.</p>
           </div>
 
           <!-- Active Project State -->
           <div id="videoActiveState" style="display: none; flex-direction: column; flex: 1; min-height: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
               <div>
-                <h3 id="activeProjTitle" style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">Tên dự án</h3>
+                <h3 id="activeProjTitle" style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">Tên dự án
+                </h3>
                 <p id="activeProjSub" style="margin: 4px 0 0 0; font-size: 12px; color: var(--muted);">Chủ đề: --</p>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="videoProgressText" class="challenge-badge" style="background: rgba(139, 92, 246, 0.2); color: var(--purple2); border: 1px solid rgba(139, 92, 246, 0.4); font-size: 11px; padding: 4px 10px; border-radius: 99px;">Hoàn thành: 0 / 100</span>
-                <button type="button" id="btnDeleteVideoProj" class="btn-modal btn-delete-red" style="font-size: 11px; padding: 4px 10px; height: 28px; width: auto; display: inline-block; line-height: 1;">🗑 Xóa dự án</button>
+                <span id="videoProgressText" class="challenge-badge"
+                  style="background: rgba(139, 92, 246, 0.2); color: var(--purple2); border: 1px solid rgba(139, 92, 246, 0.4); font-size: 11px; padding: 4px 10px; border-radius: 99px;">Hoàn
+                  thành: 0 / 100</span>
+                <button type="button" id="btnDeleteVideoProj" class="btn-modal btn-delete-red"
+                  style="font-size: 11px; padding: 4px 10px; height: 28px; width: auto; display: inline-block; line-height: 1;">🗑
+                  Xóa dự án</button>
               </div>
             </div>
-            
+
             <!-- Progress Bar -->
-            <div class="day-bar" style="height: 10px; border-radius: 99px; margin-bottom: 16px; background: rgba(255,255,255,0.05);">
-              <div id="videoProgressFill" class="day-fill" style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, var(--purple) 0%, var(--purple2) 100%);"></div>
+            <div class="day-bar"
+              style="height: 10px; border-radius: 99px; margin-bottom: 16px; background: rgba(255,255,255,0.05);">
+              <div id="videoProgressFill" class="day-fill"
+                style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, var(--purple) 0%, var(--purple2) 100%);">
+              </div>
             </div>
 
             <!-- Days Grid -->
-            <div id="videoDaysGrid" style="flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding-right: 6px; scrollbar-width: thin; scrollbar-color: var(--purple) transparent;">
+            <div id="videoDaysGrid"
+              style="flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding-right: 6px; scrollbar-width: thin; scrollbar-color: var(--purple) transparent;">
               <!-- 100 day cards generated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Tab 6: Memorization & Learning -->
-    <div id="paneMemorize" class="tab-pane">
-      <!-- SRS Stats Dashboard Card -->
-      <div class="speaking-header-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4); color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <!-- Tab 5: TikTok Flashcard Learning -->
+    <div id="paneTiktokFlashcard" class="tab-pane">
+      <!-- Header banner -->
+      <div class="speaking-header-card"
+        style="background: linear-gradient(135deg, #ff0050 0%, #7c3aed 50%, #00f2fe 100%); border: 1px solid rgba(255, 0, 80, 0.4); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 20px; box-shadow: 0 6px 30px rgba(255, 0, 80, 0.3); color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div>
-          <h3 style="margin: 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff;">🧠 FLASHCARD & HỌC THUỘC TỪ VỰNG THÔNG MINH</h3>
-          <p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9; line-height: 1.4;">Luyện viết chữ, gõ phím, làm bài tập trắc nghiệm và ghim từ vựng lên bảng 3D.</p>
+          <h3
+            style="margin: 0; font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            🎵 FLASHCARD TIKTOK - HỌC TỪ VỰNG & CÂU QUA VIDEO</h3>
+          <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.95; line-height: 1.4;">Lưu từ/câu tự động sinh link
+            TikTok • Bấm 1-Click mở xem ngay trên trình duyệt • Lật thẻ 3D thông minh.</p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <div class="stat-bubble" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px 12px; text-align: center; min-width: 80px;">
-            <div style="font-size: 10px; color: #e2e8f0; font-weight: 600;">Cần ôn hôm nay</div>
-            <div id="memoDueCount" style="font-size: 18px; font-weight: 700; color: #fca5a5;">0</div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div class="stat-bubble"
+            style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px 14px; text-align: center; min-width: 85px;">
+            <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">Tổng số từ</div>
+            <div id="tkTotalCount" style="font-size: 20px; font-weight: 800; color: #00f2fe;">0</div>
           </div>
-          <div class="stat-bubble" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 6px 12px; text-align: center; min-width: 80px;">
-            <div style="font-size: 10px; color: #e2e8f0; font-weight: 600;">Tổng số từ</div>
-            <div id="memoTotalCount" style="font-size: 18px; font-weight: 700; color: #93c5fd;">0</div>
+          <div class="stat-bubble"
+            style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px 14px; text-align: center; min-width: 85px;">
+            <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">Cần ôn</div>
+            <div id="tkDueCount" style="font-size: 20px; font-weight: 800; color: #fca5a5;">0</div>
           </div>
         </div>
       </div>
 
-      <!-- Split Layout: Sidebar & Main Workspace -->
-      <div class="vault-layout" style="display: flex; gap: 20px; min-height: 600px;">
-        <!-- Sidebar: Add Form & List -->
-        <div class="vault-sidebar" style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px;">
-          <button id="btnNewMemorize" class="btn-primary-glow" style="width: 100%; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">+ Thêm Từ / Câu mới</button>
-          
-          <!-- Search & Filter Box -->
-          <div class="search-filter-box" style="display: flex; flex-direction: column; gap: 8px;">
-            <input type="text" id="memorizeSearch" class="inp" placeholder="🔍 Tìm từ hoặc câu..." />
-            <select id="filterMemorizeStatus" class="inp select-inp" style="height: 34px;">
+      <!-- Layout: Sidebar & Main Workspace -->
+      <div class="vault-layout" style="display: flex; gap: 20px; min-height: 580px;">
+        <!-- Sidebar -->
+        <div class="vault-sidebar"
+          style="width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px;">
+          <button id="btnTkNewWord" class="btn-primary-glow"
+            style="width: 100%; height: 42px; font-size: 13.5px; font-weight: 700; background: linear-gradient(135deg, #ff0050 0%, #7c3aed 100%); box-shadow: 0 4px 15px rgba(255,0,80,0.35);">+
+            Thêm Từ / Câu mới</button>
+
+          <!-- Search & Filter -->
+          <div class="search-filter-box"
+            style="display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 12px;">
+            <input type="text" id="tkSearchInput" class="inp" placeholder="🔍 Tìm từ hoặc câu..."
+              style="height: 34px; font-size: 12.5px;" />
+            <select id="tkFilterStatus" class="inp select-inp" style="height: 34px; font-size: 12px;">
               <option value="all">📚 Tất cả từ vựng</option>
-              <option value="due">🔴 Cần ôn hôm nay (SRS)</option>
-              <option value="learning">🟡 Đang học (Lớp 1-4)</option>
-              <option value="mastered">🟢 Đã thuộc hoàn toàn (Lớp 5)</option>
+              <option value="due">🔴 Cần ôn hôm nay</option>
+              <option value="mastered">🟢 Đã thuộc hoàn toàn</option>
             </select>
           </div>
 
-          <!-- List Container -->
-          <div class="sidebar-list-container" style="flex: 1; overflow-y: auto; max-height: 450px;">
-            <ul id="memorizeList" class="ielts-list">
+          <!-- Flashcard List -->
+          <div class="sidebar-list-container" style="flex: 1; overflow-y: auto; max-height: 460px; padding-right: 4px;">
+            <ul id="tkFlashcardList" class="ielts-list" style="list-style: none; padding: 0; margin: 0;">
               <!-- Dynamically populated -->
             </ul>
-            <div id="memorizeEmptyState" class="ielts-empty-state">
-              <div class="empty-icon">🧠</div>
-              <p>Chưa có từ vựng nào.</p>
+            <div id="tkEmptyState" class="ielts-empty-state"
+              style="display: none; padding: 30px 10px; text-align: center;">
+              <div class="empty-icon" style="font-size: 36px;">🎵</div>
+              <p style="font-size: 13px; color: var(--muted); margin-top: 8px;">Chưa có từ vựng nào.<br>Bấm "+ Thêm Từ /
+                Câu mới" để bắt đầu!</p>
             </div>
           </div>
         </div>
 
         <!-- Main Workspace -->
-        <div class="vault-main" id="memorizeMain" style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column;">
-          
-          <!-- Welcome State -->
-          <div id="memorizeWelcomeState" class="vault-welcome-state active">
-            <div class="welcome-icon" style="color: #8b5cf6; font-size: 48px; text-align: center; margin-bottom: 15px;">🧠</div>
-            <h2 style="text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 10px;">Flashcard & Học Thuộc Thông Minh</h2>
-            <p style="text-align: center; color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px;">Nhập từ hoặc câu cần học để tự động lấy ảnh minh họa, link video YouTube phát âm, từ đồng nghĩa và tham gia ôn tập đa phương thức.</p>
-            
-            <div class="study-tips" style="border-left: 3px solid #8b5cf6; background: rgba(139, 92, 246, 0.05); padding: 15px; border-radius: 0 var(--radius) var(--radius) 0;">
-              <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #a78bfa;">💡 Hướng dẫn ôn tập:</h4>
-              <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--text); display: flex; flex-direction: column; gap: 8px;">
-                <li><strong>Bảng ghim 3D:</strong> Các từ vựng lưu trữ sẽ xuất hiện dưới dạng Sticker trên bảng ghim 3D. Nhấp đúp để lật thẻ xem nghĩa hoặc di chuột kéo thả tự do.</li>
-                <li><strong>Giả lập viết tay & đánh máy:</strong> Rèn luyện phản xạ cơ tay và tốc độ gõ phím chuẩn xác.</li>
-                <li><strong>Hệ thống SRS:</strong> Học tập ngắt quãng dựa trên mức độ thuộc của bạn (Lớp 1-5). Từ vựng tự động được xếp lịch ôn tập định kỳ!</li>
-              </ul>
+        <div class="vault-main"
+          style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; min-height: 540px;">
+
+          <!-- State 1: Form Add/Edit -->
+          <div id="tkFormState" style="display: none; flex-direction: column; gap: 14px;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+              <h3 id="tkFormTitle"
+                style="font-size: 17px; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                ➕ Thêm Thẻ Flashcard Mới</h3>
+              <button type="button" id="btnTkCancelForm" class="btn-modal btn-cancel"
+                style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto;">✕ Hủy</button>
             </div>
-            
-            <!-- Quick View Wall Button -->
-            <button id="btnViewStickyWall" class="btn-primary-glow" style="margin-top: 25px; padding: 12px; font-weight: bold; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">📌 Truy cập Bảng Ghim 3D Ghi Nhớ</button>
-          </div>
 
-          <!-- Form Add/Edit Mode -->
-          <div id="memorizeFormState" class="vault-form-state" style="display: none;">
-            <h3 id="memoFormTitle" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #a78bfa;">➕ Thêm từ vựng mới</h3>
-            <form id="memorizeForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 12px;">
-              <input type="hidden" id="editMemoId" value="" />
-              
-              <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                  <label for="memoWord" style="font-size: 11px; font-weight: 600; color: var(--muted);">Từ vựng / Câu gốc</label>
+            <form id="tkFlashcardForm" style="display: flex; flex-direction: column; gap: 14px;">
+              <input type="hidden" id="tkEditId" value="" />
+
+              <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="tkWordInput" style="font-size: 11.5px; font-weight: 700; color: #a78bfa;">Từ vựng / Câu
+                    gốc *</label>
                   <div style="display: flex; gap: 6px;">
-                    <input type="text" id="memoWord" class="inp" placeholder="Ví dụ: gorgeous, I love learning English..." required style="flex: 1;" />
-                    <button type="button" id="btnAutoFetchData" class="btn-primary-glow" style="padding: 0 10px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 38px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">✨ Tải dữ liệu</button>
+                    <input type="text" id="tkWordInput" class="inp" placeholder="Ví dụ: gorgeous, break a leg..."
+                      required style="flex: 1; height: 38px;" />
+                    <button type="button" id="btnTkAutoFetch" class="btn-primary-glow"
+                      style="padding: 0 12px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 38px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">✨
+                      Tải dữ liệu</button>
                   </div>
                 </div>
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                  <label for="memoTranslation" style="font-size: 11px; font-weight: 600; color: var(--muted);">Dịch nghĩa (Việt)</label>
-                  <input type="text" id="memoTranslation" class="inp" placeholder="Ví dụ: tuyệt đẹp, Tôi yêu học tiếng Anh..." required />
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="tkTransInput" style="font-size: 11.5px; font-weight: 700; color: #34d399;">Dịch nghĩa
+                    (Tiếng Việt) *</label>
+                  <input type="text" id="tkTransInput" class="inp" placeholder="Ví dụ: tuyệt đẹp, chúc may mắn..."
+                    required style="height: 38px;" />
                 </div>
               </div>
 
-              <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                <label for="memoNotes" style="font-size: 11px; font-weight: 600; color: var(--muted);">Ghi chú / Mẹo ghi nhớ</label>
-                <textarea id="memoNotes" class="inp" style="height: 50px; resize: none;" placeholder="Mô tả mẹo liên tưởng hoặc từ đồng nghĩa tự điền..."></textarea>
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="tkNotesInput"
+                  style="font-size: 11.5px; font-weight: 700; color: #00f2fe; display: flex; align-items: center; justify-content: space-between;">
+                  <span>💡 5 Ví Dụ Speaking & Writing / Ghi chú</span>
+                  <span style="font-size: 10px; font-weight: normal; color: var(--muted);">(Tự động điền khi bấm "✨ Tải
+                    dữ liệu")</span>
+                </label>
+                <textarea id="tkNotesInput" class="inp"
+                  style="height: 85px; resize: vertical; font-size: 12px; line-height: 1.5;"
+                  placeholder="5 câu ví dụ thực tế trong Speaking và Writing sẽ tự động được điền khi bấm Tải dữ liệu..."></textarea>
               </div>
 
-              <!-- Color Picker for Sticky Note -->
-              <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Chọn màu Sticky Note</label>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <div class="color-pill active" data-color="#fef08a" style="width: 28px; height: 28px; border-radius: 50%; background: #fef08a; cursor: pointer; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>
-                  <div class="color-pill" data-color="#fbcfe8" style="width: 28px; height: 28px; border-radius: 50%; background: #fbcfe8; cursor: pointer; border: 2px solid transparent;"></div>
-                  <div class="color-pill" data-color="#bbf7d0" style="width: 28px; height: 28px; border-radius: 50%; background: #bbf7d0; cursor: pointer; border: 2px solid transparent;"></div>
-                  <div class="color-pill" data-color="#bfdbfe" style="width: 28px; height: 28px; border-radius: 50%; background: #bfdbfe; cursor: pointer; border: 2px solid transparent;"></div>
-                  <div class="color-pill" data-color="#e9d5ff" style="width: 28px; height: 28px; border-radius: 50%; background: #e9d5ff; cursor: pointer; border: 2px solid transparent;"></div>
+              <!-- TikTok Link Field with 2 Options (Option 2 Default) -->
+              <div class="form-group"
+                style="display: flex; flex-direction: column; gap: 10px; background: rgba(255, 0, 80, 0.08); border: 1px solid rgba(255, 0, 80, 0.35); border-radius: 12px; padding: 14px 16px;">
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <label
+                    style="font-size: 12.5px; font-weight: 700; color: #ff0050; display: flex; align-items: center; gap: 6px; margin: 0;">
+                    🎵 Chế độ Link TikTok:
+                  </label>
+
+                  <!-- Option 1 vs Option 2 Segmented Control (Option 2 Default) -->
+                  <div
+                    style="display: flex; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 3px; gap: 4px;">
+                    <label id="lblTkOptDirect"
+                      style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #000; cursor: pointer; padding: 5px 12px; border-radius: 6px; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); transition: all 0.2s; user-select: none;">
+                      <input type="radio" name="tkLinkType" id="tkOptDirect" value="direct" checked
+                        style="display: none;" />
+                      🎬 Option 2: Link 1 Video cụ thể (Mặc định)
+                    </label>
+                    <label id="lblTkOptSearch"
+                      style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 5px 12px; border-radius: 6px; background: transparent; transition: all 0.2s; user-select: none;">
+                      <input type="radio" name="tkLinkType" id="tkOptSearch" value="search" style="display: none;" />
+                      🔍 Option 1: Tìm kiếm tự động (Search)
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Saved Music Dropdown & Quick Selector (Option 2) -->
+                <div id="tkMusicHistoryRow"
+                  style="display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; background: rgba(0,0,0,0.25); border: 1px dashed rgba(0, 242, 254, 0.35); border-radius: 8px; padding: 6px 10px;">
+                  <span
+                    style="font-size: 11.5px; font-weight: 700; color: #00f2fe; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+                    🎶 Nhạc đã lưu:
+                  </span>
+                  <select id="tkMusicHistorySelect" class="inp"
+                    style="flex: 1; min-width: 130px; height: 32px; font-size: 11.5px; font-weight: 600; cursor: pointer; background: #1a1728; border-color: rgba(0, 242, 254, 0.4); color: #fff;">
+                    <!-- Dynamically populated from saved music list -->
+                  </select>
+                  <button type="button" id="btnTkAddMusicBatch" class="btn-primary-glow"
+                    style="padding: 0 10px; font-size: 11px; font-weight: 700; height: 32px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); color: #34d399; white-space: nowrap;"
+                    title="Thêm 1 hoặc nhiều link nhạc TikTok mới">➕ Thêm Link</button>
+                  <button type="button" id="btnTkEditMusic" class="btn-primary-glow"
+                    style="padding: 0 8px; font-size: 11px; font-weight: 700; height: 32px; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4); color: #00f2fe; white-space: nowrap;"
+                    title="Sửa tên bài hát đang chọn">✏️ Sửa Tên</button>
+                  <button type="button" id="btnTkDeleteMusic" class="btn-primary-glow"
+                    style="padding: 0 8px; font-size: 11px; font-weight: 700; height: 32px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; white-space: nowrap;"
+                    title="Xóa bài hát đang chọn">🗑</button>
+                </div>
+
+                <!-- Dynamic Hint Text -->
+                <div id="tkLinkHintText"
+                  style="font-size: 11.5px; color: #00f2fe; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                  🎬 <strong>Option 2</strong>: Dán link video hoặc link nhạc TikTok (Tự lưu nhạc & bốc video ngẫu
+                  nhiên).
+                </div>
+
+                <!-- Input Row -->
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <input type="text" id="tkUrlInput" class="inp"
+                    placeholder="Dán link 1 video cụ thể hoặc link nhạc TikTok..."
+                    style="flex: 1; min-width: 240px; height: 38px; border-color: rgba(255, 0, 80, 0.4);" />
+                  <button type="button" id="btnTkExtractMusic" class="btn-primary-glow"
+                    style="padding: 0 12px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 38px; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); color: #000;"
+                    title="Tự động vào trang nhạc lấy 1 video ngẫu nhiên">🎬 Tải Video từ Link Nhạc</button>
+                  <button type="button" id="btnTkPasteClipboard" class="btn-primary-glow"
+                    style="padding: 0 12px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;"
+                    title="Dán link video từ clipboard">📋 Dán Link</button>
+                  <button type="button" id="btnTkGenUrl" class="btn-primary-glow"
+                    style="padding: 0 12px; font-size: 11px; font-weight: bold; width: auto; white-space: nowrap; height: 38px; background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); color: #fff;"
+                    title="Sinh link tìm kiếm theo từ">🎵 Tìm theo từ</button>
                 </div>
               </div>
 
-              <!-- Synonyms & Online search preview area -->
-              <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; margin-top: 5px;">
-                <!-- Synonyms and YouTube -->
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Từ đồng nghĩa (Tự lấy từ Datamuse)</label>
-                    <input type="text" id="memoSynonyms" class="inp" placeholder="Chờ tìm từ đồng nghĩa..." readonly style="background: rgba(0,0,0,0.25);" />
-                  </div>
-                  <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Video phát âm YouTube</label>
-                    <select id="memoYoutubeSelect" class="inp select-inp" style="height: 38px;">
-                      <option value="">-- Chọn video YouTube nhúng --</option>
-                    </select>
-                  </div>
-                </div>
-                <!-- Images Grid Select -->
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
-                  <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Chọn ảnh minh họa online (Unsplash)</label>
-                  <div id="memoImageSearchGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; height: 90px; border: 1px solid var(--border); border-radius: 8px; padding: 6px; background: rgba(0,0,0,0.2); overflow-y: auto;">
-                    <span style="grid-column: span 4; font-size: 11px; color: var(--muted); text-align: center; line-height: 75px;">Nhập từ vựng và bấm Tải dữ liệu để tìm ảnh...</span>
-                  </div>
-                  <input type="hidden" id="memoSelectedImageUrl" value="" />
-                </div>
-              </div>
-
-              <div class="form-actions" style="margin-top: 10px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" id="btnCancelMemorize" class="btn-modal btn-cancel">Hủy bỏ</button>
-                <button type="submit" id="btnSaveMemorize" class="btn-modal btn-confirm" style="background: var(--purple);">Lưu từ vựng</button>
+              <!-- Form Buttons -->
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                <button type="button" id="btnTkCancelSave" class="btn-modal btn-cancel"
+                  style="height: 38px; padding: 0 18px;">Hủy bỏ</button>
+                <button type="button" id="btnTkSaveWord" class="btn-modal btn-confirm"
+                  style="height: 38px; padding: 0 24px; font-weight: 700; background: linear-gradient(135deg, #ff0050 0%, #7c3aed 100%);">💾
+                  Lưu Thẻ Flashcard</button>
               </div>
             </form>
           </div>
 
-          <!-- Detail View & Practice Center Mode -->
-          <div id="memorizeDetailState" class="vault-detail-state" style="display: none; flex-direction: column; flex: 1;">
-            <!-- Vocabulary Card Header -->
-            <div class="detail-header" id="memoDetailHeader" style="border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; margin-bottom: 15px; color: #1e293b;">
-              <div>
-                <h2 id="lblDetailWord" style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; color: inherit;">Gorgeous</h2>
-                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                  <span id="lblDetailTranslation" style="font-size: 14px; font-weight: 600; color: inherit; opacity: 0.85;">tuyệt đẹp</span>
-                  <span class="badge" id="lblDetailSrsBadge" style="background: rgba(0,0,0,0.15); color: inherit; font-size: 9.5px; padding: 2px 8px; border-radius: 99px;">Lớp 1</span>
-                </div>
+          <!-- State 2: 3D Flashcard Player View -->
+          <div id="tkPlayerState"
+            style="display: flex; flex-direction: column; flex: 1; align-items: center; justify-content: center; gap: 18px;">
+
+            <!-- Top Controls -->
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 580px; padding: 0 4px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" id="tkPlayerIndexBadge"
+                  style="background: rgba(255, 0, 80, 0.2); border: 1px solid rgba(255, 0, 80, 0.4); color: #00f2fe; font-weight: 700; font-size: 12px; padding: 4px 12px; border-radius: 99px;">Thẻ
+                  1 / 1</span>
+                <span class="badge" id="tkPlayerSrsBadge"
+                  style="background: rgba(255,255,255,0.08); color: var(--text); font-size: 11.5px; padding: 4px 10px; border-radius: 99px;">Lớp
+                  1</span>
               </div>
-              
-              <!-- Speak audio controller -->
-              <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">
-                <button id="btnSpeakWord" style="background: transparent; border: none; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; color: inherit; font-weight: bold;">🔊 Đọc</button>
-                <div style="height: 14px; width: 1px; background: rgba(0,0,0,0.2);"></div>
-                <select id="selectVoiceSpeed" style="background: transparent; border: none; font-size: 11px; cursor: pointer; color: inherit; font-weight: 600; outline: none;">
-                  <option value="1.0" selected>1.0x</option>
-                  <option value="0.8">0.8x</option>
-                  <option value="0.6">0.6x</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Detail Grid Layout -->
-            <div class="form-grid-2" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 15px; margin-bottom: 15px;">
-              <!-- Image & Synonyms Info -->
-              <div style="display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; padding: 15px;">
-                <div style="display: flex; gap: 12px; align-items: center; min-height: 110px;">
-                  <img id="imgDetailImage" src="" alt="Minh họa" style="width: 140px; height: 100px; object-fit: cover; border-radius: 8px; background: rgba(255,255,255,0.05); display: none; border: 1px solid var(--border);" />
-                  <div style="flex: 1;">
-                    <strong style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Mẹo ghi nhớ / Ghi chú:</strong>
-                    <p id="lblDetailNotes" style="font-size: 13px; color: var(--text); line-height: 1.4; margin-top: 4px; white-space: pre-line;">Chưa có ghi chú nào.</p>
-                  </div>
-                </div>
-                
-                <!-- Synonyms row -->
-                <div id="lblDetailSynonymsBox" style="border-top: 1px dashed var(--border); padding-top: 8px; font-size: 12.5px;">
-                  <strong style="color: var(--muted);">Từ đồng nghĩa:</strong> <span id="lblDetailSynonyms" style="color: #60a5fa; font-weight: 600;">đang cập nhật...</span>
-                </div>
-              </div>
-
-              <!-- YouTube Pronunciation Embed -->
-              <div style="background: rgba(0,0,0,0.15); border: 1px solid var(--border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: center; height: 160px; position: relative; overflow: hidden;">
-                <iframe id="ytDetailIframe" style="width: 100%; height: 100%; border: none; border-radius: 6px; display: none;" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                <div id="ytDetailPlaceholder" style="text-align: center; font-size: 12px; color: var(--muted); padding: 20px;">
-                  <span>🎬 Không có video YouTube đính kèm từ này.</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Interactive Training Nav Tabs -->
-            <div class="tab-nav" style="border-bottom: 1px solid var(--border); margin-bottom: 12px; padding-bottom: 2px;">
-              <button class="tab-btn active" id="btnSubTabStickyWall" data-subtab="sticky">📌 Bảng 3D</button>
-              <button class="tab-btn" id="btnSubTabHandwriting" data-subtab="writing">✍️ Luyện viết</button>
-              <button class="tab-btn" id="btnSubTabTyping" data-subtab="typing">⌨️ Luyện gõ</button>
-              <button class="tab-btn" id="btnSubTabQuizzes" data-subtab="quiz">📝 Bài tập</button>
-              <button class="tab-btn" id="btnSubTabAi" data-subtab="ai">✨ Tạo câu AI</button>
-            </div>
-
-            <!-- Training Panels -->
-            <div style="flex: 1; display: flex; flex-direction: column; min-height: 280px; position: relative;">
-              
-              <!-- SUBTAB 1: 3D Sticky Note Wall -->
-              <div class="sub-pane active" id="subPaneSticky" style="flex: 1; display: flex; flex-direction: column;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span style="font-size: 11px; color: var(--muted);">Click đúp để lật xem mặt sau • Di chuột để kéo thả sticker dán lên tường</span>
-                  <button id="btnClearStickyPositions" style="background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 10.5px; border-radius: 4px; padding: 2px 8px; cursor: pointer;">🔄 Khôi phục vị trí</button>
-                </div>
-                <!-- Interactive 3D Corkboard Wall -->
-                <div id="stickyNoteWall" class="corkboard-wall" style="flex: 1; min-height: 240px; border: 1px solid var(--border); border-radius: var(--radius); position: relative; overflow: hidden; background: linear-gradient(135deg, #1e1b4b 0%, #111029 100%);">
-                  <!-- Rendered dynamically -->
-                </div>
-              </div>
-
-              <!-- SUBTAB 2: Handwriting Practice Canvas -->
-              <div class="sub-pane" id="subPaneWriting" style="display: none; flex-direction: column; gap: 10px; flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 12.5px; color: var(--text);">Hãy dùng chuột / bút vẽ tập tô theo chữ mẫu mờ dưới đây:</span>
-                  <div style="display: flex; gap: 8px;">
-                    <button type="button" id="btnToggleTraceFont" class="btn-modal" style="height: 28px; font-size: 11px; padding: 0 10px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;">👁️ Ẩn/Hiện chữ mẫu</button>
-                    <button type="button" id="btnClearWritingCanvas" class="btn-modal btn-cancel" style="height: 28px; font-size: 11px; padding: 0 10px; width: auto;">🧹 Xóa nét vẽ</button>
-                  </div>
-                </div>
-                
-                <!-- Lined Notebook Page Canvas Area -->
-                <div style="position: relative; border: 2px solid var(--purple); border-radius: 8px; height: 210px; overflow: hidden; background: #fff;">
-                  <!-- Faded background trace font -->
-                  <div id="lblCanvasTraceWord" style="position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; font-size: 48px; font-weight: 400; color: rgba(0,0,0,0.07); pointer-events: none; letter-spacing: 2px; text-transform: uppercase;">
-                    GORGEOUS
-                  </div>
-                  <!-- The drawing Canvas -->
-                  <canvas id="handwritingCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; z-index: 2;"></canvas>
-                </div>
-              </div>
-
-              <!-- SUBTAB 3: Typing Game -->
-              <div class="sub-pane" id="subPaneTyping" style="display: none; flex-direction: column; gap: 12px; flex: 1; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 20px;">
-                <div style="text-align: center; margin-bottom: 8px;">
-                  <span style="font-size: 13px; color: var(--muted);">Nhấp chuột vào ô dưới và bắt đầu gõ lại từ vựng cho chính xác:</span>
-                </div>
-                <!-- Drill display block -->
-                <div id="typingDrillDisplay" style="font-family: 'Courier New', monospace; font-size: 32px; font-weight: 700; letter-spacing: 4px; display: flex; gap: 4px; min-height: 48px; align-items: center;">
-                  <!-- Spanned characters with active colors populated dynamically -->
-                </div>
-                <input type="text" id="typingGameInput" class="inp" placeholder="Gõ tại đây..." style="max-width: 320px; text-align: center; font-size: 18px; height: 42px; border-color: var(--purple); background: rgba(0,0,0,0.4);" autocomplete="off" />
-                <div style="display: flex; gap: 20px; font-size: 12px; color: var(--muted); margin-top: 6px;">
-                  <span>Độ chính xác: <strong id="typingAccuracyText" style="color: var(--green);">100%</strong></span>
-                  <span>Thời gian: <strong id="typingSpeedText" style="color: var(--purple2);">0.0s</strong></span>
-                </div>
-              </div>
-
-              <!-- SUBTAB 4: Quizzes & Exercises -->
-              <div class="sub-pane" id="subPaneQuiz" style="display: none; flex-direction: column; gap: 12px; flex: 1; align-items: center; justify-content: center; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
-                <!-- Quiz container -->
-                <div id="quizContainer" style="width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 12px;">
-                  <!-- Question header -->
-                  <div style="text-align: center;">
-                    <span class="badge" id="lblQuizTypeBadge" style="background: rgba(139,92,246,0.2); color: var(--purple2); font-size: 10px;">TRẮC NGHIỆM</span>
-                    <h4 id="lblQuizQuestion" style="margin-top: 8px; font-size: 15px; color: #fff;">Từ này có nghĩa tiếng Việt là gì?</h4>
-                  </div>
-                  
-                  <!-- MCQ Options -->
-                  <div id="quizMcqOptions" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- Options buttons rendered dynamically -->
-                  </div>
-
-                  <!-- Scramble word layout -->
-                  <div id="quizScrambleBox" style="display: none; flex-direction: column; align-items: center; gap: 12px;">
-                    <div id="quizScrambledLetters" style="font-size: 24px; font-weight: 700; letter-spacing: 6px; color: var(--orange); background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 8px;">O-G-E-G-O-U-R-S</div>
-                    <input type="text" id="quizScrambleInput" class="inp" placeholder="Nhập đáp án sắp xếp lại..." style="max-width: 280px; text-align: center;" />
-                  </div>
-
-                  <!-- Quiz Feedback & Action Button -->
-                  <div id="quizFeedback" style="text-align: center; font-size: 13px; font-weight: bold; min-height: 20px;"></div>
-                  <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button type="button" id="btnSubmitQuiz" class="btn-primary-glow" style="padding: 0 16px; height: 32px; font-size: 12px; width: auto;">Kiểm tra</button>
-                    <button type="button" id="btnNextQuiz" class="btn-modal btn-confirm" style="padding: 0 16px; height: 32px; font-size: 12px; width: auto; display: none;">Tiếp tục</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- SUBTAB 5: AI Context Builder -->
-              <div class="sub-pane" id="subPaneAi" style="display: none; flex-direction: column; gap: 12px; flex: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 12.5px; color: var(--muted);">Tạo câu ví dụ giao tiếp chân thực bằng AI Gemini:</span>
-                  <button type="button" id="btnGenerateAiSentences" class="btn-primary-glow" style="padding: 0 12px; font-size: 11px; font-weight: bold; width: auto; height: 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✨ Sinh 3 Câu Ví Dụ</button>
-                </div>
-                
-                <!-- AI Output box -->
-                <div id="memoAiOutput" style="flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: rgba(0,0,0,0.3); overflow-y: auto; font-size: 13px; line-height: 1.5; color: var(--text);">
-                  <div style="text-align: center; color: var(--muted); margin-top: 30px;">
-                    <span>Bấm nút phía trên để bắt đầu sinh câu ví dụ.<br>(Yêu cầu bạn đã thiết lập Gemini API Key trong tab IELTS).</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Detail Actions & SRS Review Feedback -->
-            <div class="detail-actions" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; gap: 15px; flex-wrap: wrap;">
-              <!-- SRS Rating buttons -->
-              <div style="display: flex; flex-direction: column; gap: 4px;">
-                <span style="font-size: 10px; color: var(--muted); font-weight: bold;">Kết quả ôn tập của bạn (Cập nhật lịch SRS):</span>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="btn-srs-rate" data-rate="1" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🔴 Quên</button>
-                  <button type="button" class="btn-srs-rate" data-rate="3" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245,158,11,0.3); color: #fde047; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🟡 Nhớ mang máng</button>
-                  <button type="button" class="btn-srs-rate" data-rate="5" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16,185,129,0.3); color: #86efac; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🟢 Nhớ tốt</button>
-                </div>
-              </div>
-              
               <div style="display: flex; gap: 8px;">
-                <button id="btnEditMemorize" class="btn-modal btn-cancel" style="height: 36px;">✏️ Sửa từ</button>
-                <button id="btnDeleteMemorize" class="btn-modal btn-delete-red" style="height: 36px;">🗑 Xóa từ</button>
+                <button type="button" id="btnTkPlayerShuffle" class="btn-modal"
+                  style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;"
+                  title="Trộn ngẫu nhiên danh sách">🎲 Trộn thẻ</button>
+                <button type="button" id="btnTkPlayerEdit" class="btn-modal"
+                  style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;">✏️
+                  Sửa</button>
+                <button type="button" id="btnTkPlayerDelete" class="btn-modal btn-delete-red"
+                  style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto;">🗑 Xóa</button>
               </div>
             </div>
 
+            <!-- Big 3D Flip Flashcard -->
+            <div id="tk3dCardWrap" class="flashcard-3d-wrap"
+              style="width: 100%; max-width: 580px; height: 260px; perspective: 1000px; cursor: pointer;"
+              title="Nhấp vào thẻ để lật xem mặt sau">
+              <div id="tk3dCardInner" class="flashcard-3d-inner"
+                style="width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; box-shadow: 0 12px 35px rgba(0,0,0,0.6);">
+
+                <!-- FRONT OF CARD -->
+                <div class="flashcard-face"
+                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; padding: 22px 26px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(255, 0, 80, 0.35); background: linear-gradient(145deg, #1e1035 0%, #110d24 100%); box-sizing: border-box;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span
+                      style="font-size: 11.5px; font-weight: 700; color: #c084fc; letter-spacing: 1px; text-transform: uppercase;">MẶT
+                      TRƯỚC (TỪ / CÂU GỐC)</span>
+                    <button type="button" id="btnTkSpeakFront" class="ctrl-btn"
+                      style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;"
+                      title="Phát âm (Phím S)">🔊</button>
+                  </div>
+
+                  <div style="text-align: center; margin: auto 0;">
+                    <h2 id="lblTkWord"
+                      style="margin: 0; font-size: 32px; font-weight: 800; color: #fff; letter-spacing: 0.5px; word-break: break-word;">
+                      Word</h2>
+                    <p style="margin: 8px 0 0 0; font-size: 12.5px; color: var(--muted);">Nhấp vào thẻ hoặc bấm phím
+                      <kbd
+                        style="background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 4px; color: #fff; font-size: 11px; border: 1px solid rgba(255,255,255,0.2);">Space</kbd>
+                      để lật xem nghĩa
+                    </p>
+                  </div>
+
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                    <span style="font-size: 11.5px; color: #00f2fe; display: flex; align-items: center; gap: 4px;">🎵
+                      Link TikTok tự động gắn</span>
+                    <button type="button" id="btnTkOpenTiktokFront" class="btn-primary-glow"
+                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 34px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
+                      title="Mở video TikTok ngay (Phím T)">🎵 Xem Video TikTok (T)</button>
+                  </div>
+                </div>
+
+                <!-- BACK OF CARD -->
+                <div class="flashcard-face"
+                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); border-radius: 16px; padding: 22px 26px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(52, 211, 153, 0.4); background: linear-gradient(145deg, #062b22 0%, #0f172a 100%); box-sizing: border-box;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span
+                      style="font-size: 11.5px; font-weight: 700; color: #34d399; letter-spacing: 1px; text-transform: uppercase;">MẶT
+                      SAU (DỊCH NGHĨA & CHI TIẾT)</span>
+                    <span id="lblTkBackWordMini" style="font-size: 13px; color: #a7f3d0; font-weight: 600;">Word</span>
+                  </div>
+
+                  <div
+                    style="display: flex; flex-direction: column; justify-content: center; margin: auto 0; text-align: center;">
+                    <h3 id="lblTkTrans"
+                      style="margin: 0 0 6px 0; font-size: 24px; font-weight: 800; color: #6ee7b7; word-break: break-word;">
+                      Dịch nghĩa tiếng Việt</h3>
+                    <p id="lblTkNotes"
+                      style="margin: 0; font-size: 13.5px; color: #e2e8f0; line-height: 1.5; max-height: 55px; overflow-y: auto; white-space: pre-line;">
+                      Ghi chú ngữ cảnh...</p>
+                  </div>
+
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                    <button type="button" id="btnTkFlipBack" class="btn-modal btn-cancel"
+                      style="height: 34px; font-size: 11.5px; padding: 0 12px; width: auto;">🔄 Lật lại mặt
+                      trước</button>
+                    <button type="button" id="btnTkOpenTiktokBack" class="btn-primary-glow"
+                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 34px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
+                      title="Mở video TikTok ngay (Phím T)">🎵 Xem Video TikTok (T)</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Bottom Navigation Controls -->
+            <div
+              style="display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; max-width: 580px; flex-wrap: wrap;">
+              <button type="button" id="btnTkPrev" class="btn-primary-glow"
+                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">◀
+                Thẻ trước (←)</button>
+              <button type="button" id="btnTkFlipToggle" class="btn-primary-glow"
+                style="padding: 0 24px; height: 38px; font-size: 13.5px; font-weight: 800; width: auto; background: linear-gradient(135deg, #ff0050 0%, #7c3aed 100%); box-shadow: 0 0 16px rgba(255,0,80,0.4);">🔄
+                Lật thẻ (Space)</button>
+              <button type="button" id="btnTkNext" class="btn-primary-glow"
+                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">Thẻ
+                sau ▶ (→)</button>
+            </div>
+
+            <!-- SRS Rating Row -->
+            <div
+              style="display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.25); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px;">
+              <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">Mức độ ghi nhớ:</span>
+              <button type="button" class="btn-tk-rate" data-rate="1"
+                style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239,68,68,0.35); color: #fca5a5; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🔴
+                Quên (Lớp 1)</button>
+              <button type="button" class="btn-tk-rate" data-rate="3"
+                style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245,158,11,0.35); color: #fde047; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🟡
+                Nhớ mang máng (Lớp 2)</button>
+              <button type="button" class="btn-tk-rate" data-rate="5"
+                style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16,185,129,0.35); color: #86efac; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">🟢
+                Đã thuộc (Lớp 5)</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: 1000 Comment Vault -->
+    <div id="paneCommentsVault" class="tab-pane">
+      <!-- Header banner -->
+      <div class="speaking-header-card"
+        style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #ec4899 100%); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 6px 30px rgba(99, 102, 241, 0.3); color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h3
+            style="margin: 0; font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            💬 THỬ THÁCH 1000 COMMENT - KHO BÌNH LUẬN ĐA KÊNH</h3>
+          <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.95; line-height: 1.4;">Lưu trữ, sáng tạo & quản lý 1000
+            mẫu bình luận đỉnh cao • 1-Click Copy • Tăng tương tác TikTok, FB, YouTube & IELTS.</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div class="stat-bubble"
+            style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px 14px; text-align: center; min-width: 90px;">
+            <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">Mục tiêu 1000</div>
+            <div id="cmTotalCount" style="font-size: 20px; font-weight: 800; color: #38bdf8;">0 / 1000</div>
+          </div>
+          <div class="stat-bubble"
+            style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px 14px; text-align: center; min-width: 80px;">
+            <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">Đã dùng</div>
+            <div id="cmUsedCount" style="font-size: 20px; font-weight: 800; color: #a7f3d0;">0</div>
+          </div>
+          <div class="stat-bubble"
+            style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 6px 14px; text-align: center; min-width: 80px;">
+            <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">Yêu thích</div>
+            <div id="cmFavCount" style="font-size: 20px; font-weight: 800; color: #fde047;">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestone progress card -->
+      <div
+        style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span
+            style="font-size: 12px; font-weight: 700; color: var(--purple2); display: flex; align-items: center; gap: 6px;">
+            🎯 Tiến độ chinh phục 1000 Comment:
+          </span>
+          <span id="cmProgressPct" style="font-size: 12px; font-weight: 800; color: #38bdf8;">0%</span>
+        </div>
+        <div class="day-bar" style="height: 10px; border-radius: 99px; background: rgba(255,255,255,0.06); margin: 0;">
+          <div id="cmProgressFill" class="day-fill"
+            style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, #0ea5e9 0%, #6366f1 50%, #ec4899 100%);">
+          </div>
+        </div>
+        <div
+          style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); padding: 0 2px;">
+          <span>0</span>
+          <span>100 (Khởi động)</span>
+          <span>250 (Tăng tốc)</span>
+          <span>500 (Bứt phá)</span>
+          <span>750 (Chuyên gia)</span>
+          <span style="color: #ec4899; font-weight: bold;">1000 🏆 (Bậc thầy)</span>
+        </div>
+      </div>
+
+      <!-- Layout: Sidebar & Main Workspace -->
+      <div class="vault-layout" style="display: flex; gap: 20px; min-height: 580px;">
+        <!-- Sidebar -->
+        <div class="vault-sidebar"
+          style="width: 330px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px;">
+          <button id="btnCmNewComment" class="btn-primary-glow"
+            style="width: 100%; height: 42px; font-size: 13.5px; font-weight: 700; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);">+
+            Thêm Bình Luận Mới</button>
+
+          <!-- Project Management Bar -->
+          <div
+            style="background: rgba(99, 102, 241, 0.12); border: 1.5px solid rgba(99, 102, 241, 0.35); border-radius: 10px; padding: 9px 12px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span
+                style="font-size: 11.5px; font-weight: 700; color: #a5b4fc; display: flex; align-items: center; gap: 5px;">
+                📁 Dự Án Đang Mở:
+              </span>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" id="btnCmNewProject" class="btn-modal"
+                  style="height: 24px; font-size: 11px; padding: 0 8px; width: auto; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 700;"
+                  title="Tạo dự án mới">+ Thêm mới</button>
+                <button type="button" id="btnCmRenameProject" class="btn-modal"
+                  style="height: 24px; font-size: 11px; padding: 0 6px; width: auto; background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: #fff;"
+                  title="Đổi tên dự án">✏️</button>
+                <button type="button" id="btnCmDeleteProject" class="btn-modal btn-delete-red"
+                  style="height: 24px; font-size: 11px; padding: 0 6px; width: auto;" title="Xóa dự án">🗑️</button>
+              </div>
+            </div>
+            <select id="cmProjectSelect" class="inp select-inp"
+              style="height: 36px; font-size: 12.5px; font-weight: 700; color: #38bdf8; background: rgba(15, 23, 42, 0.95); border-color: rgba(99, 102, 241, 0.5); cursor: pointer;">
+              <option value="proj_default">📁 Đang tải danh sách dự án...</option>
+            </select>
+          </div>
+
+          <!-- Quick actions row -->
+          <div style="display: flex; gap: 6px;">
+            <button type="button" id="btnCmPasteJsonSidebar" onclick="openTopicJsonModal()" class="btn-primary-glow"
+              style="flex: 1.2; height: 32px; font-size: 11px; font-weight: 700; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);"
+              title="Dán JSON nạp 1000 comment theo chủ đề video">📋 Dán JSON</button>
+            <button type="button" id="btnCmLoadPresets" class="btn-primary-glow"
+              style="flex: 1; height: 32px; font-size: 11px; font-weight: 700; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #a5b4fc;"
+              title="Nạp thêm bộ mẫu bình luận kinh điển">⚡ Mẫu Sẵn</button>
+            <button type="button" id="btnCmBulkImport" class="btn-primary-glow"
+              style="flex: 1; height: 32px; font-size: 11px; font-weight: 700; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8;"
+              title="Thêm nhiều bình luận cùng lúc">📥 Thêm Nhiều</button>
+            <button type="button" id="btnCmBackupRestore" class="btn-primary-glow"
+              style="flex: 0 0 34px; height: 32px; font-size: 13px; font-weight: 700; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0;"
+              title="Sao lưu / Xuất / Nhập JSON">⚙️</button>
+          </div>
+
+          <!-- Search & Filters -->
+          <div class="search-filter-box"
+            style="display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 12px;">
+            <input type="text" id="cmSearchInput" class="inp" placeholder="🔍 Tìm nội dung, tiêu đề, tag..."
+              style="height: 34px; font-size: 12.5px;" />
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <select id="cmFilterCategory" class="inp select-inp" style="height: 32px; font-size: 11.5px;">
+                <option value="all">📁 Tất cả danh mục</option>
+              </select>
+              <select id="cmFilterPlatform" class="inp select-inp" style="height: 32px; font-size: 11.5px;">
+                <option value="all">🌐 Tất cả kênh</option>
+                <option value="TikTok">🎵 TikTok</option>
+                <option value="Facebook">👥 Facebook</option>
+                <option value="YouTube">📹 YouTube</option>
+                <option value="X">🐦 X / Twitter</option>
+                <option value="Shopee">🛍️ Shopee / TMĐT</option>
+                <option value="Other">📌 Khác</option>
+              </select>
+            </div>
+            <select id="cmFilterStatus" class="inp select-inp" style="height: 32px; font-size: 11.5px;">
+              <option value="all">📜 Tất cả bình luận</option>
+              <option value="favorite">⭐ Bình luận yêu thích</option>
+              <option value="mostUsed">🔥 Hay dùng nhất</option>
+              <option value="newest">🆕 Mới thêm gần đây</option>
+            </select>
+          </div>
+
+          <!-- Comments List Container -->
+          <div class="sidebar-list-container" style="flex: 1; overflow-y: auto; max-height: 440px; padding-right: 4px;">
+            <ul id="cmCommentsList" class="ielts-list"
+              style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+              <!-- Dynamically populated -->
+            </ul>
+            <div id="cmEmptyState" class="ielts-empty-state"
+              style="display: none; padding: 30px 10px; text-align: center;">
+              <div class="empty-icon" style="font-size: 36px;">💬</div>
+              <p style="font-size: 13px; color: var(--muted); margin-top: 8px;">Chưa có bình luận nào phù hợp.<br>Bấm "+
+                Thêm Bình Luận Mới" hoặc "⚡ Nạp Mẫu Sẵn" để bắt đầu!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="vault-main"
+          style="flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; min-height: 540px;">
+
+          <!-- Mode Switcher -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+              <button type="button" id="btnCmViewDetailMode" class="btn-modal btn-confirm"
+                style="height: 30px; font-size: 11.5px; padding: 0 14px; width: auto; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">🔍
+                Xem Chi Tiết & Copy</button>
+              <button type="button" id="btnCmViewGridMode" class="btn-modal btn-cancel"
+                style="height: 30px; font-size: 11.5px; padding: 0 14px; width: auto;">🗂️ Chế độ Lưới (Copy
+                Nhanh)</button>
+              <button type="button" id="btnCmPasteJsonMain" onclick="openTopicJsonModal()" class="btn-primary-glow"
+                style="height: 30px; font-size: 11.5px; padding: 0 14px; width: auto; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.35); display: flex; align-items: center; gap: 5px;">📋
+                Dán JSON 1000 Comment (Theo Chủ Đề)</button>
+            </div>
+            <div id="cmActiveItemCountBadge" style="font-size: 11.5px; color: var(--muted); font-weight: 600;">
+              Hiển thị: 0 bình luận
+            </div>
+          </div>
+
+          <!-- State 1: Detail & Large Preview Card -->
+          <div id="cmDetailState" style="display: flex; flex-direction: column; flex: 1; gap: 16px;">
+            <div id="cmDetailEmptyPrompt"
+              style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; color: var(--muted); padding: 40px 20px;">
+              <div style="font-size: 48px; margin-bottom: 10px;">💬</div>
+              <h3 style="font-size: 17px; color: #fff; margin-bottom: 6px;">Chọn một bình luận từ danh sách</h3>
+              <p style="font-size: 13px; max-width: 420px; line-height: 1.5;">Chọn bất kỳ bình luận nào ở cột bên trái
+                để xem thẻ tương tác, bấm 1-Click Copy hoặc chỉnh sửa theo ý bạn.</p>
+            </div>
+
+            <div id="cmDetailContent" style="display: none; flex-direction: column; gap: 16px; flex: 1;">
+              <!-- Top Actions Bar -->
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  <span id="cmDetailCategoryBadge" class="challenge-badge"
+                    style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); font-size: 11.5px; padding: 3px 10px; border-radius: 99px;">Danh
+                    mục</span>
+                  <span id="cmDetailPlatformBadge" class="challenge-badge"
+                    style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); font-size: 11.5px; padding: 3px 10px; border-radius: 99px;">Platform</span>
+                  <span id="cmDetailUsedBadge" class="challenge-badge"
+                    style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 11px; padding: 3px 8px; border-radius: 99px;">Đã
+                    dùng 0 lần</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" id="btnCmToggleFav" class="btn-modal"
+                    style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto; border: 1px solid rgba(253, 224, 71, 0.4); background: rgba(253, 224, 71, 0.1); color: #fde047;"
+                    title="Yêu thích">⭐ Thích</button>
+                  <button type="button" id="btnCmSpeak" class="btn-modal"
+                    style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;"
+                    title="Đọc phát âm">🔊 Đọc</button>
+                  <button type="button" id="btnCmEdit" class="btn-modal"
+                    style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;">✏️
+                    Sửa</button>
+                  <button type="button" id="btnCmDelete" class="btn-modal btn-delete-red"
+                    style="height: 28px; font-size: 11.5px; padding: 0 10px; width: auto;">🗑 Xóa</button>
+                </div>
+              </div>
+
+              <!-- Main Preview Box (Social Media Style) -->
+              <div
+                style="background: linear-gradient(145deg, #18182f 0%, #0f172a 100%); border: 1.5px solid rgba(99, 102, 241, 0.35); border-radius: 16px; padding: 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div
+                      style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: bold; box-shadow: 0 0 12px rgba(236, 72, 153, 0.4);">
+                      💬
+                    </div>
+                    <div>
+                      <h4 id="cmDetailTitle" style="margin: 0; font-size: 15px; font-weight: 700; color: #fff;">Tiêu đề
+                        bình luận</h4>
+                      <span id="cmDetailAuthor" style="font-size: 11.5px; color: var(--muted);">@tino_comment • Sẵn sàng
+                        sử dụng</span>
+                    </div>
+                  </div>
+                  <span id="cmDetailTime" style="font-size: 11px; color: var(--muted);">Vừa cập nhật</span>
+                </div>
+
+                <!-- Comment Content Box -->
+                <div
+                  style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 18px; margin: 4px 0;">
+                  <p id="cmDetailContentText"
+                    style="margin: 0; font-size: 15.5px; font-weight: 500; color: #fff; line-height: 1.6; white-space: pre-line; word-break: break-word; user-select: text;">
+                    Nội dung bình luận sẽ hiển thị ở đây...
+                  </p>
+                  <div id="cmDetailTranslationWrap"
+                    style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); display: none;">
+                    <span
+                      style="font-size: 11px; font-weight: 700; color: #34d399; display: block; margin-bottom: 2px;">🇻🇳
+                      Nghĩa / Ghi chú:</span>
+                    <p id="cmDetailTranslationText"
+                      style="margin: 0; font-size: 13.5px; color: #a7f3d0; line-height: 1.5; font-style: italic; white-space: pre-line; user-select: text;">
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Tags & Context -->
+                <div id="cmDetailTagsWrap" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <!-- Dynamic tag pills -->
+                </div>
+
+                <div id="cmDetailContextWrap"
+                  style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #7dd3fc; line-height: 1.5; display: none;">
+                  💡 <strong>Gợi ý sử dụng:</strong> <span id="cmDetailContextText"></span>
+                </div>
+
+                <!-- Big 1-Click Copy Button -->
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                  <button type="button" id="btnCmBigCopy" class="btn-primary-glow"
+                    style="width: 100%; height: 48px; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #ec4899 100%); box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 18px;">📋</span>
+                    <span>SAO CHÉP BÌNH LUẬN NÀY (1-CLICK COPY)</span>
+                  </button>
+                  <div id="cmCopySuccessMsg"
+                    style="display: none; text-align: center; font-size: 12px; font-weight: 700; color: #34d399; animation: slideIn 0.2s ease;">
+                    ✅ Đã sao chép vào bộ nhớ tạm! Bạn có thể dán (Ctrl + V) ngay lên ứng dụng.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- State 2: Form Add/Edit -->
+          <div id="cmFormState" style="display: none; flex-direction: column; gap: 14px;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+              <h3 id="cmFormTitle"
+                style="font-size: 17px; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                ➕ Thêm Mẫu Bình Luận Mới</h3>
+              <button type="button" id="btnCmCancelForm" class="btn-modal btn-cancel"
+                style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto;">✕ Hủy</button>
+            </div>
+
+            <form id="cmCommentForm" style="display: flex; flex-direction: column; gap: 14px;">
+              <input type="hidden" id="cmEditId" value="" />
+
+              <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="cmFormTitleInput" style="font-size: 11.5px; font-weight: 700; color: #a78bfa;">Tiêu đề / Ý
+                    tưởng gợi nhớ *</label>
+                  <input type="text" id="cmFormTitleInput" class="inp"
+                    placeholder="Ví dụ: Hook xem đêm, Khen ngợi tinh tế..." required style="height: 38px;" />
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="cmFormPlatformInput" style="font-size: 11.5px; font-weight: 700; color: #38bdf8;">Nền tảng
+                    chính</label>
+                  <select id="cmFormPlatformInput" class="inp select-inp" style="height: 38px;">
+                    <option value="TikTok">🎵 TikTok</option>
+                    <option value="Facebook">👥 Facebook</option>
+                    <option value="YouTube">📹 YouTube</option>
+                    <option value="X">🐦 X / Twitter</option>
+                    <option value="Shopee">🛍️ Shopee / TMĐT</option>
+                    <option value="All">🌐 Đa nền tảng</option>
+                    <option value="Other">📌 Khác</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <label for="cmFormContentInput" style="font-size: 11.5px; font-weight: 700; color: #f43f5e;">Nội dung
+                    bình luận *</label>
+                  <button type="button" id="btnCmAiEnhance" class="btn-primary-glow"
+                    style="padding: 0 10px; font-size: 10.5px; font-weight: 700; height: 26px; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); width: auto;">✨
+                    Tự động dịch / Gợi ý</button>
+                </div>
+                <textarea id="cmFormContentInput" class="inp textarea-inp"
+                  style="height: 90px; resize: vertical; font-size: 13px; line-height: 1.5;"
+                  placeholder="Nhập nội dung câu bình luận bạn muốn lưu..." required></textarea>
+              </div>
+
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="cmFormTranslationInput" style="font-size: 11.5px; font-weight: 700; color: #34d399;">Dịch
+                  nghĩa / Giải thích (Tiếng Việt nếu comment tiếng Anh)</label>
+                <textarea id="cmFormTranslationInput" class="inp textarea-inp"
+                  style="height: 60px; resize: vertical; font-size: 12.5px; line-height: 1.4;"
+                  placeholder="Dịch nghĩa tiếng Việt hoặc lưu ý giải thích..."></textarea>
+              </div>
+
+              <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="cmFormCategoryInput" style="font-size: 11.5px; font-weight: 700; color: #c084fc;">Danh
+                    mục</label>
+                  <input type="text" id="cmFormCategoryInput" list="cmCategoryDatalist" class="inp"
+                    placeholder="Chọn hoặc gõ danh mục mới..." style="height: 38px;" />
+                  <datalist id="cmCategoryDatalist">
+                    <!-- Populated dynamically -->
+                  </datalist>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                  <label for="cmFormTagsInput" style="font-size: 11.5px; font-weight: 700; color: #fde047;">Tags (ngăn
+                    cách bằng dấu phẩy)</label>
+                  <input type="text" id="cmFormTagsInput" class="inp" placeholder="hook, trend, seeding, viral..."
+                    style="height: 38px;" />
+                </div>
+              </div>
+
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="cmFormContextInput" style="font-size: 11.5px; font-weight: 700; color: #67e8f9;">Ngữ cảnh &
+                  Mẹo sử dụng</label>
+                <input type="text" id="cmFormContextInput" class="inp"
+                  placeholder="Dùng khi video đạt > 10k views, khi live stream hoặc seeding..." style="height: 38px;" />
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+                <button type="button" id="btnCmCancelSave" class="btn-modal btn-cancel"
+                  style="height: 38px; padding: 0 18px;">Hủy bỏ</button>
+                <button type="button" id="btnCmSaveComment" class="btn-modal btn-confirm"
+                  style="height: 38px; padding: 0 24px; font-weight: 700; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">💾
+                  Lưu Bình Luận</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- State 3: Quick Grid / Fast Copy Mode -->
+          <div id="cmGridState" style="display: none; flex-direction: column; flex: 1; gap: 12px; min-height: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--muted); font-weight: 600;">⚡ Chế độ xem lưới – Bấm nút 📋 trên
+                thẻ để sao chép tức thì:</span>
+              <span id="cmGridCountBadge" style="font-size: 11.5px; color: #38bdf8; font-weight: 700;">0 thẻ</span>
+            </div>
+            <div id="cmFastCopyGrid"
+              style="flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; padding-right: 4px; max-height: 480px; scrollbar-width: thin; scrollbar-color: var(--purple) transparent;">
+              <!-- Dynamically populated fast copy cards -->
+            </div>
           </div>
 
         </div>
@@ -1112,6 +1694,199 @@
       <span>⏱ Task Countdown • Premium Daily Planner</span>
     </div>
 
+  </div>
+
+  <!-- Bulk Import Comments Modal -->
+  <div id="cmBulkModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 520px;">
+      <div class="modal-icon">📥</div>
+      <h3>Thêm Hàng Loạt Bình Luận</h3>
+      <p style="margin-bottom: 12px; font-size: 12.5px; color: var(--muted); text-align: center;">Dán danh sách bình
+        luận vào ô bên dưới (Mỗi dòng là 1 câu bình luận riêng biệt):</p>
+
+      <div class="form-grid-2"
+        style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; text-align: left;">
+        <div class="form-group">
+          <label style="font-size: 11px; font-weight: 700; color: #a78bfa;">Danh mục chung</label>
+          <input type="text" id="cmBulkCategoryInput" class="inp" placeholder="Ví dụ: 🔥 Bắt Trend TikTok..."
+            style="height: 34px; font-size: 12px;" />
+        </div>
+        <div class="form-group">
+          <label style="font-size: 11px; font-weight: 700; color: #38bdf8;">Kênh chính</label>
+          <select id="cmBulkPlatformInput" class="inp select-inp" style="height: 34px; font-size: 12px;">
+            <option value="TikTok">🎵 TikTok</option>
+            <option value="Facebook">👥 Facebook</option>
+            <option value="YouTube">📹 YouTube</option>
+            <option value="X">🐦 X / Twitter</option>
+            <option value="Shopee">🛍️ Shopee / TMĐT</option>
+            <option value="All">🌐 Đa nền tảng</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="text-align: left; width: 100%;">
+        <textarea id="cmBulkTextInput" class="inp textarea-inp"
+          style="height: 140px; font-size: 12.5px; width: 100%; line-height: 1.5;"
+          placeholder="Dán các câu bình luận vào đây...&#10;Dòng 1: Video này cuốn quá shop ơi!&#10;Dòng 2: Xin giá và thời gian ship với ạ...&#10;Dòng 3: Tuyệt vời 10 điểm!"></textarea>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 15px; gap: 8px; justify-content: flex-end;">
+        <button type="button" id="btnCmBulkCancel" class="btn-modal btn-cancel"
+          style="width: auto; padding: 0 16px; height: 34px; font-size: 12px;">Hủy bỏ</button>
+        <button type="button" id="btnCmBulkConfirm" class="btn-modal btn-confirm"
+          style="width: auto; padding: 0 20px; height: 34px; font-size: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">📥
+          Nạp vào Kho</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup / Restore Comments Modal -->
+  <div id="cmBackupModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 500px;">
+      <div class="modal-icon">⚙️</div>
+      <h3>Sao Lưu & Đồng Bộ 1000 Comment</h3>
+      <p style="margin-bottom: 12px; font-size: 12.5px; color: var(--muted); text-align: center;">Sao chép mã JSON để
+        backup hoặc dán mã JSON để khôi phục kho bình luận:</p>
+
+      <div class="modal-actions" style="margin-bottom: 12px; gap: 8px; justify-content: center;">
+        <button type="button" id="btnCmExportJson" class="btn-modal btn-confirm"
+          style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); width: auto; padding: 0 14px; font-size: 12px; height: 32px;">📤
+          Sao chép JSON (Xuất)</button>
+        <button type="button" id="btnCmClearAll" class="btn-modal btn-delete-red"
+          style="width: auto; padding: 0 14px; font-size: 12px; height: 32px;">🗑️ Xóa toàn bộ</button>
+      </div>
+
+      <div class="form-group" style="text-align: left; width: 100%;">
+        <textarea id="cmBackupJsonInput" class="inp textarea-inp"
+          style="height: 120px; font-family: monospace; font-size: 11.5px; width: 100%;"
+          placeholder="{ &quot;items&quot;: [...] }"></textarea>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 15px; gap: 8px; justify-content: flex-end;">
+        <button type="button" id="btnCmBackupClose" class="btn-modal btn-cancel"
+          style="width: auto; padding: 0 16px; height: 34px; font-size: 12px;">Đóng</button>
+        <button type="button" id="btnCmImportJson" class="btn-modal btn-confirm"
+          style="width: auto; padding: 0 18px; height: 34px; font-size: 12px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">📥
+          Áp dụng JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Tạo Dự Án 100 Ngày Mới -->
+  <div id="cmNewProjectModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 480px; padding: 22px;">
+      <div class="modal-icon" style="font-size: 32px;">📁</div>
+      <h3 style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Tạo Dự Án / Chủ Đề 100 Ngày Mới</h3>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Mỗi dự án sẽ lưu trữ kho 1000 bình luận riêng biệt, tự động lưu vĩnh viễn khi thoát app.</p>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: block; margin-bottom: 6px;">Tên dự án / Chủ đề video 100 ngày:</label>
+        <input type="text" id="cmNewProjNameInput" class="inp" placeholder="Ví dụ: Học IELTS 100 Ngày, 100 Ngày Video Gym, Review Món Ăn..." style="height: 38px; font-size: 13px;" />
+      </div>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 16px;">
+        <label style="font-size: 12px; font-weight: 700; color: #a78bfa; display: block; margin-bottom: 6px;">Mục tiêu số lượng bình luận:</label>
+        <input type="number" id="cmNewProjTargetInput" class="inp" value="1000" min="10" max="10000" style="height: 38px; font-size: 13px;" />
+      </div>
+
+      <div class="modal-actions" style="margin-top: 16px; gap: 10px; justify-content: flex-end;">
+        <button type="button" id="btnCmNewProjCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px;">✕ Hủy bỏ</button>
+        <button type="button" id="btnCmNewProjSave" class="btn-primary-glow" style="width: auto; padding: 0 22px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);">💾 Tạo & Mở Dự Án</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Đổi Tên Dự Án -->
+  <div id="cmRenameProjectModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 450px; padding: 22px;">
+      <div class="modal-icon" style="font-size: 28px;">✏️</div>
+      <h3 style="font-size: 17px; margin-bottom: 4px; font-weight: 700; color: #fff;">Đổi Tên Dự Án</h3>
+      <p style="margin-bottom: 14px; font-size: 12px; color: var(--muted); text-align: center;">Cập nhật tên mới cho dự án hiện tại</p>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 16px;">
+        <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: block; margin-bottom: 6px;">Tên dự án mới:</label>
+        <input type="text" id="cmRenameProjInput" class="inp" placeholder="Nhập tên dự án mới..." style="height: 38px; font-size: 13px;" />
+      </div>
+
+      <div class="modal-actions" style="margin-top: 16px; gap: 10px; justify-content: flex-end;">
+        <button type="button" id="btnCmRenameProjCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px;">✕ Hủy bỏ</button>
+        <button type="button" id="btnCmRenameProjSave" class="btn-primary-glow" style="width: auto; padding: 0 20px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">💾 Lưu Thay Đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Nạp 1000 Comment theo Chủ Đề Video từ JSON -->
+  <div id="cmTopicJsonModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 650px; padding: 22px; max-height: 92vh; overflow-y: auto;">
+      <div class="modal-icon" style="font-size: 32px;">📋</div>
+      <h3 style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Nạp Bình Luận Cho Dự Án 100 Ngày</h3>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Sao chép Prompt gửi AI để tạo 1000 bình luận góp ý cải tiến, đổi mới edit, bắt trend và lưu vào dự án của bạn.</p>
+
+      <!-- Target Project Info / Input -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label for="cmModalTopicNameInput" style="font-size: 12px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 5px;">
+            📁 Tên dự án / Chủ đề 100 ngày:
+          </label>
+          <span id="cmModalCurrentProjectBadge" style="font-size: 11.5px; color: #a7f3d0; font-weight: 600;">(Đã có: 0/1000 câu)</span>
+        </div>
+        <input type="text" id="cmModalTopicNameInput" class="inp" placeholder="Nhập tên dự án / chủ đề (Ví dụ: Tập bụng 100 ngày, Học IELTS 100 Ngày...)" style="height: 38px; font-size: 13.5px; font-weight: 700; color: #38bdf8; border-color: rgba(56, 189, 248, 0.5);" />
+      </div>
+
+      <!-- Step 1: Dual Prompt Box -->
+      <div style="background: rgba(99, 102, 241, 0.1); border: 1.5px solid rgba(99, 102, 241, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; text-align: left;">
+        <span style="font-size: 12px; font-weight: 700; color: #a5b4fc; display: flex; align-items: center; gap: 6px;">
+          🎯 Bước 1: Sao chép Prompt gửi cho AI (ChatGPT / Gemini / Claude):
+        </span>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" id="btnCmCopyAiPrompt" class="btn-primary-glow" style="height: 42px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35); display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>📋</span>
+            <span>PROMPT TẠO TỪ ĐẦU (1000 CÂU)</span>
+          </button>
+
+          <button type="button" id="btnCmCopyAppendAiPrompt" class="btn-primary-glow" style="height: 42px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #0ea5e9 0%, #059669 100%); box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35); display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>⚡</span>
+            <span id="btnCmCopyAppendPromptText">PROMPT NẠP TIẾP (KHÔNG TRÙNG)</span>
+          </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+          <span style="font-size: 11px; color: var(--muted);">Mở nhanh Web AI:</span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" id="btnCmOpenChatGPT" class="btn-modal" style="background: rgba(16, 163, 127, 0.2); border: 1px solid rgba(16, 163, 127, 0.4); color: #6ee7b7; font-size: 11px; height: 28px; padding: 0 10px; width: auto; font-weight: bold;">🤖 ChatGPT</button>
+            <button type="button" id="btnCmOpenGemini" class="btn-modal" style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; font-size: 11px; height: 28px; padding: 0 10px; width: auto; font-weight: bold;">🌐 Gemini</button>
+            <button type="button" id="btnCmOpenClaude" class="btn-modal" style="background: rgba(217, 119, 6, 0.2); border: 1px solid rgba(217, 119, 6, 0.4); color: #fde047; font-size: 11px; height: 28px; padding: 0 10px; width: auto; font-weight: bold;">🔮 Claude</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Paste JSON from AI -->
+      <div style="text-align: left; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 6px;">
+            📥 Bước 2: Dán chuỗi JSON nhận từ AI vào đây:
+          </label>
+          <button type="button" id="btnCmPasteClipboard" class="btn-primary-glow" style="width: auto; height: 26px; font-size: 11px; padding: 0 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">📋 Dán từ Clipboard</button>
+        </div>
+
+        <div style="display: flex; gap: 14px; margin-bottom: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; cursor: pointer; color: #38bdf8; font-weight: 600;">
+            <input type="radio" name="cmJsonImportMode" value="append" checked /> ➕ Nối tiếp (Giữ comment cũ & thêm mới - Khuyên dùng)
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; cursor: pointer; color: #f87171; font-weight: 600;">
+            <input type="radio" name="cmJsonImportMode" value="replace" /> 🔄 Ghi đè (Thay thế toàn bộ)
+          </label>
+        </div>
+
+        <textarea id="cmTopicJsonInput" class="inp textarea-inp" style="height: 150px; font-family: monospace; font-size: 12px; width: 100%; line-height: 1.4;" placeholder='Dán chuỗi JSON vào đây...&#10;Hỗ trợ dạng:&#10;{ "comments": [ { "title": "...", "content": "...", "category": "..." } ] }&#10;hoặc danh sách [ { "title": "...", "content": "..." }, ... ]'></textarea>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 16px; gap: 10px; justify-content: flex-end;">
+        <button type="button" id="btnCmTopicJsonCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 38px; font-size: 12.5px;">✕ Hủy bỏ</button>
+        <button type="button" id="btnCmTopicJsonApply" class="btn-primary-glow" style="width: auto; padding: 0 24px; height: 38px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);">🚀 NẠP VÀO DỰ ÁN & LƯU</button>
+      </div>
+    </div>
   </div>
 
   <!-- Custom Confirmation Modal -->
@@ -1131,39 +1906,51 @@
   <div id="customPromptModal" class="modal-overlay">
     <div class="modal-box" style="max-width: 380px; padding: 20px; text-align: center;">
       <div class="modal-icon" style="font-size: 24px; margin-bottom: 8px;">📝</div>
-      <h3 id="customPromptTitle" style="font-size: 15px; margin-bottom: 12px; font-weight: 700; color: #fff;">Nhập thông tin</h3>
+      <h3 id="customPromptTitle" style="font-size: 15px; margin-bottom: 12px; font-weight: 700; color: #fff;">Nhập thông
+        tin</h3>
       <div class="form-group" style="text-align: left; width: 100%;">
-        <input type="text" id="customPromptInput" class="inp" style="height: 34px; font-size: 13px;" placeholder="..." />
+        <input type="text" id="customPromptInput" class="inp" style="height: 34px; font-size: 13px;"
+          placeholder="..." />
       </div>
       <div class="modal-actions" style="margin-top: 15px; justify-content: flex-end; gap: 8px; display: flex;">
-        <button type="button" id="btnCustomPromptCancel" class="btn-modal btn-cancel" style="height: 32px; padding: 0 12px; font-size: 12px; width: auto;">Hủy</button>
-        <button type="button" id="btnCustomPromptOK" class="btn-modal btn-confirm" style="height: 32px; padding: 0 12px; font-size: 12px; width: auto; background: var(--purple);">Đồng ý</button>
+        <button type="button" id="btnCustomPromptCancel" class="btn-modal btn-cancel"
+          style="height: 32px; padding: 0 12px; font-size: 12px; width: auto;">Hủy</button>
+        <button type="button" id="btnCustomPromptOK" class="btn-modal btn-confirm"
+          style="height: 32px; padding: 0 12px; font-size: 12px; width: auto; background: var(--purple);">Đồng
+          ý</button>
       </div>
     </div>
   </div>
 
   <!-- Export Mobile Modal -->
   <div id="exportMobileModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 400px; padding: 24px; text-align: center; background: #1e1b4b; border: 1px solid var(--purple2); box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);">
+    <div class="modal-box"
+      style="max-width: 400px; padding: 24px; text-align: center; background: #1e1b4b; border: 1px solid var(--purple2); box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);">
       <div class="modal-icon" style="font-size: 36px; margin-bottom: 8px;">📱</div>
       <h3 style="font-size: 16px; margin-bottom: 6px; font-weight: 700; color: #fff;">Tạo trang học tập thành công!</h3>
-      <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Trang web học tập trên điện thoại tồn tại trong 3 ngày.</p>
-      
+      <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Trang web học tập trên điện thoại tồn tại
+        trong 3 ngày.</p>
+
       <!-- QR Code display -->
       <div style="background: white; padding: 12px; display: inline-block; border-radius: 8px; margin-bottom: 16px;">
         <img id="exportMobileQr" src="" alt="QR Code" style="width: 180px; height: 180px; display: block;" />
       </div>
-      
+
       <!-- Short URL display -->
       <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 16px;">
         <div style="display: flex; gap: 6px;">
-          <input type="text" id="exportMobileUrl" class="inp" style="height: 36px; font-size: 13px; text-align: center; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); color: #fff;" readonly />
-          <button type="button" id="btnCopyExportUrl" class="btn-primary-glow" style="width: auto; padding: 0 14px; font-size: 12px; height: 36px; font-weight: 700; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); white-space: nowrap;">📋 Sao chép</button>
+          <input type="text" id="exportMobileUrl" class="inp"
+            style="height: 36px; font-size: 13px; text-align: center; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); color: #fff;"
+            readonly />
+          <button type="button" id="btnCopyExportUrl" class="btn-primary-glow"
+            style="width: auto; padding: 0 14px; font-size: 12px; height: 36px; font-weight: 700; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); white-space: nowrap;">📋
+            Sao chép</button>
         </div>
       </div>
-      
+
       <div class="modal-actions" style="justify-content: center; width: 100%;">
-        <button type="button" id="btnExportMobileClose" class="btn-modal btn-cancel" style="height: 34px; padding: 0 20px; font-size: 13px; font-weight: bold; width: auto; background: rgba(255,255,255,0.05);">Đóng</button>
+        <button type="button" id="btnExportMobileClose" class="btn-modal btn-cancel"
+          style="height: 34px; padding: 0 20px; font-size: 13px; font-weight: bold; width: auto; background: rgba(255,255,255,0.05);">Đóng</button>
       </div>
     </div>
   </div>
@@ -1173,9 +1960,11 @@
     <div class="modal-box modal-large" style="max-width: 500px;">
       <div class="modal-icon">🌐</div>
       <h3>Hỗ trợ Web AI (Miễn phí)</h3>
-      <p style="margin-bottom: 8px; font-size: 13px; color: var(--muted); text-align: center;">Đã sao chép prompt vào Clipboard! Vui lòng thực hiện:</p>
-      
-      <ol style="margin-left: 18px; margin-right: 18px; margin-bottom: 15px; font-size: 12.5px; color: var(--text); display: flex; flex-direction: column; gap: 6px; text-align: left;">
+      <p style="margin-bottom: 8px; font-size: 13px; color: var(--muted); text-align: center;">Đã sao chép prompt vào
+        Clipboard! Vui lòng thực hiện:</p>
+
+      <ol
+        style="margin-left: 18px; margin-right: 18px; margin-bottom: 15px; font-size: 12.5px; color: var(--text); display: flex; flex-direction: column; gap: 6px; text-align: left;">
         <li>Nhấp một trong hai nút bên dưới để mở nhanh trang web AI.</li>
         <li><strong>Dán (Ctrl + V)</strong> câu hỏi đã được copy vào ô nhập liệu của Web AI.</li>
         <li>Đợi AI xử lý xong, sao chép (Copy) toàn bộ khối phản hồi JSON.</li>
@@ -1183,21 +1972,36 @@
       </ol>
 
       <div class="modal-actions" style="margin-bottom: 14px; gap: 8px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" id="btnOpenGeminiWeb" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">🌐 Mở Gemini Web</button>
-        <button type="button" id="btnOpenAiStudioWeb" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">🛠 Mở AI Studio</button>
-        <button type="button" id="btnCopyWebAiPrompt" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">📋 Copy lại Prompt</button>
-        <button type="button" id="btnCopyWebAiImage" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px; display: none;">🖼️ Copy Ảnh</button>
+        <button type="button" id="btnOpenGeminiWeb" class="btn-modal btn-confirm"
+          style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">🌐
+          Mở Gemini Web</button>
+        <button type="button" id="btnOpenAiStudioWeb" class="btn-modal btn-confirm"
+          style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">🛠
+          Mở AI Studio</button>
+        <button type="button" id="btnCopyWebAiPrompt" class="btn-modal btn-confirm"
+          style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px;">📋
+          Copy lại Prompt</button>
+        <button type="button" id="btnCopyWebAiImage" class="btn-modal btn-confirm"
+          style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); width: auto; padding: 0 12px; font-size: 12px; height: 32px; display: none;">🖼️
+          Copy Ảnh</button>
       </div>
 
       <div class="form-group" style="text-align: left; width: 100%;">
-        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Dán kết quả JSON vào đây:</label>
-        <textarea id="webAiJsonInput" class="inp textarea-inp" style="height: 100px; font-family: monospace; font-size: 12px; width: 100%;" placeholder="{ &quot;title&quot;: ... }"></textarea>
+        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Dán
+          kết quả JSON vào đây:</label>
+        <textarea id="webAiJsonInput" class="inp textarea-inp"
+          style="height: 100px; font-family: monospace; font-size: 12px; width: 100%;"
+          placeholder="{ &quot;title&quot;: ... }"></textarea>
       </div>
 
       <div class="modal-actions" style="margin-top: 15px; gap: 8px; justify-content: flex-end; flex-wrap: wrap;">
-        <button type="button" id="btnWebAiReload" class="btn-modal" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; width: auto; padding: 0 16px; height: 32px; font-size: 12px; margin-right: auto;">🔄 Tắt & Bật lại App</button>
-        <button type="button" id="btnWebAiCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 16px; height: 32px; font-size: 12px;">Hủy bỏ</button>
-        <button type="button" id="btnWebAiApply" class="btn-modal btn-confirm" style="width: auto; padding: 0 16px; height: 32px; font-size: 12px;">✔️ Áp dụng</button>
+        <button type="button" id="btnWebAiReload" class="btn-modal"
+          style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; width: auto; padding: 0 16px; height: 32px; font-size: 12px; margin-right: auto;">🔄
+          Tắt & Bật lại App</button>
+        <button type="button" id="btnWebAiCancel" class="btn-modal btn-cancel"
+          style="width: auto; padding: 0 16px; height: 32px; font-size: 12px;">Hủy bỏ</button>
+        <button type="button" id="btnWebAiApply" class="btn-modal btn-confirm"
+          style="width: auto; padding: 0 16px; height: 32px; font-size: 12px;">✔️ Áp dụng</button>
       </div>
     </div>
   </div>
@@ -1206,53 +2010,75 @@
   <div id="videoDayModal" class="modal-overlay">
     <div class="modal-box modal-large" style="max-width: 480px; padding: 24px; max-height: 90vh; overflow-y: auto;">
       <div class="modal-icon" style="font-size: 32px;">🎬</div>
-      <h3 id="videoDayModalHeader" style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 12px; text-align: center;">Chi tiết Video Ngày X</h3>
-      
+      <h3 id="videoDayModalHeader"
+        style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 12px; text-align: center;">Chi tiết Video
+        Ngày X</h3>
+
       <div class="form-group" style="text-align: left; width: 100%; margin-top: 10px;">
-        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Tiêu đề Video</label>
+        <label
+          style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Tiêu đề
+          Video</label>
         <input type="text" id="videoDayTitle" class="inp" placeholder="Nhập tiêu đề video..." />
       </div>
 
       <div class="form-group" style="text-align: left; width: 100%; margin-top: 8px;">
-        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Ý tưởng & Dàn ý (Outline)</label>
-        <textarea id="videoDayOutline" class="inp textarea-inp" style="height: 80px; resize: vertical;" placeholder="Mô tả ý tưởng kịch bản..."></textarea>
+        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Ý
+          tưởng & Dàn ý (Outline)</label>
+        <textarea id="videoDayOutline" class="inp textarea-inp" style="height: 80px; resize: vertical;"
+          placeholder="Mô tả ý tưởng kịch bản..."></textarea>
       </div>
 
-      <div class="form-grid-2" style="text-align: left; width: 100%; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="form-grid-2"
+        style="text-align: left; width: 100%; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
-          <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Chi phí ước tính (VND)</label>
+          <label
+            style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Chi
+            phí ước tính (VND)</label>
           <input type="number" id="videoDayCost" class="inp" placeholder="0" />
         </div>
         <div class="form-group">
-          <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Đạo cụ</label>
+          <label
+            style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Đạo
+            cụ</label>
           <input type="text" id="videoDayProps" class="inp" placeholder="Vật dụng..." />
         </div>
       </div>
 
-      <div class="form-grid-2" style="text-align: left; width: 100%; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="form-grid-2"
+        style="text-align: left; width: 100%; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
-          <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Tên Filter</label>
+          <label
+            style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Tên
+            Filter</label>
           <input type="text" id="videoDayFilter" class="inp" placeholder="Ví dụ: Cinematic, Vintage..." />
         </div>
         <div class="form-group">
-          <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Sound Effect (Âm thanh)</label>
+          <label
+            style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Sound
+            Effect (Âm thanh)</label>
           <input type="text" id="videoDaySound" class="inp" placeholder="Pop, Woosh, Swish..." />
         </div>
       </div>
 
       <div class="form-group" style="text-align: left; width: 100%; margin-top: 8px;">
-        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Định dạng Hook (Mở đầu Video)</label>
+        <label
+          style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Định
+          dạng Hook (Mở đầu Video)</label>
         <input type="text" id="videoDayHook" class="inp" placeholder="Câu hỏi khiêu khích, Sự thật bất ngờ..." />
       </div>
 
       <div class="form-group" style="text-align: left; width: 100%; margin-top: 8px;">
-        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Ghi chú cá nhân / Nhật ký làm</label>
-        <textarea id="videoDayNotes" class="inp textarea-inp" style="height: 60px; resize: vertical;" placeholder="Ghi chú bài học kinh nghiệm..."></textarea>
+        <label style="font-weight: 600; font-size: 12px; color: var(--purple2); margin-bottom: 4px; display: block;">Ghi
+          chú cá nhân / Nhật ký làm</label>
+        <textarea id="videoDayNotes" class="inp textarea-inp" style="height: 60px; resize: vertical;"
+          placeholder="Ghi chú bài học kinh nghiệm..."></textarea>
       </div>
 
       <div class="modal-actions" style="margin-top: 20px; justify-content: flex-end; gap: 10px; display: flex;">
-        <button type="button" id="btnVideoDayCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 16px; height: 34px;">Hủy bỏ</button>
-        <button type="button" id="btnVideoDaySave" class="btn-modal btn-confirm" style="width: auto; padding: 0 16px; height: 34px;">Lưu thay đổi</button>
+        <button type="button" id="btnVideoDayCancel" class="btn-modal btn-cancel"
+          style="width: auto; padding: 0 16px; height: 34px;">Hủy bỏ</button>
+        <button type="button" id="btnVideoDaySave" class="btn-modal btn-confirm"
+          style="width: auto; padding: 0 16px; height: 34px;">Lưu thay đổi</button>
       </div>
     </div>
   </div>
@@ -1279,4 +2105,5 @@
 
   <script defer src="renderer.js"></script>
 </body>
+
 </html>

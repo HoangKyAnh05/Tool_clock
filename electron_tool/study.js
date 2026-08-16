@@ -980,6 +980,178 @@ async function addWordToVocabularyDirect(word, translation, type) {
   alert(`Đã thêm thành công "${word}" vào ${isReading ? 'bảng từ khóa' : 'danh sách từ vựng'}!`);
 }
 
+function showTkToast(msg) {
+  let toast = document.getElementById('tkCustomFloatingToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'tkCustomFloatingToast';
+    toast.style.cssText = 'position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #1e1b2e 0%, #2d1b4e 100%); border: 1.5px solid #00f2fe; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 9999999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(20px); opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px;';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<span style="font-size: 16px;">✨</span> <span>${msg}</span>`;
+  toast.style.transform = 'translateY(0)';
+  toast.style.opacity = '1';
+  setTimeout(() => {
+    toast.style.transform = 'translateY(20px)';
+    toast.style.opacity = '0';
+  }, 3500);
+}
+
+async function saveWordToTiktokFlashcardDirect(word, translation) {
+  if (!word || !word.trim()) return;
+  const cleanWord = word.trim();
+  let cleanTrans = (translation || '').trim();
+
+  // 1. Fallback translation if not provided
+  if (!cleanTrans || cleanTrans === 'Đang cập nhật' || cleanTrans.includes('Không tìm thấy')) {
+    if (window.taskAPI && window.taskAPI.translateText) {
+      try {
+        const rawRes = await window.taskAPI.translateText(cleanWord, 'vi');
+        if (typeof rawRes === 'string') {
+          cleanTrans = rawRes;
+        } else if (Array.isArray(rawRes) && Array.isArray(rawRes[0])) {
+          cleanTrans = rawRes[0].map(item => item && item[0] ? item[0] : '').filter(Boolean).join(' ');
+        }
+      } catch (e) {}
+    }
+  }
+  if (!cleanTrans || cleanTrans.includes('Không tìm thấy')) cleanTrans = 'Đang cập nhật';
+
+  // 2. Generate 5 speaking & writing examples
+  let notes = [
+    `🗣️ Speaking 1: "In daily life, I often encounter the need to ${cleanWord} to reach my goals."`,
+    `🗣️ Speaking 2: "From my perspective, using the word '${cleanWord}' makes answers sound natural."`,
+    `✍️ Writing 1: "In academic discussions, the concept of '${cleanWord}' is frequently highlighted."`,
+    `✍️ Writing 2: "Numerous studies demonstrate how '${cleanWord}' can significantly influence results."`,
+    `✍️ Writing 3: "Therefore, gaining a deep understanding of '${cleanWord}' is essential."`
+  ].join('\n');
+
+  // Try fetching Gemini if available
+  const apiKey = localStorage.getItem('gemini_api_key') || localStorage.getItem('GEMINI_API_KEY') || localStorage.getItem('ielts_gemini_api_key') || '';
+  if (apiKey) {
+    try {
+      const promptText = `Bạn là chuyên gia IELTS. Hãy phân tích từ/câu: "${cleanWord}".
+Trả về duy nhất 1 JSON object:
+{
+  "translation": "Nghĩa tiếng Việt ngắn gọn",
+  "examples": [
+    "🗣️ Speaking 1: [Câu ví dụ giao tiếp thực tế] - [Dịch tiếng Việt]",
+    "🗣️ Speaking 2: [Câu ví dụ giao tiếp thực tế] - [Dịch tiếng Việt]",
+    "✍️ Writing 1: [Câu ví dụ học thuật/văn viết] - [Dịch tiếng Việt]",
+    "✍️ Writing 2: [Câu ví dụ học thuật/văn viết] - [Dịch tiếng Việt]",
+    "✍️ Writing 3: [Câu ví dụ học thuật/văn viết] - [Dịch tiếng Việt]"
+  ]
+}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const json = await res.json();
+        const rawText = json.candidates[0].content.parts[0].text.trim();
+        let parsed = null;
+        try {
+          let clean = rawText;
+          if (clean.startsWith('```json')) clean = clean.substring(7);
+          if (clean.startsWith('```')) clean = clean.substring(3);
+          if (clean.endsWith('```')) clean = clean.substring(0, clean.length - 3);
+          parsed = JSON.parse(clean.trim());
+        } catch (e) {
+          const m = rawText.match(/\{[\s\S]*\}/);
+          if (m) parsed = JSON.parse(m[0]);
+        }
+        if (parsed) {
+          if (parsed.translation) cleanTrans = parsed.translation;
+          if (Array.isArray(parsed.examples) && parsed.examples.length > 0) {
+            notes = parsed.examples.join('\n');
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 3. Load Memorize Vault
+  let vaultData = { items: [] };
+  if (window.taskAPI && window.taskAPI.loadMemorizeVault) {
+    try {
+      const loaded = await window.taskAPI.loadMemorizeVault();
+      if (loaded && Array.isArray(loaded.items)) vaultData = loaded;
+    } catch (e) {}
+  }
+
+  // 4. Extract TikTok video from selected/last chosen music
+  let tiktokUrl = '';
+  let chosenMusicUrl = localStorage.getItem('tk_last_chosen_music_url') || '';
+  if (window.taskAPI && window.taskAPI.loadTiktokMusic) {
+    try {
+      const musicData = await window.taskAPI.loadTiktokMusic();
+      if (musicData) {
+        if (musicData.lastChosenUrl) {
+          chosenMusicUrl = musicData.lastChosenUrl;
+        } else if (Array.isArray(musicData.items) && musicData.items.length > 0) {
+          chosenMusicUrl = musicData.items[0].url;
+        }
+      }
+    } catch (e) {}
+  }
+  if (!chosenMusicUrl) {
+    chosenMusicUrl = 'https://www.tiktok.com/music/Perfect-6655492047723563778';
+  }
+  if (window.taskAPI && window.taskAPI.extractTiktokMusicVideos) {
+    try {
+      const res = await window.taskAPI.extractTiktokMusicVideos(chosenMusicUrl);
+      if (res && res.success && Array.isArray(res.videos) && res.videos.length > 0) {
+        const randomIndex = Math.floor(Math.random() * res.videos.length);
+        tiktokUrl = res.videos[randomIndex];
+      }
+    } catch (e) {}
+  }
+  if (!tiktokUrl) {
+    tiktokUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(cleanWord)}`;
+  }
+
+  // 5. Check if card already exists or create new
+  let existing = vaultData.items.find(x => x.word && x.word.toLowerCase().trim() === cleanWord.toLowerCase());
+  if (existing) {
+    existing.translation = cleanTrans;
+    existing.notes = notes;
+    existing.tiktokUrl = tiktokUrl;
+    existing.linkType = 'direct';
+  } else {
+    const newItem = {
+      id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      word: cleanWord,
+      translation: cleanTrans,
+      notes: notes,
+      tiktokUrl: tiktokUrl,
+      linkType: 'direct',
+      level: 1,
+      interval: 1,
+      nextReviewDate: new Date().toISOString().split('T')[0]
+    };
+    vaultData.items.unshift(newItem);
+  }
+
+  // 6. Save back to Vault
+  if (window.taskAPI && window.taskAPI.saveMemorizeVault) {
+    await window.taskAPI.saveMemorizeVault(vaultData);
+  }
+
+  // Visual & Audio confirmation
+  if (typeof playTone === 'function') {
+    playTone(523, 0.08, 'sine', 0.1);
+    setTimeout(() => playTone(784, 0.12, 'sine', 0.15), 100);
+  }
+
+  showTkToast(`Đã tự động lưu từ "${cleanWord}" vào Flashcard TikTok!`);
+}
+
 let currentSelectionHandler = null;
 let currentMouseDownHandler = null;
 let ttsPronounceTimeout = null;
@@ -1108,9 +1280,10 @@ function setupTextSelectionSearch(containerEl, type) {
     selectionTooltip.innerHTML = `
       <div style="font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Dịch nghĩa</div>
       <div class="translation-text" style="font-size: 13px; font-weight: 500; color: #f8fafc; line-height: 1.4;">⏳ Đang dịch...</div>
-      <div style="display: flex; gap: 6px; margin-top: 4px;">
-        <button class="tooltip-search-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; outline: none; transition: background 0.2s;">🔍 Tìm</button>
-        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; display: none; outline: none; transition: transform 0.2s;">➕ Thêm từ</button>
+      <div style="display: flex; gap: 5px; margin-top: 4px;">
+        <button class="tooltip-search-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; outline: none; transition: background 0.2s;">🔍 Tìm</button>
+        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; display: none; outline: none; transition: transform 0.2s;">➕ Thêm từ</button>
+        <button class="tooltip-tk-btn" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); border: none; color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; flex: 1.2; display: none; outline: none; transition: transform 0.2s; white-space: nowrap;">🎵 Flashcard</button>
       </div>
     `;
     
@@ -1175,6 +1348,17 @@ function setupTextSelectionSearch(containerEl, type) {
             e.preventDefault();
             hideTooltip();
             await addWordToVocabularyDirect(text, translation, type);
+          };
+        }
+
+        const tkBtn = selectionTooltip.querySelector('.tooltip-tk-btn');
+        if (tkBtn) {
+          tkBtn.style.display = 'block';
+          tkBtn.onclick = async (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            hideTooltip();
+            await saveWordToTiktokFlashcardDirect(text, translation);
           };
         }
       } else {

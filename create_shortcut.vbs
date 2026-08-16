@@ -1,7 +1,7 @@
 ' create_shortcut.vbs
 ' Visual Basic Script to create Desktop Shortcut for Tool Clock
 
-Dim objShell, objFSO, strRootDir, strElectronDir, strDesktop, strShortcutPath, objShortcut, strIconPath, strLauncherVbs, strTargetExe
+Dim objShell, objFSO, strRootDir, strElectronDir, strDesktop, strShortcutPath, objShortcut, strIconPath, strTargetExe
 
 Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -14,7 +14,6 @@ strElectronDir = objFSO.BuildPath(strRootDir, "electron_tool")
 strDesktop = objShell.SpecialFolders("Desktop")
 strShortcutPath = objFSO.BuildPath(strDesktop, "Tool Clock.lnk")
 
-strLauncherVbs = objFSO.BuildPath(strElectronDir, "launcher.vbs")
 strTargetExe = objFSO.BuildPath(strElectronDir, "node_modules\electron\dist\electron.exe")
 strIconPath = objFSO.BuildPath(strElectronDir, "icon.ico")
 
@@ -22,20 +21,20 @@ If Not objFSO.FileExists(strIconPath) Then
     strIconPath = strTargetExe
 End If
 
-Set objShortcut = objShell.CreateShortcut(strShortcutPath)
-
-' Use launcher.vbs to open silently without cmd window if available
-If objFSO.FileExists(strLauncherVbs) Then
-    objShortcut.TargetPath = "wscript.exe"
-    objShortcut.Arguments = """" & strLauncherVbs & """"
-Else
-    objShortcut.TargetPath = strTargetExe
-    objShortcut.Arguments = "."
+If Not objFSO.FileExists(strTargetExe) Then
+    MsgBox "Khong tim thay file electron.exe tai: " & vbCrLf & strTargetExe & vbCrLf & vbCrLf & "Vui long kiem tra thu muc electron_tool/node_modules!", 16, "Loi tao Shortcut"
+    WScript.Quit 1
 End If
 
+Set objShortcut = objShell.CreateShortcut(strShortcutPath)
+
+' Point shortcut directly to electron.exe with '.' argument and working directory
+objShortcut.TargetPath = strTargetExe
+objShortcut.Arguments = "."
 objShortcut.WorkingDirectory = strElectronDir
 objShortcut.WindowStyle = 1
-objShortcut.Description = "Tool Clock - Application"
+objShortcut.Description = "Tool Clock - Task Countdown Application"
+
 If objFSO.FileExists(strIconPath) Then
     objShortcut.IconLocation = strIconPath
 End If

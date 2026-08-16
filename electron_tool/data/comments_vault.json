@@ -1,0 +1,647 @@
+{
+  "activeProjectId": "proj_1786870932147",
+  "projects": [
+    {
+      "id": "proj_1",
+      "name": "Tập bụng 100 ngày",
+      "target": 1000,
+      "categories": [
+        "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+        "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+        "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+        "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+        "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+        "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng"
+      ],
+      "items": [
+        {
+          "id": "cm_import_1786869360931_0",
+          "title": "Góp ý góc máy ngang để soi độ võng lưng khi tập plank",
+          "content": "Chủ thớt quay thêm góc máy ngang tầm sàn đi, quay chéo từ trên xuống không check được lưng có bị võng hay mông bị nhô cao quá không á!",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "gop_y",
+            "goc_quay",
+            "form_chuan",
+            "plank",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Đặt máy quay sát sàn ngang hông, làm hiệu ứng đường thẳng ảo màu đỏ/xanh để người xem tự so sánh form chuẩn tránh đau lưng.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_1",
+          "title": "Góp ý gắn đồng hồ đếm ngược trực quan trên màn hình",
+          "content": "Ad chèn thêm cái đồng hồ đếm ngược kèm thanh tiến trình (progress bar) to rõ ở góc trên đi ạ, để tụi em bật video lên tập theo cho chuẩn giờ.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "gop_y",
+            "timer",
+            "workout_along",
+            "ui_ux",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Thêm hiệu ứng đồng hồ số đếm ngược 45s/15s rest kèm âm thanh 'beep beep' để tối ưu trải nghiệm follow-along.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_2",
+          "title": "Góp ý giảm nhạc nền để nghe rõ nhịp hít thở",
+          "content": "Nhạc nền chiến thì có chiến nhưng át hết tiếng ad hít vào thở ra rồi. Tập bụng quan trọng nhất nhịp thở mà không nghe rõ để bắt chước nè.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "Reels",
+          "tags": [
+            "gop_y",
+            "am_thanh",
+            "nhip_tho",
+            "core",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Hạ nhạc nền xuống 15%, thu âm rõ tiếng thở gồng core 'hít mũi - nén - thở miệng' làm mấu chốt kỹ thuật.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_3",
+          "title": "Yêu cầu chỉnh ánh sáng ven để thấy rõ rãnh cơ bụng",
+          "content": "Ad set up thêm đèn đánh góc nghiêng (side light) đi, ánh sáng trần làm bụng phẳng lì không thấy rõ sự thay đổi cơ múi qua từng ngày đâu!",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "gop_y",
+            "anh_sang",
+            "lighting",
+            "progress",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Sử dụng đèn chiếu xiên góc 45 độ tạo bóng đổ tự nhiên giúp cơ bụng 11/múi bụng hiện rõ nét trong thước phim so sánh.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_4",
+          "title": "Yêu cầu edit giật theo beat kết hợp zoom biểu cảm thống khổ",
+          "content": "Đoạn 10 giây cuối plank ad zoom sát quả mặt run bần bật xong chèn meme sound 'cứu tôi cứu tôi' bao hài, xem tạo động lực hẳn 😂",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "TikTok",
+          "tags": [
+            "edit_style",
+            "meme",
+            "zoom_in",
+            "hai_huoc",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Cắt nhịp fast-cut giật theo beat nhạc dồn dập, zoom cận cảnh mặt run rẩy kèm meme âm thanh hài hước để tăng độ chân thực và giữ chân người xem.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_5",
+          "title": "Yêu cầu phong cách ASMR phòng tập không nhạc nền",
+          "content": "Thử làm 1 clip phong cách Gym ASMR thuần âm thanh thực tế đi ad: tiếng hít thở nặng, tiếng mồ hôi rơi, tiếng kéo thảm... nghe nghiện lắm!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "edit_style",
+            "asmr",
+            "raw_audio",
+            "gym_vlog",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Tắt hoàn toàn nhạc nền, gắn mic cài áo thu trọn vẹn âm thanh tự nhiên của buổi tập để tạo cảm giác chân thực, tập trung cao độ.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_6",
+          "title": "Gợi ý edit màu phim retro VHS kèm thông số đo đạc",
+          "content": "Làm tone màu kiểu retro cam vintage kèm font chữ digital hiển thị số đo vòng eo, nhịp tim và calorie tiêu hao nhìn pro cực kỳ luôn.",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "Reels",
+          "tags": [
+            "edit_style",
+            "retro_vhs",
+            "hud_interface",
+            "cinematic",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Thiết kế giao diện HUD (Heads-Up Display) hiển thị vòng eo Day 1 vs Hiện tại, số calo đốt cháy và nhịp tim đập.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_7",
+          "title": "Thách thức plank 3 phút không nghỉ giữa chừng",
+          "content": "Thách chủ kênh ngày mai plank liên tục 3 phút không ngắt quãng, quay một góc máy liền (one-shot) không cắt ghép xem chịu nổi không!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "TikTok",
+          "tags": [
+            "thach_thuc",
+            "plank_challenge",
+            "one_shot",
+            "suc_ben",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Nhận lời thách đấu: Bật máy quay cố định góc rộng, đặt đồng hồ bấm giờ trực tiếp trong khung hình và quay 1 shot duy nhất vượt qua thử thách.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_8",
+          "title": "Yêu cầu bài tập bụng đứng không cần nằm thảm cho dân văn phòng",
+          "content": "Ad làm 1 bài standing abs (tập bụng đứng) không cần trải thảm cho hội dân văn phòng tranh thủ giờ nghỉ giải lao 5 phút tập theo với!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "Reels",
+          "tags": [
+            "de_xuat",
+            "standing_abs",
+            "dan_van_phong",
+            "quick_workout",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Lên kịch bản 4 bài tập cơ bụng ở tư thế đứng (High Knees Twist, Standing Oblique Crunch...) phù hợp không gian nhỏ hẹp văn phòng.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_9",
+          "title": "Thách thức tập bài bụng với tạ bình vôi 10kg",
+          "content": "Tập bodyweight quen rồi, thách ad cầm thêm quả tạ chuông 10kg gập bụng Russian Twist 50 cái không chạm chân xuống sàn!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "TikTok",
+          "tags": [
+            "thach_thuc",
+            "russian_twist",
+            "kettlebell",
+            "hardcore",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Ghim comment thách thức, quay cảnh gồng cơ siết eo với tạ nặng kèm lời nhắc nhở kỹ thuật an toàn cho cột sống.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_10",
+          "title": "Bắt trend nhạc biến hình Before - After sau 30 ngày",
+          "content": "Hôm nay tròn 30 ngày nè ad, bắt trend nhạc biến hình 'Drop the beat' khoe ảnh bụng mỡ Day 1 chuyển sang cơ bụng nét căng Day 30 liền đi!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "TikTok",
+          "tags": [
+            "bat_trend",
+            "before_after",
+            "bien_hinh",
+            "day30",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Dùng âm thanh biến hình thịnh hành nhất TikTok, khớp cú nhảy hoặc giật áo đúng nốt nhạc drop để khoe thành quả 1/3 chặng đường.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_11",
+          "title": "Bắt trend tiểu phẩm POV não bảo nghỉ nhưng cơ bụng bảo ráng",
+          "content": "Làm trend POV: Não bộ đấu tranh tư tưởng ở giây thứ 50 của bài gập bụng đi ad ơi, diễn quả mắt trợn ngược hài xỉu 😂",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "TikTok",
+          "tags": [
+            "bat_trend",
+            "pov",
+            "tieu_pham",
+            "dau_tranh_tam_ly",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Dàn dựng tình huống đối thoại ngắn giữa 2 nhân vật (Lười biếng vs Quyết tâm) ngay trong lúc đang gồng bụng run rẩy.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_12",
+          "title": "Hỏi xoáy về việc tập bụng mỗi ngày có làm giảm mỡ bụng dưới không",
+          "content": "Ủa ad ơi em nghe bảo không thể giảm mỡ từng vùng (spot reduction), vậy ad cắm mặt gập bụng 100 ngày mà không ăn kiêng thâm hụt calo thì bụng có bé lại được không?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "TikTok",
+          "tags": [
+            "hoi_xoay",
+            "spot_reduction",
+            "calo_deficit",
+            "giai_dap",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Bấm nút Reply: Giải thích thẳng thắn nguyên lý khoa học giữa 'xây dựng khối cơ bụng' (Hypertrophy) vs 'giảm mỡ toàn thân' (Calorie Deficit).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_13",
+          "title": "Thắc mắc gập bụng bị mỏi cổ và đau thắt lưng dưới",
+          "content": "Sao mỗi lần em gập bụng crunch là cơ bụng chưa thấy mỏi mà cái cổ với lưng dưới đau ê ẩm vậy ad? Em đang tập sai ở đâu ạ?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "hoi_xoay",
+            "sai_form",
+            "dau_lung",
+            "sua_loi",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Quay video chỉ ra 2 lỗi kinh điển: lấy tay kéo gáy thay vì gập bằng cơ bụng, và không cuộn xương chậu áp sát lưng xuống thảm.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_14",
+          "title": "Bình chọn chia phe Gập bụng truyền thống vs Tập Plank",
+          "content": "Kèo căng: Team Gập bụng Crunch thả tim ❤️, Team Giữ Plank thả haha 😆! Xem phương pháp nào giúp săn cơ bụng nhanh hơn để ad test 10 ngày tới.",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "TikTok",
+          "tags": [
+            "binh_chon",
+            "crunches",
+            "plank",
+            "tranh_luan",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Ghim bình luận kích thích comment nổ tung, video sau làm bảng so sánh chi tiết ưu/nhược điểm của bài tập động vs bài tập tĩnh (isometric).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        },
+        {
+          "id": "cm_import_1786869360931_15",
+          "title": "Bình chọn chế độ ăn Eat Clean hay Nhịn ăn gián đoạn 16:8",
+          "content": "Chuỗi 100 ngày này mọi người vote ad kết hợp với: Ăn kiêng Eat Clean nhiều đạm (Vote 1) hay Nhịn ăn gián đoạn IF 16:8 (Vote 2)?",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "Reels",
+          "tags": [
+            "binh_chon",
+            "eat_clean",
+            "intermittent_fasting",
+            "dinh_duong",
+            "Tập_bụng_100_ngày"
+          ],
+          "context": "Cho khán giả chọn thực đơn dinh dưỡng áp dụng song song với bài tập bụng trong 30 ngày tiếp theo để tăng tính gắn kết của cộng đồng.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T08:36:00.931Z"
+        }
+      ],
+      "createdAt": "2026-08-16T08:42:39.918Z",
+      "updatedAt": "2026-08-16T08:42:39.919Z"
+    },
+    {
+      "id": "proj_1786870932147",
+      "name": "Học ielts 100 ngày",
+      "target": 1000,
+      "categories": [
+        "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+        "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+        "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+        "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+        "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+        "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng"
+      ],
+      "items": [
+        {
+          "id": "cm_1786871037669_0_334",
+          "title": "Góp ý hạ âm lượng BGM để nghe rõ phân tích Listening",
+          "content": "Nhạc nền lo-fi cuốn thật á ní, nhưng đoạn ad phân tích bẫy distractors trong Section 3 Listening bị tiếng bass át mất, hạ BGM xuống 10% là điểm 10 luôn!",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "gop_y",
+            "am_thanh",
+            "listening",
+            "cai_tien_chat_luong",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Video sau giảm volume BGM còn 10%, ghim comment và mở đầu bằng câu: Cảm ơn bạn, từ hôm nay âm thanh chữa đề Listening sẽ cực nét nhé.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_1_785",
+          "title": "Góp ý highlight từ khóa và cấu trúc C1/C2 trên màn hình",
+          "content": "Ad chèn thêm text box phân loại collocation C1 màu vàng với ngữ pháp ăn điểm màu xanh lá đi ạ, tụi em chụp màn hình lại học cho dễ nhớ.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "gop_y",
+            "subtitles",
+            "collocations",
+            "writing_task2",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Thiết kế template caption phân màu: Vàng cho từ vựng C1/C2, Xanh cho cấu trúc ngữ pháp phức (complex sentences) để tăng tỷ lệ Save/Bookmark.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_2_847",
+          "title": "Góp ý tăng góc quay bàn học và tài liệu Cam/Road to IELTS",
+          "content": "Góc quay mặt hoài hơi ngán á anh, đổi sang góc từ trên xuống (top-down) quay tay highlight đề Cam 18 với take note flashcard nhìn cuốn hơn nhiều á.",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "Reels",
+          "tags": [
+            "gop_y",
+            "goc_quay",
+            "desk_setup",
+            "study_with_me",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Sử dụng góc quay POV từ trên bàn học lúc gạch chân keywords trong bài Reading Passage 3 kèm hiệu ứng âm thanh lật sách.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_3_447",
+          "title": "Góp ý tốc độ nói 30s đầu cần dồn dập và vào thẳng vấn đề",
+          "content": "Ad chào hỏi với giới thiệu dài dòng quá mất 7s đầu rồi, vô thẳng bài giảng bẫy Not Given luôn đi là video lên triệu view liền!",
+          "translation": "",
+          "category": "🎬 Góp Ý Cải Tiến & Nâng Cao Chất Lượng Video",
+          "platform": "TikTok",
+          "tags": [
+            "gop_y",
+            "hook",
+            "retention_rate",
+            "reading_tips",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Tối ưu hóa 3 giây đầu bằng Hook giật gân: 90% thí sinh mất điểm oan ở câu Not Given này vì 1 từ duy nhất.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_4_830",
+          "title": "Yêu cầu phong cách Fast-cut giật beat CapCut kết hợp meme",
+          "content": "Edit kiểu nhịp nhanh giật giật theo nhạc phonk, đoạn bị điểm 5.0 Reading chèn meme ếch Pepe khóc thét đi ad, xem giải trí mà nhớ bài lâu cực 😂",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "TikTok",
+          "tags": [
+            "edit_style",
+            "fast_cut",
+            "phonk",
+            "meme_sound",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Cắt nhịp mỗi 1.5 - 2s, chèn sound effect meme lúc gặp câu bẫy IELTS để tạo tiếng cười và giữ chân người xem đến cuối video.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_5_8",
+          "title": "Yêu cầu video phong cách ASMR Silent Study 1 tiếng ban đêm",
+          "content": "Làm quả ASMR giải đề thi IELTS lúc 12h đêm đi anh: tiếng viết bút chì lên giấy ráp, tiếng gõ bàn phím cơ, tiếng uống ngụm cà phê... bao dính!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "edit_style",
+            "asmr",
+            "silent_vlog",
+            "focus_study",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Làm video ASMR không lời thoại trong không gian phòng tối đèn bàn ấm, gắn mic thu rõ tiếng cọ xát bút chì khi luyện Writing Task 1.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_6_552",
+          "title": "Yêu cầu hiệu ứng Kinetic Typography bùng nổ từ vựng",
+          "content": "Ad làm hiệu ứng chữ nảy từng từ (Kinetic Typography) bay ra màn hình khi phát âm mấy từ dài ngoằng như 'Unprecedented' hay 'Substantiate' đi!",
+          "translation": "",
+          "category": "✂️ Đổi Phong Cách Edit & Hiệu Ứng Mới Lạ",
+          "platform": "Reels",
+          "tags": [
+            "edit_style",
+            "kinetic_typography",
+            "visual_effects",
+            "vocab",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Dùng keyframe phóng to chữ đồng bộ chuẩn mili-giây theo từng âm tiết được nhấn trọng âm để tăng tương tác thị giác.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_7_601",
+          "title": "Thách thức giải trọn vẹn 1 bài Reading Passage 3 trong 12 phút",
+          "content": "Thách chủ kênh bấm giờ làm nguyên bài Reading Passage 3 đề Cam 19 khó nhất trong vòng đúng 12 phút mà đúng trên 11/14 câu!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "TikTok",
+          "tags": [
+            "thach_thuc",
+            "reading_passage3",
+            "cambridge19",
+            "speed_run",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Bấm reply video: Đặt đồng hồ đếm ngược 12:00 ở góc màn hình, quay màn hình split-screen quá trình đọc lướt skim/scan và chốt đáp án.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_8_141",
+          "title": "Đề xuất chuỗi bài 'Cấp cứu Writing Task 2 cho người mất gốc'",
+          "content": "Ad làm series 7 ngày cách viết mở bài và kết bài Writing Task 2 chỉ bằng 3 công thức bất bại cho team mù chữ tiếng Anh đi ạ 😭",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "de_xuat",
+            "writing_task2",
+            "mat_goc",
+            "template",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Xây dựng chuỗi 7 video ngắn cung cấp template paraphrase mở bài Task 2 chuẩn logic mà không cần từ vựng quá cao siêu.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_9_418",
+          "title": "Thách thức học thuộc và ứng dụng 50 từ vựng Academic trong 1 ngày",
+          "content": "Thách bạn trong 24h nạp hết 50 từ vựng Academic Word List và áp dụng viết ngay một bài Essay chủ đề Environment được chấm 7.5+!",
+          "translation": "",
+          "category": "💡 Đề Xuất Chủ Đề Mới & Thách Thức Khán Giả Đặt Ra",
+          "platform": "TikTok",
+          "tags": [
+            "thach_thuc",
+            "academic_vocab",
+            "24h_challenge",
+            "writing",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Làm vlog tài liệu hóa 24 giờ dùng phương pháp Spaced Repetition + Active Recall học 50 từ và đưa bài viết cho cựu giám khảo chấm điểm.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_10_657",
+          "title": "Bắt trend POV: Đi thi IELTS gặp giám khảo khó tính",
+          "content": "Diễn trend 'POV: Giám khảo IDP/BC liếc mắt khi bạn lỡ mồm xài từ 'Nowadays' trong Writing Task 2' đi ad, đang viral rần rần bên nước ngoài á!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "TikTok",
+          "tags": [
+            "bat_trend",
+            "pov",
+            "tieu_pham",
+            "ielts_memes",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Đóng 2 vai biểu cảm hài hước khi dùng các từ cấm kỵ (overused words) và đưa ra 3 phương án thay thế band 8.0 mượt mà hơn.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_11_640",
+          "title": "Bắt trend nhạc biến hình Before - After sau 50 ngày cày cuốc",
+          "content": "Ghép bài nhạc biến hình drop beat khoe quả bảng điểm mock test từ 4.5 lột xác lên 7.0 sau 50 ngày đầu tiên đi idol ơi, tạo động lực cực!",
+          "translation": "",
+          "category": "📈 Bắt Trend Hiện Hành & Nhạc Xu Hướng Hot",
+          "platform": "Reels",
+          "tags": [
+            "bat_trend",
+            "before_after",
+            "bien_hinh",
+            "progress_check",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Khớp nhịp drop beat của bài hát thịnh hành để chuyển cảnh từ xấp bài ngập mực đỏ Day 1 sang bài viết mạch lạc đạt Band 7.0 ở Day 50.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_12_420",
+          "title": "Hỏi xoáy về việc cày đề Cam liên tục có thực sự tăng band",
+          "content": "Ủa ad cứ bảo giải đề Cam mỗi ngày, nhưng nếu không có nền tảng ngữ pháp với từ vựng vững thì giải 100 đề có khác gì học vẹt không ad?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "TikTok",
+          "tags": [
+            "hoi_xoay",
+            "phuong_phap",
+            "giai_de_cam",
+            "giai_dap_thac_mac",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Bấm reply video: Chỉ rõ sai lầm của việc 'cày đề thụ động' so với 'deep-dive analysis' (phân tích chi tiết từng lỗi sai và ghi chép bẫy từ).",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_13_947",
+          "title": "Thắc mắc cách xử lý khi gặp dạng bài Map/Process trong Writing Task 1",
+          "content": "Gặp biểu đồ đường/cột thì dễ chứ bốc trúng đề Map quy hoạch thành phố hay Process làm socola là em tắt thở liền. Có mẹo nào cứu điểm không ad?",
+          "translation": "",
+          "category": "❓ Đặt Câu Hỏi Xoáy & Thắc Mắc Để Quay Video Trả Lời",
+          "platform": "YouTube Shorts",
+          "tags": [
+            "hoi_xoay",
+            "writing_task1",
+            "map_process",
+            "tips_and_tricks",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Làm video 60s tổng hợp bộ giới từ chỉ phương hướng và 5 động từ chuyển đổi cấu trúc cố định chuyên trị dạng Map.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_14_242",
+          "title": "Bình chọn chia phe Thi IELTS trên giấy vs Thi trên máy tính",
+          "content": "Cuộc chiến không hồi kết: Team Thi Giấy thả tim ❤️ (dễ gạch chân), Team Thi Máy tính thả haha 😆 (dễ đếm từ/gõ nhanh)! Khán giả vote thử xem phe nào áp đảo!",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "TikTok",
+          "tags": [
+            "binh_chon",
+            "computer_vs_paper",
+            "tranh_luan",
+            "ielts_exam",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Kêu gọi bình luận tương tác, video sau làm bảng so sánh chi tiết ưu - nhược điểm của 2 hình thức thi để khán giả chọn phương án tối ưu.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        },
+        {
+          "id": "cm_1786871037669_15_342",
+          "title": "Bình chọn lộ trình cho chặng nước rút 30 ngày cuối",
+          "content": "Còn 30 ngày cuối của chuỗi 100 ngày, cả nhà vote ad dồn lực vào: Phương án A (Cày nát kỹ năng Listening & Reading kéo điểm) hay Phương án B (Tập trung cứu vớt Writing & Speaking)?",
+          "translation": "",
+          "category": "🗳️ Bình Chọn & Thăm Dò Ý Kiến Cộng Đồng",
+          "platform": "Reels",
+          "tags": [
+            "binh_chon",
+            "community_poll",
+            "lo_trinh_100ngay",
+            "nuoc_rut",
+            "Học_ielts_100_ngày"
+          ],
+          "context": "Tận dụng kết quả bình chọn của cộng đồng để xây dựng kịch bản 30 video cuối cùng, tạo cảm giác người xem đồng hành cùng dự án.",
+          "favorite": false,
+          "usedCount": 0,
+          "createdAt": "2026-08-16T09:03:57.669Z"
+        }
+      ],
+      "createdAt": "2026-08-16T09:02:12.147Z",
+      "updatedAt": "2026-08-16T09:10:14.052Z"
+    }
+  ]
+}
