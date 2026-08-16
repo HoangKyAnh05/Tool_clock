@@ -5833,13 +5833,17 @@ async function handleBulkExportHtml() {
 }
 
 // =========================================================
+// =========================================================
 // 🎵 TIKTOK FLASHCARD MODULE (Học từ vựng & câu qua Video)
 // =========================================================
 
 let tkFlashcardData = { items: [] };
+let tkLastChosenMusicUrl = '';
 let tkSavedMusicList = [
-  { id: 'm_1', name: 'Nhạc Hot TikTok #1 (Viral Beat)', url: 'https://www.tiktok.com/music/original-sound-7123456789' },
-  { id: 'm_2', name: 'Nhạc Chill Lofi Học Tiếng Anh', url: 'https://www.tiktok.com/music/lofi-english-study-7234567890' }
+  { id: 'm_1', name: 'âm thanh gốc shanghai9992', url: 'https://www.tiktok.com/music/%C3%A2m-thanh-g%E1%BB%91c-shanghai9992-7668519855653784338' },
+  { id: 'm_2', name: 'Fuera del Planeta', url: 'https://www.tiktok.com/music/Fuera-del-Planeta-7532902301028764421' },
+  { id: 'm_3', name: 'RITMO AGRESSIVO', url: 'https://www.tiktok.com/music/RITMO-AGRESSIVO-7409071300436281361' },
+  { id: 'm_4', name: 'Perfect - Ed Sheeran', url: 'https://www.tiktok.com/music/Perfect-6655492047723563778' }
 ];
 
 let activeTkCardId = null;
@@ -5862,38 +5866,6 @@ async function loadTkFlashcardData() {
     const raw = localStorage.getItem('task_countdown_tiktok_flashcards');
     if (raw) {
       tkFlashcardData = JSON.parse(raw);
-    } else {
-      tkFlashcardData = {
-        items: [
-          {
-            id: 'tk_1',
-            word: 'Consistency is key',
-            translation: 'Sự kiên trì là chìa khóa thành công',
-            phonetic: '/kənˈsɪs.tən.si ɪz kiː/',
-            notes: '1. Consistency is key to mastering any new language.\n2. In workout routines, consistency is key.\n3. Keep going every day because consistency is key.',
-            linkType: 'direct',
-            tiktokUrl: 'https://www.tiktok.com/search?q=Consistency%20is%20key',
-            level: 1,
-            interval: 1,
-            nextReviewDate: new Date().toISOString().split('T')[0],
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: 'tk_2',
-            word: 'Out of the blue',
-            translation: 'Bất ngờ, không báo trước (từ trên trời rơi xuống)',
-            phonetic: '/aʊt əv ðə bluː/',
-            notes: '1. She called me out of the blue yesterday.\n2. Good news came completely out of the blue.\n3. He suddenly resigned out of the blue.',
-            linkType: 'direct',
-            tiktokUrl: 'https://www.tiktok.com/search?q=Out%20of%20the%20blue',
-            level: 1,
-            interval: 1,
-            nextReviewDate: new Date().toISOString().split('T')[0],
-            createdAt: new Date().toISOString()
-          }
-        ]
-      };
-      localStorage.setItem('task_countdown_tiktok_flashcards', JSON.stringify(tkFlashcardData));
     }
   } catch (e) {
     tkFlashcardData = { items: [] };
@@ -5922,8 +5894,9 @@ async function loadTkSavedMusic() {
       let rawList = [];
       if (Array.isArray(data)) {
         rawList = data;
-      } else if (data && typeof data === 'object' && Array.isArray(data.items)) {
-        rawList = data.items;
+      } else if (data && typeof data === 'object') {
+        if (data.lastChosenUrl) tkLastChosenMusicUrl = data.lastChosenUrl;
+        if (Array.isArray(data.items)) rawList = data.items;
       }
       if (rawList.length > 0) {
         tkSavedMusicList = rawList.map((m, idx) => ({
@@ -5931,6 +5904,9 @@ async function loadTkSavedMusic() {
           name: (m.name || m.title || 'Nhạc TikTok').replace(/^🎵\s*/, ''),
           url: m.url || ''
         })).filter(m => m.url);
+        if (!tkLastChosenMusicUrl && tkSavedMusicList[0]) {
+          tkLastChosenMusicUrl = tkSavedMusicList[0].url;
+        }
         return tkSavedMusicList;
       }
     } catch (e) {
@@ -5942,6 +5918,9 @@ async function loadTkSavedMusic() {
     const raw = localStorage.getItem('task_countdown_tiktok_music');
     if (raw) {
       const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.lastChosenUrl) {
+        tkLastChosenMusicUrl = parsed.lastChosenUrl;
+      }
       const rawList = Array.isArray(parsed) ? parsed : (parsed.items || []);
       tkSavedMusicList = rawList.map((m, idx) => ({
         id: m.id || ('m_' + Date.now() + '_' + idx),
@@ -5951,20 +5930,18 @@ async function loadTkSavedMusic() {
     }
   } catch (e) { }
 
-  if (tkSavedMusicList.length === 0) {
-    tkSavedMusicList = [
-      { id: 'm_1', name: 'âm thanh gốc shanghai9992', url: 'https://www.tiktok.com/music/%C3%A2m-thanh-g%E1%BB%91c-shanghai9992-7668519855653784338' },
-      { id: 'm_2', name: 'Fuera del Planeta', url: 'https://www.tiktok.com/music/Fuera-del-Planeta-7532902301028764421' },
-      { id: 'm_3', name: 'RITMO AGRESSIVO', url: 'https://www.tiktok.com/music/RITMO-AGRESSIVO-7409071300436281361' },
-      { id: 'm_4', name: 'Perfect - Ed Sheeran', url: 'https://www.tiktok.com/music/Perfect-6655492047723563778' }
-    ];
+  if (!tkLastChosenMusicUrl && tkSavedMusicList[0]) {
+    tkLastChosenMusicUrl = tkSavedMusicList[0].url;
   }
   return tkSavedMusicList;
 }
 
 async function saveTkSavedMusic() {
+  const currentInpVal = document.getElementById('tkUrlInput')?.value;
+  if (currentInpVal) tkLastChosenMusicUrl = currentInpVal;
+
   const savePayload = {
-    lastChosenUrl: document.getElementById('tkUrlInput')?.value || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : ''),
+    lastChosenUrl: tkLastChosenMusicUrl || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : ''),
     items: tkSavedMusicList.map(m => ({
       id: m.id,
       title: `🎵 ${m.name}`,
@@ -6026,7 +6003,7 @@ function renderTkMusicSelect() {
   const select = document.getElementById('tkMusicHistorySelect');
   if (!select) return;
 
-  const currentVal = select.value;
+  const activeUrl = tkLastChosenMusicUrl || select.value || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : '');
   select.innerHTML = '';
   if (tkSavedMusicList.length === 0) {
     const opt = document.createElement('option');
@@ -6040,10 +6017,11 @@ function renderTkMusicSelect() {
     const opt = document.createElement('option');
     opt.value = m.url;
     opt.textContent = `🎵 ${m.name}`;
-    if (m.url === currentVal) opt.selected = true;
+    if (m.url === activeUrl) opt.selected = true;
     select.appendChild(opt);
   });
 }
+
 function renderTkFlashcardList() {
   const listEl = document.getElementById('tkFlashcardList');
   const emptyEl = document.getElementById('tkEmptyState');
@@ -6096,6 +6074,10 @@ function renderTkFlashcardList() {
   } else if (activeTkCardId) {
     const current = items.find(x => x.id === activeTkCardId);
     if (current) renderTkPlayer(current);
+    else if (items.length > 0) {
+      activeTkCardId = items[0].id;
+      renderTkPlayer(items[0]);
+    }
   }
 }
 
@@ -6114,8 +6096,9 @@ function renderTkPlayer(item) {
   const idxBadge = document.getElementById('tkPlayerIndexBadge');
   if (idxBadge) idxBadge.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${totalCount}`;
 
+  const lvl = item.level || 1;
   const srsBadge = document.getElementById('tkPlayerSrsBadge');
-  if (srsBadge) srsBadge.textContent = `Lớp ${item.level || 1}`;
+  if (srsBadge) srsBadge.textContent = `Lớp ${lvl}`;
 
   const wordEl = document.getElementById('lblTkWord');
   if (wordEl) wordEl.textContent = item.word || '---';
@@ -6215,37 +6198,24 @@ function renderTkPlayer(item) {
   const btnShuffle = document.getElementById('btnTkPlayerShuffle');
   if (btnShuffle) {
     btnShuffle.onclick = () => {
-      if ((tkFlashcardData.items || []).length <= 1) return;
-      for (let i = tkFlashcardData.items.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tkFlashcardData.items[i], tkFlashcardData.items[j]] = [tkFlashcardData.items[j], tkFlashcardData.items[i]];
+      if (tkFlashcardData.items && tkFlashcardData.items.length > 1) {
+        tkFlashcardData.items.sort(() => Math.random() - 0.5);
+        activeTkCardId = tkFlashcardData.items[0].id;
+        renderTkFlashcardList();
+        renderTkPlayer(tkFlashcardData.items[0]);
+        if (typeof playTone === 'function') playTone(650, 0.08, 'sine', 0.15);
       }
-      activeTkCardId = tkFlashcardData.items[0].id;
-      saveTkFlashcardData();
-      renderTkFlashcardList();
-      renderTkPlayer(tkFlashcardData.items[0]);
-      if (typeof playTone === 'function') playTone(700, 0.08, 'sine', 0.1);
     };
   }
 
-  // SRS Rating Buttons
-  const rateBtns = document.querySelectorAll('.btn-tk-rate');
-  rateBtns.forEach(btn => {
+  // SRS Rating Buttons (1, 2, 5)
+  const rateButtons = document.querySelectorAll('.btn-tk-rate');
+  rateButtons.forEach(btn => {
     btn.onclick = async () => {
-      const rate = parseInt(btn.getAttribute('data-rate'), 10) || 3;
-      let lvl = item.level || 1;
+      const lvl = parseInt(btn.dataset.rate || '1');
       let interval = 1;
-
-      if (rate === 1) {
-        lvl = 1;
-        interval = 1;
-      } else if (rate === 3) {
-        lvl = Math.max(1, lvl);
-        interval = 2;
-      } else if (rate === 5) {
-        lvl = Math.min(5, lvl + 1);
-        interval = lvl === 2 ? 3 : lvl === 3 ? 7 : lvl === 4 ? 14 : 30;
-      }
+      if (lvl === 2) interval = 3;
+      if (lvl === 5) interval = 14;
 
       const nextDate = new Date();
       nextDate.setDate(nextDate.getDate() + interval);
@@ -6285,6 +6255,7 @@ function openTkForm(itemToEdit = null) {
   const transInp = document.getElementById('tkTransInput');
   const notesInp = document.getElementById('tkNotesInput');
   const urlInp = document.getElementById('tkUrlInput');
+  const defaultMusicUrl = tkLastChosenMusicUrl || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : '');
 
   if (itemToEdit) {
     if (formTitle) formTitle.textContent = '✏️ Chỉnh Sửa Thẻ Flashcard';
@@ -6292,17 +6263,21 @@ function openTkForm(itemToEdit = null) {
     if (wordInp) wordInp.value = itemToEdit.word || '';
     if (transInp) transInp.value = itemToEdit.translation || '';
     if (notesInp) notesInp.value = itemToEdit.notes || '';
-    if (urlInp) urlInp.value = itemToEdit.tiktokUrl || '';
+    if (urlInp) urlInp.value = itemToEdit.tiktokUrl || defaultMusicUrl;
   } else {
     if (formTitle) formTitle.textContent = '➕ Thêm Thẻ Flashcard Mới';
     if (editId) editId.value = '';
     if (wordInp) wordInp.value = '';
     if (transInp) transInp.value = '';
     if (notesInp) notesInp.value = '';
-    if (urlInp) urlInp.value = '';
+    if (urlInp) urlInp.value = defaultMusicUrl;
   }
 
   renderTkMusicSelect();
+  const musicSelect = document.getElementById('tkMusicHistorySelect');
+  if (musicSelect && defaultMusicUrl) {
+    musicSelect.value = defaultMusicUrl;
+  }
   if (wordInp) wordInp.focus();
 }
 
@@ -6359,16 +6334,13 @@ async function saveTkForm() {
   closeTkForm();
   updateTkDashboardStats();
   renderTkFlashcardList();
-
-  if (activeTkCardId) {
-    const current = (tkFlashcardData.items || []).find(x => x.id === activeTkCardId);
-    if (current) renderTkPlayer(current);
-  }
+  if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.12);
 }
 
 function initTiktokFlashcardTab() {
   if (tkInitialized) {
     updateTkDashboardStats();
+    renderTkMusicSelect();
     renderTkFlashcardList();
     return;
   }
@@ -6446,10 +6418,13 @@ function initTiktokFlashcardTab() {
   // Music select dropdown
   const musicSelect = document.getElementById('tkMusicHistorySelect');
   if (musicSelect) {
-    musicSelect.addEventListener('change', (e) => {
+    musicSelect.addEventListener('change', async (e) => {
       const urlInp = document.getElementById('tkUrlInput');
-      if (urlInp && e.target.value) {
-        urlInp.value = e.target.value;
+      if (e.target.value) {
+        tkLastChosenMusicUrl = e.target.value;
+        if (urlInp) urlInp.value = e.target.value;
+        await saveTkSavedMusic();
+        if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
       }
     });
   }
@@ -6601,6 +6576,7 @@ function initTiktokFlashcardTab() {
       }
     });
   }
+
   // Extract / test music link
   const btnExtractMusic = document.getElementById('btnTkExtractMusic');
   if (btnExtractMusic) {
@@ -6749,7 +6725,6 @@ function initTiktokFlashcardTab() {
   renderTkFlashcardList();
 }
 
-// =========================================================
 // 💬 1000 COMMENTS VAULT MODULE (Đa Dự Án & Nạp JSON)
 // =========================================================
 
