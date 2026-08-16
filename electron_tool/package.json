@@ -1,0 +1,30 @@
+{
+  "name": "task-countdown-tool",
+  "version": "1.0.0",
+  "description": "Electron app to track daily tasks with a countdown from 7 AM to midnight.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^28.3.0",
+    "electron-builder": "^24.13.3",
+    "sharp": "^0.33.3"
+  },
+  "build": {
+    "appId": "com.example.taskcountdown",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "files": ["**/*"],
+    "extraResources": []
+  }
+}

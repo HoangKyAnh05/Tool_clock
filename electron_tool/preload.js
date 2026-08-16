@@ -1,0 +1,31 @@
+// preload.js – expose safe APIs to renderer
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('taskAPI', {
+  minimize: () => ipcRenderer.send('win-minimize'),
+  maximize: () => ipcRenderer.send('win-maximize'),
+  close:    () => ipcRenderer.send('win-close'),
+  onMaximized: (callback) => ipcRenderer.on('window-maximized', (event, isMax) => callback(isMax)),
+  loadIeltsVault: () => ipcRenderer.invoke('load-ielts-vault'),
+  saveIeltsVault: (data) => ipcRenderer.invoke('save-ielts-vault', data),
+  loadGeneralVault: () => ipcRenderer.invoke('load-general-vault'),
+  saveGeneralVault: (data) => ipcRenderer.invoke('save-general-vault', data),
+  loadSpeakingVault: () => ipcRenderer.invoke('load-speaking-vault'),
+  saveSpeakingVault: (data) => ipcRenderer.invoke('save-speaking-vault', data),
+  loadVideoChallenge: () => ipcRenderer.invoke('load-video-challenge'),
+  saveVideoChallenge: (data) => ipcRenderer.invoke('save-video-challenge', data),
+  openExternal: (url) => ipcRenderer.send('open-external', url),
+  openStudyWindow: (id, type) => ipcRenderer.send('open-study-window', id, type),
+  fetchUrl: (url, options) => ipcRenderer.invoke('fetch-url', url, options),
+  copyImage: (pathOrBase64) => ipcRenderer.send('copy-image', pathOrBase64),
+  copyPromptAndImage: (text, pathOrBase64) => ipcRenderer.invoke('copy-prompt-and-image', text, pathOrBase64),
+  exportMobilePage: (itemIds) => ipcRenderer.invoke('export-mobile-page', itemIds),
+  writeClipboardText: (text) => ipcRenderer.send('write-clipboard-text', text),
+  translateText: (text, targetLang = 'vi') => ipcRenderer.invoke('translate-text', text, targetLang),
+  relaunchApp: () => ipcRenderer.send('relaunch-app'),
+  onVaultUpdated: (callback) => ipcRenderer.on('vault-updated', (event, info) => callback(info)),
+  loadMemorizeVault: () => ipcRenderer.invoke('load-memorize-vault'),
+  saveMemorizeVault: (data) => ipcRenderer.invoke('save-memorize-vault', data),
+  searchImages: (query) => ipcRenderer.invoke('search-images', query),
+  searchYoutubeVideos: (query) => ipcRenderer.invoke('search-youtube-videos', query),
+});
