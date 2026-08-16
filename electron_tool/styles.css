@@ -461,7 +461,7 @@ html, body {
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(15, 15, 26, 0.85);
   backdrop-filter: blur(4px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -471,6 +471,7 @@ html, body {
 }
 .modal-overlay.active,
 .modal-overlay.visible {
+  display: flex;
   opacity: 1;
   pointer-events: auto;
 }

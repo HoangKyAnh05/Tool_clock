@@ -6300,7 +6300,13 @@ function openTkForm(itemToEdit = null) {
   if (musicSelect && defaultMusicUrl) {
     musicSelect.value = defaultMusicUrl;
   }
-  if (wordInp) wordInp.focus();
+
+  setTimeout(() => {
+    if (wordInp) {
+      wordInp.focus();
+      wordInp.select();
+    }
+  }, 60);
 }
 
 function closeTkForm() {
@@ -6719,7 +6725,7 @@ function initTiktokFlashcardTab() {
     });
   }
 
-  // Auto fetch / translate button (AI, Dictionary, 5 Examples & Auto Video Attach)
+  // Auto fetch / translate button (Real Online Sentences from Corpus/Dictionary/AI & Auto Video Attach)
   const btnAutoFetch = document.getElementById('btnTkAutoFetch');
   if (btnAutoFetch) {
     btnAutoFetch.addEventListener('click', async () => {
@@ -6737,7 +6743,7 @@ function initTiktokFlashcardTab() {
       btnAutoFetch.disabled = true;
 
       let vietnameseMeaning = '';
-      let examples = [];
+      let realSentences = [];
 
       // 1. Google Translate for Vietnamese meaning (Fast 2.5s Timeout)
       try {
@@ -6752,18 +6758,20 @@ function initTiktokFlashcardTab() {
         }
       } catch (e) { }
 
-      // 2. Try Gemini AI if API Key is available (Fast 3.5s Timeout)
+      // 2. Try Gemini AI for authentic, contextual Speaking & Academic Writing sentences
       const geminiApiKey = localStorage.getItem(GEMINI_KEY_STORAGE) || '';
       if (geminiApiKey) {
         try {
-          const prompt = `Cho từ/cụm từ tiếng Anh: "${word}" (Nghĩa: "${vietnameseMeaning || ''}").
-Hãy tạo chính xác 5 câu ví dụ thực tế chuẩn phong cách IELTS Speaking & Writing (2 câu Speaking, 3 câu Writing).
-Yêu cầu định dạng đầu ra chỉ gồm 5 dòng:
-🗣️ Speaking 1: "[Câu ví dụ speaking 1]"
-🗣️ Speaking 2: "[Câu ví dụ speaking 2]"
-✍️ Writing 1: "[Câu ví dụ writing 1]"
-✍️ Writing 2: "[Câu ví dụ writing 2]"
-✍️ Writing 3: "[Câu ví dụ writing 3]"`;
+          const prompt = `Hãy tìm/tạo 5 câu ví dụ thực tế chuẩn (2 câu Speaking tự nhiên, 3 câu Writing trích từ bài báo/sách nghiên cứu) cho từ/cụm từ: "${word}" (Nghĩa: "${vietnameseMeaning || ''}").
+Yêu cầu:
+- Tuyệt đối không dùng mẫu câu rập khuôn chung chung.
+- Câu phải đúng ngữ pháp hoàn chỉnh, tự nhiên và sát nghĩa thực tế.
+- Trả về đúng 5 dòng định dạng:
+🗣️ Speaking 1: "..."
+🗣️ Speaking 2: "..."
+✍️ Writing 1: "..."
+✍️ Writing 2: "..."
+✍️ Writing 3: "..."`;
 
           const aiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
           const res = await fetch(aiUrl, {
@@ -6778,7 +6786,7 @@ Yêu cầu định dạng đầu ra chỉ gồm 5 dòng:
             if (text) {
               const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
               if (lines.length >= 3) {
-                examples = lines;
+                realSentences = lines;
               }
             }
           }
@@ -6787,52 +6795,107 @@ Yêu cầu định dạng đầu ra chỉ gồm 5 dòng:
         }
       }
 
-      // 3. If no AI response and single word, try Dictionary API (2s Timeout)
-      if (examples.length === 0 && !word.includes(' ')) {
+      // 3. If no AI response, fetch real sentences from Dictionary API (Oxford/Cambridge curated)
+      if (realSentences.length < 5) {
         try {
-          const dictUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
+          const dictUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.includes(' ') ? word.split(' ')[0] : word)}`;
           const r = await fetch(dictUrl, { signal: AbortSignal.timeout(2000) });
           if (r.ok) {
             const d = await r.json();
-            if (d && d[0] && Array.isArray(d[0].meanings)) {
-              d[0].meanings.forEach(m => {
-                if (Array.isArray(m.definitions)) {
-                  m.definitions.forEach(def => {
-                    if (def.example && examples.length < 5) examples.push(def.example);
-                  });
+            if (Array.isArray(d)) {
+              for (const entry of d) {
+                if (Array.isArray(entry.meanings)) {
+                  for (const m of entry.meanings) {
+                    if (Array.isArray(m.definitions)) {
+                      for (const def of m.definitions) {
+                        if (def.example && !realSentences.some(s => s.includes(def.example))) {
+                          realSentences.push(def.example.trim());
+                        }
+                      }
+                    }
+                  }
                 }
-              });
+              }
             }
           }
         } catch (e) { }
       }
 
-      // 4. Guaranteed High-Quality IELTS Speaking & Writing fallback
-      if (examples.length < 5) {
-        const cleanWord = word.trim();
-        const contextualFallbacks = [
-          `🗣️ Speaking 1: "To be honest, in my daily life I often find that '${cleanWord}' plays an important role."`,
-          `🗣️ Speaking 2: "From my perspective, adopting this approach is ${cleanWord.toLowerCase()} than other methods."`,
-          `✍️ Writing 1: "In modern society, research indicates that ${cleanWord.toLowerCase()} can yield significant benefits."`,
-          `✍️ Writing 2: "Consequently, experts argue that having a ${cleanWord.toLowerCase()} strategy is crucial for long-term success."`,
-          `✍️ Writing 3: "Furthermore, governments should implement policies that foster ${cleanWord.toLowerCase()} developments."`
-        ];
-
-        if (examples.length > 0) {
-          examples = examples.map((ex, i) => `${i + 1}. ${ex}`);
-          while (examples.length < 5) {
-            examples.push(contextualFallbacks[examples.length]);
+      // 4. Fetch real sentences from Tatoeba Open Corpus (Real Books & Publications)
+      if (realSentences.length < 5) {
+        try {
+          const tatoebaUrl = `https://tatoeba.org/en/api_v0/search?from=eng&to=eng&query=${encodeURIComponent(word)}&trans_filter=limit&limit=8`;
+          const res = await fetch(tatoebaUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            signal: AbortSignal.timeout(2500)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.results)) {
+              for (const item of data.results) {
+                if (item && item.text) {
+                  const txt = item.text.trim();
+                  if (txt && !realSentences.some(s => s.includes(txt))) {
+                    realSentences.push(txt);
+                  }
+                }
+              }
+            }
           }
-        } else {
-          examples = contextualFallbacks;
-        }
+        } catch (e) { }
       }
 
-      if (notesInp) {
-        notesInp.value = examples.join('\n');
+      // 5. Fetch real quotes from Wiktionary
+      if (realSentences.length < 5) {
+        try {
+          const wiktUrl = `https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`;
+          const res = await fetch(wiktUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            signal: AbortSignal.timeout(2500)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.en && Array.isArray(data.en)) {
+              for (const sec of data.en) {
+                if (Array.isArray(sec.definitions)) {
+                  for (const d of sec.definitions) {
+                    if (Array.isArray(d.examples)) {
+                      for (const ex of d.examples) {
+                        const plain = typeof ex === 'string' ? ex.replace(/<[^>]+>/g, '').trim() : '';
+                        if (plain && !realSentences.some(s => s.includes(plain))) {
+                          realSentences.push(plain);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) { }
       }
 
-      // 5. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
+      // Format final sentences nicely
+      let formattedOutput = [];
+      if (realSentences.length > 0 && realSentences[0].startsWith('🗣️')) {
+        formattedOutput = realSentences;
+      } else {
+        const top5 = realSentences.slice(0, 5);
+        top5.forEach((st, idx) => {
+          const clean = st.replace(/^\d+\.\s*/, '').trim();
+          if (idx < 2) {
+            formattedOutput.push(`🗣️ Speaking ${idx + 1}: "${clean}"`);
+          } else {
+            formattedOutput.push(`✍️ Writing ${idx - 1}: "${clean}"`);
+          }
+        });
+      }
+
+      if (formattedOutput.length > 0 && notesInp) {
+        notesInp.value = formattedOutput.join('\n');
+      }
+
+      // 6. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
       try {
         await extractAndAttachVideoFromMusic(true);
       } catch (err) {
@@ -6860,10 +6923,15 @@ Yêu cầu định dạng đầu ra chỉ gồm 5 dòng:
     });
   }
 
-  // Keyboard shortcut listeners (Space = Flip, ArrowLeft/Right = Prev/Next, T = TikTok, S = Speak)
+  // Keyboard shortcut listeners (Only active when NOT in Add/Edit Form)
   window.addEventListener('keydown', (e) => {
     const pane = document.getElementById('paneTiktokFlashcard');
     if (!pane || !pane.classList.contains('active')) return;
+
+    // Never intercept shortcuts if user is currently inside the Add/Edit form
+    const formState = document.getElementById('tkFormState');
+    if (formState && formState.style.display !== 'none') return;
+
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
 
     if (e.code === 'Space') {
