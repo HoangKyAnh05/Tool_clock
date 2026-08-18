@@ -1840,7 +1840,7 @@ ipcMain.handle('sync-flashcards-to-web', async (event, data) => {
       success: true,
       url: webUrl,
       gitPushed: pushResult.success,
-      totalCount: (vaultData.items || []).length,
+      totalCount: webItems.length,
       message: pushResult.success ? 'Đã đẩy dữ liệu flashcard lên GitHub Pages thành công!' : 'Đã lưu và tạo file Web. Hãy kiểm tra kết nối mạng khi push.'
     };
   } catch (err) {
