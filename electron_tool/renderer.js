@@ -6164,7 +6164,37 @@ let tkSavedMusicList = [
 ];
 
 let activeTkCardId = null;
+let selectedTkCardIds = new Set();
+let lastSelectedTkId = null;
 let tkInitialized = false;
+
+function updateTkSelectionUI() {
+  const bar = document.getElementById('tkSelectionBar');
+  const countEl = document.getElementById('tkSelectedCount');
+  const btnSync = document.getElementById('btnTkSyncWeb');
+  const btnPlayerSync = document.getElementById('btnTkPlayerSyncWeb');
+
+  if (selectedTkCardIds.size > 1) {
+    if (bar) bar.style.display = 'flex';
+    if (countEl) countEl.textContent = selectedTkCardIds.size;
+    if (btnSync) {
+      btnSync.innerHTML = `🌐 Đẩy ${selectedTkCardIds.size} từ đã chọn lên Web`;
+      btnSync.style.background = 'linear-gradient(135deg, #00f2fe 0%, #10b981 100%)';
+    }
+    if (btnPlayerSync) {
+      btnPlayerSync.innerHTML = `🌐 Đẩy ${selectedTkCardIds.size} từ`;
+    }
+  } else {
+    if (bar) bar.style.display = 'none';
+    if (btnSync) {
+      btnSync.innerHTML = '🌐 Đẩy lên Web Mobile';
+      btnSync.style.background = 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)';
+    }
+    if (btnPlayerSync) {
+      btnPlayerSync.innerHTML = '🌐 Web Mobile';
+    }
+  }
+}
 
 async function loadTkFlashcardData() {
   if (window.taskAPI && window.taskAPI.loadMemorizeVault) {
@@ -6351,22 +6381,34 @@ function renderTkFlashcardList() {
     if (emptyEl) emptyEl.style.display = 'block';
     const playerState = document.getElementById('tkPlayerState');
     if (playerState) playerState.style.display = 'none';
+    updateTkSelectionUI();
     return;
   }
 
   if (emptyEl) emptyEl.style.display = 'none';
   listEl.innerHTML = '';
 
-  items.forEach(item => {
+  items.forEach((item, idx) => {
     const li = document.createElement('li');
-    li.className = `ielts-item-card ${item.id === activeTkCardId ? 'active' : ''}`;
+    const isSelected = selectedTkCardIds.has(item.id);
+    const isActive = item.id === activeTkCardId;
+
+    li.className = `ielts-item-card ${isActive ? 'active' : ''}`;
+    if (isSelected) {
+      li.style.background = 'rgba(0, 242, 254, 0.16)';
+      li.style.borderColor = '#00f2fe';
+      li.style.boxShadow = '0 0 10px rgba(0, 242, 254, 0.3)';
+    }
 
     const lvl = item.level || 1;
     const isDue = !item.nextReviewDate || item.nextReviewDate <= new Date().toISOString().split('T')[0];
 
     li.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-        <span style="font-weight: 700; font-size: 13.5px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${escapeHtml(item.word)}</span>
+        <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden;">
+          ${isSelected ? '<span style="font-size: 13px; color: #00f2fe; flex-shrink: 0;">☑️</span>' : ''}
+          <span style="font-weight: 700; font-size: 13.5px; color: ${isSelected ? '#00f2fe' : '#fff'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.word)}</span>
+        </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
           <button class="tk-quick-video-btn" data-url="${escapeHtml(item.tiktokUrl || '')}" data-word="${escapeHtml(item.word)}" title="🎬 Xem video TikTok ngay" style="background: rgba(255, 0, 80, 0.15); border: 1px solid rgba(255, 0, 80, 0.4); color: #ff0050; border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: all 0.2s;">
             🎬 Xem
@@ -6399,13 +6441,45 @@ function renderTkFlashcardList() {
         return;
       }
 
+      if (e.shiftKey && lastSelectedTkId) {
+        // Shift + Click: Range selection from start to end
+        const startIdx = items.findIndex(x => x.id === lastSelectedTkId);
+        const endIdx = items.findIndex(x => x.id === item.id);
+        if (startIdx !== -1 && endIdx !== -1) {
+          const min = Math.min(startIdx, endIdx);
+          const max = Math.max(startIdx, endIdx);
+          for (let i = min; i <= max; i++) {
+            selectedTkCardIds.add(items[i].id);
+          }
+        }
+        if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.1);
+      } else if (e.ctrlKey || e.metaKey) {
+        // Ctrl + Click: Toggle individual selection
+        if (selectedTkCardIds.has(item.id)) {
+          selectedTkCardIds.delete(item.id);
+        } else {
+          selectedTkCardIds.add(item.id);
+        }
+        lastSelectedTkId = item.id;
+        if (typeof playTone === 'function') playTone(650, 0.05, 'sine', 0.1);
+      } else {
+        // Normal click: single select
+        if (selectedTkCardIds.size > 0) {
+          selectedTkCardIds.clear();
+        }
+        lastSelectedTkId = item.id;
+      }
+
       activeTkCardId = item.id;
+      updateTkSelectionUI();
       renderTkFlashcardList();
       renderTkPlayer(item);
     });
 
     listEl.appendChild(li);
   });
+
+  updateTkSelectionUI();
 
   if (!activeTkCardId && items.length > 0) {
     activeTkCardId = items[0].id;
@@ -7565,7 +7639,13 @@ Yêu cầu gồm:
 
     try {
       if (window.taskAPI && window.taskAPI.syncFlashcardsToWeb) {
-        const result = await window.taskAPI.syncFlashcardsToWeb(tkFlashcardData);
+        let payload = tkFlashcardData;
+        if (selectedTkCardIds.size > 1) {
+          const selectedItems = (tkFlashcardData.items || []).filter(x => selectedTkCardIds.has(x.id));
+          payload = { items: selectedItems };
+        }
+
+        const result = await window.taskAPI.syncFlashcardsToWeb(payload);
         if (result && result.success) {
           const modal = document.getElementById('tkSyncWebModal');
           const qrImg = document.getElementById('tkSyncWebQr');
@@ -7576,7 +7656,7 @@ Yêu cầu gồm:
             urlInput.value = result.url;
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(result.url)}`;
             if (msgEl) {
-              msgEl.textContent = `Đã cập nhật ${result.totalCount || (tkFlashcardData.items || []).length} thẻ flashcard. Quét mã QR bằng điện thoại để xem ngay:`;
+              msgEl.textContent = `Đã cập nhật ${result.totalCount || (payload.items || []).length} thẻ flashcard. Quét mã QR bằng điện thoại để xem ngay:`;
             }
             modal.classList.add('active');
 
@@ -7608,6 +7688,7 @@ Yêu cầu gồm:
         btnPlayer.disabled = false;
         btnPlayer.innerHTML = oldTextPlayer;
       }
+      updateTkSelectionUI();
     }
   }
 
@@ -7616,6 +7697,28 @@ Yêu cầu gồm:
 
   const btnPlayerSyncWeb = document.getElementById('btnTkPlayerSyncWeb');
   if (btnPlayerSyncWeb) btnPlayerSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
+
+  // Selection toolbar buttons
+  const btnSelectAll = document.getElementById('btnTkSelectAll');
+  if (btnSelectAll) {
+    btnSelectAll.addEventListener('click', () => {
+      const items = getTkFilteredItems();
+      items.forEach(x => selectedTkCardIds.add(x.id));
+      updateTkSelectionUI();
+      renderTkFlashcardList();
+      if (typeof playTone === 'function') playTone(750, 0.05, 'sine', 0.1);
+    });
+  }
+
+  const btnClearSelect = document.getElementById('btnTkClearSelect');
+  if (btnClearSelect) {
+    btnClearSelect.addEventListener('click', () => {
+      selectedTkCardIds.clear();
+      updateTkSelectionUI();
+      renderTkFlashcardList();
+      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+    });
+  }
 
   // Sync Modal Buttons
   const btnCloseSyncModal = document.getElementById('btnTkSyncWebClose');
