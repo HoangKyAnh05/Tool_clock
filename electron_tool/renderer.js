@@ -7547,6 +7547,110 @@ Yêu cầu gồm:
     });
   }
 
+  // Sync Flashcards to Web Handler
+  async function handleSyncFlashcardsToWeb() {
+    const btnHeader = document.getElementById('btnTkSyncWeb');
+    const btnPlayer = document.getElementById('btnTkPlayerSyncWeb');
+    const oldTextHeader = btnHeader ? btnHeader.innerHTML : '';
+    const oldTextPlayer = btnPlayer ? btnPlayer.innerHTML : '';
+
+    if (btnHeader) {
+      btnHeader.disabled = true;
+      btnHeader.innerHTML = '⏳ Đang đẩy lên Web...';
+    }
+    if (btnPlayer) {
+      btnPlayer.disabled = true;
+      btnPlayer.innerHTML = '⏳ Đang đẩy...';
+    }
+
+    try {
+      if (window.taskAPI && window.taskAPI.syncFlashcardsToWeb) {
+        const result = await window.taskAPI.syncFlashcardsToWeb(tkFlashcardData);
+        if (result && result.success) {
+          const modal = document.getElementById('tkSyncWebModal');
+          const qrImg = document.getElementById('tkSyncWebQr');
+          const urlInput = document.getElementById('tkSyncWebUrlInput');
+          const msgEl = document.getElementById('tkSyncWebMsg');
+
+          if (modal && qrImg && urlInput) {
+            urlInput.value = result.url;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(result.url)}`;
+            if (msgEl) {
+              msgEl.textContent = `Đã cập nhật ${result.totalCount || (tkFlashcardData.items || []).length} thẻ flashcard. Quét mã QR bằng điện thoại để xem ngay:`;
+            }
+            modal.classList.add('active');
+
+            if (typeof playTone === 'function') {
+              playTone(523, 0.08, 'sine', 0.15);
+              setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
+              setTimeout(() => playTone(784, 0.15, 'sine', 0.15), 160);
+            }
+          }
+        } else {
+          alert('Không thể cập nhật Web: ' + (result ? result.error : 'Lỗi không xác định.'));
+        }
+      } else {
+        alert('Tính năng đồng bộ Web chưa được cấu hình.');
+      }
+    } catch (err) {
+      console.error('Sync flashcards to web failed:', err);
+      alert('Có lỗi xảy ra: ' + err.message);
+    } finally {
+      if (btnHeader) {
+        btnHeader.disabled = false;
+        btnHeader.innerHTML = oldTextHeader;
+      }
+      if (btnPlayer) {
+        btnPlayer.disabled = false;
+        btnPlayer.innerHTML = oldTextPlayer;
+      }
+    }
+  }
+
+  const btnSyncWeb = document.getElementById('btnTkSyncWeb');
+  if (btnSyncWeb) btnSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
+
+  const btnPlayerSyncWeb = document.getElementById('btnTkPlayerSyncWeb');
+  if (btnPlayerSyncWeb) btnPlayerSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
+
+  // Sync Modal Buttons
+  const btnCloseSyncModal = document.getElementById('btnTkSyncWebClose');
+  if (btnCloseSyncModal) {
+    btnCloseSyncModal.addEventListener('click', () => {
+      document.getElementById('tkSyncWebModal')?.classList.remove('active');
+    });
+  }
+
+  const btnCopyWebUrl = document.getElementById('btnTkCopyWebUrl');
+  if (btnCopyWebUrl) {
+    btnCopyWebUrl.addEventListener('click', () => {
+      const urlInput = document.getElementById('tkSyncWebUrlInput');
+      if (urlInput && urlInput.value) {
+        if (window.taskAPI && window.taskAPI.writeClipboardText) {
+          window.taskAPI.writeClipboardText(urlInput.value);
+        } else {
+          navigator.clipboard.writeText(urlInput.value);
+        }
+        btnCopyWebUrl.textContent = '✅ Đã Copy!';
+        if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.12);
+        setTimeout(() => { btnCopyWebUrl.textContent = '📋 Copy'; }, 2000);
+      }
+    });
+  }
+
+  const btnOpenWebUrl = document.getElementById('btnTkOpenWebUrl');
+  if (btnOpenWebUrl) {
+    btnOpenWebUrl.addEventListener('click', () => {
+      const urlInput = document.getElementById('tkSyncWebUrlInput');
+      const targetUrl = urlInput?.value || 'https://hoangkyanh05.github.io/Tool_clock/';
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(targetUrl);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+    });
+  }
+
   // Keyboard shortcut listeners (Only active when NOT in Add/Edit Form)
   window.addEventListener('keydown', (e) => {
     const pane = document.getElementById('paneTiktokFlashcard');

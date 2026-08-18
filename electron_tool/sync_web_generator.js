@@ -1,0 +1,1255 @@
+// sync_web_generator.js
+// Generates standalone, mobile-optimized Flashcard Web App for GitHub Pages / Vercel
+const fs = require('fs');
+const path = require('path');
+
+function generateMobileHtml(data) {
+  const items = (data && data.items) ? data.items : [];
+  const totalCount = items.length;
+  
+  // Calculate 3-day partition
+  const day1Limit = Math.ceil(totalCount / 3);
+  const day2Limit = Math.ceil((totalCount * 2) / 3);
+  
+  const jsonData = JSON.stringify(items);
+
+  return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>IELTS Flashcard 3-Day Mastery</title>
+  <meta name="description" content="Trang học 645 thẻ từ vựng & cấu trúc ngữ pháp IELTS chia lộ trình 3 ngày với phát âm, ví dụ Speaking & Writing thực tế.">
+  <meta name="theme-color" content="#0d0e15">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IELTS Flashcard">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --bg-card: #131722;
+      --bg-card-back: #0e201b;
+      --surface: #1a2030;
+      --primary: #00f2fe;
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      --accent-pink: #ff0050;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-gold: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 242, 254, 0.35);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    /* Header Nav */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 13, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(255, 0, 80, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      background: linear-gradient(135deg, #fff 40%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Day Tabs Filter */
+    .filter-container {
+      padding: 10px 14px 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .day-tab {
+      padding: 8px 14px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .day-tab.active {
+      background: linear-gradient(135deg, #ff0050 0%, #8b5cf6 100%);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(255, 0, 80, 0.35);
+    }
+
+    .day-tab .tab-badge {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 10px;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 14px 14px;
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 4px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .progress-pill {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* 3D Flashcard Stage */
+    .card-stage {
+      position: relative;
+      width: 100%;
+      min-height: 480px;
+      perspective: 1200px;
+      margin-bottom: 12px;
+    }
+
+    .card-3d {
+      width: 100%;
+      height: 100%;
+      min-height: 480px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .card-3d.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Front Card Face */
+    .card-front {
+      background: linear-gradient(160deg, #181c2b 0%, #0d0f1a 100%);
+      border: 2px solid rgba(0, 242, 254, 0.25);
+    }
+
+    .card-front::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Back Card Face */
+    .card-back {
+      background: linear-gradient(160deg, #092019 0%, #091319 100%);
+      border: 2px solid rgba(16, 185, 129, 0.35);
+      transform: rotateY(180deg);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .tag-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .tag-day {
+      background: rgba(139, 92, 246, 0.25);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+
+    .tag-level {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .speak-btn-bubble {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .speak-btn-bubble:active {
+      transform: scale(0.9);
+      background: rgba(0, 242, 254, 0.3);
+    }
+
+    /* Card Middle */
+    .card-middle {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 16px 4px;
+      z-index: 2;
+      overflow-y: auto;
+      max-height: 320px;
+    }
+
+    .word-title {
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+      word-break: break-word;
+    }
+
+    .card-front .word-title {
+      background: linear-gradient(135deg, #ffffff 30%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .card-back .word-title {
+      color: #34d399;
+      font-size: 21px;
+    }
+
+    .word-trans-sub {
+      font-size: 16px;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 12px;
+    }
+
+    .tap-hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+    }
+
+    /* Examples Scroll Area in Back */
+    .examples-container {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-top: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: #10b981 transparent;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .example-section-header {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #a7f3d0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .example-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .example-en-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .example-en {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.4;
+    }
+
+    .example-vi {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+      line-height: 1.35;
+      font-style: italic;
+    }
+
+    .example-speak {
+      font-size: 14px;
+      cursor: pointer;
+      color: #38bdf8;
+      padding: 2px 4px;
+      flex-shrink: 0;
+    }
+
+    /* Card Bottom */
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      z-index: 2;
+    }
+
+    .tiktok-btn {
+      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 0, 80, 0.4);
+      text-decoration: none;
+    }
+
+    .tiktok-btn:active {
+      transform: scale(0.95);
+    }
+
+    .flip-btn-sub {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Navigation Controls */
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-nav {
+      flex: 1;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-nav.primary {
+      background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%);
+      color: #0b0d14;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+    }
+
+    .btn-action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-status {
+      flex: 1;
+      height: 42px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-status.due {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    .btn-status.mastered {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
+    .btn-status:active {
+      transform: scale(0.96);
+    }
+
+    /* Search & List Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 13, 20, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 16px;
+      padding-top: calc(16px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .search-input-box {
+      width: 100%;
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-input-box input {
+      width: 100%;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 14px;
+      padding: 0 16px;
+      padding-left: 40px;
+      outline: none;
+    }
+
+    .search-input-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .list-results {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .list-item:active {
+      background: var(--surface);
+      border-color: var(--primary);
+    }
+
+    .list-item-word {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .list-item-trans {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(16, 185, 129, 0.95);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 99px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 200;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">⚡</div>
+      <div class="brand-text">
+        <h1>IELTS FLASHCARD</h1>
+        <p>Lộ trình 3 ngày (${totalCount} thẻ)</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btnSearchToggle" title="Tìm kiếm">🔍</button>
+      <button class="icon-btn" id="btnShuffle" title="Trộn ngẫu nhiên">🎲</button>
+      <button class="icon-btn" id="btnSoundSettings" title="Giọng đọc">🗣️</button>
+    </div>
+  </header>
+
+  <!-- Day Filter Tabs -->
+  <div class="filter-container">
+    <button class="day-tab active" data-day="day1">
+      <span>📅 Ngày 1</span>
+      <span class="tab-badge">1 - ${day1Limit}</span>
+    </button>
+    <button class="day-tab" data-day="day2">
+      <span>📅 Ngày 2</span>
+      <span class="tab-badge">${day1Limit + 1} - ${day2Limit}</span>
+    </button>
+    <button class="day-tab" data-day="day3">
+      <span>📅 Ngày 3</span>
+      <span class="tab-badge">${day2Limit + 1} - ${totalCount}</span>
+    </button>
+    <button class="day-tab" data-day="all">
+      <span>📚 Tất cả</span>
+      <span class="tab-badge">${totalCount}</span>
+    </button>
+    <button class="day-tab" data-day="due">
+      <span>🔴 Cần ôn</span>
+      <span class="tab-badge" id="dueCountBadge">0</span>
+    </button>
+    <button class="day-tab" data-day="mastered">
+      <span>🟢 Đã thuộc</span>
+      <span class="tab-badge" id="masteredCountBadge">0</span>
+    </button>
+  </div>
+
+  <!-- Main Stage -->
+  <main>
+    <div class="stats-bar">
+      <span id="currentCardIndex">Thẻ 1 / ${totalCount}</span>
+      <span class="progress-pill" id="currentDayPill">Ngày 1</span>
+    </div>
+
+    <!-- 3D Card Stage with touch/swipe -->
+    <div class="card-stage">
+      <div class="card-3d" id="card3d">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <div class="card-top">
+            <div class="tag-group">
+              <span class="tag tag-day" id="cardDayTag">Ngày 1</span>
+              <span class="tag tag-level" id="cardLevelTag">Lớp 1</span>
+            </div>
+            <div class="speak-btn-bubble" id="btnSpeakFront" title="Phát âm">🔊</div>
+          </div>
+
+          <div class="card-middle">
+            <div class="word-title" id="cardWord">word</div>
+            <div class="tap-hint">
+              <span>👆</span>
+              <span>Chạm thẻ để lật xem nghĩa & 10 ví dụ</span>
+            </div>
+          </div>
+
+          <div class="card-bottom">
+            <span style="font-size: 11px; color: var(--text-muted);">👈 Vuốt qua thẻ 👉</span>
+            <a href="#" target="_blank" class="tiktok-btn" id="btnTiktokFront">🎬 TikTok Video</a>
+          </div>
+        </div>
+
+        <!-- BACK -->
+        <div class="card-face card-back">
+          <div class="card-top">
+            <div class="tag-group">
+              <span class="tag tag-day" id="cardDayTagBack">Ngày 1</span>
+              <span class="tag tag-level" id="cardLevelTagBack">Lớp 1</span>
+            </div>
+            <div class="speak-btn-bubble" id="btnSpeakBack" title="Phát âm từ">🔊</div>
+          </div>
+
+          <div class="card-middle" style="justify-content: flex-start;">
+            <div class="word-title" id="cardTrans">Dịch nghĩa</div>
+            <div class="word-trans-sub" id="cardWordSub" style="color: #6ee7b7; font-size: 14px;">(Word)</div>
+            
+            <div class="examples-container" id="examplesContainer">
+              <!-- Dynamically populated examples -->
+            </div>
+          </div>
+
+          <div class="card-bottom">
+            <button type="button" class="flip-btn-sub" id="btnFlipBack">🔄 Lật lại</button>
+            <a href="#" target="_blank" class="tiktok-btn" id="btnTiktokBack">🎬 Mở TikTok</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+      <button class="btn-nav" id="btnPrev">◀ Thẻ trước</button>
+      <button class="btn-nav primary" id="btnNext">Thẻ sau ▶</button>
+    </div>
+
+    <!-- Mark Status -->
+    <div class="btn-action-row">
+      <button class="btn-status due" id="btnMarkDue">🔴 Chưa thuộc (Học lại)</button>
+      <button class="btn-status mastered" id="btnMarkMastered">🟢 Đã nhớ từ này</button>
+    </div>
+  </main>
+
+  <!-- Search & List Modal -->
+  <div class="modal" id="searchModal">
+    <div class="modal-header">
+      <div class="modal-title">Danh sách & Tìm kiếm</div>
+      <button class="icon-btn" id="btnCloseSearch">✕</button>
+    </div>
+    <div class="search-input-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh hoặc tiếng Việt..." />
+    </div>
+    <div class="list-results" id="listResults">
+      <!-- Search results -->
+    </div>
+  </div>
+
+  <!-- Toast message -->
+  <div class="toast" id="toast">Đã lưu tiến độ!</div>
+
+  <script>
+    // Embedded dataset
+    const RAW_ITEMS = ${jsonData};
+
+    // Partition ranges
+    const TOTAL = RAW_ITEMS.length;
+    const D1_LIMIT = Math.ceil(TOTAL / 3);
+    const D2_LIMIT = Math.ceil((TOTAL * 2) / 3);
+
+    // State
+    let currentFilter = 'day1';
+    let filteredList = [];
+    let currentIndex = 0;
+    let masteredIds = new Set(JSON.parse(localStorage.getItem('ielts_mastered_ids') || '[]'));
+    let dueIds = new Set(JSON.parse(localStorage.getItem('ielts_due_ids') || '[]'));
+
+    // DOM Elements
+    const card3d = document.getElementById('card3d');
+    const cardWord = document.getElementById('cardWord');
+    const cardTrans = document.getElementById('cardTrans');
+    const cardWordSub = document.getElementById('cardWordSub');
+    const cardDayTag = document.getElementById('cardDayTag');
+    const cardDayTagBack = document.getElementById('cardDayTagBack');
+    const cardLevelTag = document.getElementById('cardLevelTag');
+    const cardLevelTagBack = document.getElementById('cardLevelTagBack');
+    const currentCardIndex = document.getElementById('currentCardIndex');
+    const currentDayPill = document.getElementById('currentDayPill');
+    const examplesContainer = document.getElementById('examplesContainer');
+    const btnTiktokFront = document.getElementById('btnTiktokFront');
+    const btnTiktokBack = document.getElementById('btnTiktokBack');
+    const dueCountBadge = document.getElementById('dueCountBadge');
+    const masteredCountBadge = document.getElementById('masteredCountBadge');
+    const toast = document.getElementById('toast');
+
+    // Speech Synthesis
+    function speakText(text) {
+      if (!window.speechSynthesis || !text) return;
+      window.speechSynthesis.cancel();
+      const clean = text.replace(/🗣️|✍️|👉|"/g, '').trim();
+      const utter = new SpeechSynthesisUtterance(clean);
+      utter.lang = 'en-US';
+      utter.rate = 0.92;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function updateBadges() {
+      dueCountBadge.textContent = dueIds.size;
+      masteredCountBadge.textContent = masteredIds.size;
+      localStorage.setItem('ielts_mastered_ids', JSON.stringify(Array.from(masteredIds)));
+      localStorage.setItem('ielts_due_ids', JSON.stringify(Array.from(dueIds)));
+    }
+
+    function getDayForItem(index) {
+      if (index < D1_LIMIT) return 'Ngày 1';
+      if (index < D2_LIMIT) return 'Ngày 2';
+      return 'Ngày 3';
+    }
+
+    function applyFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.day-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-day') === filter);
+      });
+
+      if (filter === 'day1') {
+        filteredList = RAW_ITEMS.slice(0, D1_LIMIT);
+        currentDayPill.textContent = 'Ngày 1 (Thẻ 1 - ' + D1_LIMIT + ')';
+      } else if (filter === 'day2') {
+        filteredList = RAW_ITEMS.slice(D1_LIMIT, D2_LIMIT);
+        currentDayPill.textContent = 'Ngày 2 (Thẻ ' + (D1_LIMIT + 1) + ' - ' + D2_LIMIT + ')';
+      } else if (filter === 'day3') {
+        filteredList = RAW_ITEMS.slice(D2_LIMIT);
+        currentDayPill.textContent = 'Ngày 3 (Thẻ ' + (D2_LIMIT + 1) + ' - ' + TOTAL + ')';
+      } else if (filter === 'due') {
+        filteredList = RAW_ITEMS.filter(x => dueIds.has(x.id));
+        currentDayPill.textContent = 'Cần ôn (' + filteredList.length + ' từ)';
+      } else if (filter === 'mastered') {
+        filteredList = RAW_ITEMS.filter(x => masteredIds.has(x.id));
+        currentDayPill.textContent = 'Đã thuộc (' + filteredList.length + ' từ)';
+      } else {
+        filteredList = [...RAW_ITEMS];
+        currentDayPill.textContent = 'Tất cả (' + TOTAL + ' từ)';
+      }
+
+      currentIndex = 0;
+      renderCard();
+    }
+
+    function renderCard() {
+      card3d.classList.remove('flipped');
+
+      if (filteredList.length === 0) {
+        cardWord.textContent = 'Không có từ nào';
+        cardTrans.textContent = 'Trống';
+        cardWordSub.textContent = '';
+        currentCardIndex.textContent = '0 / 0';
+        examplesContainer.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">Danh sách này hiện đang trống. Hãy chọn tab khác nhé!</div>';
+        return;
+      }
+
+      if (currentIndex >= filteredList.length) currentIndex = 0;
+      if (currentIndex < 0) currentIndex = filteredList.length - 1;
+
+      const item = filteredList[currentIndex];
+      const rawIndex = RAW_ITEMS.findIndex(x => x.id === item.id);
+      const dayLabel = getDayForItem(rawIndex >= 0 ? rawIndex : 0);
+
+      currentCardIndex.textContent = \`Thẻ \${currentIndex + 1} / \${filteredList.length} (Tổng #\${rawIndex + 1})\`;
+      cardWord.textContent = item.word || '---';
+      cardTrans.textContent = item.translation || '(Chưa có bản dịch)';
+      cardWordSub.textContent = item.word || '';
+
+      cardDayTag.textContent = dayLabel;
+      cardDayTagBack.textContent = dayLabel;
+      cardLevelTag.textContent = 'Lớp ' + (item.level || 1);
+      cardLevelTagBack.textContent = 'Lớp ' + (item.level || 1);
+
+      // TikTok links
+      const tkUrl = item.tiktokUrl || ('https://www.tiktok.com/search?q=' + encodeURIComponent(item.word || ''));
+      btnTiktokFront.href = tkUrl;
+      btnTiktokBack.href = tkUrl;
+
+      // Parse Examples from notes
+      parseAndRenderExamples(item.notes || '');
+    }
+
+    function parseAndRenderExamples(rawNotes) {
+      examplesContainer.innerHTML = '';
+      if (!rawNotes.trim()) {
+        examplesContainer.innerHTML = '<div style="color: #94a3b8; padding: 10px;">Chưa có ví dụ cho từ này.</div>';
+        return;
+      }
+
+      const lines = rawNotes.split('\\n').map(l => l.trim()).filter(Boolean);
+      const speakingItems = [];
+      const writingItems = [];
+      let currentCard = null;
+
+      lines.forEach(line => {
+        if (line.includes('Speaking') || line.startsWith('🗣️')) {
+          if (currentCard) {
+            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+            else writingItems.push(currentCard);
+          }
+          currentCard = { section: 'speaking', en: line.replace(/^🗣️\\s*Speaking\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+        } else if (line.includes('Writing') || line.startsWith('✍️')) {
+          if (currentCard) {
+            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+            else writingItems.push(currentCard);
+          }
+          currentCard = { section: 'writing', en: line.replace(/^✍️\\s*Writing\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+        } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
+          if (currentCard) {
+            currentCard.vi = line.replace(/.*(?:👉\\s*Dịch:|Dịch:)\\s*/i, '').trim();
+          }
+        } else {
+          if (currentCard && !currentCard.vi) {
+            currentCard.en += ' ' + line;
+          }
+        }
+      });
+      if (currentCard) {
+        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        else writingItems.push(currentCard);
+      }
+
+      let html = '';
+      if (speakingItems.length > 0) {
+        html += '<div class="example-section-header">🗣️ IELTS SPEAKING</div>';
+        speakingItems.forEach(sp => {
+          const cleanEn = sp.en.replace(/"/g, '&quot;');
+          html += \`
+            <div class="example-card">
+              <div class="example-en-row">
+                <div class="example-en">\${sp.en}</div>
+                <div class="example-speak" onclick="event.stopPropagation(); speakText('\${cleanEn}')">🔊</div>
+              </div>
+              \${sp.vi ? \`<div class="example-vi">👉 \${sp.vi}</div>\` : ''}
+            </div>
+          \`;
+        });
+      }
+
+      if (writingItems.length > 0) {
+        html += '<div class="example-section-header" style="color: #60a5fa; margin-top: 10px;">✍️ IELTS WRITING</div>';
+        writingItems.forEach(wr => {
+          const cleanEn = wr.en.replace(/"/g, '&quot;');
+          html += \`
+            <div class="example-card">
+              <div class="example-en-row">
+                <div class="example-en">\${wr.en}</div>
+                <div class="example-speak" onclick="event.stopPropagation(); speakText('\${cleanEn}')">🔊</div>
+              </div>
+              \${wr.vi ? \`<div class="example-vi">👉 \${wr.vi}</div>\` : ''}
+            </div>
+          \`;
+        });
+      }
+
+      if (!html) {
+        html = \`<div class="example-card"><div class="example-en">\${rawNotes.replace(/\\n/g, '<br>')}</div></div>\`;
+      }
+
+      examplesContainer.innerHTML = html;
+    }
+
+    // Touch Swipe Gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    card3d.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    card3d.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const dx = touchEndX - touchStartX;
+      const dy = touchEndY - touchStartY;
+      // If horizontal swipe is significant and larger than vertical swipe
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) {
+          // Swipe Left -> Next card
+          document.getElementById('btnNext').click();
+        } else {
+          // Swipe Right -> Prev card
+          document.getElementById('btnPrev').click();
+        }
+      }
+    }
+
+    // Flip Card on tap
+    card3d.addEventListener('click', (e) => {
+      if (e.target.closest('.speak-btn-bubble') || e.target.closest('.tiktok-btn') || e.target.closest('.example-speak') || e.target.closest('.flip-btn-sub')) {
+        return;
+      }
+      card3d.classList.toggle('flipped');
+    });
+
+    document.getElementById('btnFlipBack').addEventListener('click', (e) => {
+      e.stopPropagation();
+      card3d.classList.remove('flipped');
+    });
+
+    // Navigation buttons
+    document.getElementById('btnNext').addEventListener('click', () => {
+      if (filteredList.length === 0) return;
+      currentIndex = (currentIndex + 1) % filteredList.length;
+      renderCard();
+    });
+
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      if (filteredList.length === 0) return;
+      currentIndex = (currentIndex - 1 + filteredList.length) % filteredList.length;
+      renderCard();
+    });
+
+    // Speak buttons
+    document.getElementById('btnSpeakFront').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
+    });
+    document.getElementById('btnSpeakBack').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
+    });
+
+    // Mark Status
+    document.getElementById('btnMarkMastered').addEventListener('click', () => {
+      if (!filteredList[currentIndex]) return;
+      const id = filteredList[currentIndex].id;
+      masteredIds.add(id);
+      dueIds.delete(id);
+      updateBadges();
+      showToast('🟢 Đã đánh dấu: Đã thuộc!');
+      setTimeout(() => document.getElementById('btnNext').click(), 300);
+    });
+
+    document.getElementById('btnMarkDue').addEventListener('click', () => {
+      if (!filteredList[currentIndex]) return;
+      const id = filteredList[currentIndex].id;
+      dueIds.add(id);
+      masteredIds.delete(id);
+      updateBadges();
+      showToast('🔴 Đã lưu vào mục Cần ôn!');
+      setTimeout(() => document.getElementById('btnNext').click(), 300);
+    });
+
+    // Day Tabs Click
+    document.querySelectorAll('.day-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        applyFilter(tab.getAttribute('data-day'));
+      });
+    });
+
+    // Shuffle Button
+    document.getElementById('btnShuffle').addEventListener('click', () => {
+      for (let i = filteredList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredList[i], filteredList[j]] = [filteredList[j], filteredList[i]];
+      }
+      currentIndex = 0;
+      renderCard();
+      showToast('🎲 Đã trộn ngẫu nhiên danh sách!');
+    });
+
+    // Voice test
+    document.getElementById('btnSoundSettings').addEventListener('click', () => {
+      speakText('Welcome to IELTS Flashcard Mastery! Let\'s boost your vocabulary.');
+    });
+
+    // Search & List Modal
+    const searchModal = document.getElementById('searchModal');
+    const searchInput = document.getElementById('searchInput');
+    const listResults = document.getElementById('listResults');
+
+    document.getElementById('btnSearchToggle').addEventListener('click', () => {
+      searchModal.classList.add('active');
+      searchInput.value = '';
+      renderSearchResults('');
+      setTimeout(() => searchInput.focus(), 100);
+    });
+
+    document.getElementById('btnCloseSearch').addEventListener('click', () => {
+      searchModal.classList.remove('active');
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      renderSearchResults(e.target.value);
+    });
+
+    function renderSearchResults(query) {
+      const q = (query || '').toLowerCase().trim();
+      const results = RAW_ITEMS.filter(x => {
+        return (x.word || '').toLowerCase().includes(q) || (x.translation || '').toLowerCase().includes(q);
+      }).slice(0, 50);
+
+      listResults.innerHTML = '';
+      if (results.length === 0) {
+        listResults.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">Không tìm thấy từ nào phù hợp.</div>';
+        return;
+      }
+
+      results.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = \`
+          <div>
+            <div class="list-item-word">\${item.word || '---'}</div>
+            <div class="list-item-trans">\${item.translation || ''}</div>
+          </div>
+          <div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>
+        \`;
+        div.addEventListener('click', () => {
+          searchModal.classList.remove('active');
+          // Switch to all tab
+          applyFilter('all');
+          const idx = filteredList.findIndex(x => x.id === item.id);
+          if (idx >= 0) currentIndex = idx;
+          renderCard();
+        });
+        listResults.appendChild(div);
+      });
+    }
+
+    // Keyboard navigation (for desktop preview)
+    window.addEventListener('keydown', (e) => {
+      if (searchModal.classList.contains('active')) return;
+      if (e.key === 'ArrowRight') document.getElementById('btnNext').click();
+      if (e.key === 'ArrowLeft') document.getElementById('btnPrev').click();
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        card3d.classList.toggle('flipped');
+      }
+      if (e.key === 's' || e.key === 'S') document.getElementById('btnSpeakFront').click();
+    });
+
+    // Init
+    updateBadges();
+    applyFilter('day1');
+  </script>
+</body>
+</html>`;
+}
+
+function writeWebFiles(data, rootDir) {
+  const html = generateMobileHtml(data);
+  
+  // 1. Root index.html (for root GitHub Pages / local browser)
+  const rootIndex = path.join(rootDir, 'index.html');
+  fs.writeFileSync(rootIndex, html, 'utf8');
+
+  // 2. docs/index.html (for /docs GitHub Pages option)
+  const docsDir = path.join(rootDir, 'docs');
+  if (!fs.existsSync(docsDir)) {
+    fs.mkdirSync(docsDir, { recursive: true });
+  }
+  const docsIndex = path.join(docsDir, 'index.html');
+  fs.writeFileSync(docsIndex, html, 'utf8');
+
+  console.log('[SYNC] Successfully generated index.html and docs/index.html');
+  return { rootIndex, docsIndex };
+}
+
+module.exports = {
+  generateMobileHtml,
+  writeWebFiles
+};

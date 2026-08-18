@@ -2,6 +2,7 @@
 const { app, BrowserWindow, shell, ipcMain } = require('electron');
 const path = require('path');
 const fs   = require('fs');
+const syncWebGen = require('./sync_web_generator');
 
 let mainWin = null;
 
@@ -1786,6 +1787,61 @@ ipcMain.handle('save-memorize-vault', async (event, data) => {
   } catch (e) {
     console.error('Failed to save memorize vault:', e);
     return null;
+  }
+});
+
+ipcMain.handle('sync-flashcards-to-web', async (event, data) => {
+  try {
+    let vaultData = data || cachedMemorizeVault;
+    if (!vaultData && fs.existsSync(memorizePath)) {
+      const fileData = await fs.promises.readFile(memorizePath, 'utf8');
+      vaultData = JSON.parse(fileData);
+    }
+    if (!vaultData) vaultData = { items: [] };
+    cachedMemorizeVault = vaultData;
+
+    // Save to memorize_vault.json
+    await fs.promises.writeFile(memorizePath, JSON.stringify(vaultData, null, 2), 'utf8');
+    broadcastVaultUpdate('memorize', vaultData);
+
+    // Generate standalone index.html in root & docs
+    const rootDir = path.join(__dirname, '..');
+    syncWebGen.writeWebFiles(vaultData, rootDir);
+
+    // Run Git commands to commit & push to GitHub Pages
+    const { exec } = require('child_process');
+    const runGitCmd = (cmd) => {
+      return new Promise((resolve) => {
+        exec(cmd, { cwd: rootDir }, (err, stdout, stderr) => {
+          if (err) {
+            console.warn(`[GIT] Warning on "${cmd}":`, stderr || err.message);
+            resolve({ success: false, error: stderr || err.message, stdout });
+          } else {
+            resolve({ success: true, stdout });
+          }
+        });
+      });
+    };
+
+    console.log('[MAIN] Running Git push for Flashcard Web...');
+    await runGitCmd('git add .');
+    await runGitCmd('git commit -m "Update IELTS Flashcards on Mobile Web"');
+    const pushResult = await runGitCmd('git push origin main');
+
+    const webUrl = 'https://hoangkyanh05.github.io/Tool_clock/';
+    return {
+      success: true,
+      url: webUrl,
+      gitPushed: pushResult.success,
+      totalCount: (vaultData.items || []).length,
+      message: pushResult.success ? 'Đã đẩy dữ liệu flashcard lên GitHub Pages thành công!' : 'Đã lưu và tạo file Web. Hãy kiểm tra kết nối mạng khi push.'
+    };
+  } catch (err) {
+    console.error('[MAIN] Failed to sync flashcards to web:', err);
+    return {
+      success: false,
+      error: err.message
+    };
   }
 });
 

@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('taskAPI', {
   onVaultUpdated: (callback) => ipcRenderer.on('vault-updated', (event, info) => callback(info)),
   loadMemorizeVault: () => ipcRenderer.invoke('load-memorize-vault'),
   saveMemorizeVault: (data) => ipcRenderer.invoke('save-memorize-vault', data),
+  syncFlashcardsToWeb: (data) => ipcRenderer.invoke('sync-flashcards-to-web', data),
   searchImages: (query) => ipcRenderer.invoke('search-images', query),
   searchYoutubeVideos: (query) => ipcRenderer.invoke('search-youtube-videos', query),
   extractTiktokMusicVideos: (musicUrl) => ipcRenderer.invoke('extract-tiktok-music-videos', musicUrl),
