@@ -1069,7 +1069,11 @@
           </div>
 
           <!-- Multi-selection Toolbar -->
-          <div id="tkSelectionBar" style="display: none; justify-content: space-between; align-items: center; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 8px; padding: 6px 10px; font-size: 11.5px; font-weight: 700; color: #00f2fe; margin-bottom: 2px;">
+          <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+            <button type="button" id="btnTkOpenRangeModal" class="btn-modal" style="flex: 1; height: 32px; font-size: 11.5px; font-weight: 700; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #c084fc; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Chọn từ số A đến số B">📍 Chọn đoạn (Từ A ➔ B)</button>
+          </div>
+
+          <div id="tkSelectionBar" style="display: none; justify-content: space-between; align-items: center; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 8px; padding: 6px 10px; font-size: 11.5px; font-weight: 700; color: #00f2fe; margin-bottom: 6px;">
             <span>Đã chọn: <b id="tkSelectedCount" style="color: #fff; font-size: 13px;">0</b> từ</span>
             <div style="display: flex; gap: 6px;">
               <button type="button" id="btnTkSelectAll" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer;">Tất cả</button>
@@ -2617,6 +2621,39 @@
 
       <div style="display: flex; justify-content: flex-end;">
         <button type="button" id="btnTkSyncWebClose" class="btn-modal btn-cancel" style="height: 34px; font-size: 12px; padding: 0 20px; width: auto;">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Range Selector (Từ Thẻ A đến Thẻ B) -->
+  <div id="tkRangeSelectModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px; width: 95%; text-align: left; padding: 22px; border: 1px solid rgba(139, 92, 246, 0.4); box-shadow: 0 10px 40px rgba(139, 92, 246, 0.25);">
+      <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px;">
+        📍 Chọn Đoạn Từ Vựng (Từ Thẻ A ➔ B)
+      </h3>
+      <p style="font-size: 12.5px; color: var(--muted); margin: 0 0 16px 0;">
+        Nhập số thứ tự thẻ bắt đầu và kết thúc để chọn nhanh toàn bộ các từ ở giữa:
+      </p>
+
+      <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
+        <div style="flex: 1;">
+          <label style="font-size: 11.5px; color: #a7f3d0; font-weight: 700; display: block; margin-bottom: 4px;">Từ Thẻ Số (#):</label>
+          <input type="number" id="tkRangeFromInp" class="inp" min="1" value="1" style="height: 38px; font-size: 15px; font-weight: 800; text-align: center; color: #00f2fe;" />
+        </div>
+        <div style="font-size: 20px; color: var(--muted); padding-top: 18px;">➔</div>
+        <div style="flex: 1;">
+          <label style="font-size: 11.5px; color: #a7f3d0; font-weight: 700; display: block; margin-bottom: 4px;">Đến Thẻ Số (#):</label>
+          <input type="number" id="tkRangeToInp" class="inp" min="1" value="50" style="height: 38px; font-size: 15px; font-weight: 800; text-align: center; color: #00f2fe;" />
+        </div>
+      </div>
+
+      <div id="tkRangePreviewText" style="font-size: 12px; color: var(--muted); margin-bottom: 18px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; line-height: 1.4;">
+        Sẽ chọn: <b id="tkRangeCalcCount" style="color: #00f2fe; font-size: 14px;">50</b> từ (từ thẻ 1 đến thẻ 50).
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" id="btnTkRangeCancel" class="btn-modal btn-cancel" style="height: 36px; padding: 0 16px; font-size: 12px; width: auto;">Hủy</button>
+        <button type="button" id="btnTkRangeApply" class="btn-primary-glow" style="height: 36px; padding: 0 20px; font-size: 12.5px; font-weight: 800; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); color: #0b0d14; width: auto;">✅ Chọn ngay</button>
       </div>
     </div>
   </div>

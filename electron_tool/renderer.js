@@ -7640,9 +7640,9 @@ Yêu cầu gồm:
     try {
       if (window.taskAPI && window.taskAPI.syncFlashcardsToWeb) {
         let payload = tkFlashcardData;
-        if (selectedTkCardIds.size > 1) {
+        if (selectedTkCardIds.size > 0) {
           const selectedItems = (tkFlashcardData.items || []).filter(x => selectedTkCardIds.has(x.id));
-          payload = { items: selectedItems };
+          payload = { items: selectedItems, isPartial: true };
         }
 
         const result = await window.taskAPI.syncFlashcardsToWeb(payload);
@@ -7656,7 +7656,7 @@ Yêu cầu gồm:
             urlInput.value = result.url;
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(result.url)}`;
             if (msgEl) {
-              msgEl.textContent = `Đã cập nhật ${result.totalCount || (payload.items || []).length} thẻ flashcard. Quét mã QR bằng điện thoại để xem ngay:`;
+              msgEl.textContent = `Đã cập nhật đúng ${result.totalCount || (payload.items || []).length} thẻ bạn đã chọn lên Web. Quét mã QR bằng điện thoại để xem ngay:`;
             }
             modal.classList.add('active');
 
@@ -7717,6 +7717,87 @@ Yêu cầu gồm:
       updateTkSelectionUI();
       renderTkFlashcardList();
       if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+    });
+  }
+
+  // Range Selector Modal Logic
+  const rangeModal = document.getElementById('tkRangeSelectModal');
+  const btnOpenRange = document.getElementById('btnTkOpenRangeModal');
+  const btnCancelRange = document.getElementById('btnTkRangeCancel');
+  const btnApplyRange = document.getElementById('btnTkRangeApply');
+  const rangeFromInp = document.getElementById('tkRangeFromInp');
+  const rangeToInp = document.getElementById('tkRangeToInp');
+  const rangeCalcCount = document.getElementById('tkRangeCalcCount');
+
+  function updateRangePreview() {
+    const items = getTkFilteredItems();
+    let from = parseInt(rangeFromInp?.value || '1', 10);
+    let to = parseInt(rangeToInp?.value || '1', 10);
+    if (isNaN(from) || from < 1) from = 1;
+    if (isNaN(to) || to < 1) to = 1;
+    if (to > items.length) to = items.length;
+    if (from > items.length) from = items.length;
+
+    const count = Math.abs(to - from) + 1;
+    if (rangeCalcCount) {
+      rangeCalcCount.textContent = count;
+    }
+  }
+
+  if (btnOpenRange) {
+    btnOpenRange.addEventListener('click', () => {
+      const items = getTkFilteredItems();
+      if (rangeFromInp) {
+        rangeFromInp.max = items.length;
+        rangeFromInp.value = 1;
+      }
+      if (rangeToInp) {
+        rangeToInp.max = items.length;
+        rangeToInp.value = Math.min(50, items.length);
+      }
+      updateRangePreview();
+      rangeModal?.classList.add('active');
+    });
+  }
+
+  if (rangeFromInp) rangeFromInp.addEventListener('input', updateRangePreview);
+  if (rangeToInp) rangeToInp.addEventListener('input', updateRangePreview);
+
+  if (btnCancelRange) {
+    btnCancelRange.addEventListener('click', () => {
+      rangeModal?.classList.remove('active');
+    });
+  }
+
+  if (btnApplyRange) {
+    btnApplyRange.addEventListener('click', () => {
+      const items = getTkFilteredItems();
+      let from = parseInt(rangeFromInp?.value || '1', 10);
+      let to = parseInt(rangeToInp?.value || '1', 10);
+      if (isNaN(from) || from < 1) from = 1;
+      if (isNaN(to) || to < 1) to = 1;
+
+      const min = Math.min(from, to) - 1;
+      const max = Math.max(from, to) - 1;
+
+      selectedTkCardIds.clear();
+      for (let i = min; i <= max && i < items.length; i++) {
+        if (items[i]) selectedTkCardIds.add(items[i].id);
+      }
+
+      if (items[min]) {
+        activeTkCardId = items[min].id;
+        renderTkPlayer(items[min]);
+      }
+
+      rangeModal?.classList.remove('active');
+      updateTkSelectionUI();
+      renderTkFlashcardList();
+
+      if (typeof playTone === 'function') {
+        playTone(523, 0.08, 'sine', 0.15);
+        setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
+      }
     });
   }
 
