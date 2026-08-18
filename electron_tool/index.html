@@ -1202,75 +1202,75 @@
 
             <!-- Big 3D Flip Flashcard -->
             <div id="tk3dCardWrap" class="flashcard-3d-wrap"
-              style="width: 100%; max-width: 580px; height: 260px; perspective: 1000px; cursor: pointer;"
+              style="width: 100%; max-width: 580px; height: 280px; min-height: 280px; perspective: 1000px; cursor: pointer; position: relative;"
               title="Nhấp vào thẻ để lật xem mặt sau">
               <div id="tk3dCardInner" class="flashcard-3d-inner"
                 style="width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; box-shadow: 0 12px 35px rgba(0,0,0,0.6);">
 
                 <!-- FRONT OF CARD -->
                 <div class="flashcard-face"
-                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; padding: 22px 26px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(255, 0, 80, 0.35); background: linear-gradient(145deg, #1e1035 0%, #110d24 100%); box-sizing: border-box;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; padding: 18px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(255, 0, 80, 0.35); background: linear-gradient(145deg, #1e1035 0%, #110d24 100%); box-sizing: border-box; overflow: hidden;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <span
                       style="font-size: 11.5px; font-weight: 700; color: #c084fc; letter-spacing: 1px; text-transform: uppercase;">MẶT
                       TRƯỚC (TỪ / CÂU GỐC)</span>
                     <button type="button" id="btnTkSpeakFront" class="ctrl-btn"
-                      style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;"
+                      style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
                       title="Phát âm (Phím S)">🔊</button>
                   </div>
 
-                  <div style="text-align: center; margin: auto 0;">
+                  <div class="card-content-scroll" style="text-align: center; margin: auto 0; max-height: calc(100% - 85px); overflow-y: auto; padding: 4px 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; box-sizing: border-box;">
                     <h2 id="lblTkWord"
-                      style="margin: 0; font-size: 32px; font-weight: 800; color: #fff; letter-spacing: 0.5px; word-break: break-word;">
+                      style="margin: 0; font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 0.5px; word-break: break-word; line-height: 1.35;">
                       Word</h2>
-                    <p style="margin: 8px 0 0 0; font-size: 12.5px; color: var(--muted);">Nhấp vào thẻ hoặc bấm phím
+                    <p style="margin: 6px 0 0 0; font-size: 12px; color: var(--muted); flex-shrink: 0;">Bấm
                       <kbd
                         style="background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 4px; color: #fff; font-size: 11px; border: 1px solid rgba(255,255,255,0.2);">Space</kbd>
-                      để lật xem nghĩa
+                      mở TikTok | Nhấp thẻ / Bấm <kbd style="background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 11px; border: 1px solid rgba(255,255,255,0.2);">Enter</kbd> lật nghĩa
                     </p>
                   </div>
 
                   <div
-                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; flex-shrink: 0;">
                     <span style="font-size: 11.5px; color: #00f2fe; display: flex; align-items: center; gap: 4px;">🎵
                       Link TikTok tự động gắn</span>
                     <button type="button" id="btnTkOpenTiktokFront" class="btn-primary-glow"
-                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 34px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
-                      title="Mở video TikTok ngay (Phím T)">🎵 Xem Video TikTok (T)</button>
+                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 32px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
+                      title="Mở video TikTok ngay (Phím Space)">🎵 Xem Video TikTok (Space)</button>
                   </div>
                 </div>
 
                 <!-- BACK OF CARD -->
                 <div class="flashcard-face"
-                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); border-radius: 16px; padding: 22px 26px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(52, 211, 153, 0.4); background: linear-gradient(145deg, #062b22 0%, #0f172a 100%); box-sizing: border-box;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                  style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); border-radius: 16px; padding: 18px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid rgba(52, 211, 153, 0.4); background: linear-gradient(145deg, #062b22 0%, #0f172a 100%); box-sizing: border-box; overflow: hidden;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <span
                       style="font-size: 11.5px; font-weight: 700; color: #34d399; letter-spacing: 1px; text-transform: uppercase;">MẶT
                       SAU (DỊCH NGHĨA & CHI TIẾT)</span>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span id="lblTkBackWordMini" style="font-size: 13px; color: #a7f3d0; font-weight: 600;">Word</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                      <span id="lblTkBackWordMini" style="font-size: 13px; color: #a7f3d0; font-weight: 600; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Word</span>
                       <button type="button" id="btnTkExpandDetailCard" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; width: auto; background: rgba(52, 211, 153, 0.2); border: 1px solid rgba(52, 211, 153, 0.5); color: #34d399; border-radius: 6px; cursor: pointer; font-weight: bold;" title="Phóng to xem toàn bộ 10 ví dụ">🔍 Phóng to</button>
                     </div>
                   </div>
 
-                  <div
-                    style="display: flex; flex-direction: column; justify-content: center; margin: auto 0; text-align: center;">
+                  <div class="card-content-scroll"
+                    style="display: flex; flex-direction: column; justify-content: center; margin: auto 0; text-align: center; max-height: calc(100% - 85px); overflow-y: auto; padding: 4px 6px; width: 100%; box-sizing: border-box;">
                     <h3 id="lblTkTrans"
-                      style="margin: 0 0 6px 0; font-size: 24px; font-weight: 800; color: #6ee7b7; word-break: break-word;">
+                      style="margin: 0 0 6px 0; font-size: 20px; font-weight: 800; color: #6ee7b7; word-break: break-word; line-height: 1.35;">
                       Dịch nghĩa tiếng Việt</h3>
                     <p id="lblTkNotes"
-                      style="margin: 0; font-size: 13.5px; color: #e2e8f0; line-height: 1.5; max-height: 55px; overflow-y: auto; white-space: pre-line;">
+                      style="margin: 0; font-size: 13px; color: #e2e8f0; line-height: 1.45; max-height: 70px; overflow-y: auto; white-space: pre-line;">
                       Ghi chú ngữ cảnh...</p>
                   </div>
 
                   <div
-                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                    style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; flex-shrink: 0;">
                     <button type="button" id="btnTkFlipBack" class="btn-modal btn-cancel"
-                      style="height: 34px; font-size: 11.5px; padding: 0 12px; width: auto;">🔄 Lật lại mặt
+                      style="height: 32px; font-size: 11.5px; padding: 0 12px; width: auto;">🔄 Lật lại mặt
                       trước</button>
                     <button type="button" id="btnTkOpenTiktokBack" class="btn-primary-glow"
-                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 34px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
-                      title="Mở video TikTok ngay (Phím T)">🎵 Xem Video TikTok (T)</button>
+                      style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 16px; height: 32px; font-size: 12px; font-weight: 800; width: auto; color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,0,80,0.5);"
+                      title="Mở video TikTok ngay (Phím Space)">🎵 Xem Video TikTok (Space)</button>
                   </div>
                 </div>
 
@@ -1281,13 +1281,13 @@
             <div
               style="display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; max-width: 580px; flex-wrap: wrap;">
               <button type="button" id="btnTkPrev" class="btn-primary-glow"
-                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">◀
+                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;" title="Thẻ trước (Phím ←)">◀
                 Thẻ trước (←)</button>
               <button type="button" id="btnTkFlipToggle" class="btn-primary-glow"
-                style="padding: 0 24px; height: 38px; font-size: 13.5px; font-weight: 800; width: auto; background: linear-gradient(135deg, #ff0050 0%, #7c3aed 100%); box-shadow: 0 0 16px rgba(255,0,80,0.4);">🔄
-                Lật thẻ (Space)</button>
+                style="padding: 0 24px; height: 38px; font-size: 13.5px; font-weight: 800; width: auto; background: linear-gradient(135deg, #ff0050 0%, #7c3aed 100%); box-shadow: 0 0 16px rgba(255,0,80,0.4);" title="Lật thẻ (Nhấp thẻ hoặc phím Enter)">🔄
+                Lật thẻ</button>
               <button type="button" id="btnTkNext" class="btn-primary-glow"
-                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">Thẻ
+                style="padding: 0 18px; height: 38px; font-size: 13px; font-weight: 700; width: auto; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;" title="Thẻ sau (Phím →)">Thẻ
                 sau ▶ (→)</button>
             </div>
 
@@ -2149,7 +2149,7 @@
           <p id="tkExpandModalTrans" style="margin: 6px 0 0 0; font-size: 16px; font-weight: 700; color: #34d399;">Dịch nghĩa tiếng Việt</p>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-          <button type="button" id="btnTkExpandOpenTiktok" class="btn-primary-glow" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 14px; height: 32px; font-size: 11.5px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;" title="Mở video TikTok của từ này">🎬 Mở TikTok</button>
+          <button type="button" id="btnTkExpandOpenTiktok" class="btn-primary-glow" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); padding: 0 14px; height: 32px; font-size: 11.5px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;" title="Mở video TikTok của từ này (Phím Space)">🎬 Mở TikTok (Space)</button>
           <button type="button" id="btnTkExpandClose" class="btn-modal btn-cancel" style="height: 32px; width: 32px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 6px;">✕</button>
         </div>
       </div>
@@ -2163,8 +2163,8 @@
       <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px;">
         <span id="tkExpandModalIndex" style="font-size: 12px; color: var(--muted); font-weight: 600;">Thẻ 1 / 15</span>
         <div style="display: flex; gap: 10px;">
-          <button type="button" id="btnTkExpandPrev" class="btn-modal" style="height: 32px; font-size: 12px; padding: 0 14px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;">◀ Thẻ trước</button>
-          <button type="button" id="btnTkExpandNext" class="btn-modal" style="height: 32px; font-size: 12px; padding: 0 14px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;">Thẻ sau ▶</button>
+          <button type="button" id="btnTkExpandPrev" class="btn-modal" style="height: 32px; font-size: 12px; padding: 0 14px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;" title="Thẻ trước (Phím ←)">◀ Thẻ trước (←)</button>
+          <button type="button" id="btnTkExpandNext" class="btn-modal" style="height: 32px; font-size: 12px; padding: 0 14px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;" title="Thẻ sau (Phím →)">Thẻ sau ▶ (→)</button>
           <button type="button" id="btnTkExpandDone" class="btn-modal btn-confirm" style="height: 32px; font-size: 12px; padding: 0 18px; width: auto; background: var(--purple); color: #fff;">Đóng</button>
         </div>
       </div>

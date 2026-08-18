@@ -4037,6 +4037,127 @@ async function addWordToVocabularyDirect(word, translation, type) {
 
 let currentSelectionHandler = null;
 let currentMouseDownHandler = null;
+let currentDblClickHandler = null;
+let anchorWordRange = null;
+
+function findFirstTextNode(el) {
+  if (!el) return null;
+  if (el.nodeType === Node.TEXT_NODE) return el;
+  for (let i = 0; i < el.childNodes.length; i++) {
+    const res = findFirstTextNode(el.childNodes[i]);
+    if (res) return res;
+  }
+  return null;
+}
+
+function getWordRangeAtPoint(x, y) {
+  let range = null;
+  if (document.caretRangeFromPoint) {
+    range = document.caretRangeFromPoint(x, y);
+  } else if (document.caretPositionFromPoint) {
+    const pos = document.caretPositionFromPoint(x, y);
+    if (pos && pos.offsetNode) {
+      range = document.createRange();
+      range.setStart(pos.offsetNode, pos.offset);
+      range.setEnd(pos.offsetNode, pos.offset);
+    }
+  }
+
+  if (!range) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      range = sel.getRangeAt(0);
+    }
+  }
+
+  if (!range) return null;
+
+  let node = range.startContainer;
+  let offset = range.startOffset;
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.childNodes.length > 0) {
+      const idx = Math.max(0, Math.min(offset, node.childNodes.length - 1));
+      const child = node.childNodes[idx];
+      if (child.nodeType === Node.TEXT_NODE) {
+        node = child;
+        offset = 0;
+      } else {
+        const textChild = findFirstTextNode(child);
+        if (textChild) {
+          node = textChild;
+          offset = 0;
+        }
+      }
+    }
+  }
+
+  if (node.nodeType !== Node.TEXT_NODE) {
+    return range;
+  }
+
+  const text = node.nodeValue || '';
+  if (!text) return range;
+
+  const isWordChar = (c) => Boolean(c && /[\p{L}\p{N}_'\-]/u.test(c));
+
+  let pos = Math.min(offset, text.length);
+  if (pos > 0 && !isWordChar(text[pos]) && isWordChar(text[pos - 1])) {
+    pos--;
+  } else if (!isWordChar(text[pos])) {
+    if (pos + 1 < text.length && isWordChar(text[pos + 1])) {
+      pos++;
+    } else if (pos > 0 && isWordChar(text[pos - 1])) {
+      pos--;
+    }
+  }
+
+  let start = pos;
+  while (start > 0 && isWordChar(text[start - 1])) {
+    start--;
+  }
+
+  let end = pos;
+  while (end < text.length && isWordChar(text[end])) {
+    end++;
+  }
+
+  if (start === end) {
+    start = Math.max(0, pos);
+    end = Math.min(text.length, pos + 1);
+  }
+
+  const wordRange = document.createRange();
+  wordRange.setStart(node, start);
+  wordRange.setEnd(node, end);
+  return wordRange;
+}
+
+function mergeRanges(rangeA, rangeB) {
+  if (!rangeA) return rangeB;
+  if (!rangeB) return rangeA;
+
+  const newRange = document.createRange();
+  try {
+    const startComp = rangeA.compareBoundaryPoints(Range.START_TO_START, rangeB);
+    if (startComp <= 0) {
+      newRange.setStart(rangeA.startContainer, rangeA.startOffset);
+    } else {
+      newRange.setStart(rangeB.startContainer, rangeB.startOffset);
+    }
+
+    const endComp = rangeA.compareBoundaryPoints(Range.END_TO_END, rangeB);
+    if (endComp >= 0) {
+      newRange.setEnd(rangeA.endContainer, rangeA.endOffset);
+    } else {
+      newRange.setEnd(rangeB.endContainer, rangeB.endOffset);
+    }
+    return newRange;
+  } catch (e) {
+    console.warn('mergeRanges error:', e);
+    return rangeB || rangeA;
+  }
+}
 
 function setupTextSelectionSearch(containerEl, type) {
   if (currentSelectionHandler) {
@@ -4044,6 +4165,9 @@ function setupTextSelectionSearch(containerEl, type) {
   }
   if (currentMouseDownHandler) {
     document.removeEventListener('mousedown', currentMouseDownHandler);
+  }
+  if (currentDblClickHandler) {
+    document.removeEventListener('dblclick', currentDblClickHandler);
   }
 
   const handleSelection = () => {
@@ -4088,13 +4212,57 @@ function setupTextSelectionSearch(containerEl, type) {
       if (hideSelectionTimeout) clearTimeout(hideSelectionTimeout);
       hideSelectionTimeout = setTimeout(hideTooltip, 150);
     }
+    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      anchorWordRange = null;
+    }
+  };
+
+  const handleDblClick = (e) => {
+    const targetVal = e.target.closest ? e.target.closest('.detail-section-val') : null;
+    if (!targetVal) return;
+
+    const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
+    if (!clickedWordRange) return;
+
+    const isModifierPressed = Boolean(e.ctrlKey || e.metaKey || e.shiftKey);
+    const existingSel = window.getSelection();
+    const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
+      ? existingSel.getRangeAt(0) 
+      : null;
+
+    const activeAnchor = anchorWordRange || existingRange;
+
+    if (isModifierPressed && activeAnchor) {
+      try {
+        const combinedRange = mergeRanges(activeAnchor, clickedWordRange);
+        anchorWordRange = activeAnchor; // keep origin anchor
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(combinedRange);
+        handleSelection();
+        e.preventDefault();
+        return;
+      } catch (err) {
+        console.warn('Error expanding range on Ctrl+dblclick:', err);
+      }
+    }
+
+    // Single word double-click sets the anchor
+    anchorWordRange = clickedWordRange.cloneRange();
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(clickedWordRange);
+    handleSelection();
+    e.preventDefault();
   };
 
   currentSelectionHandler = handleSelection;
   currentMouseDownHandler = handleMouseDown;
+  currentDblClickHandler = handleDblClick;
 
   document.addEventListener('selectionchange', handleSelection);
   document.addEventListener('mousedown', handleMouseDown);
+  document.addEventListener('dblclick', handleDblClick);
 
   async function showTooltip(rect, text, containerEl) {
     if (hideSelectionTimeout) {
@@ -6346,13 +6514,51 @@ function renderTkPlayer(item) {
   if (srsBadge) srsBadge.textContent = `Lớp ${lvl}`;
 
   const wordEl = document.getElementById('lblTkWord');
-  if (wordEl) wordEl.textContent = item.word || '---';
+  if (wordEl) {
+    const text = item.word || '---';
+    wordEl.textContent = text;
+    if (text.length > 180) {
+      wordEl.style.fontSize = '14.5px';
+      wordEl.style.lineHeight = '1.35';
+    } else if (text.length > 120) {
+      wordEl.style.fontSize = '16.5px';
+      wordEl.style.lineHeight = '1.35';
+    } else if (text.length > 60) {
+      wordEl.style.fontSize = '19px';
+      wordEl.style.lineHeight = '1.35';
+    } else if (text.length > 30) {
+      wordEl.style.fontSize = '23px';
+      wordEl.style.lineHeight = '1.3';
+    } else {
+      wordEl.style.fontSize = '28px';
+      wordEl.style.lineHeight = '1.25';
+    }
+  }
 
   const backWordMini = document.getElementById('lblTkBackWordMini');
   if (backWordMini) backWordMini.textContent = item.word || '---';
 
   const transEl = document.getElementById('lblTkTrans');
-  if (transEl) transEl.textContent = item.translation || '(Chưa có bản dịch)';
+  if (transEl) {
+    const text = item.translation || '(Chưa có bản dịch)';
+    transEl.textContent = text;
+    if (text.length > 180) {
+      transEl.style.fontSize = '13.5px';
+      transEl.style.lineHeight = '1.35';
+    } else if (text.length > 120) {
+      transEl.style.fontSize = '15.5px';
+      transEl.style.lineHeight = '1.35';
+    } else if (text.length > 60) {
+      transEl.style.fontSize = '17.5px';
+      transEl.style.lineHeight = '1.35';
+    } else if (text.length > 30) {
+      transEl.style.fontSize = '19px';
+      transEl.style.lineHeight = '1.3';
+    } else {
+      transEl.style.fontSize = '22px';
+      transEl.style.lineHeight = '1.25';
+    }
+  }
 
   const notesEl = document.getElementById('lblTkNotes');
   if (notesEl) notesEl.textContent = item.notes || 'Chưa có ghi chú ví dụ.';
@@ -7195,29 +7401,72 @@ Yêu cầu gồm:
   // Keyboard shortcut listeners (Only active when NOT in Add/Edit Form)
   window.addEventListener('keydown', (e) => {
     const pane = document.getElementById('paneTiktokFlashcard');
-    if (!pane || !pane.classList.contains('active')) return;
+    const expandModal = document.getElementById('tkExpandModal');
+    const isModalOpen = expandModal && (expandModal.classList.contains('active') || expandModal.classList.contains('visible') || (expandModal.style.display && expandModal.style.display !== 'none'));
+
+    // Check if flashcard pane is active or expand modal is open
+    if (!isModalOpen && (!pane || !pane.classList.contains('active'))) return;
+
+    // Never intercept shortcuts if user is currently typing in input/textarea/select
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
 
     // Never intercept shortcuts if user is currently inside the Add/Edit form
     const formState = document.getElementById('tkFormState');
-    if (formState && formState.style.display !== 'none') return;
-
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+    if (!isModalOpen && formState && formState.style.display !== 'none') return;
 
     if (e.code === 'Space') {
       e.preventDefault();
-      toggleTkCardFlip();
+      if (isModalOpen) {
+        document.getElementById('btnTkExpandOpenTiktok')?.click();
+      } else {
+        const isBack = document.querySelector('.flashcard-3d-inner')?.classList.contains('flipped');
+        if (isBack) {
+          document.getElementById('btnTkOpenTiktokBack')?.click();
+        } else {
+          document.getElementById('btnTkOpenTiktokFront')?.click();
+        }
+      }
     } else if (e.code === 'ArrowLeft') {
       e.preventDefault();
-      document.getElementById('btnTkPrev')?.click();
+      if (isModalOpen) {
+        document.getElementById('btnTkExpandPrev')?.click();
+      } else {
+        document.getElementById('btnTkPrev')?.click();
+      }
     } else if (e.code === 'ArrowRight') {
       e.preventDefault();
-      document.getElementById('btnTkNext')?.click();
+      if (isModalOpen) {
+        document.getElementById('btnTkExpandNext')?.click();
+      } else {
+        document.getElementById('btnTkNext')?.click();
+      }
+    } else if (e.key === 'Escape' && isModalOpen) {
+      e.preventDefault();
+      document.getElementById('btnTkExpandClose')?.click();
     } else if (e.key === 't' || e.key === 'T') {
       e.preventDefault();
-      document.getElementById('btnTkOpenTiktokFront')?.click();
+      if (isModalOpen) {
+        document.getElementById('btnTkExpandOpenTiktok')?.click();
+      } else {
+        const isBack = document.querySelector('.flashcard-3d-inner')?.classList.contains('flipped');
+        if (isBack) {
+          document.getElementById('btnTkOpenTiktokBack')?.click();
+        } else {
+          document.getElementById('btnTkOpenTiktokFront')?.click();
+        }
+      }
     } else if (e.key === 's' || e.key === 'S') {
       e.preventDefault();
-      document.getElementById('btnTkSpeakFront')?.click();
+      if (isModalOpen) {
+        document.getElementById('btnTkExpandSpeak')?.click();
+      } else {
+        document.getElementById('btnTkSpeakFront')?.click();
+      }
+    } else if (e.key === 'f' || e.key === 'F' || e.code === 'Enter') {
+      if (!isModalOpen) {
+        e.preventDefault();
+        toggleTkCardFlip();
+      }
     }
   });
 

@@ -1154,7 +1154,128 @@ Trả về duy nhất 1 JSON object:
 
 let currentSelectionHandler = null;
 let currentMouseDownHandler = null;
+let currentDblClickHandler = null;
+let anchorWordRange = null;
 let ttsPronounceTimeout = null;
+
+function findFirstTextNode(el) {
+  if (!el) return null;
+  if (el.nodeType === Node.TEXT_NODE) return el;
+  for (let i = 0; i < el.childNodes.length; i++) {
+    const res = findFirstTextNode(el.childNodes[i]);
+    if (res) return res;
+  }
+  return null;
+}
+
+function getWordRangeAtPoint(x, y) {
+  let range = null;
+  if (document.caretRangeFromPoint) {
+    range = document.caretRangeFromPoint(x, y);
+  } else if (document.caretPositionFromPoint) {
+    const pos = document.caretPositionFromPoint(x, y);
+    if (pos && pos.offsetNode) {
+      range = document.createRange();
+      range.setStart(pos.offsetNode, pos.offset);
+      range.setEnd(pos.offsetNode, pos.offset);
+    }
+  }
+
+  if (!range) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      range = sel.getRangeAt(0);
+    }
+  }
+
+  if (!range) return null;
+
+  let node = range.startContainer;
+  let offset = range.startOffset;
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.childNodes.length > 0) {
+      const idx = Math.max(0, Math.min(offset, node.childNodes.length - 1));
+      const child = node.childNodes[idx];
+      if (child.nodeType === Node.TEXT_NODE) {
+        node = child;
+        offset = 0;
+      } else {
+        const textChild = findFirstTextNode(child);
+        if (textChild) {
+          node = textChild;
+          offset = 0;
+        }
+      }
+    }
+  }
+
+  if (node.nodeType !== Node.TEXT_NODE) {
+    return range;
+  }
+
+  const text = node.nodeValue || '';
+  if (!text) return range;
+
+  const isWordChar = (c) => Boolean(c && /[\p{L}\p{N}_'\-]/u.test(c));
+
+  let pos = Math.min(offset, text.length);
+  if (pos > 0 && !isWordChar(text[pos]) && isWordChar(text[pos - 1])) {
+    pos--;
+  } else if (!isWordChar(text[pos])) {
+    if (pos + 1 < text.length && isWordChar(text[pos + 1])) {
+      pos++;
+    } else if (pos > 0 && isWordChar(text[pos - 1])) {
+      pos--;
+    }
+  }
+
+  let start = pos;
+  while (start > 0 && isWordChar(text[start - 1])) {
+    start--;
+  }
+
+  let end = pos;
+  while (end < text.length && isWordChar(text[end])) {
+    end++;
+  }
+
+  if (start === end) {
+    start = Math.max(0, pos);
+    end = Math.min(text.length, pos + 1);
+  }
+
+  const wordRange = document.createRange();
+  wordRange.setStart(node, start);
+  wordRange.setEnd(node, end);
+  return wordRange;
+}
+
+function mergeRanges(rangeA, rangeB) {
+  if (!rangeA) return rangeB;
+  if (!rangeB) return rangeA;
+
+  const newRange = document.createRange();
+  try {
+    const startComp = rangeA.compareBoundaryPoints(Range.START_TO_START, rangeB);
+    if (startComp <= 0) {
+      newRange.setStart(rangeA.startContainer, rangeA.startOffset);
+    } else {
+      newRange.setStart(rangeB.startContainer, rangeB.startOffset);
+    }
+
+    const endComp = rangeA.compareBoundaryPoints(Range.END_TO_END, rangeB);
+    if (endComp >= 0) {
+      newRange.setEnd(rangeA.endContainer, rangeA.endOffset);
+    } else {
+      newRange.setEnd(rangeB.endContainer, rangeB.endOffset);
+    }
+    return newRange;
+  } catch (e) {
+    console.warn('mergeRanges error:', e);
+    return rangeB || rangeA;
+  }
+}
 
 function setupTextSelectionSearch(containerEl, type) {
   if (currentSelectionHandler) {
@@ -1162,6 +1283,9 @@ function setupTextSelectionSearch(containerEl, type) {
   }
   if (currentMouseDownHandler) {
     document.removeEventListener('mousedown', currentMouseDownHandler);
+  }
+  if (currentDblClickHandler) {
+    document.removeEventListener('dblclick', currentDblClickHandler);
   }
 
   const handleSelection = () => {
@@ -1205,12 +1329,14 @@ function setupTextSelectionSearch(containerEl, type) {
     }
     
     // Trigger pronunciation after a 350ms debounce
-    if (ttsPronounceTimeout) {
-      clearTimeout(ttsPronounceTimeout);
+    if (typeof speakPronunciation === 'function') {
+      if (ttsPronounceTimeout) {
+        clearTimeout(ttsPronounceTimeout);
+      }
+      ttsPronounceTimeout = setTimeout(() => {
+        speakPronunciation(selectedText);
+      }, 350);
     }
-    ttsPronounceTimeout = setTimeout(() => {
-      speakPronunciation(selectedText);
-    }, 350);
 
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -1226,13 +1352,57 @@ function setupTextSelectionSearch(containerEl, type) {
       if (hideSelectionTimeout) clearTimeout(hideSelectionTimeout);
       hideSelectionTimeout = setTimeout(hideTooltip, 150);
     }
+    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      anchorWordRange = null;
+    }
+  };
+
+  const handleDblClick = (e) => {
+    const targetVal = e.target.closest ? e.target.closest('.detail-section-val') : null;
+    if (!targetVal) return;
+
+    const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
+    if (!clickedWordRange) return;
+
+    const isModifierPressed = Boolean(e.ctrlKey || e.metaKey || e.shiftKey);
+    const existingSel = window.getSelection();
+    const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
+      ? existingSel.getRangeAt(0) 
+      : null;
+
+    const activeAnchor = anchorWordRange || existingRange;
+
+    if (isModifierPressed && activeAnchor) {
+      try {
+        const combinedRange = mergeRanges(activeAnchor, clickedWordRange);
+        anchorWordRange = activeAnchor; // keep origin anchor
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(combinedRange);
+        handleSelection();
+        e.preventDefault();
+        return;
+      } catch (err) {
+        console.warn('Error expanding range on Ctrl+dblclick:', err);
+      }
+    }
+
+    // Single word double-click sets the anchor
+    anchorWordRange = clickedWordRange.cloneRange();
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(clickedWordRange);
+    handleSelection();
+    e.preventDefault();
   };
   
   currentSelectionHandler = handleSelection;
   currentMouseDownHandler = handleMouseDown;
+  currentDblClickHandler = handleDblClick;
   
   document.addEventListener('selectionchange', handleSelection);
   document.addEventListener('mousedown', handleMouseDown);
+  document.addEventListener('dblclick', handleDblClick);
   
   async function showTooltip(rect, text, containerEl) {
     if (hideSelectionTimeout) {
