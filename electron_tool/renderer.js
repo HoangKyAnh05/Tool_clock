@@ -7594,7 +7594,11 @@ Yêu cầu gồm:
       }
     } catch (err) {
       console.error('Sync flashcards to web failed:', err);
-      alert('Có lỗi xảy ra: ' + err.message);
+      if (err.message && err.message.includes('No handler registered')) {
+        alert('⚡ Vui lòng TẮT và KHỞI ĐỘNG LẠI ứng dụng Tool Clock một lần để nạp tính năng đẩy Web mới nhé!');
+      } else {
+        alert('Có lỗi xảy ra: ' + err.message);
+      }
     } finally {
       if (btnHeader) {
         btnHeader.disabled = false;
