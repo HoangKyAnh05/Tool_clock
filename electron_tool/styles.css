@@ -951,6 +951,7 @@ html, body {
 .skill-badge.reading { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
 .skill-badge.listening { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
 .skill-badge.math { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+.skill-badge.conversation { background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.25)); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); text-shadow: 0 0 8px rgba(236,72,153,0.3); }
 .skill-badge.korean { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
 .skill-badge.japanese { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 .skill-badge.coding { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }

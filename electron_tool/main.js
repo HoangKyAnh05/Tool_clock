@@ -898,6 +898,7 @@ async function generateMobileHTML(items) {
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
+    conversation: '🎙️ Nói & Giao Tiếp',
     reading: '📖 Reading',
     listening: '🎧 Listening',
     math: '📐 Toán Học',
@@ -924,6 +925,16 @@ async function generateMobileHTML(items) {
       ['Ý tưởng & Dàn bài nói', 'outline'],
       ['Bài nói mẫu (Sample Answer)', 'sample'],
       ['Ghi chú phát âm & Ngữ điệu', 'pron']
+    ],
+    conversation: [
+      ['Tình huống & Bối cảnh giao tiếp', 'convScenario'],
+      ['Mở đầu & Câu hỏi đắt giá', 'convOpener'],
+      ['Kiến thức / Trend & Cách lồng ghép', 'convKnowledgeAngle'],
+      ['Story Bank - Câu chuyện cá nhân & Twist', 'convStory'],
+      ['Humor Bank & Miếng hài thông minh', 'convHumor'],
+      ['Góc nhìn cá nhân & Chiều sâu', 'convPerspective'],
+      ['Nâng cấp câu trả lời 5 Cấp Độ', 'convUpgrades'],
+      ['Đọc vị tâm lý & Quy tắc Charisma', 'convSocialEq']
     ],
     reading: [
       ['Đoạn văn đọc / Tiêu đề bài đọc', 'passage'],

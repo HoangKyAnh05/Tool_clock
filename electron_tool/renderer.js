@@ -850,6 +850,7 @@ function updateSkillSelects(selectedSkill = 'writing') {
   const defaultSkills = [
     { value: 'writing', label: '✍️ Writing' },
     { value: 'speaking', label: '🗣️ Speaking' },
+    { value: 'conversation', label: '🎙️ Nói & Giao Tiếp (Charisma)' },
     { value: 'reading', label: '📖 Reading' },
     { value: 'listening', label: '🎧 Listening' },
     { value: 'math', label: '📐 Toán Học' },
@@ -1526,6 +1527,7 @@ async function handleFetchFromLink(type) {
     if (type === 'ielts') {
       if (skill === 'writing') inputEl = document.getElementById('writePrompt');
       else if (skill === 'speaking') inputEl = document.getElementById('speakQuestion');
+      else if (skill === 'conversation') inputEl = document.getElementById('convScenario');
       else if (skill === 'reading') inputEl = document.getElementById('readPassage');
       else if (skill === 'listening') inputEl = document.getElementById('listenContext');
     } else {
@@ -1622,6 +1624,45 @@ Format your response strictly as a single JSON object without markdown code bloc
   "sample": "[Toàn bộ bài mẫu trả lời Band ${targetBand} cho cả 3 phần Speaking]",
   "pron": "[Hướng dẫn phát âm, nối âm và ngữ điệu nổi bật]"
 }`;
+  } else if (skill === 'conversation') {
+    return `You are a World-Class Charisma & High-Status Communication Mentor (Bậc Thầy Giao Tiếp Đẳng Cấp, Sức Hút Vị Thế Cao & Tạo Sự Ngưỡng Mộ Tuyệt Đối).
+The user has provided a topic, scenario, conversational draft, or question:
+Input block:
+${rawInput}
+
+TÔN CHỈ CỐT LÕI:
+Mục tiêu tối thượng của bài phân tích là biến người nói thành một hình mẫu giao tiếp đỉnh cao (HIGH-VALUE, DEEPLY ADMIRED & INTELLECTUALLY FASCINATING). Khi người nói cất lời, người nghe phải lập tức CẢM THẤY NGƯỠNG MỘ, NỂ PHỤC, BỊ CUỐN HÚT VÀ TÔN TRỌNG SỰ THÔNG MINH, CHIỀU SÂU BẢN LĨNH CỦA HỌ.
+Không phải khoe mẽ tự phụ, mà là phong thái tự tin điềm đạm (Quiet Confidence), góc nhìn khai phóng (Paradigm Shift), khiếu hài hước tinh tế (Subtle Wit) và sức hút của người có vị thế cao.
+
+Analyze this block and create a comprehensive, highly admired conversational playbook in Vietnamese:
+
+1. "title": Tiêu đề chiến lược nói chuyện đắt giá khiến người nghe ngưỡng mộ (Ví dụ: "Nghệ Thuật Nói Về [Chủ đề] Khiến Đối Phương Nể Phục & Cuốn Hút Tuyệt Đối").
+2. "scenario": Bối cảnh & Tầm vóc tương tác (First date tinh tế, Gặp gỡ đối tác lớn, Trò chuyện nhóm bạn, Phỏng vấn đỉnh cao, Thảo luận bàn tiệc, Tranh luận vị thế cao...).
+3. "opener": Mở đầu cuốn hút & Các câu hỏi "Level Triệu Đô" (High-Status Openers & Mind-Expanding Questions) - Câu hỏi mở khai phóng tư duy khiến đối phương lập tức nhận ra người nói có tầm nhìn khác biệt.
+4. "knowledgeAngle": Đòn bẩy tri thức & Góc nhìn tinh hoa (Intellectual Hook & Trend Connection) - Cách kết nối kiến thức công nghệ/tâm lý/kinh tế/trend mạng xã hội một cách tự nhiên như hơi thở, đưa ra quy luật phi trực giác khiến người nghe thầm thốt lên: "Người này quá uyên bác và nhạy bén!".
+5. "story": Story Bank Đẳng Cấp (Hero's Journey & Vulnerable Triumph) - Câu chuyện cá nhân ngắn có cấu trúc: Bối cảnh chân thực ➔ Thách thức/xung đột ➔ Chi tiết tự trào (Self-deprecating) hóm hỉnh ➔ Bước ngoặt tư duy bất ngờ (Twist) ➔ Bài học & Triết lý nhân sinh khiến người nghe nể phục bản lĩnh sống.
+6. "humor": Humor Bank - Khiếu hài hước thông minh & Sắc sảo (High-EQ Wit, Subtle Sarcasm, Callback, Wordplay, Unexpected Punchline) kèm chỉ số an toàn Humor Risk (1-5) để giữ không khí lôi cuốn mà vẫn thanh lịch.
+7. "perspective": Góc nhìn cá nhân sắc bén & Tầm nhìn lãnh đạo (Visionary Perspective & Deep Reasoning) - Phá vỡ tư duy nhị nguyên trắng/đen, nhìn thấu bản chất vấn đề từ nguyên lý gốc (First Principles), thể hiện chiều sâu của một người dẫn dắt tư tưởng.
+8. "upgrades": Nâng cấp câu trả lời theo 5 CẤP ĐỘ đột phá:
+   • Level 1 (Basic / NPC): Câu trả lời nhạt nhòa, thông thường của 90% số đông.
+   • Level 2 (Polite / Natural): Lịch sự, tự nhiên, dễ chịu.
+   • Level 3 (Smart & Interesting): Thú vị, có kiến thức, gợi sự tò mò.
+   • Level 4 (Charismatic & Magnetic): Phong thái cuốn hút, sắc sảo, có năng lượng tích cực và cảm xúc kết nối.
+   • Level 5 (Mind-Blowing & Admired - ĐỈNH CAO KHIẾN NGƯỜI NGHE NGƯỠNG MỘ & NỂ PHỤC): Đưa ra góc nhìn thay đổi nhận thức, vừa khiêm tốn vừa quyền lực, kết hợp triết lý sâu sắc khiến người nghe phải 'WOW' và nhớ mãi.
+9. "socialEq": Đọc vị tâm lý đối phương & Quy tắc vị thế cao (Social Dynamics & Charisma Mastery) - Tỷ lệ nói/nghe (Talking Ratio), kiểm soát khoảng lặng quyền lực (Power Pause), cách làm người đối diện cảm thấy được thấu hiểu nhưng ngầm ngưỡng mộ bạn.
+
+Format your response strictly as a single JSON object without markdown code blocks. Do not use ellipses (...) as values in the JSON object. The output must be valid JSON:
+{
+  "title": "[Tiêu đề bài luyện nói chuyện cuốn hút khiến người nghe ngưỡng mộ]",
+  "scenario": "[Bối cảnh và đối tượng giao tiếp cụ thể]",
+  "opener": "[Câu mở đầu cuốn hút và các câu hỏi mở đắt giá gợi chuyện]",
+  "knowledgeAngle": "[Kiến thức / Trend và cách chuyển hóa mượt mà vào câu chuyện]",
+  "story": "[Câu chuyện cá nhân ngắn có Hook, Twist và cảm xúc kết nối]",
+  "humor": "[Miếng hài hước / Callback / Punchline thông minh kèm mức độ rủi ro Risk 1-5]",
+  "perspective": "[Góc nhìn cá nhân độc đáo, sâu sắc và đa chiều]",
+  "upgrades": "• Level 1 (Basic): [Câu trả lời cơ bản]\\n• Level 2 (Natural): [Tự nhiên]\\n• Level 3 (Interesting): [Thú vị, khơi mở]\\n• Level 4 (Charismatic): [Phong thái, thông minh]\\n• Level 5 (Magnetic & Admired): [Đỉnh cao sức hút khiến người nghe nể phục]",
+  "socialEq": "[Lời khuyên đọc vị cảm xúc, điều chỉnh nhịp nói và nguyên tắc Charisma vàng]"
+}`;
   } else if (skill === 'reading') {
     return `You are an expert IELTS reading instructor.
 The user has pasted a block of text containing an IELTS reading passage and optionally other notes, questions, and guides.
@@ -1698,6 +1739,17 @@ async function handleAiAnalyze() {
     if (!rawInput) {
       alert('Vui lòng nhập hoặc dán nội dung Câu hỏi / Bài nói vào ô đầu tiên hoặc Bài nói mẫu.');
       document.getElementById('speakQuestion').focus();
+      return;
+    }
+  } else if (skill === 'conversation') {
+    rawInput = document.getElementById('convScenario').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convOpener').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convKnowledgeAngle').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convStory').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convPerspective').value.trim();
+    if (!rawInput) {
+      alert('Vui lòng nhập hoặc dán nội dung Bối cảnh, Chủ đề trò chuyện hoặc Câu hỏi cần luyện nói.');
+      document.getElementById('convScenario').focus();
       return;
     }
   } else if (skill === 'reading') {
@@ -1780,6 +1832,15 @@ async function handleAiAnalyze() {
       if (data.outline) setInputValue('speakOutline', data.outline);
       if (data.sample) setInputValue('speakSample', data.sample);
       if (data.pron) setInputValue('speakPron', data.pron);
+    } else if (skill === 'conversation') {
+      if (data.scenario) setInputValue('convScenario', data.scenario);
+      if (data.opener) setInputValue('convOpener', data.opener);
+      if (data.knowledgeAngle) setInputValue('convKnowledgeAngle', data.knowledgeAngle);
+      if (data.story) setInputValue('convStory', data.story);
+      if (data.humor) setInputValue('convHumor', data.humor);
+      if (data.perspective) setInputValue('convPerspective', data.perspective);
+      if (data.upgrades) setInputValue('convUpgrades', data.upgrades);
+      if (data.socialEq) setInputValue('convSocialEq', data.socialEq);
     } else if (skill === 'reading') {
       if (data.passage) setInputValue('readPassage', data.passage);
       if (data.keywords) setInputValue('readKeywords', data.keywords);
@@ -1901,6 +1962,17 @@ function handleWebAiAssist() {
       document.getElementById('speakQuestion').focus();
       return;
     }
+  } else if (skill === 'conversation') {
+    rawInput = document.getElementById('convScenario').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convOpener').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convKnowledgeAngle').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convStory').value.trim();
+    if (!rawInput) rawInput = document.getElementById('convPerspective').value.trim();
+    if (!rawInput) {
+      alert('Vui lòng nhập hoặc dán nội dung Bối cảnh, Chủ đề trò chuyện hoặc Câu hỏi cần luyện nói.');
+      document.getElementById('convScenario').focus();
+      return;
+    }
   } else if (skill === 'reading') {
     rawInput = document.getElementById('readPassage').value.trim();
     if (!rawInput) rawInput = document.getElementById('readExplanation').value.trim();
@@ -1978,6 +2050,24 @@ function handleWebAiApply() {
       if (data.outline) setInputValue('speakOutline', data.outline);
       if (data.sample) setInputValue('speakSample', data.sample);
       if (data.pron) setInputValue('speakPron', data.pron);
+    } else if (skill === 'conversation') {
+      const sc = data.scenario || data.convScenario || data.context || data.situation || '';
+      const op = data.opener || data.convOpener || data.questions || data.openerQuestions || '';
+      const ka = data.knowledgeAngle || data.convKnowledgeAngle || data.knowledge || data.trend || '';
+      const st = data.story || data.convStory || data.storytelling || '';
+      const hu = data.humor || data.convHumor || data.joke || '';
+      const ps = data.perspective || data.convPerspective || data.opinion || '';
+      const up = data.upgrades || data.convUpgrades || data.responseUpgrades || data.levels || '';
+      const eq = data.socialEq || data.convSocialEq || data.eq || data.takeaway || data.charismaRule || '';
+
+      if (sc) setInputValue('convScenario', sc);
+      if (op) setInputValue('convOpener', op);
+      if (ka) setInputValue('convKnowledgeAngle', ka);
+      if (st) setInputValue('convStory', st);
+      if (hu) setInputValue('convHumor', hu);
+      if (ps) setInputValue('convPerspective', ps);
+      if (up) setInputValue('convUpgrades', up);
+      if (eq) setInputValue('convSocialEq', eq);
     } else if (skill === 'reading') {
       if (data.passage) setInputValueIfEmpty('readPassage', data.passage);
       if (data.keywords) setInputValue('readKeywords', data.keywords);
@@ -2009,6 +2099,14 @@ function saveInputStateForReload() {
 
     writePrompt: document.getElementById('writePrompt') ? document.getElementById('writePrompt').value : '',
     speakQuestion: document.getElementById('speakQuestion') ? document.getElementById('speakQuestion').value : '',
+    convScenario: document.getElementById('convScenario') ? document.getElementById('convScenario').value : '',
+    convOpener: document.getElementById('convOpener') ? document.getElementById('convOpener').value : '',
+    convKnowledgeAngle: document.getElementById('convKnowledgeAngle') ? document.getElementById('convKnowledgeAngle').value : '',
+    convStory: document.getElementById('convStory') ? document.getElementById('convStory').value : '',
+    convHumor: document.getElementById('convHumor') ? document.getElementById('convHumor').value : '',
+    convPerspective: document.getElementById('convPerspective') ? document.getElementById('convPerspective').value : '',
+    convUpgrades: document.getElementById('convUpgrades') ? document.getElementById('convUpgrades').value : '',
+    convSocialEq: document.getElementById('convSocialEq') ? document.getElementById('convSocialEq').value : '',
     readPassage: document.getElementById('readPassage') ? document.getElementById('readPassage').value : '',
     listenContext: document.getElementById('listenContext') ? document.getElementById('listenContext').value : '',
 
@@ -2040,6 +2138,14 @@ function restoreInputStateAfterReload() {
 
     if (state.writePrompt && document.getElementById('writePrompt')) document.getElementById('writePrompt').value = state.writePrompt;
     if (state.speakQuestion && document.getElementById('speakQuestion')) document.getElementById('speakQuestion').value = state.speakQuestion;
+    if (state.convScenario && document.getElementById('convScenario')) document.getElementById('convScenario').value = state.convScenario;
+    if (state.convOpener && document.getElementById('convOpener')) document.getElementById('convOpener').value = state.convOpener;
+    if (state.convKnowledgeAngle && document.getElementById('convKnowledgeAngle')) document.getElementById('convKnowledgeAngle').value = state.convKnowledgeAngle;
+    if (state.convStory && document.getElementById('convStory')) document.getElementById('convStory').value = state.convStory;
+    if (state.convHumor && document.getElementById('convHumor')) document.getElementById('convHumor').value = state.convHumor;
+    if (state.convPerspective && document.getElementById('convPerspective')) document.getElementById('convPerspective').value = state.convPerspective;
+    if (state.convUpgrades && document.getElementById('convUpgrades')) document.getElementById('convUpgrades').value = state.convUpgrades;
+    if (state.convSocialEq && document.getElementById('convSocialEq')) document.getElementById('convSocialEq').value = state.convSocialEq;
     if (state.readPassage && document.getElementById('readPassage')) document.getElementById('readPassage').value = state.readPassage;
     if (state.listenContext && document.getElementById('listenContext')) document.getElementById('listenContext').value = state.listenContext;
 
@@ -2924,6 +3030,7 @@ function renderIeltsList() {
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
+    conversation: '🎙️ Nói & Giao Tiếp',
     reading: '📖 Reading',
     listening: '🎧 Listening',
     math: '📐 Toán Học',
@@ -3296,6 +3403,15 @@ function handleSaveIelts() {
     fields.outline = document.getElementById('speakOutline').value.trim();
     fields.sample = document.getElementById('speakSample').value.trim();
     fields.pron = document.getElementById('speakPron').value.trim();
+  } else if (skill === 'conversation') {
+    fields.convScenario = document.getElementById('convScenario') ? document.getElementById('convScenario').value.trim() : '';
+    fields.convOpener = document.getElementById('convOpener') ? document.getElementById('convOpener').value.trim() : '';
+    fields.convKnowledgeAngle = document.getElementById('convKnowledgeAngle') ? document.getElementById('convKnowledgeAngle').value.trim() : '';
+    fields.convStory = document.getElementById('convStory') ? document.getElementById('convStory').value.trim() : '';
+    fields.convHumor = document.getElementById('convHumor') ? document.getElementById('convHumor').value.trim() : '';
+    fields.convPerspective = document.getElementById('convPerspective') ? document.getElementById('convPerspective').value.trim() : '';
+    fields.convUpgrades = document.getElementById('convUpgrades') ? document.getElementById('convUpgrades').value.trim() : '';
+    fields.convSocialEq = document.getElementById('convSocialEq') ? document.getElementById('convSocialEq').value.trim() : '';
   } else if (skill === 'reading') {
     fields.passage = document.getElementById('readPassage').value.trim();
     fields.keywords = document.getElementById('readKeywords').value.trim();
@@ -3419,6 +3535,15 @@ function handleEditIelts() {
     document.getElementById('speakOutline').value = f.outline || '';
     document.getElementById('speakSample').value = f.sample || '';
     document.getElementById('speakPron').value = f.pron || '';
+  } else if (item.skill === 'conversation') {
+    if (document.getElementById('convScenario')) document.getElementById('convScenario').value = f.convScenario || f.scenario || '';
+    if (document.getElementById('convOpener')) document.getElementById('convOpener').value = f.convOpener || f.opener || '';
+    if (document.getElementById('convKnowledgeAngle')) document.getElementById('convKnowledgeAngle').value = f.convKnowledgeAngle || f.knowledgeAngle || '';
+    if (document.getElementById('convStory')) document.getElementById('convStory').value = f.convStory || f.story || '';
+    if (document.getElementById('convHumor')) document.getElementById('convHumor').value = f.convHumor || f.humor || '';
+    if (document.getElementById('convPerspective')) document.getElementById('convPerspective').value = f.convPerspective || f.perspective || '';
+    if (document.getElementById('convUpgrades')) document.getElementById('convUpgrades').value = f.convUpgrades || f.upgrades || '';
+    if (document.getElementById('convSocialEq')) document.getElementById('convSocialEq').value = f.convSocialEq || f.socialEq || '';
   } else if (item.skill === 'reading') {
     document.getElementById('readPassage').value = f.passage || '';
     document.getElementById('readKeywords').value = f.keywords || '';
@@ -3501,6 +3626,7 @@ function renderIeltsDetail(itemId) {
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
+    conversation: '🎙️ Nói & Giao Tiếp (Charisma)',
     reading: '📖 Reading',
     listening: '🎧 Listening',
     math: '📐 Toán Học',
@@ -3570,6 +3696,24 @@ function renderIeltsDetail(itemId) {
     if (f.outline) scroll.appendChild(createDetailSection('Ý tưởng & Dàn bài nói', f.outline));
     if (f.sample) scroll.appendChild(createDetailSection('Bài nói mẫu (Sample Answer)', f.sample));
     if (f.pron) scroll.appendChild(createDetailSection('Ghi chú phát âm & Ngữ điệu', f.pron));
+  } else if (item.skill === 'conversation') {
+    const sc = f.convScenario || f.scenario;
+    const op = f.convOpener || f.opener;
+    const ka = f.convKnowledgeAngle || f.knowledgeAngle;
+    const st = f.convStory || f.story;
+    const hu = f.convHumor || f.humor;
+    const ps = f.convPerspective || f.perspective;
+    const up = f.convUpgrades || f.upgrades;
+    const eq = f.convSocialEq || f.socialEq;
+
+    if (sc) scroll.appendChild(createDetailSection('🎭 Tình huống & Bối cảnh giao tiếp', sc));
+    if (op) scroll.appendChild(createDetailSection('🎯 Mở đầu & Câu hỏi đắt giá (Opener & Open-ended Questions)', op));
+    if (ka) scroll.appendChild(createDetailSection('🧠 Kiến thức / Trend & Cách lồng ghép (Knowledge Angle)', ka));
+    if (st) scroll.appendChild(createDetailSection('📖 Story Bank - Câu chuyện cá nhân & Twist (Storytelling)', st));
+    if (hu) scroll.appendChild(createDetailSection('😂 Humor Bank & Miếng hài thông minh (Humor & Timing - Risk 1-5)', hu));
+    if (ps) scroll.appendChild(createDetailSection('💡 Góc nhìn cá nhân & Chiều sâu (Perspective)', ps));
+    if (up) scroll.appendChild(createDetailSection('🚀 Nâng cấp câu trả lời 5 Cấp Độ (5-Level Response Upgrade)', up));
+    if (eq) scroll.appendChild(createDetailSection('👑 Đọc vị tâm lý & Quy tắc Charisma (Social & Emotional Intelligence)', eq));
   } else if (item.skill === 'reading') {
     if (f.passage) scroll.appendChild(createDetailSection('Đoạn văn đọc / Tiêu đề bài đọc', f.passage));
     if (f.keywords) scroll.appendChild(createDetailSection('Bảng Từ khóa & Paraphrase (Keyword Table)', f.keywords));

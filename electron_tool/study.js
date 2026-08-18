@@ -361,6 +361,7 @@ function renderItem() {
   const skillIcons = {
     writing: '✍️ Writing',
     speaking: '🗣️ Speaking',
+    conversation: '🎙️ Nói & Giao Tiếp (Charisma)',
     reading: '📖 Reading',
     listening: '🎧 Listening',
     math: '📐 Toán Học',
@@ -408,6 +409,24 @@ function renderItem() {
       if (f.outline) scroll.appendChild(createDetailSection('Ý tưởng & Dàn bài nói', f.outline));
       if (f.sample) scroll.appendChild(createDetailSection('Bài nói mẫu (Sample Answer)', f.sample));
       if (f.pron) scroll.appendChild(createDetailSection('Ghi chú phát âm & Ngữ điệu', f.pron));
+    } else if (currentItem.skill === 'conversation') {
+      const sc = f.convScenario || f.scenario;
+      const op = f.convOpener || f.opener;
+      const ka = f.convKnowledgeAngle || f.knowledgeAngle;
+      const st = f.convStory || f.story;
+      const hu = f.convHumor || f.humor;
+      const ps = f.convPerspective || f.perspective;
+      const up = f.convUpgrades || f.upgrades;
+      const eq = f.convSocialEq || f.socialEq;
+
+      if (sc) scroll.appendChild(createDetailSection('🎭 Tình huống & Bối cảnh giao tiếp', sc));
+      if (op) scroll.appendChild(createDetailSection('🎯 Mở đầu & Câu hỏi đắt giá (Opener & Open-ended Questions)', op));
+      if (ka) scroll.appendChild(createDetailSection('🧠 Kiến thức / Trend & Cách lồng ghép (Knowledge Angle)', ka));
+      if (st) scroll.appendChild(createDetailSection('📖 Story Bank - Câu chuyện cá nhân & Twist (Storytelling)', st));
+      if (hu) scroll.appendChild(createDetailSection('😂 Humor Bank & Miếng hài thông minh (Humor & Timing)', hu));
+      if (ps) scroll.appendChild(createDetailSection('💡 Góc nhìn cá nhân & Chiều sâu (Perspective)', ps));
+      if (up) scroll.appendChild(createDetailSection('🚀 Nâng cấp câu trả lời 5 Cấp Độ (5-Level Response Upgrade)', up));
+      if (eq) scroll.appendChild(createDetailSection('👑 Đọc vị tâm lý & Quy tắc Charisma (Social & Emotional Intelligence)', eq));
     } else if (currentItem.skill === 'reading') {
       if (f.passage) scroll.appendChild(createDetailSection('Đoạn văn đọc / Tiêu đề bài đọc', f.passage));
       if (f.keywords) scroll.appendChild(createDetailSection('Bảng Từ khóa & Paraphrase (Keyword Table)', f.keywords));
