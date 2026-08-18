@@ -424,6 +424,8 @@ const videoChallengePath = path.join(baseDataDir, 'video_challenge.json');
 const memorizePath = path.join(baseDataDir, 'memorize_vault.json');
 const tiktokMusicPath = path.join(baseDataDir, 'tiktok_music.json');
 const commentsVaultPath = path.join(baseDataDir, 'comments_vault.json');
+const brainChainPath = path.join(baseDataDir, 'brain_chain.json');
+let cachedBrainChain = null;
 const imagesDir = path.join(baseDataDir, 'ielts_images');
 
 if (!fs.existsSync(imagesDir)) {
@@ -1841,6 +1843,37 @@ ipcMain.handle('save-comments-vault', async (event, data) => {
     return data;
   } catch (e) {
     console.error('Failed to save comments vault:', e);
+    return null;
+  }
+});
+
+ipcMain.handle('load-brain-chain', async () => {
+  try {
+    if (cachedBrainChain) return cachedBrainChain;
+    if (fs.existsSync(brainChainPath)) {
+      const data = await fs.promises.readFile(brainChainPath, 'utf8');
+      cachedBrainChain = JSON.parse(data);
+      const eventCount = Array.isArray(cachedBrainChain.events) ? cachedBrainChain.events.length : 0;
+      console.log('[MAIN] Loaded brain chain from disk:', eventCount, 'events');
+      return cachedBrainChain;
+    }
+  } catch (e) {
+    console.error('Failed to load brain chain:', e);
+  }
+  cachedBrainChain = { events: [], activeEventId: null };
+  return cachedBrainChain;
+});
+
+ipcMain.handle('save-brain-chain', async (event, data) => {
+  try {
+    cachedBrainChain = data;
+    await fs.promises.writeFile(brainChainPath, JSON.stringify(data, null, 2), 'utf8');
+    const eventCount = Array.isArray(data.events) ? data.events.length : 0;
+    console.log('[MAIN] Saved brain chain to disk:', eventCount, 'events');
+    broadcastVaultUpdate('brain-chain', data);
+    return data;
+  } catch (e) {
+    console.error('Failed to save brain chain:', e);
     return null;
   }
 });

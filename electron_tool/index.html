@@ -33,6 +33,7 @@
     <button class="tab-btn" id="tabBtnVideoChallenge" data-tab="videoChallenge">🎬 Hành Trình 100 Ngày Video</button>
     <button class="tab-btn" id="tabBtnTiktokFlashcard" data-tab="tiktokFlashcard">🎵 Flashcard TikTok</button>
     <button class="tab-btn" id="tabBtnCommentsVault" data-tab="commentsVault">💬 1000 Comment</button>
+    <button class="tab-btn" id="tabBtnBrainChain" data-tab="brainChain">🧠 Brain Chain</button>
   </div>
   <div class="app-container">
 
@@ -1695,6 +1696,371 @@
       </div>
     </div>
 
+    <!-- Tab 7: Brain Chain (Chuỗi Tư Duy & Phân Tích Logic Đa Tầng) -->
+    <div id="paneBrainChain" class="tab-pane">
+      <!-- Header Banner -->
+      <div class="speaking-header-card"
+        style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #065f46 100%); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 6px 30px rgba(139, 92, 246, 0.25); color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 26px;">🧠</span>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 800; letter-spacing: 0.5px; background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              BRAIN CHAIN — XÂY DỰNG CHUỖI TƯ DUY & INSIGHT LOGIC</h3>
+          </div>
+          <p style="margin: 6px 0 0 0; font-size: 12.5px; color: #cbd5e1; opacity: 0.9;">
+            Từ một sự kiện → Suy luận A→B→C→D → Phân tích 5 Whys & Hệ thống → Kiến tạo Insight đột phá
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" id="btnBcAddEvent" class="btn-primary-glow"
+            style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); padding: 0 16px; height: 36px; font-size: 12.5px; font-weight: 700; width: auto; color: #fff;"
+            title="Thêm sự kiện hoặc tình huống mới để phân tích">➕ Sự Kiện Mới</button>
+          <button type="button" id="btnBcGenPrompt" class="btn-primary-glow"
+            style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 16px; height: 36px; font-size: 12.5px; font-weight: 700; width: auto; color: #fff;"
+            title="Tạo Prompt chuẩn Brain Chain để gửi AI phân tích">⚡ Tạo Prompt AI</button>
+          <button type="button" id="btnBcImportJson" class="btn-primary-glow"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 16px; height: 36px; font-size: 12.5px; font-weight: 700; width: auto; color: #fff;"
+            title="Dán kết quả JSON từ AI để xem trực quan chuỗi tư duy">📥 Dán JSON AI</button>
+          <button type="button" id="btnBcLoadPresets" class="btn-modal"
+            style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; height: 36px; font-size: 12px; padding: 0 12px; width: auto;"
+            title="Nạp lại bộ tình huống mẫu tinh hoa">🔮 Mẫu Tinh Hoa</button>
+          <button type="button" id="btnBcBackup" class="btn-modal"
+            style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; height: 36px; font-size: 12px; padding: 0 12px; width: auto;"
+            title="Sao lưu & Đồng bộ kho dữ liệu Brain Chain">⚙️ Sao Lưu</button>
+        </div>
+      </div>
+
+      <!-- Main Container: Sidebar + Studio Workspace -->
+      <div class="bc-container">
+        <!-- Sidebar: Danh sách sự kiện -->
+        <div class="bc-sidebar">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="bcSearchInput" class="inp" placeholder="🔍 Tìm kiếm sự kiện..."
+              style="height: 34px; font-size: 12px; flex: 1;" />
+            <select id="bcCategoryFilter" class="inp select-inp" style="height: 34px; font-size: 11.5px; width: 120px;">
+              <option value="all">Tất cả chủ đề</option>
+              <option value="Kinh doanh">💼 Kinh doanh</option>
+              <option value="Kinh tế">📈 Kinh tế</option>
+              <option value="Công nghệ">🤖 Công nghệ</option>
+              <option value="Đời sống">👥 Đời sống</option>
+              <option value="Tâm lý">🧠 Tâm lý</option>
+              <option value="Giả định">🌀 Giả định</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 2px; font-size: 11px; color: var(--muted);">
+            <span id="bcEventCountLabel">0 Sự kiện</span>
+            <span style="color: #a78bfa; font-weight: 600;">⚡ Brain Score: <b id="bcAvgScoreLabel" style="color: #34d399;">88/100</b></span>
+          </div>
+
+          <!-- List of events -->
+          <div id="bcEventList" class="bc-event-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Main Studio & Visualizer -->
+        <div class="bc-main" id="bcMainStudio">
+          <!-- Empty State (when no event is selected) -->
+          <div id="bcEmptyState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--muted); padding: 40px 20px;">
+            <div style="font-size: 56px; margin-bottom: 16px; animation: pulse 2s infinite;">🧠</div>
+            <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px;">CHỌN HOẶC TẠO SỰ KIỆN MỚI</h3>
+            <p style="max-width: 520px; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
+              Hệ thống Brain Chain giúp bạn rèn luyện năng lực tư duy liên tưởng, nhìn ra quy luật nhân quả A→B→C→D, phân rã nguyên lý gốc và đúc kết những Insight giá trị cao từ mọi hiện tượng trong cuộc sống.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+              <button type="button" class="btn-primary-glow" onclick="document.getElementById('btnBcAddEvent').click();"
+                style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); padding: 0 20px; height: 38px; font-size: 13px; font-weight: 700; width: auto; color: #fff;">
+                ➕ Thêm Sự Kiện Đầu Tiên
+              </button>
+              <button type="button" class="btn-primary-glow" onclick="document.getElementById('btnBcLoadPresets').click();"
+                style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 20px; height: 38px; font-size: 13px; font-weight: 700; width: auto; color: #fff;">
+                🔮 Khám Phá 6 Tình Huống Mẫu
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Workspace (when an event is selected) -->
+          <div id="bcActiveWorkspace" style="display: none; flex-direction: column; gap: 14px;">
+            <!-- Event Header & Actions Bar -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 260px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span id="bcEventCatBadge" class="bc-badge bc-badge-cat">💼 Kinh doanh</span>
+                  <span id="bcEventStatusBadge" class="bc-badge bc-badge-analyzed">✅ Đã có phân tích</span>
+                </div>
+                <h2 id="bcEventTitle" style="margin: 0; font-size: 19px; font-weight: 800; color: #fff; line-height: 1.35;">
+                  Tên sự kiện
+                </h2>
+                <p id="bcEventContext" style="margin: 6px 0 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45;">
+                  Bối cảnh sự kiện...
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button type="button" id="btnBcCopyPromptQuick" class="btn-primary-glow"
+                  style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
+                  title="Sao chép toàn bộ Prompt phân tích sự kiện này để gửi AI">📋 Copy Prompt AI</button>
+                <button type="button" id="btnBcImportEventJson" class="btn-primary-glow"
+                  style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
+                  title="Dán kết quả JSON phân tích từ AI vào sự kiện này">📥 Nạp JSON AI</button>
+                <button type="button" id="btnBcPracticeMode" class="btn-modal"
+                  style="height: 32px; font-size: 12px; padding: 0 12px; width: auto; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd;"
+                  title="Chế độ ẩn từng bước để tự suy luận A -> B -> C -> D">🎮 Luyện Tự Suy Luận</button>
+                <button type="button" id="btnBcEditEvent" class="btn-modal"
+                  style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                  title="Chỉnh sửa thông tin sự kiện">✏️</button>
+                <button type="button" id="btnBcDeleteEvent" class="btn-modal btn-delete-red"
+                  style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                  title="Xóa sự kiện này">🗑️</button>
+              </div>
+            </div>
+
+            <!-- Sub-tab Navigation Bar -->
+            <div class="bc-subtab-bar">
+              <button type="button" class="bc-subtab-btn active" data-bc-tab="chain">🔗 Chuỗi A→B→C→D→Insight</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="effects">⚡ Hiệu Ứng Đa Tầng</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="whys">🎯 5 Whys (Gốc Rễ)</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="system">🌐 Hệ Thống & Loops</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="contrarian">⚖️ Nguyên Lý Gốc & Phản Biện</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="predictions">🔮 Dự Đoán (1T / 1N / 5N)</button>
+              <button type="button" class="bc-subtab-btn" data-bc-tab="vault">💎 Insight & Hành Động</button>
+            </div>
+
+            <!-- SUB-TAB 1: 🔗 Chuỗi A -> B -> C -> D -> Insight -->
+            <div id="bcPaneTabChain" class="bc-tab-content">
+              <div id="bcChainPracticeBanner" style="display: none; background: rgba(139, 92, 246, 0.15); border: 1px solid #8b5cf6; border-radius: 10px; padding: 10px 16px; margin-bottom: 12px; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12.5px; color: #ddd6fe; font-weight: 600;">
+                  🎯 <b>Chế độ Luyện Suy Luận:</b> Hãy tự suy luận bước tiếp theo trong đầu trước khi bấm tiết lộ!
+                </span>
+                <button type="button" id="btnBcRevealNext" class="btn-primary-glow" style="background: var(--purple); font-size: 11.5px; height: 28px; padding: 0 12px; width: auto;">Tiết Lộ Bước Kế Tiếp ▶</button>
+              </div>
+
+              <div class="bc-chain-flow">
+                <!-- Node A -->
+                <div id="bcNodeCardA" class="bc-node-card bc-node-a">
+                  <div class="bc-node-header">
+                    <span class="bc-node-tag">🔷 BƯỚC 1: KHỞI NGUỒN SỰ KIỆN (A)</span>
+                    <span style="font-size: 11px; color: var(--muted);">Bắt đầu chuỗi nhân quả</span>
+                  </div>
+                  <div id="bcNodeTextA" class="bc-node-content">...</div>
+                </div>
+
+                <div id="bcConnector1" class="bc-node-connector"><span>dẫn đến (A ➔ B)</span></div>
+
+                <!-- Node B -->
+                <div id="bcNodeCardB" class="bc-node-card bc-node-b">
+                  <div class="bc-node-header">
+                    <span class="bc-node-tag">🔹 BƯỚC 2: TÁC ĐỘNG TRỰC TIẾP (B)</span>
+                    <span style="font-size: 11px; color: var(--muted);">Phản ứng tức thời cấp 1</span>
+                  </div>
+                  <div id="bcNodeTextB" class="bc-node-content">...</div>
+                </div>
+
+                <div id="bcConnector2" class="bc-node-connector"><span>tiếp tục kéo theo (B ➔ C)</span></div>
+
+                <!-- Node C -->
+                <div id="bcNodeCardC" class="bc-node-card bc-node-c">
+                  <div class="bc-node-header">
+                    <span class="bc-node-tag">🟣 BƯỚC 3: PHẢN ỨNG DÂY CHUYỀN (C)</span>
+                    <span style="font-size: 11px; color: var(--muted);">Tác động bậc hai lan rộng</span>
+                  </div>
+                  <div id="bcNodeTextC" class="bc-node-content">...</div>
+                </div>
+
+                <div id="bcConnector3" class="bc-node-connector"><span>hệ quả dây chuyền (C ➔ D)</span></div>
+
+                <!-- Node D -->
+                <div id="bcNodeCardD" class="bc-node-card bc-node-d">
+                  <div class="bc-node-header">
+                    <span class="bc-node-tag">🌸 BƯỚC 4: HỆ QUẢ SÂU RỘNG (D)</span>
+                    <span style="font-size: 11px; color: var(--muted);">Thay đổi hành vi / vận hành</span>
+                  </div>
+                  <div id="bcNodeTextD" class="bc-node-content">...</div>
+                </div>
+
+                <div id="bcConnector4" class="bc-node-connector"><span>kết tinh nhận thức (D ➔ Insight)</span></div>
+
+                <!-- Node Insight -->
+                <div id="bcNodeCardInsight" class="bc-node-card bc-node-insight">
+                  <div class="bc-node-header">
+                    <span class="bc-node-tag">💡 BƯỚC 5: INSIGHT CỐT LÕI ĐỘT PHÁ</span>
+                    <span style="font-size: 11px; color: #6ee7b7; font-weight: bold;">💎 Giá Trị Tư Duy Đỉnh Cao</span>
+                  </div>
+                  <div id="bcNodeTextInsight" class="bc-node-content">...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUB-TAB 2: ⚡ Hiệu Ứng Đa Tầng -->
+            <div id="bcPaneTabEffects" class="bc-tab-content" style="display: none;">
+              <div class="bc-grid-2">
+                <div class="bc-card-box" style="border-left: 4px solid #38bdf8;">
+                  <div style="font-size: 12px; font-weight: 800; color: #38bdf8;">⚡ TÁC ĐỘNG TỨC THÌ (IMMEDIATE EFFECT)</div>
+                  <p id="bcEffectImmediate" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="border-left: 4px solid #818cf8;">
+                  <div style="font-size: 12px; font-weight: 800; color: #818cf8;">🌀 HỆ QUẢ BẬC HAI (SECOND-ORDER EFFECT)</div>
+                  <p id="bcEffectSecond" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="border-left: 4px solid #a78bfa;">
+                  <div style="font-size: 12px; font-weight: 800; color: #a78bfa;">🌊 HỆ QUẢ BẬC BA (THIRD-ORDER EFFECT)</div>
+                  <p id="bcEffectThird" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="border-left: 4px solid #fbbf24;">
+                  <div style="font-size: 12px; font-weight: 800; color: #fbbf24;">⚠️ HỆ QUẢ BẤT NGỜ NGOÀI DỰ KIẾN (UNEXPECTED)</div>
+                  <p id="bcEffectUnexpected" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="grid-column: 1 / -1; border-left: 4px solid #34d399; background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(30,30,50,0.9) 100%);">
+                  <div style="font-size: 12px; font-weight: 800; color: #34d399;">📅 HỆ QUẢ DÀI HẠN (LONG-TERM EFFECT 1-3 NĂM)</div>
+                  <p id="bcEffectLongTerm" style="font-size: 14px; color: #f1f5f9; line-height: 1.55; margin: 0;">...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUB-TAB 3: 🎯 5 Whys (Gốc Rễ) -->
+            <div id="bcPaneTabWhys" class="bc-tab-content" style="display: none;">
+              <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 12px;">
+                Phương pháp 5 Whys đào sâu từ hiện tượng bề mặt qua các tầng nguyên nhân cho đến khi chạm tới <b>Root Cause gốc rễ</b>:
+              </div>
+              <div id="bcWhyLadderList" class="bc-why-ladder">
+                <!-- Dynamically populated 5 why steps -->
+              </div>
+            </div>
+
+            <!-- SUB-TAB 4: 🌐 Hệ Thống & Loops -->
+            <div id="bcPaneTabSystem" class="bc-tab-content" style="display: none;">
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div class="bc-card-box">
+                  <div style="font-size: 12px; font-weight: 800; color: #38bdf8;">🌐 CÁC THÀNH TỐ TRONG HỆ THỐNG (SYSTEM NODES)</div>
+                  <div id="bcSystemNodesWrap" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+                    <!-- Nodes tags -->
+                  </div>
+                </div>
+                <div class="bc-grid-2">
+                  <div class="bc-card-box">
+                    <div style="font-size: 12px; font-weight: 800; color: #818cf8;">🎯 TÁC ĐỘNG TRỰC TIẾP</div>
+                    <p id="bcSystemDirect" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                  </div>
+                  <div class="bc-card-box">
+                    <div style="font-size: 12px; font-weight: 800; color: #a78bfa;">🔗 TÁC ĐỘNG GIÁN TIẾP</div>
+                    <p id="bcSystemIndirect" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                  </div>
+                </div>
+                <div class="bc-card-box" style="border: 1px solid rgba(236, 72, 153, 0.4); background: linear-gradient(135deg, rgba(236,72,153,0.06) 0%, rgba(30,30,50,0.95) 100%);">
+                  <div style="font-size: 12px; font-weight: 800; color: #f472b6;">🔄 VÒNG LẶP PHẢN HỒI (FEEDBACK LOOPS)</div>
+                  <p id="bcSystemFeedback" style="font-size: 13.5px; color: #fce7f3; line-height: 1.55; margin: 0;">...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUB-TAB 5: ⚖️ Nguyên Lý Gốc & Phản Biện -->
+            <div id="bcPaneTabContrarian" class="bc-tab-content" style="display: none;">
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- First Principles -->
+                <div class="bc-card-box" style="border: 1px solid rgba(56, 189, 248, 0.3);">
+                  <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;">⚛️ PHÂN RÃ NGUYÊN LÝ GỐC (FIRST PRINCIPLES)</div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px;">
+                      <span style="font-size: 11px; color: #f87171; font-weight: 700; display: block; margin-bottom: 4px;">❌ Giả Định Ngầm Bị Phá Vỡ</span>
+                      <p id="bcFpBroken" style="font-size: 12.5px; color: #e2e8f0; margin: 0; line-height: 1.45;">...</p>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px;">
+                      <span style="font-size: 11px; color: #34d399; font-weight: 700; display: block; margin-bottom: 4px;">✅ Sự Thật Nền Tảng Bất Biến</span>
+                      <p id="bcFpTruths" style="font-size: 12.5px; color: #e2e8f0; margin: 0; line-height: 1.45;">...</p>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px;">
+                      <span style="font-size: 11px; color: #38bdf8; font-weight: 700; display: block; margin-bottom: 4px;">🧩 Logic Tái Cấu Trúc</span>
+                      <p id="bcFpLogic" style="font-size: 12.5px; color: #e2e8f0; margin: 0; line-height: 1.45;">...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contrarian Matrix -->
+                <div class="bc-grid-2">
+                  <div class="bc-card-box" style="border-left: 4px solid #10b981;">
+                    <div style="font-size: 12px; font-weight: 800; color: #10b981;">👍 TẠI SAO ĐÚNG? (ARGUMENT FOR)</div>
+                    <p id="bcContraFor" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                  </div>
+                  <div class="bc-card-box" style="border-left: 4px solid #ef4444;">
+                    <div style="font-size: 12px; font-weight: 800; color: #ef4444;">👎 TẠI SAO CÓ THỂ SAI? (ARGUMENT AGAINST)</div>
+                    <p id="bcContraAgainst" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                  </div>
+                </div>
+
+                <div class="bc-card-box" style="background: linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(30,30,50,0.95) 100%);">
+                  <div style="font-size: 12px; font-weight: 800; color: #a78bfa;">⚖️ KẾT LUẬN TỔNG HỢP ĐA CHIỀU (SYNTHESIS)</div>
+                  <p id="bcContraSynthesis" style="font-size: 13.5px; color: #f1f5f9; line-height: 1.55; margin: 0; font-weight: 600;">...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUB-TAB 6: 🔮 Dự Đoán (1T / 1N / 5N) -->
+            <div id="bcPaneTabPredictions" class="bc-tab-content" style="display: none;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+                <div class="bc-card-box" style="border-top: 3px solid #38bdf8;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 800; color: #38bdf8;">⏱ 1 THÁNG TỚI</span>
+                    <span style="font-size: 10.5px; color: var(--muted);">Ngắn hạn</span>
+                  </div>
+                  <p id="bcPredMonth" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="border-top: 3px solid #a78bfa;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 800; color: #a78bfa;">📅 1 NĂM TỚI</span>
+                    <span style="font-size: 10.5px; color: var(--muted);">Trung hạn</span>
+                  </div>
+                  <p id="bcPredYear" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+                <div class="bc-card-box" style="border-top: 3px solid #f472b6;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 800; color: #f472b6;">🔮 5 NĂM TỚI</span>
+                    <span style="font-size: 10.5px; color: var(--muted);">Dài hạn</span>
+                  </div>
+                  <p id="bcPredFiveYears" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin: 0;">...</p>
+                </div>
+              </div>
+              <div class="bc-card-box" style="margin-top: 14px; border: 1px dashed rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.04);">
+                <div style="font-size: 12px; font-weight: 800; color: #fbbf24;">👁️ ĐIỂM MÙ & GIẢ THIẾT CẦN KIỂM CHỨNG (BLIND SPOTS)</div>
+                <p id="bcPredBlindSpots" style="font-size: 13px; color: #fef3c7; line-height: 1.5; margin: 0;">...</p>
+              </div>
+            </div>
+
+            <!-- SUB-TAB 7: 💎 Insight & Hành Động -->
+            <div id="bcPaneTabVault" class="bc-tab-content" style="display: none;">
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Golden Insight Hero -->
+                <div style="background: linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(6,78,59,0.5) 100%); border: 2px solid #10b981; border-radius: 14px; padding: 20px 24px; box-shadow: 0 0 30px rgba(16,185,129,0.18);">
+                  <div style="font-size: 12px; font-weight: 800; color: #34d399; letter-spacing: 1px; margin-bottom: 8px;">💎 GOLDEN INSIGHT — BẢN CHẤT CỐT LÕI</div>
+                  <blockquote id="bcVaultGoldenInsight" style="margin: 0; font-size: 16px; font-weight: 700; color: #fff; line-height: 1.6; font-style: italic;">
+                    "..."
+                  </blockquote>
+                </div>
+
+                <!-- Action Takeaways -->
+                <div class="bc-card-box">
+                  <div style="font-size: 12.5px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;">🚀 BÀI HỌC HÀNH ĐỘNG & ỨNG DỤNG THỰC TẾ</div>
+                  <ul id="bcVaultTakeawaysList" style="margin: 0; padding-left: 20px; font-size: 13.5px; color: #e2e8f0; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
+                    <!-- Takeaways items -->
+                  </ul>
+                </div>
+
+                <!-- Personal Notes & Reflections -->
+                <div class="bc-card-box">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 12.5px; font-weight: 800; color: #a78bfa;">📝 Ghi Chú & Chiêm Nghiệm Cá Nhân</span>
+                    <span id="bcNotesSaveStatus" style="font-size: 11px; color: var(--muted);">Tự động lưu</span>
+                  </div>
+                  <textarea id="bcUserNotesInput" class="inp textarea-inp" placeholder="Viết thêm suy nghĩ, phản biện hoặc bài học cá nhân rút ra từ sự kiện này..." style="height: 100px; font-size: 13px; line-height: 1.5;"></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer -->
     <div class="footer">
       <span>⏱ Task Countdown • Premium Daily Planner</span>
@@ -2167,6 +2533,157 @@
           <button type="button" id="btnTkExpandNext" class="btn-modal" style="height: 32px; font-size: 12px; padding: 0 14px; width: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff;" title="Thẻ sau (Phím →)">Thẻ sau ▶ (→)</button>
           <button type="button" id="btnTkExpandDone" class="btn-modal btn-confirm" style="height: 32px; font-size: 12px; padding: 0 18px; width: auto; background: var(--purple); color: #fff;">Đóng</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       🧠 BRAIN CHAIN MODALS
+       ========================================================= -->
+
+  <!-- Modal: Tạo / Chỉnh Sửa Sự Kiện -->
+  <div id="bcEventModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 540px; padding: 22px;">
+      <div class="modal-icon" style="font-size: 32px;">💡</div>
+      <h3 id="bcEventModalTitle" style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Thêm Sự Kiện / Tình Huống Mới</h3>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập một sự kiện thực tế, hiện tượng xã hội hoặc tình huống kinh doanh để phân tích chuỗi tư duy.</p>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: block; margin-bottom: 6px;">Tên sự kiện / Tình huống cốt lõi (*):</label>
+        <input type="text" id="bcInputEventTitle" class="inp" placeholder="Ví dụ: Một quán cà phê giảm giá 30%, Giá xăng tăng mạnh 15%, ..." style="height: 38px; font-size: 13px;" />
+      </div>
+
+      <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: left;">
+        <div class="form-group">
+          <label style="font-size: 12px; font-weight: 700; color: #a78bfa; display: block; margin-bottom: 6px;">Chủ đề / Lĩnh vực:</label>
+          <select id="bcInputEventCategory" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
+            <option value="Kinh doanh">💼 Kinh doanh & Khởi nghiệp</option>
+            <option value="Kinh tế">📈 Kinh tế & Thị trường</option>
+            <option value="Công nghệ">🤖 Công nghệ & AI</option>
+            <option value="Đời sống">👥 Đời sống & Xã hội</option>
+            <option value="Tâm lý">🧠 Tâm lý & Hành vi</option>
+            <option value="Giáo dục">🎓 Giáo dục & Phát triển</option>
+            <option value="Giả định">🌀 Giả định (What-If)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label style="font-size: 12px; font-weight: 700; color: #34d399; display: block; margin-bottom: 6px;">Mức độ phức tạp:</label>
+          <select id="bcInputEventLevel" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
+            <option value="1">Level 1 - Cơ bản (A ➔ B)</option>
+            <option value="2">Level 2 - Trung bình (A ➔ B ➔ C)</option>
+            <option value="3" selected>Level 3 - Nâng cao (A ➔ B ➔ C ➔ D ➔ Insight)</option>
+            <option value="4">Level 4 - Chuyên sâu (Hệ thống & Đa tầng)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px;">
+        <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">Bối cảnh chi tiết / Câu hỏi trọng tâm (Tùy chọn):</label>
+        <textarea id="bcInputEventContext" class="inp textarea-inp" placeholder="Mô tả thêm bối cảnh, câu hỏi muốn tìm lời giải hoặc các giả thiết ban đầu..." style="height: 85px; font-size: 12.5px; line-height: 1.45;"></textarea>
+      </div>
+
+      <div class="modal-actions" style="gap: 10px; justify-content: flex-end;">
+        <button type="button" id="btnBcEventModalCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px;">✕ Hủy bỏ</button>
+        <button type="button" id="btnBcEventModalSave" class="btn-primary-glow" style="width: auto; padding: 0 22px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">💾 Lưu Sự Kiện</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Tạo Prompt AI Chuẩn Brain Chain -->
+  <div id="bcPromptModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 720px; padding: 24px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 26px;">⚡</span>
+          <div>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #fff;">Tạo Prompt AI Phân Tích Logic Chuỗi Tư Duy</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--muted);">Gửi prompt này cho Gemini, ChatGPT hoặc Claude để sinh trọn vẹn chuỗi A→B→C→D→Insight dưới dạng JSON</p>
+          </div>
+        </div>
+        <button type="button" id="btnBcPromptClose" class="btn-modal btn-cancel" style="height: 32px; width: 32px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;">
+        <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Sự kiện đang chọn:</span>
+        <span id="bcPromptSelectedEventName" style="font-size: 12.5px; font-weight: 700; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 6px;">Chưa chọn sự kiện</span>
+      </div>
+
+      <!-- Prompt Textarea Preview -->
+      <div style="flex: 1; min-height: 220px; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 14px;">
+        <textarea id="bcGeneratedPromptText" class="inp textarea-inp" readonly style="flex: 1; font-family: monospace; font-size: 11.5px; line-height: 1.5; color: #a7f3d0; background: rgba(0,0,0,0.35); padding: 12px; height: 260px; scrollbar-width: thin;"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <!-- Quick AI Web launch buttons -->
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <span style="font-size: 11.5px; color: var(--muted);">Mở nhanh AI:</span>
+          <button type="button" id="btnBcOpenGemini" class="btn-modal" style="height: 32px; font-size: 11.5px; padding: 0 10px; width: auto; color: #38bdf8; background: rgba(56,189,248,0.15);" title="Mở Google Gemini và sao chép Prompt">✨ Gemini</button>
+          <button type="button" id="btnBcOpenChatGPT" class="btn-modal" style="height: 32px; font-size: 11.5px; padding: 0 10px; width: auto; color: #34d399; background: rgba(52,211,153,0.15);" title="Mở ChatGPT và sao chép Prompt">🟢 ChatGPT</button>
+          <button type="button" id="btnBcOpenClaude" class="btn-modal" style="height: 32px; font-size: 11.5px; padding: 0 10px; width: auto; color: #f472b6; background: rgba(244,114,182,0.15);" title="Mở Claude AI và sao chép Prompt">🟣 Claude</button>
+        </div>
+
+        <!-- Copy Prompt Button -->
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnBcCopyPromptModalBtn" class="btn-primary-glow" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 20px; height: 36px; font-size: 13px; font-weight: 800; width: auto; color: #fff;">
+            📋 Sao Chép Prompt (1-Click)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Nhập JSON Kết Quả Phân Tích từ AI -->
+  <div id="bcImportJsonModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 680px; padding: 24px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 26px;">📥</span>
+          <div>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #fff;">Nạp Kết Quả JSON từ AI</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--muted);">Dán đoạn mã JSON mà AI trả về vào đây để hệ thống hiển thị trực quan toàn bộ chuỗi tư duy</p>
+          </div>
+        </div>
+        <button type="button" id="btnBcImportJsonClose" class="btn-modal btn-cancel" style="height: 32px; width: 32px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="font-size: 12px; font-weight: 700; color: #a78bfa;">Dán mã JSON phân tích:</label>
+        <button type="button" id="btnBcPasteSampleJson" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 10px; width: auto; color: #38bdf8; background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.3);">📋 Dán mẫu thử nghiệm</button>
+      </div>
+
+      <div style="flex: 1; min-height: 200px; display: flex; flex-direction: column; margin-bottom: 12px;">
+        <textarea id="bcImportJsonInput" class="inp textarea-inp" placeholder="Dán mã JSON phân tích từ AI vào đây... Ví dụ:&#10;{&#10;  &quot;title&quot;: &quot;...&quot;,&#10;  &quot;coreChain&quot;: { &quot;a&quot;: &quot;...&quot;, &quot;b&quot;: &quot;...&quot;, &quot;c&quot;: &quot;...&quot;, &quot;d&quot;: &quot;...&quot;, &quot;insight&quot;: &quot;...&quot; }&#10;}" style="flex: 1; height: 220px; font-family: monospace; font-size: 12px; line-height: 1.45;"></textarea>
+      </div>
+
+      <div id="bcImportJsonError" style="display: none; color: #f87171; font-size: 12px; margin-bottom: 10px; background: rgba(239,68,68,0.15); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(239,68,68,0.3);"></div>
+
+      <div class="modal-actions" style="border-top: 1px solid var(--border); padding-top: 14px; gap: 10px; justify-content: flex-end;">
+        <button type="button" id="btnBcImportJsonCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px;">✕ Đóng</button>
+        <button type="button" id="btnBcImportJsonConfirm" class="btn-primary-glow" style="width: auto; padding: 0 24px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">📥 Áp Dụng & Hiển Thị Chuỗi Tư Duy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sao Lưu & Khôi Phục Dữ Liệu Brain Chain -->
+  <div id="bcBackupModal" class="modal-overlay">
+    <div class="modal-box modal-large" style="max-width: 520px; padding: 22px;">
+      <div class="modal-icon" style="font-size: 30px;">⚙️</div>
+      <h3 style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Sao Lưu & Đồng Bộ Brain Chain</h3>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Sao chép toàn bộ kho sự kiện và chuỗi tư duy dưới dạng JSON để lưu trữ hoặc chuyển sang máy khác.</p>
+
+      <div class="modal-actions" style="margin-bottom: 12px; gap: 8px; justify-content: center;">
+        <button type="button" id="btnBcExportFullJson" class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); width: auto; padding: 0 16px; font-size: 12.5px; height: 34px;">📤 Sao chép JSON (Xuất)</button>
+        <button type="button" id="btnBcResetDefaultPresets" class="btn-modal" style="width: auto; padding: 0 14px; font-size: 12px; height: 34px; background: rgba(245,158,11,0.15); color: #fbbf24; border-color: rgba(245,158,11,0.3);">🔮 Khôi phục 6 Mẫu Gốc</button>
+        <button type="button" id="btnBcClearAllEvents" class="btn-modal btn-delete-red" style="width: auto; padding: 0 14px; font-size: 12px; height: 34px;">🗑️ Xóa toàn bộ</button>
+      </div>
+
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px;">
+        <textarea id="bcBackupJsonInput" class="inp textarea-inp" style="height: 130px; font-family: monospace; font-size: 11.5px; width: 100%;" placeholder="{ &quot;events&quot;: [...] }"></textarea>
+      </div>
+
+      <div class="modal-actions" style="gap: 8px; justify-content: flex-end;">
+        <button type="button" id="btnBcBackupClose" class="btn-modal btn-cancel" style="width: auto; padding: 0 16px; height: 34px; font-size: 12px;">Đóng</button>
+        <button type="button" id="btnBcApplyBackupJson" class="btn-modal btn-confirm" style="width: auto; padding: 0 20px; height: 34px; font-size: 12px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">📥 Áp dụng JSON</button>
       </div>
     </div>
   </div>

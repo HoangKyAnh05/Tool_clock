@@ -2736,7 +2736,8 @@ function initTabs() {
     { btn: document.getElementById('tabBtnSpeaking'), pane: document.getElementById('paneSpeaking'), onOpen: () => { renderSpeakingList(); } },
     { btn: document.getElementById('tabBtnVideoChallenge'), pane: document.getElementById('paneVideoChallenge'), onOpen: () => { renderVideoProjectsList(); } },
     { btn: document.getElementById('tabBtnTiktokFlashcard'), pane: document.getElementById('paneTiktokFlashcard'), onOpen: () => { if (typeof initTiktokFlashcardTab === 'function') initTiktokFlashcardTab(); } },
-    { btn: document.getElementById('tabBtnCommentsVault'), pane: document.getElementById('paneCommentsVault'), onOpen: () => { if (typeof initCommentsVaultTab === 'function') initCommentsVaultTab(); } }
+    { btn: document.getElementById('tabBtnCommentsVault'), pane: document.getElementById('paneCommentsVault'), onOpen: () => { if (typeof initCommentsVaultTab === 'function') initCommentsVaultTab(); } },
+    { btn: document.getElementById('tabBtnBrainChain'), pane: document.getElementById('paneBrainChain'), onOpen: () => { if (typeof initBrainChainTab === 'function') initBrainChainTab(); } }
   ];
 
   tabs.forEach(tab => {
@@ -5897,7 +5898,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadVideoData(),
     loadTkFlashcardData(),
     loadTkSavedMusic(),
-    loadCommentsVaultData()
+    loadCommentsVaultData(),
+    loadBrainChainData()
   ]).then(() => {
     try { updateFolderSelects(); } catch (e) { console.error('Folder selects error:', e); }
     try { updateSkillSelects(); } catch (e) { console.error('Skill selects error:', e); }
@@ -5911,6 +5913,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Comments Vault tab
     try { initCommentsVaultTab(); } catch (e) { console.error('Comments Vault tab error:', e); }
+
+    // Initialize Brain Chain tab
+    try { initBrainChainTab(); } catch (e) { console.error('Brain Chain tab error:', e); }
 
     // Restore preserved inputs if we just reloaded
     try { restoreInputStateAfterReload(); } catch (e) { console.error('Restore state error:', e); }
@@ -9015,4 +9020,1325 @@ Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), khô
   updateCmDashboardStats();
   updateCmCategorySelects();
   renderCmCommentsList();
+}
+
+// 🧠 BRAIN CHAIN MODULE (Hệ Thống Phân Tích Chuỗi Tư Duy Đa Tầng)
+// =================================================================
+
+const DEFAULT_BRAIN_CHAIN_PRESETS = [
+  {
+    id: "bc_preset_1",
+    title: "Một quán cà phê giảm giá 30%",
+    category: "Kinh doanh",
+    level: 3,
+    context: "Quán cà phê đông khách nhưng lợi nhuận giảm, chủ quán quyết định tung chương trình khuyến mãi giảm 30% toàn menu để kích cầu.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Quán cà phê triển khai chương trình giảm giá 30% toàn menu.",
+      b: "Lượng khách mới tò mò và khách quen kéo đến quán tăng đột biến gấp 3 lần.",
+      c: "Quán quá tải nghiêm trọng, thời gian khách chờ đồ uống kéo dài từ 5 phút lên 35 phút, nhân viên kiệt sức.",
+      d: "Đơn hàng bị pha chế ẩu và nhầm lẫn liên tục; khách hàng thất vọng rời đi và để lại hàng loạt đánh giá 1 sao.",
+      insight: "Nếu năng lực vận hành không sẵn sàng cho quy mô tăng trưởng, một chiến dịch marketing thành công về lượng khách sẽ biến thành thảm họa hủy diệt uy tín thương hiệu."
+    },
+    causeEffects: {
+      immediate: "Doanh thu ngày đầu tiên tăng cao do lượng khách săn khuyến mãi đổ về đông đúc.",
+      secondOrder: "Chi phí nguyên vật liệu và áp lực nhân sự tăng vọt nhưng biên lợi nhuận trên từng ly bị bào mòn do giảm giá sâu.",
+      thirdOrder: "Khách hàng trung thành trước đây bỏ sang quán khác vì không gian ồn ào và chất lượng phục vụ suy giảm.",
+      unexpected: "Chiến dịch marketing càng viral mạnh thì tốc độ phá hủy danh tiếng thương hiệu càng diễn ra nhanh hơn.",
+      longTerm: "Khi hết thời hạn giảm giá 30%, khách hàng vãng lai săn sale biến mất, quán mất cả khách cũ lẫn khách mới, doanh số sụt giảm chạm đáy."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao khách hàng nổi giận và chấm 1 sao?", answer: "Vì phải chờ đồ uống hơn 30 phút và nhận sai món đồ uống có vị nhạt nhẽo." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao thời gian phục vụ bị chậm và đồ uống bị ẩu?", answer: "Vì quầy pha chế chỉ có 2 barista nhưng phải xử lý hơn 120 đơn hàng cùng một lúc." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao quán không chuẩn bị thêm nhân sự và quy trình trước?", answer: "Vì bộ phận marketing chạy chương trình mà không đồng bộ kế hoạch với bộ phận vận hành." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao có sự đứt gãy giữa Marketing và Vận hành?", answer: "Vì quán thiếu hệ thống dự báo công suất tải tối đa (Capacity Planning) trước khi kích hoạt đòn bẩy cầu." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Tư duy ngộ nhận rằng 'Có nhiều khách là luôn tốt' mà bỏ quên nguyên tắc: Trải nghiệm khách hàng là hàm số của Năng lực cung ứng chia cho Lượng cầu." }
+    ],
+    whatIf: {
+      scenario: "Nếu quán giới hạn 50 suất giảm giá/ngày hoặc chỉ áp dụng cho khách đặt lịch trước thì sao?",
+      consequences: [
+        "Tạo ra hiệu ứng khan hiếm (FOMO) lành mạnh khiến giá trị khuyến mãi được trân trọng hơn.",
+        "Bộ phận vận hành luôn kiểm soát được 100% chất lượng từng ly cà phê và phong cách phục vụ.",
+        "Biến 100% khách thử nghiệm thành khách hàng trung thành thay vì tạo ra 500 khách hàng thất vọng."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Giá bán (-30%)", "Lượng khách (+300%)", "Công suất pha chế (100% Max)", "Thời gian chờ (+600%)", "Trải nghiệm khách (-80%)", "Tỷ lệ quay lại (-90%)"],
+      directImpact: "Giảm giá kích thích trực tiếp nhu cầu tiêu dùng ngắn hạn của phân khúc nhạy cảm về giá.",
+      indirectImpact: "Tác động gián tiếp gây căng thẳng tâm lý nhân sự dẫn đến tỷ lệ thôi việc tăng cao sau đợt khuyến mãi.",
+      feedbackLoop: "Vòng lặp cân bằng tiêu cực: Quá tải ➔ Phục vụ kém ➔ Đánh giá xấu ➔ Khách giảm sút ➔ Lợi nhuận âm ➔ Cắt giảm nhân sự ➔ Quán càng phục vụ tệ hơn."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Doanh thu tăng = Lợi nhuận tăng' và 'Cứ có khách đông là quán sẽ phát triển bền vững'.",
+      fundamentalTruths: "Sự thật gốc: Giá trị thực sự của quán cà phê là trải nghiệm nhất quán; khách hàng trả tiền cho cảm xúc thoải mái chứ không chỉ là caffein rẻ tiền.",
+      reconstructedLogic: "Chỉ mở rộng phễu khách hàng khi và chỉ khi điểm nghẽn vận hành (Bottleneck) đã được nới rộng tương ứng."
+    },
+    contrarianThinking: {
+      argFor: "Giảm giá 30% giúp xả hàng tồn kho nhanh, thu thập dữ liệu khách hàng mới và tạo tiếng vang truyền thông tức thì.",
+      argAgainst: "Giảm giá thu hút tệp khách hàng nhạy cảm về giá không trung thành, hạ thấp định vị thương hiệu và làm kiệt quệ dòng tiền.",
+      conditions: "Chỉ đúng khi quán có biên lợi nhuận gộp cực cao (>80%), dư thừa công suất phục vụ và có kịch bản Upsell các món có lãi cao.",
+      exceptions: "Không bao giờ áp dụng giảm giá đại trà cho các mô hình dịch vụ giới hạn chỗ ngồi và trải nghiệm cao cấp.",
+      synthesis: "Khuyến mãi là con dao hai lưỡi: Dùng để kiểm tra sức chịu tải của hệ thống thì tốt, dùng làm cứu cánh doanh thu dài hạn là tự sát."
+    },
+    predictions: {
+      oneMonth: "Lượng khách quay về mức bình thường nhưng chi phí vận hành và tuyển dụng nhân viên mới tăng 25%.",
+      oneYear: "Điểm đánh giá Google Maps giảm từ 4.8 xuống 3.9 sao, khách công sở chuyển sang thương hiệu đối thủ bên cạnh.",
+      fiveYears: "Quán buộc phải tái cơ cấu toàn diện hoặc sang nhượng mặt bằng nếu không đổi mới định vị giá trị.",
+      blindSpots: "Chưa tính đến chi phí xử lý khiếu nại và tổn thất vô hình khi đánh mất khách quen có giá trị vòng đời (LTV) cao."
+    },
+    actionTakeaways: [
+      "Luôn tính toán ngưỡng chịu tải vận hành (Max Capacity) trước khi tung bất kỳ chiến dịch Marketing nào.",
+      "Thay vì giảm giá trực tiếp (-30%), hãy tặng voucher trải nghiệm lần sau hoặc nâng cấp size miễn phí để kiểm soát lượng phục vụ.",
+      "Xây dựng quy trình đồng bộ liên phòng ban: Marketing phải báo trước cho Vận hành tối thiểu 7 ngày."
+    ],
+    userNotes: "Bài học then chốt: Marketing tạo ra kỳ vọng, Vận hành quyết định sự thỏa mãn. Đừng để kỳ vọng vượt xa năng lực cung ứng!"
+  },
+  {
+    id: "bc_preset_2",
+    title: "Giá xăng dầu thế giới tăng mạnh 15%",
+    category: "Kinh tế",
+    level: 3,
+    context: "Do bất ổn địa chính trị tại các nước xuất khẩu dầu mỏ, giá xăng dầu thế giới và trong nước tăng đột ngột 15%.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Giá xăng dầu tăng 15% do biến động nguồn cung năng lượng toàn cầu.",
+      b: "Chi phí logistics, vận chuyển container và cước giao nhận hàng hóa tăng ngay lập tức 8-12%.",
+      c: "Giá vốn hàng bán của các mặt hàng tiêu dùng, thực phẩm tại chợ và siêu thị đồng loạt tăng giá.",
+      d: "Người tiêu dùng cảm nhận áp lực lạm phát, cắt giảm chi tiêu không thiết yếu và thắt chặt hầu bao.",
+      insight: "Năng lượng là 'máu' chảy trong huyết mạch của mọi ngành kinh tế; cú sốc năng lượng luôn chuyển hóa thành suy thoái sức mua bán lẻ trước khi làm tổn thương lợi nhuận ròng của doanh nghiệp."
+    },
+    causeEffects: {
+      immediate: "Người dân xếp hàng đổ xăng trước giờ tăng giá; các doanh nghiệp vận tải thông báo điều chỉnh phụ phí xăng dầu.",
+      secondOrder: "Các nhà sản xuất đối mặt với tình thế tiến thoái lưỡng nan: Tăng giá bán thì mất khách, giữ giá thì chịu lỗ gộp.",
+      thirdOrder: "Ngân hàng trung ương xem xét tăng lãi suất để kiềm chế lạm phát kỳ vọng.",
+      unexpected: "Doanh số xe máy điện và các phương tiện công cộng tăng trưởng đột biến 40%.",
+      longTerm: "Thúc đẩy nhanh hơn quá trình chuyển đổi năng lượng xanh và tối ưu hóa chuỗi cung ứng cục bộ (Near-shoring)."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao tô phở và mớ rau ngoài chợ lại tăng giá thêm 5.000đ?", answer: "Vì người bán hàng phải trả thêm tiền xăng khi đi lấy hàng tại chợ đầu mối." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao chi phí vận chuyển lại chiếm tỷ trọng lớn như vậy?", answer: "Vì chuỗi cung ứng thực phẩm tươi sống phụ thuộc 100% vào xe tải chạy dầu diesel mỗi ngày." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao nền kinh tế không thể ngay lập tức chuyển sang nguồn nhiên liệu thay thế?", answer: "Vì cơ sở hạ tầng giao thông và phương tiện vận tải nặng cần hàng thập kỷ và hàng tỷ USD để điện hóa." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao biến động xăng dầu lại có sức lan tỏa rộng như vậy?", answer: "Vì năng lượng là đầu vào cơ bản (Base Input) của toàn bộ các tầng sản xuất, lưu kho và phân phối." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Xã hội hiện đại được xây dựng trên giả định rằng 'năng lượng hóa thạch luôn dồi dào và rẻ mạt'. Khi giả định này lung lay, toàn bộ cấu trúc định giá kinh tế phải thiết lập lại." }
+    ],
+    whatIf: {
+      scenario: "Nếu các doanh nghiệp chuyển sang hợp đồng bảo hiểm giá nhiên liệu (Fuel Hedging) dài hạn?",
+      consequences: [
+        "Doanh nghiệp ổn định được giá thành sản phẩm trong 6-12 tháng, giữ chân khách hàng tốt hơn đối thủ.",
+        "Biến chi phí biến đổi khó đoán thành chi phí cố định có thể hoạch định trong ngân sách tài chính.",
+        "Tạo lợi thế cạnh tranh áp đảo trước các đối thủ cạnh tranh nhỏ lẻ bị sốc giá."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Giá Dầu", "Cước Vận Tải", "Giá Hàng Tiêu Dùng", "CPI Lạm Phát", "Lãi Suất", "Sức Mua Thị Trường"],
+      directImpact: "Tác động trực tiếp làm tăng chi phí biến đổi của các ngành phụ thuộc giao nhận.",
+      indirectImpact: "Tác động gián tiếp kéo giảm chỉ số niềm tin tiêu dùng và làm chậm tốc độ luân chuyển tiền tệ.",
+      feedbackLoop: "Vòng lặp lạm phát: Giá xăng tăng ➔ Chi phí sinh hoạt tăng ➔ Người lao động đòi tăng lương ➔ Doanh nghiệp tăng giá hàng hóa ➔ Lạm phát tiếp tục leo thang."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Chỉ có xe cộ mới chịu ảnh hưởng bởi giá xăng, doanh nghiệp phần mềm/dịch vụ thì không sao'.",
+      fundamentalTruths: "Sự thật gốc: Mọi sản phẩm vật lý đều phải di chuyển trong không gian để đến tay người tiêu dùng; không gian di chuyển gắn liền với năng lượng tiêu hao.",
+      reconstructedLogic: "Để chống chịu khủng hoảng năng lượng, doanh nghiệp phải rút ngắn khoảng cách địa lý của chuỗi cung ứng hoặc gia tăng hàm lượng giá trị vô hình/số hóa."
+    },
+    contrarianThinking: {
+      argFor: "Giá xăng tăng kích thích sự sáng tạo trong việc tối ưu lộ trình giao hàng và loại bỏ các quy trình vận chuyển lãng phí.",
+      argAgainst: "Gây tổn thương nặng nề nhất cho tầng lớp lao động thu nhập thấp và doanh nghiệp vừa và nhỏ vốn có biên an toàn mỏng.",
+      conditions: "Đúng khi nền kinh tế có năng lực chuyển đổi nhanh sang các giải pháp năng lượng thay thế.",
+      exceptions: "Các ngành sản xuất thuần số (SaaS, Digital Media) chịu ảnh hưởng gián tiếp chậm hơn các ngành hàng vật lý.",
+      synthesis: "Khủng hoảng giá xăng dầu là bài kiểm tra độ dẻo dai của chuỗi cung ứng; kẻ nào thích nghi trước sẽ chiếm lĩnh thị phần của kẻ đứng yên."
+    },
+    predictions: {
+      oneMonth: "Các ứng dụng giao hàng tăng phụ phí xăng xe; người tiêu dùng gom đơn để giảm tiền ship.",
+      oneYear: "Làn sóng chuyển đổi sang xe máy điện của tài xế công nghệ đạt tỷ lệ áp đảo trên 30%.",
+      fiveYears: "Các mô hình kho bãi vệ tinh mini (Micro-fulfillment) phát triển mạnh để giảm quãng đường giao nhận chặng cuối.",
+      blindSpots: "Chưa tính đến rủi ro suy thoái kinh tế toàn cầu khi các ngân hàng trung ương siết chặt dòng tiền quá mức."
+    },
+    actionTakeaways: [
+      "Tối ưu hóa bài toán lộ trình giao hàng (Route Optimization) để giảm 15-20% quãng đường di chuyển không cần thiết.",
+      "Xem xét đàm phán hợp đồng giá cố định dài hạn với các nhà cung ứng vận tải tin cậy.",
+      "Chuyển đổi từng phần đội xe giao vận nội bộ sang phương tiện điện để cắt giảm chi phí nhiên liệu dài hạn."
+    ],
+    userNotes: "Tư duy phản xạ: Khi một chi phí đầu vào nền tảng (năng lượng, lãi suất, tỷ giá) tăng, hãy lập tức rà soát lại toàn bộ cây chi phí của doanh nghiệp."
+  },
+  {
+    id: "bc_preset_3",
+    title: "AI tạo sinh (Generative AI) tích hợp sâu vào văn phòng",
+    category: "Công nghệ",
+    level: 3,
+    context: "Các công cụ AI (ChatGPT, Copilot, Gemini) được doanh nghiệp bắt buộc đưa vào quy trình làm việc hằng ngày của nhân viên văn phòng.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Doanh nghiệp trang bị tài khoản AI và chuẩn hóa quy trình làm việc bằng AI cho toàn bộ nhân viên.",
+      b: "Tốc độ soạn thảo email, báo cáo, phân tích dữ liệu và viết code sơ bộ tăng gấp 5 lần.",
+      c: "Giá trị của kỹ năng làm việc thủ công và kiến thức cơ bản giảm sút; yêu cầu chuyển dịch sang tư duy thẩm định, kiểm chứng và đặt câu hỏi (Prompting & Critical Thinking).",
+      d: "Cấu trúc tổ chức tinh gọn lại; khoảng cách năng suất giữa người làm chủ AI và người từ chối AI nới rộng thành vực thẳm.",
+      insight: "AI không trực tiếp thay thế con người, nhưng một người biết tư duy hệ thống và làm chủ AI sẽ thay thế hoàn toàn 5 người chỉ làm việc theo quy trình máy móc cố định."
+    },
+    causeEffects: {
+      immediate: "Nhân viên tiết kiệm được 2-3 giờ làm việc mỗi ngày từ các tác vụ soạn thảo văn bản và tổng hợp tài liệu.",
+      secondOrder: "Số lượng nội dung và báo cáo được tạo ra bùng nổ, nhưng chất lượng trung bình có nguy cơ bị bão hòa và rập khuôn.",
+      thirdOrder: "Tiêu chuẩn đánh giá hiệu suất (KPI) được nâng lên gấp đôi vì ban lãnh đạo kỳ vọng năng suất cao hơn từ công cụ AI.",
+      unexpected: "Xuất hiện tình trạng 'ảo giác AI' (Hallucination) dẫn đến các quyết định sai lầm nghiêm trọng nếu thiếu người có chuyên môn sâu thẩm định.",
+      longTerm: "Mô hình công ty 1 người (Solopreneur) hoặc đội ngũ 5 người tạo ra doanh thu triệu USD trở nên phổ biến nhờ đòn bẩy AI tự động hóa."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao nhân viên có thể hoàn thành bản kế hoạch 20 trang chỉ trong 30 phút?", answer: "Vì AI đã tổng hợp và sinh ra toàn bộ dàn ý, nội dung và biểu mẫu theo câu lệnh chỉ trong vài giây." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao AI làm được điều đó nhanh hơn con người?", answer: "Vì các mô hình ngôn ngữ lớn (LLM) đã học từ hàng triệu văn bản mẫu và có khả năng liên kết tri thức xuyên ngành tức thì." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao công việc văn phòng truyền thống lại dễ bị AI tác động nhất?", answer: "Vì phần lớn công việc văn phòng trước đây là xử lý, sao chép và tái cấu trúc thông tin có tính lặp lại (Information Arbitrage)." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao kỹ năng đặt câu hỏi và phản biện lại trở thành yếu tố quyết định?", answer: "Vì AI chỉ giỏi đưa ra câu trả lời khi con người đưa ra câu hỏi sắc bén; chất lượng đầu ra (Output) phụ thuộc hoàn toàn vào chất lượng tư duy đầu vào (Input)." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Sự dịch chuyển từ 'Nền kinh tế ghi nhớ & thực thi cơ bắp' sang 'Nền kinh tế định hướng, thẩm định và ra quyết định chiến lược'." }
+    ],
+    whatIf: {
+      scenario: "Nếu nhân viên chỉ ỷ lại 100% vào AI mà không tự học và rèn luyện tư duy nền tảng?",
+      consequences: [
+        "Bộ não mất dần khả năng tư duy sâu (Deep Thinking) và giải quyết vấn đề khi gặp các tình huống độc lạ chưa có trong dữ liệu huấn luyện.",
+        "Không thể phát hiện ra các lỗi sai logic tinh vi hoặc định kiến sai lệch trong câu trả lời của AI.",
+        "Dễ dàng bị thay thế bởi bất kỳ ai có kỹ năng prompt tương tự."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Công Cụ AI", "Tốc Độ Tạo Nội Dung", "Khối Lượng Thông Tin", "Độ Bão Hòa Chất Lượng", "Yêu Cầu Thẩm Định", "Giá Trị Tư Duy Độc Bản"],
+      directImpact: "Tăng cấp số nhân năng suất sơ chế thông tin và tự động hóa các tác vụ lặp lại.",
+      indirectImpact: "Tái định hình cơ cấu lương thưởng: Trả tiền cho kết quả và tầm nhìn thay vì trả tiền cho số giờ ngồi máy tính.",
+      feedbackLoop: "Vòng lặp tăng cường: Dùng AI thành thạo ➔ Giải phóng thời gian ➔ Có thêm thì giờ học tư duy chiến lược ➔ Prompt cho AI thông minh hơn ➔ Năng suất vượt trội đối thủ."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Cần nhiều năm học viết code hoặc viết văn mới tạo ra được sản phẩm thương mại hoàn chỉnh'.",
+      fundamentalTruths: "Sự thật gốc: Mục đích cuối cùng của công việc là giải quyết vấn đề và tạo ra giá trị cho người dùng; công cụ nào giúp giải quyết nhanh và chuẩn hơn thì công cụ đó thắng.",
+      reconstructedLogic: "Con người giữ vai trò Kiến trúc sư trưởng (Architect) và Người kiểm duyệt (Judge); AI đảm nhận vai trò Thợ xây lành nghề (Builder)."
+    },
+    contrarianThinking: {
+      argFor: "AI dân chủ hóa tri thức, giúp một nhân viên bình thường cũng có thể tiếp cận năng lực của chuyên gia cấp cao.",
+      argAgainst: "AI tạo ra biển rác thông tin vô nghĩa nếu người dùng không có gout thẩm mỹ và chuẩn mực chất lượng cao.",
+      conditions: "Đúng khi văn hóa doanh nghiệp khuyến khích thử nghiệm, có khung đạo đức dữ liệu và đào tạo nhân sự bài bản.",
+      exceptions: "Các công việc đòi hỏi sự thấu cảm con người, quan hệ đàm phán trực tiếp và sáng tạo vật lý nguyên bản.",
+      synthesis: "Tương lai không thuộc về người chống đối AI, cũng không thuộc về người mù quáng tôn thờ AI; tương lai thuộc về người kết hợp Tư Duy Con Người + Sức Mạnh AI (Centaur Model)."
+    },
+    predictions: {
+      oneMonth: "Nhân viên phấn khích thử nghiệm mọi tính năng, nhưng bắt đầu xuất hiện những email gửi nhầm nội dung chưa kiểm duyệt.",
+      oneYear: "Các doanh nghiệp cắt giảm 20-30% nhân sự cấp dưới làm việc đơn giản và tái đầu tư vào nhân sự chiến lược.",
+      fiveYears: "Mọi phần mềm nghiệp vụ đều trở thành Agent tự hành; người lao động quản lý một 'đội ngũ nhân viên AI' thay vì làm việc đơn lẻ.",
+      blindSpots: "Chưa lường trước các vụ kiện tụng bản quyền dữ liệu và rủi ro an ninh mạng khi dữ liệu bí mật nội bộ bị rò rỉ qua AI."
+    },
+    actionTakeaways: [
+      "Xây dựng thư viện Prompt chuẩn hóa (Prompt Vault) cho các tác vụ lặp lại trong công ty.",
+      "Ban hành quy tắc vàng: 'Mọi nội dung AI tạo ra đều phải qua ít nhất một vòng kiểm chứng (Fact-check) của con người trước khi gửi đi'.",
+      "Tập trung nâng cao 3 năng lực bất biến: Tư duy phản biện, Đặt câu hỏi đúng và Thấu cảm tâm lý khách hàng."
+    ],
+    userNotes: "Tự nhắc nhở: Đừng tự hào vì mình gõ prompt nhanh hơn, hãy tự hào vì mình có khả năng phát hiện ra lỗ hổng logic mà AI không nhìn thấy!"
+  },
+  {
+    id: "bc_preset_4",
+    title: "Trường đại học cấm sinh viên sử dụng điện thoại trong lớp",
+    category: "Giáo dục",
+    level: 3,
+    context: "Một trường đại học lớn áp dụng quy chế nghiêm ngặt: Sinh viên phải cất điện thoại vào tủ cá nhân trước khi bước vào phòng học.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Nhà trường ban hành lệnh cấm tuyệt đối sử dụng smartphone trong giờ học.",
+      b: "Sinh viên buộc phải nhìn lên bảng, giảm hẳn tình trạng lướt mạng xã hội và nhắn tin xao nhãng.",
+      c: "Sinh viên cảm thấy bồn chồn (hội chứng FOMO), gặp khó khăn khi tra cứu tài liệu nhanh và không thể chụp lại slide bài giảng.",
+      d: "Giảng viên nhận ra phương pháp đọc chép truyền thống bị lộ rõ sự nhàm chán khi sinh viên không có màn hình điện thoại để trốn tránh; giảng viên buộc phải đổi mới cách giảng dạy tương tác.",
+      insight: "Cấm đoán công cụ chỉ giải quyết được triệu chứng bề mặt của sự mất tập trung; chính sự hấp dẫn của nội dung và phương pháp kích hoạt động lực nội tại mới là giải pháp gốc rễ."
+    },
+    causeEffects: {
+      immediate: "Không khí lớp học yên ắng hơn; tỷ lệ sinh viên ngủ gật hoặc nhìn ra cửa sổ tăng lên.",
+      secondOrder: "Sinh viên quay lại dùng sổ tay giấy và thảo luận nhóm trực tiếp nhiều hơn trong giờ giải lao.",
+      thirdOrder: "Điểm thi giữa kỳ của môn học có tính thực hành tăng nhẹ, nhưng môn học lý thuyết nặng nề vẫn có điểm số thấp.",
+      unexpected: "Giảng viên chịu áp lực lớn hơn vì không thể đổ lỗi cho 'sinh viên mải chơi điện thoại' khi giờ học buồn ngủ.",
+      longTerm: "Trường đại học chuyển đổi sang mô hình lớp học đảo ngược (Flipped Classroom): Sinh viên tự nghiên cứu ở nhà, lên lớp chỉ để tranh biện."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao sinh viên nghiện bấm điện thoại trong giờ học?", answer: "Vì thông báo mạng xã hội và video ngắn mang lại dopamine tức thì cao hơn bài giảng." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao bài giảng lại kém hấp dẫn hơn điện thoại?", answer: "Vì nhiều giảng viên chỉ đọc lại slide chữ chi chít mà sinh viên có thể tự đọc ở nhà." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao phương pháp giảng dạy chưa đổi mới?", answer: "Vì hệ thống đánh giá giảng viên dựa trên số lượng bài báo khoa học hơn là chất lượng trải nghiệm sư phạm." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao cấm điện thoại không làm sinh viên thông minh hơn?", answer: "Vì cấm công cụ không đồng nghĩa với việc kích hoạt được sự tò mò và tư duy độc lập của người học." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Xung đột giữa mô hình giáo dục thời đại công nghiệp (Ngồi nghe thụ động) và tâm lý thế hệ số (Tương tác chủ động & phản hồi tức thì)." }
+    ],
+    whatIf: {
+      scenario: "Nếu biến điện thoại thành công cụ học tập tương tác (Kahoot, Poll, Tra cứu tranh biện trực tiếp)?",
+      consequences: [
+        "Chuyển hóa năng lượng xao nhãng của sinh viên thành năng lượng cạnh tranh học tập lành mạnh.",
+        "Giảng viên đo lường được mức độ hiểu bài của 100% sinh viên theo thời gian thực (Real-time Feedback).",
+        "Sinh viên rèn luyện được kỹ năng dùng công cụ số có kỷ luật và đúng mục đích."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Quy Chế Cấm", "Sự Chú Ý Tức Thời", "Hội Chứng Bồn Chồn", "Chất Lượng Giảng Dạy", "Phương Pháp Sư Phạm", "Động Lực Tự Thân"],
+      directImpact: "Loại bỏ hoàn toàn tác nhân gây xao nhãng kỹ thuật số trong không gian vật lý của lớp học.",
+      indirectImpact: "Tạo ra một 'ốc đảo cai nghiện số' (Digital Detox) ngắn hạn giúp sinh viên phục hồi khả năng tập trung sâu.",
+      feedbackLoop: "Vòng lặp giáo dục tích cực: Giảng dạy tương tác cao ➔ Sinh viên cuốn hút ➔ Không còn nhu cầu xem điện thoại ➔ Lớp học sôi nổi ➔ Giảng viên hào hứng cống hiến hơn."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Không có điện thoại là sinh viên sẽ tự động chú ý nghe giảng'.",
+      fundamentalTruths: "Sự thật gốc: Sự chú ý của con người đi theo nơi nào có giá trị kích thích tư duy và cảm xúc mạnh mẽ nhất; sự chú ý không thể cưỡng ép bằng kỷ luật hành chính.",
+      reconstructedLogic: "Thay vì chiến đấu chống lại công nghệ, hãy thiết kế trải nghiệm học tập vượt trội hơn công nghệ."
+    },
+    contrarianThinking: {
+      argFor: "Cấm điện thoại rèn luyện tính kỷ luật, tôn trọng người dạy và bảo vệ mắt cũng như khả năng ghi nhớ dài hạn.",
+      argAgainst: "Tước đi cơ hội học cách tự quản lý bản thân (Self-regulation) và cô lập sinh viên khỏi dòng chảy thông tin thực tế.",
+      conditions: "Phù hợp cho các buổi hội thảo tư duy chuyên sâu, thi cử, thực hành thí nghiệm và rèn luyện kỹ năng mềm.",
+      exceptions: "Không hiệu quả với các môn học lập trình, phân tích dữ liệu và thiết kế số.",
+      synthesis: "Kỷ luật không gian (Device-free zone) là cần thiết cho tư duy sâu, nhưng phải đi kèm với nội dung giảng dạy xứng tầm."
+    },
+    predictions: {
+      oneMonth: "Sinh viên phàn nàn trên các diễn đàn trường nhưng dần thích nghi và mang vở ghi chép bằng bút.",
+      oneYear: "Các khoa bắt đầu đánh giá lại phương pháp giảng dạy của từng bộ môn.",
+      fiveYears: "Xu hướng lớp học lai (Hybrid Learning) kết hợp phiên Offline không thiết bị và phiên Online tương tác toàn diện.",
+      blindSpots: "Bỏ qua nhu cầu liên lạc khẩn cấp của sinh viên trong các tình huống gia đình phát sinh."
+    },
+    actionTakeaways: [
+      "Thiết kế bài giảng theo công thức 'Quy tắc 10 phút': Cứ mỗi 10 phút thuyết trình phải có 1 câu hỏi tương tác hoặc bài tập nhanh.",
+      "Tận dụng các khoảng thời gian 'Digital Detox' có chủ đích để rèn luyện tư duy tập trung sâu (Deep Work).",
+      "Thay vì cấm đoán cực đoan, hãy xây dựng quy ước sử dụng công nghệ dựa trên sự đồng thuận và tôn trọng lẫn nhau."
+    ],
+    userNotes: "Nguyên tắc ứng dụng: Đừng bao giờ giải quyết vấn đề thuộc về 'Động lực' bằng các giải pháp thuần túy 'Cấm đoán'."
+  },
+  {
+    id: "bc_preset_5",
+    title: "Internet toàn cầu ngắt kết nối liên tục trong 7 ngày",
+    category: "Giả định",
+    level: 4,
+    context: "Một sự cố bão mặt trời cực mạnh làm tê liệt toàn bộ hạ tầng cáp quang biển và vệ tinh viễn thông trên toàn cầu trong vòng 7 ngày.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Toàn bộ mạng Internet, kết nối 4G/5G và dịch vụ đám mây ngừng hoạt động trên phạm vi toàn cầu.",
+      b: "Hệ thống thanh toán thẻ, ngân hàng điện tử, sàn thương mại điện tử và chuỗi logistics bị đóng băng tức khắc.",
+      c: "Người dân hoảng loạn đổ xô rút tiền mặt tại các chi nhánh và tích trữ lương thực, thuốc men tại chợ truyền thống.",
+      d: "Các cơ quan chính phủ và doanh nghiệp buộc phải kích hoạt phương án liên lạc vô tuyến, văn bản giấy và quản lý phi tập trung tại địa phương.",
+      insight: "Mức độ tiện lợi và hiệu quả của nền kinh tế số tỷ lệ thuận với độ mỏng manh của hệ thống khi mất đi hạ tầng cốt lõi; đa dạng hóa kênh dự phòng ngoại tuyến là điều kiện sống còn của an ninh vận hành."
+    },
+    causeEffects: {
+      immediate: "Mọi ứng dụng nhắn tin, mạng xã hội, định vị GPS và nền tảng streaming ngưng hoạt động; con người ngỡ ngàng vì sự im lặng.",
+      secondOrder: "Chuỗi cung ứng siêu thị bị đứt gãy do hệ thống kiểm kê tự động và điều phối xe tải không thể đồng bộ dữ liệu.",
+      thirdOrder: "Các nhà máy sản xuất tự động dừng hoạt động vì không thể xác thực mã bản quyền và tín hiệu máy chủ từ xa.",
+      unexpected: "Tội phạm công nghệ cao bị vô hiệu hóa hoàn toàn; tỷ lệ gặp gỡ nói chuyện trực tiếp giữa các thành viên gia đình và hàng xóm tăng 500%.",
+      longTerm: "Các quốc gia ban hành luật bắt buộc duy trì hệ thống dự phòng tiền mặt vật lý và mạng truyền dẫn nội địa độc lập (Air-gapped Grid)."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao tôi không thể mua một chai nước ở cửa hàng tiện lợi?", answer: "Vì máy quét mã POS và ví điện tử không thể kết nối tới máy chủ ngân hàng để xác nhận thanh toán." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao cửa hàng không nhận chuyển khoản ngân hàng?", answer: "Vì toàn bộ hệ thống viễn thông trung gian không truyền tải được gói tin dữ liệu." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao xã hội hiện đại lại phụ thuộc 99% vào thanh toán không tiền mặt?", answer: "Vì sự tiện lợi và chi phí vận hành siêu rẻ của giải pháp số đã dần đào thải hệ thống lưu thông tiền mặt cồng kềnh." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao hầu hết doanh nghiệp không có kế hoạch dự phòng khi mất Internet?", answer: "Vì mọi người đều cho rằng 'Internet là vĩnh cửu và không bao giờ sập hoàn toàn' (Single Point of Failure)." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Cái giá phải trả của sự tối ưu hóa cực đoan (Hyper-Optimization) là sự triệt tiêu tính dư thừa an toàn (Redundancy) trong cấu trúc sinh tồn." }
+    ],
+    whatIf: {
+      scenario: "Nếu doanh nghiệp của bạn sở hữu quy trình bán hàng và thanh toán Offline độc lập?",
+      consequences: [
+        "Trở thành đơn vị duy nhất trong khu vực vẫn có thể phục vụ khách hàng và duy trì dòng tiền mặt.",
+        "Xây dựng được niềm tin vững chắc của khách hàng trong thời khắc khủng hoảng gay cấn nhất.",
+        "Hạn chế 100% thiệt hại so với các đối thủ cạnh tranh phụ thuộc hoàn toàn vào đám mây."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Mạng Internet", "Hệ Thống Thanh Toán", "Chuỗi Logistics", "Nhu Cầu Thiết Yếu", "Tiền Mặt & Dự Phòng", "Trật Tự Xã Hội"],
+      directImpact: "Làm tê liệt tức thời lớp giao tiếp dữ liệu giữa các thực thể kinh tế và xã hội.",
+      indirectImpact: "Bộc lộ mức độ lệ thuộc nguy hiểm của ngành y tế, năng lượng và nước sạch vào các cảm biến điều khiển từ xa.",
+      feedbackLoop: "Vòng lặp khủng hoảng: Mất mạng ➔ Không mua được hàng ➔ Hoang mang gom hàng ➔ Khan hiếm giả tạo ➔ Giá cả chợ đen tăng vọt ➔ Trật tự bất ổn."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Mọi dữ liệu trên Cloud đều an toàn tuyệt đối và có thể truy cập 24/7/365'.",
+      fundamentalTruths: "Sự thật gốc: Con người cần Calo (thức ăn), Nước uống, Nơi ở và Phương tiện thanh toán vật lý để tồn tại; các bit dữ liệu trên mạng không thể thay thế nhu cầu sinh học.",
+      reconstructedLogic: "Nguyên lý Antifragile (Chống mỏng manh): Hệ thống càng quan trọng thì càng phải có ít nhất một cơ chế vận hành cơ học / thủ công độc lập."
+    },
+    contrarianThinking: {
+      argFor: "Sự cố 7 ngày là hồi chuông cảnh tỉnh quý giá giúp nhân loại nhận ra các lỗ hổng chí mạng trước khi một thảm họa lớn hơn xảy ra.",
+      argAgainst: "Gây thiệt hại kinh tế ước tính hàng nghìn tỷ USD và đe dọa sinh mạng của hàng triệu người trong các bệnh viện thiếu hệ thống dự phòng.",
+      conditions: "Đúng khi nhân loại biết rút kinh nghiệm để thiết kế lại hạ tầng phân tán (Decentralized Infrastructure).",
+      exceptions: "Các vùng nông thôn và bộ lạc nguyên thủy chịu tác động gần như bằng 0.",
+      synthesis: "Tiến bộ công nghệ là không thể đảo ngược, nhưng sự khôn ngoan nằm ở chỗ luôn chuẩn bị chiếc dù cứu sinh cơ học trong kỷ nguyên số."
+    },
+    predictions: {
+      oneMonth: "Ngay sau khi có mạng trở lại, các chuyên gia bảo mật và kiến trúc sư hệ thống được săn đón với mức lương kỷ lục.",
+      oneYear: "Hàng loạt tập đoàn lớn đầu tư mạnh vào các trung tâm dữ liệu cục bộ (On-premise) song song với Cloud.",
+      fiveYears: "Mạng Internet lượng tử và mạng lưới vệ tinh phân tán chống bão từ được triển khai rộng khắp.",
+      blindSpots: "Khó khăn trong việc duy trì thói quen dự phòng khi cuộc sống bình thường đã quay trở lại sau vài tháng."
+    },
+    actionTakeaways: [
+      "Luôn lưu trữ bản sao lưu ngoại tuyến (Offline Backup) của các dữ liệu quan trọng nhất (Database, Mã nguồn, Danh bạ khách hàng).",
+      "Duy trì một quỹ dự phòng tiền mặt vật lý đủ trang trải sinh hoạt hoặc vận hành tối thiểu trong 1-3 tháng.",
+      "Xây dựng kịch bản 'Kế hoạch ngày tận thế' (Disaster Recovery Plan) cho công việc kinh doanh của bạn."
+    ],
+    userNotes: "Bài học cốt tử của Tư duy Hệ thống: 'Dư thừa có chủ đích (Redundancy) không phải là lãng phí, đó là chiếc phao cứu sinh bảo hiểm cho sự tồn vong'."
+  },
+  {
+    id: "bc_preset_6",
+    title: "Quan niệm: 'Chỉ cần làm việc chăm chỉ là chắc chắn sẽ thành công'",
+    category: "Tâm lý",
+    level: 3,
+    context: "Một niềm tin phổ biến trong xã hội cho rằng nỗ lực làm việc 14-16 tiếng mỗi ngày sẽ đảm bảo sự giàu có và thành công vượt bậc.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "Một người tin tưởng tuyệt đối vào việc tối đa hóa giờ làm việc (cày cuốc 16 tiếng/ngày).",
+      b: "Họ hoàn thành được khối lượng công việc thực thi chi tiết lớn và được khen ngợi là nhân viên cần mẫn.",
+      c: "Họ bị cuốn vào guồng quay bận rộn hằng ngày, không còn năng lượng và thời gian để quan sát xu hướng, học kỹ năng mới hay xây dựng quan hệ chiến lược.",
+      d: "Họ trở thành mắt xích thực thi không thể thiếu nhưng có thể dễ dàng bị thay thế; thu nhập tăng chậm theo đường tuyến tính trong khi sức khỏe và sự sáng tạo kiệt quệ.",
+      insight: "Chăm chỉ chỉ là chiếc vé vào cửa tối thiểu; đòn bẩy tư duy (Leverage), định vị đúng thị trường và khả năng ra quyết định chính xác mới tạo ra sự đột phá theo hàm mũ."
+    },
+    causeEffects: {
+      immediate: "Cảm giác an tâm giả tạo vì 'mình đang bận rộn tức là mình đang tiến bộ'.",
+      secondOrder: "Bỏ lỡ các cơ hội mang tính bước ngoặt vì mắt luôn dán vào công việc chi tiết trước mặt thay vì nhìn lên chân trời.",
+      thirdOrder: "Bị tổn thương bởi hiệu ứng 'Người làm việc chăm chỉ nhất trên cánh đồng thường là chú trâu chứ không phải người nông dân làm chủ'.",
+      unexpected: "Những người làm việc ít giờ hơn nhưng biết xây dựng hệ thống và đòn bẩy công nghệ lại kiếm được thu nhập gấp 10 lần.",
+      longTerm: "Khủng hoảng tuổi trung niên khi nhận ra nỗ lực cơ bắp không thể cạnh tranh lại sự suy giảm thể lực và sự trỗi dậy của tự động hóa."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao nhiều người làm việc quần quật cả đời vẫn chật vật tài chính?", answer: "Vì họ chỉ bán sức lao động đổi lấy tiền theo tỷ lệ 1:1 không có đòn bẩy." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao họ không áp dụng đòn bẩy?", answer: "Vì họ không sở hữu vốn, công nghệ, sản phẩm số hoặc đội ngũ nhân sự làm việc cho mình." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao xã hội luôn ca ngợi sự chăm chỉ đơn thuần?", answer: "Vì câu chuyện 'Chăm chỉ là thành công' rất dễ truyền thông và phục vụ cho lợi ích của các tổ chức cần lực lượng lao động tuân thủ." },
+      { level: "4. Nguyên nhân hệ thống", question: "Cơ chế tạo ra sự giàu có thực sự vận hành ra sao?", answer: "Giá trị nhận được = Phán đoán đúng đắn (Judgment) × Đòn bẩy (Leverage) × Mức độ khan hiếm của kỹ năng." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: "Sự nhầm lẫn tai hại giữa 'Đầu vào nỗ lực' (Input/Effort) và 'Đầu ra giá trị' (Output/Value). Thị trường chỉ trả tiền cho giá trị tạo ra, không trả tiền cho sự mệt mỏi của bạn." }
+    ],
+    whatIf: {
+      scenario: "Nếu bạn dành 20% thời gian mỗi ngày để suy nghĩ: 'Làm thế nào để tự động hóa hoặc nhân bản công việc này?'",
+      consequences: [
+        "Chuyển dịch từ vai trò Người làm công việc (Operator) sang vai trò Người thiết kế hệ thống (Architect).",
+        "Tạo ra các tài sản số (Code, Content, Media, Quy trình) tiếp tục làm việc và tạo ra giá trị ngay cả khi bạn đang ngủ.",
+        "Giải phóng thời gian để tập trung vào những quyết định chiến lược có giá trị đòn bẩy cao."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Nỗ Lực Thời Gian", "Kỹ Năng Thực Thi", "Khả Năng Phán Đoán", "Đòn Bẩy (Code/Media/Capital)", "Giá Trị Thặng Dư", "Tự Do Tài Chính"],
+      directImpact: "Làm việc chăm chỉ nâng cao năng lực thực thi và xây dựng uy tín cá nhân ban đầu.",
+      indirectImpact: "Nếu không có đòn bẩy, làm việc chăm chỉ sẽ dẫn đến bẫy thu nhập trung bình của cá nhân.",
+      feedbackLoop: "Vòng lặp giải phóng đòn bẩy: Tư duy đúng ➔ Xây dựng đòn bẩy ➔ Năng suất tăng gấp 10 ➔ Thu nhập tăng ➔ Tái đầu tư vào phán đoán chiến lược ➔ Đạt tự do thực sự."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Càng làm nhiều giờ thì giá trị tạo ra càng lớn'.",
+      fundamentalTruths: "Sự thật gốc: Một quyết định chọn đúng thị trường của Warren Buffett mang lại hàng tỷ USD; một quyết định sai lầm của CEO chăm chỉ có thể xóa sổ tập đoàn.",
+      reconstructedLogic: "Công thức thành công: Phán đoán chính xác (Phương hướng) > Đòn bẩy (Tốc độ & Quy mô) > Nỗ lực chăm chỉ (Động cơ)."
+    },
+    contrarianThinking: {
+      argFor: "Chăm chỉ là nền tảng bắt buộc trong giai đoạn đầu (0-1) để tích lũy 10.000 giờ thấu hiểu sâu sắc chuyên môn.",
+      argAgainst: "Khi đã có chuyên môn, tiếp tục cày cuốc cơ bắp mà không nâng cấp đòn bẩy là biểu hiện của sự lười biếng trong tư duy chiến lược.",
+      conditions: "Chăm chỉ chỉ phát huy tối đa sức mạnh khi bạn đang đi đúng hướng và có đòn bẩy khuếch đại nỗ lực.",
+      exceptions: "Trong môi trường làm việc thủ công không thể áp dụng đòn bẩy hoặc thời kỳ chiến tranh sinh tồn.",
+      synthesis: "Hãy làm việc cực kỳ chăm chỉ... vào việc tìm kiếm đòn bẩy và rèn luyện năng lực phán đoán của chính mình!"
+    },
+    predictions: {
+      oneMonth: "Bạn bắt đầu từ chối các tác vụ vụn vặt không tên và dành thời gian viết tài liệu hóa quy trình.",
+      oneYear: "Thu nhập của bạn tách rời khỏi số giờ làm việc thực tế nhờ áp dụng công cụ AI và tự động hóa.",
+      fiveYears: "Bạn sở hữu một danh mục tài sản tạo thu nhập thụ động và có toàn quyền kiểm soát thời gian của cuộc đời mình.",
+      blindSpots: "Nguy cơ rơi vào cái bẫy 'Ảo tưởng đòn bẩy' mà bỏ qua kỷ luật thực thi những việc căn bản."
+    },
+    actionTakeaways: [
+      "Kiểm toán thời gian hàng tuần: Phân loại công việc thành tác vụ 10$/giờ (Ủy quyền/Tự động hóa) và tác vụ 1000$/giờ (Tập trung tối đa).",
+      "Tận dụng 4 dạng đòn bẩy hiện đại: Lập trình (Code), Nội dung (Media), Vốn (Capital) và Con người (Labor).",
+      "Trước khi bắt tay làm hùng hục, hãy tự hỏi: 'Có cách nào thông minh hơn để đạt được kết quả này với 1/10 công sức không?'"
+    ],
+    userNotes: "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
+  }
+];
+
+let brainChainData = {
+  events: [],
+  activeEventId: null,
+  practiceStep: 5 // 1: A, 2: B, 3: C, 4: D, 5: Insight
+};
+
+let bcInitialized = false;
+
+async function loadBrainChainData() {
+  try {
+    if (window.taskAPI && window.taskAPI.loadBrainChain) {
+      const data = await window.taskAPI.loadBrainChain();
+      if (data && Array.isArray(data.events) && data.events.length > 0) {
+        brainChainData = data;
+        return brainChainData;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load brain chain via API:', e);
+  }
+
+  const raw = localStorage.getItem('task_countdown_brain_chain');
+  if (raw) {
+    try {
+      brainChainData = JSON.parse(raw);
+      if (Array.isArray(brainChainData.events) && brainChainData.events.length > 0) {
+        return brainChainData;
+      }
+    } catch (e) {}
+  }
+
+  // Initialize with presets if empty
+  brainChainData = {
+    events: JSON.parse(JSON.stringify(DEFAULT_BRAIN_CHAIN_PRESETS)),
+    activeEventId: DEFAULT_BRAIN_CHAIN_PRESETS[0].id,
+    practiceStep: 5
+  };
+  await saveBrainChainData();
+  return brainChainData;
+}
+
+async function saveBrainChainData() {
+  try {
+    if (window.taskAPI && window.taskAPI.saveBrainChain) {
+      await window.taskAPI.saveBrainChain(brainChainData);
+    }
+  } catch (e) {
+    console.error('Failed to save brain chain via API:', e);
+  }
+  localStorage.setItem('task_countdown_brain_chain', JSON.stringify(brainChainData));
+}
+
+function initBrainChainTab() {
+  if (bcInitialized) {
+    renderBcEventList();
+    if (brainChainData.activeEventId) {
+      const ev = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (ev) renderBcActiveEvent(ev);
+    }
+    return;
+  }
+  bcInitialized = true;
+
+  // Search & Category Filter
+  const searchInp = document.getElementById('bcSearchInput');
+  if (searchInp) searchInp.addEventListener('input', () => renderBcEventList());
+
+  const catFilter = document.getElementById('bcCategoryFilter');
+  if (catFilter) catFilter.addEventListener('change', () => renderBcEventList());
+
+  // Top action buttons
+  const btnAdd = document.getElementById('btnBcAddEvent');
+  if (btnAdd) btnAdd.addEventListener('click', () => openBcEventModal());
+
+  const btnGenPrompt = document.getElementById('btnBcGenPrompt');
+  if (btnGenPrompt) btnGenPrompt.addEventListener('click', () => {
+    const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId) || brainChainData.events[0];
+    openBcPromptModal(curEv);
+  });
+
+  const btnImportJson = document.getElementById('btnBcImportJson');
+  if (btnImportJson) btnImportJson.addEventListener('click', () => openBcImportJsonModal());
+
+  const btnPresets = document.getElementById('btnBcLoadPresets');
+  if (btnPresets) btnPresets.addEventListener('click', async () => {
+    if (confirm('Bạn có muốn nạp lại 6 kịch bản mẫu tinh hoa của Brain Chain?')) {
+      const existingIds = new Set((brainChainData.events || []).map(x => x.id));
+      const presetsToAdd = DEFAULT_BRAIN_CHAIN_PRESETS.filter(p => !existingIds.has(p.id));
+      if (presetsToAdd.length === 0) {
+        // Reset/overwrite presets
+        brainChainData.events = JSON.parse(JSON.stringify(DEFAULT_BRAIN_CHAIN_PRESETS));
+      } else {
+        brainChainData.events = [...presetsToAdd, ...(brainChainData.events || [])];
+      }
+      brainChainData.activeEventId = brainChainData.events[0]?.id || null;
+      await saveBrainChainData();
+      renderBcEventList();
+      if (brainChainData.activeEventId) {
+        const ev = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+        if (ev) renderBcActiveEvent(ev);
+      }
+      if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+    }
+  });
+
+  const btnBackup = document.getElementById('btnBcBackup');
+  if (btnBackup) btnBackup.addEventListener('click', () => openBcBackupModal());
+
+  // Active workspace buttons
+  const btnCopyPromptQuick = document.getElementById('btnBcCopyPromptQuick');
+  if (btnCopyPromptQuick) btnCopyPromptQuick.addEventListener('click', () => {
+    const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+    if (!curEv) return;
+    openBcPromptModal(curEv);
+  });
+
+  const btnImportEventJson = document.getElementById('btnBcImportEventJson');
+  if (btnImportEventJson) btnImportEventJson.addEventListener('click', () => openBcImportJsonModal(brainChainData.activeEventId));
+
+  const btnEditEvent = document.getElementById('btnBcEditEvent');
+  if (btnEditEvent) btnEditEvent.addEventListener('click', () => {
+    const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+    if (curEv) openBcEventModal(curEv);
+  });
+
+  const btnDeleteEvent = document.getElementById('btnBcDeleteEvent');
+  if (btnDeleteEvent) btnDeleteEvent.addEventListener('click', async () => {
+    const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+    if (!curEv) return;
+    if (confirm(`Bạn có chắc chắn muốn xóa sự kiện "${curEv.title}"?`)) {
+      brainChainData.events = brainChainData.events.filter(x => x.id !== curEv.id);
+      brainChainData.activeEventId = brainChainData.events[0]?.id || null;
+      await saveBrainChainData();
+      renderBcEventList();
+      if (brainChainData.activeEventId) {
+        const ev = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+        if (ev) renderBcActiveEvent(ev);
+      } else {
+        renderBcActiveEvent(null);
+      }
+      if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+    }
+  });
+
+  // Practice mode toggle & reveal button
+  const btnPractice = document.getElementById('btnBcPracticeMode');
+  if (btnPractice) btnPractice.addEventListener('click', () => {
+    const banner = document.getElementById('bcChainPracticeBanner');
+    if (!banner) return;
+    if (banner.style.display === 'none' || !banner.style.display) {
+      banner.style.display = 'flex';
+      brainChainData.practiceStep = 1;
+      btnPractice.style.background = 'var(--purple)';
+      btnPractice.style.color = '#fff';
+      applyBcPracticeStep();
+      if (typeof playTone === 'function') playTone(650, 0.08, 'sine', 0.1);
+    } else {
+      banner.style.display = 'none';
+      brainChainData.practiceStep = 5;
+      btnPractice.style.background = 'rgba(139, 92, 246, 0.2)';
+      btnPractice.style.color = '#c4b5fd';
+      applyBcPracticeStep();
+    }
+  });
+
+  const btnRevealNext = document.getElementById('btnBcRevealNext');
+  if (btnRevealNext) btnRevealNext.addEventListener('click', () => {
+    if (brainChainData.practiceStep < 5) {
+      brainChainData.practiceStep++;
+      applyBcPracticeStep();
+      if (typeof playTone === 'function') {
+        const freqs = [400, 523, 659, 784, 1046];
+        playTone(freqs[brainChainData.practiceStep - 1] || 600, 0.09, 'sine', 0.15);
+      }
+    } else {
+      alert('🎉 Chúc mừng! Bạn đã hoàn thành trọn vẹn chuỗi suy luận A ➔ B ➔ C ➔ D ➔ Insight!');
+    }
+  });
+
+  // Sub-tabs switching
+  const subtabBtns = document.querySelectorAll('.bc-subtab-btn');
+  subtabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      subtabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const targetTab = btn.getAttribute('data-bc-tab');
+
+      document.querySelectorAll('.bc-tab-content').forEach(p => p.style.display = 'none');
+      if (targetTab === 'chain') document.getElementById('bcPaneTabChain').style.display = 'block';
+      else if (targetTab === 'effects') document.getElementById('bcPaneTabEffects').style.display = 'block';
+      else if (targetTab === 'whys') document.getElementById('bcPaneTabWhys').style.display = 'block';
+      else if (targetTab === 'system') document.getElementById('bcPaneTabSystem').style.display = 'block';
+      else if (targetTab === 'contrarian') document.getElementById('bcPaneTabContrarian').style.display = 'block';
+      else if (targetTab === 'predictions') document.getElementById('bcPaneTabPredictions').style.display = 'block';
+      else if (targetTab === 'vault') document.getElementById('bcPaneTabVault').style.display = 'block';
+
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.08);
+    });
+  });
+
+  // User Notes auto-save
+  const notesInput = document.getElementById('bcUserNotesInput');
+  if (notesInput) {
+    let noteTimer = null;
+    notesInput.addEventListener('input', () => {
+      const saveStatus = document.getElementById('bcNotesSaveStatus');
+      if (saveStatus) saveStatus.textContent = 'Đang lưu...';
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(async () => {
+        const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+        if (curEv) {
+          curEv.userNotes = notesInput.value;
+          await saveBrainChainData();
+          if (saveStatus) saveStatus.textContent = 'Đã lưu ✓';
+        }
+      }, 500);
+    });
+  }
+
+  // Setup Modals
+  setupBcModals();
+
+  // Initial render
+  renderBcEventList();
+  if (brainChainData.events.length > 0) {
+    if (!brainChainData.activeEventId) brainChainData.activeEventId = brainChainData.events[0].id;
+    const ev = brainChainData.events.find(x => x.id === brainChainData.activeEventId) || brainChainData.events[0];
+    if (ev) renderBcActiveEvent(ev);
+  } else {
+    renderBcActiveEvent(null);
+  }
+}
+
+function renderBcEventList() {
+  const listEl = document.getElementById('bcEventList');
+  const countLabel = document.getElementById('bcEventCountLabel');
+  if (!listEl) return;
+
+  const searchKeyword = (document.getElementById('bcSearchInput')?.value || '').toLowerCase().trim();
+  const selectedCat = document.getElementById('bcCategoryFilter')?.value || 'all';
+
+  let filtered = (brainChainData.events || []).filter(item => {
+    if (selectedCat !== 'all' && item.category !== selectedCat) return false;
+    if (searchKeyword) {
+      const matchTitle = (item.title || '').toLowerCase().includes(searchKeyword);
+      const matchContext = (item.context || '').toLowerCase().includes(searchKeyword);
+      const matchInsight = (item.coreChain?.insight || '').toLowerCase().includes(searchKeyword);
+      return matchTitle || matchContext || matchInsight;
+    }
+    return true;
+  });
+
+  if (countLabel) countLabel.textContent = `${filtered.length} Sự kiện`;
+  listEl.innerHTML = '';
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = `
+      <div style="text-align: center; padding: 24px 10px; color: var(--muted); font-size: 12px;">
+        Không tìm thấy sự kiện nào.<br>
+        <button type="button" class="btn-modal" onclick="document.getElementById('btnBcAddEvent').click();" style="margin-top: 8px; font-size: 11.5px; height: 28px; padding: 0 10px; width: auto; color: #a78bfa;">➕ Thêm sự kiện</button>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(item => {
+    const itemEl = document.createElement('div');
+    itemEl.className = `bc-event-item ${item.id === brainChainData.activeEventId ? 'active' : ''}`;
+    
+    const hasAnalysis = Boolean(item.coreChain && item.coreChain.insight);
+    const statusBadge = hasAnalysis
+      ? `<span class="bc-badge bc-badge-analyzed">✅ Đã phân tích</span>`
+      : `<span class="bc-badge bc-badge-pending">⏳ Chờ JSON</span>`;
+
+    itemEl.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="bc-badge bc-badge-cat">${escapeHtml(item.category || 'Chung')}</span>
+        ${statusBadge}
+      </div>
+      <div style="font-weight: 700; font-size: 13px; color: #fff; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+        ${escapeHtml(item.title || 'Sự kiện không tên')}
+      </div>
+      <div style="font-size: 11.5px; color: var(--muted); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        ${escapeHtml(item.context || item.coreChain?.insight || 'Chưa có bối cảnh chi tiết...')}
+      </div>
+    `;
+
+    itemEl.addEventListener('click', () => {
+      brainChainData.activeEventId = item.id;
+      renderBcEventList();
+      renderBcActiveEvent(item);
+      if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.08);
+    });
+
+    listEl.appendChild(itemEl);
+  });
+}
+
+function renderBcActiveEvent(ev) {
+  const emptyState = document.getElementById('bcEmptyState');
+  const activeWs = document.getElementById('bcActiveWorkspace');
+  if (!emptyState || !activeWs) return;
+
+  if (!ev) {
+    emptyState.style.display = 'flex';
+    activeWs.style.display = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  activeWs.style.display = 'flex';
+
+  // Header info
+  const titleEl = document.getElementById('bcEventTitle');
+  const catBadge = document.getElementById('bcEventCatBadge');
+  const statusBadge = document.getElementById('bcEventStatusBadge');
+  const contextEl = document.getElementById('bcEventContext');
+
+  if (titleEl) titleEl.textContent = ev.title || 'Sự kiện không tên';
+  if (catBadge) catBadge.textContent = ev.category || 'Kinh doanh';
+  
+  const hasAnalysis = Boolean(ev.coreChain && ev.coreChain.insight);
+  if (statusBadge) {
+    statusBadge.className = `bc-badge ${hasAnalysis ? 'bc-badge-analyzed' : 'bc-badge-pending'}`;
+    statusBadge.textContent = hasAnalysis ? '✅ Đã có phân tích' : '⏳ Chưa nạp JSON AI';
+  }
+  if (contextEl) contextEl.textContent = ev.context || 'Bối cảnh chưa được nhập chi tiết... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic đa tầng!';
+
+  // Core Chain
+  const nodeA = document.getElementById('bcNodeTextA');
+  const nodeB = document.getElementById('bcNodeTextB');
+  const nodeC = document.getElementById('bcNodeTextC');
+  const nodeD = document.getElementById('bcNodeTextD');
+  const nodeInsight = document.getElementById('bcNodeTextInsight');
+
+  if (nodeA) nodeA.textContent = ev.coreChain?.a || ev.title || 'Bước A: Khởi nguồn sự kiện...';
+  if (nodeB) nodeB.textContent = ev.coreChain?.b || 'Chưa có phân tích... Bấm "📥 Nạp JSON AI" để nạp kết quả.';
+  if (nodeC) nodeC.textContent = ev.coreChain?.c || 'Chưa có phân tích...';
+  if (nodeD) nodeD.textContent = ev.coreChain?.d || 'Chưa có phân tích...';
+  if (nodeInsight) nodeInsight.textContent = ev.coreChain?.insight || 'Chưa có đúc kết insight...';
+
+  // Multi-order Effects
+  const effImm = document.getElementById('bcEffectImmediate');
+  const effSec = document.getElementById('bcEffectSecond');
+  const effThird = document.getElementById('bcEffectThird');
+  const effUnexp = document.getElementById('bcEffectUnexpected');
+  const effLong = document.getElementById('bcEffectLongTerm');
+
+  if (effImm) effImm.textContent = ev.causeEffects?.immediate || 'Chưa có thông tin.';
+  if (effSec) effSec.textContent = ev.causeEffects?.secondOrder || 'Chưa có thông tin.';
+  if (effThird) effThird.textContent = ev.causeEffects?.thirdOrder || 'Chưa có thông tin.';
+  if (effUnexp) effUnexp.textContent = ev.causeEffects?.unexpected || 'Chưa có thông tin.';
+  if (effLong) effLong.textContent = ev.causeEffects?.longTerm || 'Chưa có thông tin.';
+
+  // 5 Whys
+  const whyLadder = document.getElementById('bcWhyLadderList');
+  if (whyLadder) {
+    whyLadder.innerHTML = '';
+    const whys = Array.isArray(ev.whyChain) && ev.whyChain.length > 0 ? ev.whyChain : [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao xảy ra sự việc này?", answer: ev.coreChain?.a || "..." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao lại có phản ứng trên?", answer: ev.coreChain?.b || "..." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao chuỗi phản ứng tiếp diễn?", answer: ev.coreChain?.c || "..." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao hệ thống cho phép điều này?", answer: ev.coreChain?.d || "..." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: ev.coreChain?.insight || "..." }
+    ];
+
+    whys.forEach((w, idx) => {
+      const isRoot = idx === whys.length - 1;
+      const stepDiv = document.createElement('div');
+      stepDiv.className = `bc-why-step ${isRoot ? 'root-cause' : ''}`;
+      stepDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 11.5px; font-weight: 800; color: ${isRoot ? '#f87171' : '#38bdf8'};">${escapeHtml(w.level || `Tầng ${idx + 1}`)}</span>
+          <span style="font-size: 11px; color: var(--muted); font-style: italic;">${escapeHtml(w.question || '')}</span>
+        </div>
+        <div style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; font-weight: ${isRoot ? '700' : '400'};">
+          ${escapeHtml(w.answer || '...')}
+        </div>
+      `;
+      whyLadder.appendChild(stepDiv);
+    });
+  }
+
+  // System Dynamics
+  const nodesWrap = document.getElementById('bcSystemNodesWrap');
+  if (nodesWrap) {
+    nodesWrap.innerHTML = '';
+    const nodes = Array.isArray(ev.systemDynamics?.nodes) ? ev.systemDynamics.nodes : ['Thực thể A', 'Thực thể B', 'Đòn bẩy', 'Đầu ra'];
+    nodes.forEach(n => {
+      const pill = document.createElement('span');
+      pill.className = 'cm-tag-pill';
+      pill.style.cssText = 'background: rgba(56,189,248,0.12); color: #38bdf8; border-color: rgba(56,189,248,0.3); font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight: 600;';
+      pill.textContent = `📍 ${n}`;
+      nodesWrap.appendChild(pill);
+    });
+  }
+
+  const sysDirect = document.getElementById('bcSystemDirect');
+  const sysIndirect = document.getElementById('bcSystemIndirect');
+  const sysFeedback = document.getElementById('bcSystemFeedback');
+
+  if (sysDirect) sysDirect.textContent = ev.systemDynamics?.directImpact || 'Chưa có thông tin.';
+  if (sysIndirect) sysIndirect.textContent = ev.systemDynamics?.indirectImpact || 'Chưa có thông tin.';
+  if (sysFeedback) sysFeedback.textContent = ev.systemDynamics?.feedbackLoop || 'Chưa có thông tin.';
+
+  // First Principles & Contrarian
+  const fpBroken = document.getElementById('bcFpBroken');
+  const fpTruths = document.getElementById('bcFpTruths');
+  const fpLogic = document.getElementById('bcFpLogic');
+  const contraFor = document.getElementById('bcContraFor');
+  const contraAgainst = document.getElementById('bcContraAgainst');
+  const contraSynthesis = document.getElementById('bcContraSynthesis');
+
+  if (fpBroken) fpBroken.textContent = ev.firstPrinciples?.brokenAssumptions || 'Chưa có thông tin.';
+  if (fpTruths) fpTruths.textContent = ev.firstPrinciples?.fundamentalTruths || 'Chưa có thông tin.';
+  if (fpLogic) fpLogic.textContent = ev.firstPrinciples?.reconstructedLogic || 'Chưa có thông tin.';
+  if (contraFor) contraFor.textContent = ev.contrarianThinking?.argFor || 'Chưa có thông tin.';
+  if (contraAgainst) contraAgainst.textContent = ev.contrarianThinking?.argAgainst || 'Chưa có thông tin.';
+  if (contraSynthesis) contraSynthesis.textContent = ev.contrarianThinking?.synthesis || 'Chưa có thông tin.';
+
+  // Predictions
+  const predMonth = document.getElementById('bcPredMonth');
+  const predYear = document.getElementById('bcPredYear');
+  const predFiveYears = document.getElementById('bcPredFiveYears');
+  const predBlindSpots = document.getElementById('bcPredBlindSpots');
+
+  if (predMonth) predMonth.textContent = ev.predictions?.oneMonth || 'Chưa có dự đoán.';
+  if (predYear) predYear.textContent = ev.predictions?.oneYear || 'Chưa có dự đoán.';
+  if (predFiveYears) predFiveYears.textContent = ev.predictions?.fiveYears || 'Chưa có dự đoán.';
+  if (predBlindSpots) predBlindSpots.textContent = ev.predictions?.blindSpots || 'Chưa có thông tin điểm mù.';
+
+  // Vault Insight & Action Takeaways
+  const vaultInsight = document.getElementById('bcVaultGoldenInsight');
+  const takeawaysList = document.getElementById('bcVaultTakeawaysList');
+  const notesInput = document.getElementById('bcUserNotesInput');
+
+  if (vaultInsight) vaultInsight.textContent = `"${ev.coreChain?.insight || 'Chưa có đúc kết insight...'}"`;
+  
+  if (takeawaysList) {
+    takeawaysList.innerHTML = '';
+    const items = Array.isArray(ev.actionTakeaways) && ev.actionTakeaways.length > 0
+      ? ev.actionTakeaways
+      : ['Tập trung vào nguyên lý gốc rễ thay vì xử lý triệu chứng.', 'Kiểm soát chặt chẽ điểm nghẽn vận hành trước khi mở rộng quy mô.'];
+    
+    items.forEach(t => {
+      const li = document.createElement('li');
+      li.textContent = t;
+      takeawaysList.appendChild(li);
+    });
+  }
+
+  if (notesInput) {
+    notesInput.value = ev.userNotes || '';
+  }
+
+  applyBcPracticeStep();
+}
+
+function applyBcPracticeStep() {
+  const step = brainChainData.practiceStep || 5;
+
+  const cardB = document.getElementById('bcNodeCardB');
+  const conn1 = document.getElementById('bcConnector1');
+  const cardC = document.getElementById('bcNodeCardC');
+  const conn2 = document.getElementById('bcConnector2');
+  const cardD = document.getElementById('bcNodeCardD');
+  const conn3 = document.getElementById('bcConnector3');
+  const cardInsight = document.getElementById('bcNodeCardInsight');
+  const conn4 = document.getElementById('bcConnector4');
+
+  if (cardB) cardB.style.display = step >= 2 ? 'flex' : 'none';
+  if (conn1) conn1.style.display = step >= 2 ? 'flex' : 'none';
+
+  if (cardC) cardC.style.display = step >= 3 ? 'flex' : 'none';
+  if (conn2) conn2.style.display = step >= 3 ? 'flex' : 'none';
+
+  if (cardD) cardD.style.display = step >= 4 ? 'flex' : 'none';
+  if (conn3) conn3.style.display = step >= 4 ? 'flex' : 'none';
+
+  if (cardInsight) cardInsight.style.display = step >= 5 ? 'flex' : 'none';
+  if (conn4) conn4.style.display = step >= 5 ? 'flex' : 'none';
+}
+
+function buildBrainChainPrompt(event) {
+  const title = event?.title || "Một quán cà phê giảm giá 30%";
+  const category = event?.category || "Kinh doanh";
+  const context = event?.context || "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá.";
+
+  return `Bạn là BẬC THẦY TƯ DUY HỆ THỐNG & SUY LUẬN LOGIC (SYSTEMS THINKER & LOGIC MASTER).
+Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân tích toàn diện sự kiện/hiện tượng dưới đây.
+
+🎯 SỰ KIỆN CẦN PHÂN TÍCH:
+- Tên sự kiện: "${title}"
+- Lĩnh vực: ${category}
+- Bối cảnh: ${context}
+
+# NGUYÊN TẮC CỐT LÕI CỦA BRAIN CHAIN:
+1. CORE LOOP: Từ một thứ -> suy ra thứ khác -> tiếp tục suy ra thứ khác -> cuối cùng tạo thành một Insight sắc bén (A -> B -> C -> D -> INSIGHT).
+2. CAUSE -> MULTI-ORDER EFFECTS: Tác động tức thì -> Hệ quả bậc hai -> Hệ quả bậc ba -> Hệ quả ngoài dự kiến -> Hệ quả dài hạn 1-3 năm.
+3. 5 WHYS ROOT CAUSE: Đào sâu qua 5 tầng: Triệu chứng -> Nguyên nhân trực tiếp -> Nguyên nhân sâu xa -> Nguyên nhân hệ thống -> Root Cause gốc rễ.
+4. WHAT IF & EXTREMES: Tình huống giả định đảo ngược và 3 hệ quả phi trực giác mà người bình thường ít nghĩ tới.
+5. SYSTEM THINKING: Xác định các Node thành tố, tác động trực tiếp, tác động gián tiếp và Feedback Loop (vòng lặp phản hồi).
+6. FIRST PRINCIPLES: Phá vỡ giả định sai lầm ngầm định, tìm ra sự thật nền tảng và tái cấu trúc lại logic giải pháp.
+7. CONTRARIAN THINKING: Lập luận ủng hộ (Tại sao đúng?) vs Lập luận phản biện (Tại sao có thể sai?) -> Điều kiện đúng -> Ngoại lệ -> Kết luận tổng hợp đa chiều (Tránh tư duy nhị nguyên trắng/đen).
+8. PREDICTIONS: Dự đoán 1 tháng, 1 năm, 5 năm và chỉ ra các Điểm mù (Blind spots) cần kiểm chứng.
+9. GOLDEN INSIGHT & ACTION TAKEAWAYS: Đúc kết 1 câu Insight đắt giá + 3 bài học hành động thực tế.
+
+⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
+Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau để nạp trực tiếp vào ứng dụng Brain Chain:
+
+\`\`\`json
+{
+  "title": "${title}",
+  "category": "${category}",
+  "context": "${context}",
+  "coreChain": {
+    "a": "BƯỚC 1 (A): Khởi nguồn sự kiện / Hành động ban đầu cụ thể...",
+    "b": "BƯỚC 2 (B): Tác động trực tiếp đầu tiên xảy ra ngay sau đó...",
+    "c": "BƯỚC 3 (C): Phản ứng dây chuyền bậc hai lan sang các bộ phận / đối tượng khác...",
+    "d": "BƯỚC 4 (D): Hệ quả dây chuyền sâu rộng làm thay đổi hành vi / vận hành...",
+    "insight": "BƯỚC 5 (INSIGHT): Đúc kết nhận thức đột phá, quy luật bất biến hoặc bài học chiến lược cốt lõi."
+  },
+  "causeEffects": {
+    "immediate": "Điều gì xảy ra ngay lập tức sau sự kiện?",
+    "secondOrder": "Sau đó điều gì xảy ra tiếp theo?",
+    "thirdOrder": "Một thời gian sau hệ quả lan sang đâu?",
+    "unexpected": "Hệ quả bất ngờ ngoài dự kiến mà ít người nghĩ tới là gì?",
+    "longTerm": "Sau 1-3 năm bức tranh toàn cảnh thay đổi ra sao?"
+  },
+  "whyChain": [
+    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao xảy ra điều này?", "answer": "Câu trả lời tầng 1..." },
+    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại có nguyên nhân đó?", "answer": "Câu trả lời tầng 2..." },
+    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao yếu tố đó tồn tại?", "answer": "Câu trả lời tầng 3..." },
+    { "level": "4. Nguyên nhân hệ thống", "question": "Tại sao hệ thống cho phép điều này?", "answer": "Câu trả lời tầng 4..." },
+    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi nằm ở đâu?", "answer": "Câu trả lời tầng 5 (Root Cause)..." }
+  ],
+  "whatIf": {
+    "scenario": "Tình huống giả định đảo ngược hoặc thay đổi biến số chính...",
+    "consequences": [
+      "Hệ quả phi trực giác 1",
+      "Hệ quả phi trực giác 2",
+      "Hệ quả phi trực giác 3"
+    ]
+  },
+  "systemDynamics": {
+    "nodes": ["Node 1", "Node 2", "Node 3", "Node 4", "Node 5"],
+    "directImpact": "Tác động trực tiếp đến các thành tố...",
+    "indirectImpact": "Tác động gián tiếp xuyên suốt hệ thống...",
+    "feedbackLoop": "Mô tả vòng lặp phản hồi tăng cường (Reinforcing) hoặc cân bằng (Balancing)..."
+  },
+  "firstPrinciples": {
+    "brokenAssumptions": "Giả định ngầm định bị phá vỡ...",
+    "fundamentalTruths": "Sự thật nguyên lý gốc bất biến...",
+    "reconstructedLogic": "Logic xây dựng lại từ nền tảng vững chắc..."
+  },
+  "contrarianThinking": {
+    "argFor": "Tại sao quan điểm này đúng? Lập luận ủng hộ...",
+    "argAgainst": "Tại sao có thể sai? Lập luận phản biện sắc sảo...",
+    "conditions": "Điều kiện cần và đủ để quan điểm này đúng...",
+    "exceptions": "Các trường hợp ngoại lệ quan trọng...",
+    "synthesis": "Kết luận tổng hợp đa chiều, cân bằng thực tế..."
+  },
+  "predictions": {
+    "oneMonth": "Dự đoán diễn biến trong 1 tháng tới...",
+    "oneYear": "Dự đoán diễn biến trong 1 năm tới...",
+    "fiveYears": "Dự đoán dài hạn trong 5 năm tới...",
+    "blindSpots": "Điểm mù và giả thiết cần theo dõi kiểm chứng thực tế..."
+  },
+  "actionTakeaways": [
+    "Bài học hành động cụ thể 1",
+    "Bài học hành động cụ thể 2",
+    "Bài học hành động cụ thể 3"
+  ]
+}
+\`\`\``;
+}
+
+function setupBcModals() {
+  // 1. Event Modal (Add/Edit)
+  let editingEventId = null;
+
+  window.openBcEventModal = (eventToEdit = null) => {
+    editingEventId = eventToEdit ? eventToEdit.id : null;
+    const modal = document.getElementById('bcEventModal');
+    const modalTitle = document.getElementById('bcEventModalTitle');
+    const titleInp = document.getElementById('bcInputEventTitle');
+    const catInp = document.getElementById('bcInputEventCategory');
+    const lvlInp = document.getElementById('bcInputEventLevel');
+    const ctxInp = document.getElementById('bcInputEventContext');
+
+    if (!modal) return;
+    if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Sự Kiện' : '💡 Thêm Sự Kiện / Tình Huống Mới';
+    if (titleInp) titleInp.value = eventToEdit ? eventToEdit.title : '';
+    if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Kinh doanh') : 'Kinh doanh';
+    if (lvlInp) lvlInp.value = eventToEdit ? (eventToEdit.level || 3) : 3;
+    if (ctxInp) ctxInp.value = eventToEdit ? (eventToEdit.context || '') : '';
+
+    modal.classList.add('active');
+    if (titleInp) titleInp.focus();
+  };
+
+  const btnCancelEvent = document.getElementById('btnBcEventModalCancel');
+  if (btnCancelEvent) btnCancelEvent.onclick = () => document.getElementById('bcEventModal')?.classList.remove('active');
+
+  const btnSaveEvent = document.getElementById('btnBcEventModalSave');
+  if (btnSaveEvent) {
+    btnSaveEvent.onclick = async () => {
+      const titleInp = document.getElementById('bcInputEventTitle');
+      const catInp = document.getElementById('bcInputEventCategory');
+      const lvlInp = document.getElementById('bcInputEventLevel');
+      const ctxInp = document.getElementById('bcInputEventContext');
+
+      const title = (titleInp?.value || '').trim();
+      if (!title) {
+        alert('Vui lòng nhập tên sự kiện hoặc tình huống cốt lõi!');
+        titleInp?.focus();
+        return;
+      }
+
+      if (editingEventId) {
+        const ev = brainChainData.events.find(x => x.id === editingEventId);
+        if (ev) {
+          ev.title = title;
+          ev.category = catInp?.value || 'Kinh doanh';
+          ev.level = parseInt(lvlInp?.value || '3');
+          ev.context = (ctxInp?.value || '').trim();
+          ev.updatedAt = new Date().toISOString();
+        }
+      } else {
+        const newEv = {
+          id: 'bc_event_' + Date.now(),
+          title: title,
+          category: catInp?.value || 'Kinh doanh',
+          level: parseInt(lvlInp?.value || '3'),
+          context: (ctxInp?.value || '').trim(),
+          createdAt: new Date().toISOString(),
+          coreChain: {
+            a: title,
+            b: "Bấm '⚡ Tạo Prompt AI' để sinh chuỗi tư duy đầy đủ...",
+            c: "Đang chờ phân tích...",
+            d: "Đang chờ phân tích...",
+            insight: "Chưa có insight đúc kết."
+          }
+        };
+        brainChainData.events.unshift(newEv);
+        brainChainData.activeEventId = newEv.id;
+      }
+
+      await saveBrainChainData();
+      document.getElementById('bcEventModal')?.classList.remove('active');
+      renderBcEventList();
+      const currentEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (currentEv) renderBcActiveEvent(currentEv);
+      if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+    };
+  }
+
+  // 2. Prompt Modal
+  window.openBcPromptModal = (event) => {
+    const modal = document.getElementById('bcPromptModal');
+    const nameLabel = document.getElementById('bcPromptSelectedEventName');
+    const promptText = document.getElementById('bcGeneratedPromptText');
+
+    if (!modal) return;
+    const targetEv = event || brainChainData.events.find(x => x.id === brainChainData.activeEventId) || brainChainData.events[0];
+    if (nameLabel) nameLabel.textContent = targetEv ? targetEv.title : 'Chưa có sự kiện';
+    if (promptText) promptText.value = buildBrainChainPrompt(targetEv);
+
+    modal.classList.add('active');
+  };
+
+  const btnClosePrompt = document.getElementById('btnBcPromptClose');
+  if (btnClosePrompt) btnClosePrompt.onclick = () => document.getElementById('bcPromptModal')?.classList.remove('active');
+
+  const copyPromptAction = () => {
+    const promptText = document.getElementById('bcGeneratedPromptText');
+    if (!promptText) return;
+    const text = promptText.value;
+    if (window.taskAPI && window.taskAPI.writeClipboardText) {
+      window.taskAPI.writeClipboardText(text);
+    } else {
+      navigator.clipboard.writeText(text);
+    }
+    if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+    alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!\nHãy dán vào Gemini / ChatGPT / Claude để AI sinh mã JSON phân tích logic đa tầng.');
+  };
+
+  const btnCopyPromptModal = document.getElementById('btnBcCopyPromptModalBtn');
+  if (btnCopyPromptModal) btnCopyPromptModal.onclick = copyPromptAction;
+
+  // AI Web launch buttons with 1-click prompt copy
+  const setupAiLink = (btnId, url) => {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.onclick = () => {
+      const promptText = document.getElementById('bcGeneratedPromptText');
+      if (promptText) {
+        if (window.taskAPI && window.taskAPI.writeClipboardText) {
+          window.taskAPI.writeClipboardText(promptText.value);
+        } else {
+          navigator.clipboard.writeText(promptText.value);
+        }
+      }
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(url);
+      } else {
+        window.open(url, '_blank');
+      }
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+    };
+  };
+
+  setupAiLink('btnBcOpenGemini', 'https://gemini.google.com/');
+  setupAiLink('btnBcOpenChatGPT', 'https://chatgpt.com/');
+  setupAiLink('btnBcOpenClaude', 'https://claude.ai/');
+
+  // 3. JSON Import Modal
+  let targetImportEventId = null;
+
+  window.openBcImportJsonModal = (targetEventId = null) => {
+    targetImportEventId = targetEventId;
+    const modal = document.getElementById('bcImportJsonModal');
+    const input = document.getElementById('bcImportJsonInput');
+    const errBox = document.getElementById('bcImportJsonError');
+
+    if (!modal) return;
+    if (input) input.value = '';
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+    modal.classList.add('active');
+    if (input) input.focus();
+  };
+
+  const btnCloseImport = document.getElementById('btnBcImportJsonClose');
+  if (btnCloseImport) btnCloseImport.onclick = () => document.getElementById('bcImportJsonModal')?.classList.remove('active');
+
+  const btnCancelImport = document.getElementById('btnBcImportJsonCancel');
+  if (btnCancelImport) btnCancelImport.onclick = () => document.getElementById('bcImportJsonModal')?.classList.remove('active');
+
+  const btnPasteSample = document.getElementById('btnBcPasteSampleJson');
+  if (btnPasteSample) {
+    btnPasteSample.onclick = () => {
+      const input = document.getElementById('bcImportJsonInput');
+      if (input) {
+        input.value = JSON.stringify(DEFAULT_BRAIN_CHAIN_PRESETS[0], null, 2);
+        if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+      }
+    };
+  }
+
+  const btnConfirmImport = document.getElementById('btnBcImportJsonConfirm');
+  if (btnConfirmImport) {
+    btnConfirmImport.onclick = async () => {
+      const input = document.getElementById('bcImportJsonInput');
+      const errBox = document.getElementById('bcImportJsonError');
+      let raw = (input?.value || '').trim();
+
+      if (!raw) {
+        if (errBox) { errBox.style.display = 'block'; errBox.textContent = 'Vui lòng dán đoạn mã JSON từ AI vào ô bên trên!'; }
+        return;
+      }
+
+      // Strip markdown ```json ... ``` codeblocks if present
+      if (raw.startsWith('```')) {
+        raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      }
+
+      try {
+        const parsed = JSON.parse(raw);
+        let importedEvent = null;
+
+        if (Array.isArray(parsed)) {
+          // Bulk array of events
+          parsed.forEach(item => {
+            if (item && item.title) {
+              if (!item.id) item.id = 'bc_event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+              brainChainData.events.unshift(item);
+            }
+          });
+          importedEvent = parsed[0];
+          brainChainData.activeEventId = importedEvent.id;
+        } else if (parsed && typeof parsed === 'object') {
+          // Single event
+          if (targetImportEventId) {
+            // Update existing event
+            const existing = brainChainData.events.find(x => x.id === targetImportEventId);
+            if (existing) {
+              Object.assign(existing, parsed);
+              existing.id = targetImportEventId;
+              existing.updatedAt = new Date().toISOString();
+              importedEvent = existing;
+            }
+          }
+          if (!importedEvent) {
+            if (!parsed.id) parsed.id = 'bc_event_' + Date.now();
+            parsed.createdAt = new Date().toISOString();
+            brainChainData.events.unshift(parsed);
+            brainChainData.activeEventId = parsed.id;
+            importedEvent = parsed;
+          }
+        }
+
+        await saveBrainChainData();
+        document.getElementById('bcImportJsonModal')?.classList.remove('active');
+        renderBcEventList();
+        if (importedEvent) renderBcActiveEvent(importedEvent);
+
+        if (typeof playTone === 'function') {
+          playTone(523, 0.08, 'sine', 0.1);
+          setTimeout(() => playTone(659, 0.08, 'sine', 0.12), 80);
+          setTimeout(() => playTone(784, 0.12, 'sine', 0.15), 160);
+        }
+
+        alert('🎉 NẠP THÀNH CÔNG!\nChuỗi tư duy Brain Chain đã được cập nhật và hiển thị trực quan.');
+      } catch (err) {
+        if (errBox) {
+          errBox.style.display = 'block';
+          errBox.textContent = `Lỗi cú pháp JSON: ${err.message}. Vui lòng kiểm tra lại đoạn mã JSON từ AI!`;
+        }
+      }
+    };
+  }
+
+  // 4. Backup Modal
+  window.openBcBackupModal = () => {
+    const modal = document.getElementById('bcBackupModal');
+    const input = document.getElementById('bcBackupJsonInput');
+    if (!modal) return;
+    if (input) input.value = JSON.stringify(brainChainData, null, 2);
+    modal.classList.add('active');
+  };
+
+  const btnCloseBackup = document.getElementById('btnBcBackupClose');
+  if (btnCloseBackup) btnCloseBackup.onclick = () => document.getElementById('bcBackupModal')?.classList.remove('active');
+
+  const btnExportFull = document.getElementById('btnBcExportFullJson');
+  if (btnExportFull) {
+    btnExportFull.onclick = () => {
+      const input = document.getElementById('bcBackupJsonInput');
+      if (input) {
+        input.value = JSON.stringify(brainChainData, null, 2);
+        if (window.taskAPI && window.taskAPI.writeClipboardText) {
+          window.taskAPI.writeClipboardText(input.value);
+        } else {
+          navigator.clipboard.writeText(input.value);
+        }
+        if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+        alert('📤 Đã sao chép toàn bộ dữ liệu Brain Chain vào Clipboard!');
+      }
+    };
+  }
+
+  const btnApplyBackup = document.getElementById('btnBcApplyBackupJson');
+  if (btnApplyBackup) {
+    btnApplyBackup.onclick = async () => {
+      const input = document.getElementById('bcBackupJsonInput');
+      const raw = (input?.value || '').trim();
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.events)) {
+          brainChainData = parsed;
+        } else if (Array.isArray(parsed)) {
+          brainChainData.events = parsed;
+          brainChainData.activeEventId = parsed[0]?.id || null;
+        }
+        await saveBrainChainData();
+        document.getElementById('bcBackupModal')?.classList.remove('active');
+        renderBcEventList();
+        if (brainChainData.activeEventId) {
+          const ev = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+          if (ev) renderBcActiveEvent(ev);
+        }
+        if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+        alert('📥 Khôi phục dữ liệu Brain Chain thành công!');
+      } catch (err) {
+        alert('Lỗi cú pháp JSON: ' + err.message);
+      }
+    };
+  }
+
+  const btnResetPresets = document.getElementById('btnBcResetDefaultPresets');
+  if (btnResetPresets) {
+    btnResetPresets.onclick = async () => {
+      if (confirm('Khôi phục lại 6 kịch bản mẫu tinh hoa mặc định của hệ thống?')) {
+        brainChainData = {
+          events: JSON.parse(JSON.stringify(DEFAULT_BRAIN_CHAIN_PRESETS)),
+          activeEventId: DEFAULT_BRAIN_CHAIN_PRESETS[0].id,
+          practiceStep: 5
+        };
+        await saveBrainChainData();
+        document.getElementById('bcBackupModal')?.classList.remove('active');
+        renderBcEventList();
+        renderBcActiveEvent(brainChainData.events[0]);
+        if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+      }
+    };
+  }
+
+  const btnClearAll = document.getElementById('btnBcClearAllEvents');
+  if (btnClearAll) {
+    btnClearAll.onclick = async () => {
+      if (confirm('CẢNH BÁO: Bạn có chắc muốn xóa sạch toàn bộ sự kiện trong Brain Chain?')) {
+        brainChainData = { events: [], activeEventId: null, practiceStep: 5 };
+        await saveBrainChainData();
+        document.getElementById('bcBackupModal')?.classList.remove('active');
+        renderBcEventList();
+        renderBcActiveEvent(null);
+        if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+      }
+    };
+  }
 }

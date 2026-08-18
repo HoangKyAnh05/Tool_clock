@@ -33,4 +33,6 @@ contextBridge.exposeInMainWorld('taskAPI', {
   saveTiktokMusic: (data) => ipcRenderer.invoke('save-tiktok-music', data),
   loadCommentsVault: () => ipcRenderer.invoke('load-comments-vault'),
   saveCommentsVault: (data) => ipcRenderer.invoke('save-comments-vault', data),
+  loadBrainChain: () => ipcRenderer.invoke('load-brain-chain'),
+  saveBrainChain: (data) => ipcRenderer.invoke('save-brain-chain', data),
 });
