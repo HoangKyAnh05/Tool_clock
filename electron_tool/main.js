@@ -1792,21 +1792,28 @@ ipcMain.handle('save-memorize-vault', async (event, data) => {
 
 ipcMain.handle('sync-flashcards-to-web', async (event, data) => {
   try {
-    let vaultData = data || cachedMemorizeVault;
-    if (!vaultData && fs.existsSync(memorizePath)) {
+    let fullVault = cachedMemorizeVault;
+    if (!fullVault && fs.existsSync(memorizePath)) {
       const fileData = await fs.promises.readFile(memorizePath, 'utf8');
-      vaultData = JSON.parse(fileData);
+      fullVault = JSON.parse(fileData);
     }
-    if (!vaultData) vaultData = { items: [] };
-    cachedMemorizeVault = vaultData;
+    if (!fullVault) fullVault = { items: [] };
 
-    // Save to memorize_vault.json
-    await fs.promises.writeFile(memorizePath, JSON.stringify(vaultData, null, 2), 'utf8');
-    broadcastVaultUpdate('memorize', vaultData);
+    // Determine what to write to web
+    let webItems = fullVault.items || [];
+    if (data && Array.isArray(data.items) && data.items.length > 0) {
+      webItems = data.items;
+      // If it's a full save from editor, update disk vault. If it's partial selection, keep full vault on disk!
+      if (!data.isPartial && data.items.length >= (fullVault.items || []).length) {
+        cachedMemorizeVault = data;
+        await fs.promises.writeFile(memorizePath, JSON.stringify(data, null, 2), 'utf8');
+        broadcastVaultUpdate('memorize', data);
+      }
+    }
 
-    // Generate standalone index.html in root & docs
+    // Generate standalone index.html & docs/index.html with EXACT selected/target items
     const rootDir = path.join(__dirname, '..');
-    syncWebGen.writeWebFiles(vaultData, rootDir);
+    syncWebGen.writeWebFiles({ items: webItems }, rootDir);
 
     // Run Git commands to commit & push to GitHub Pages
     const { exec } = require('child_process');
