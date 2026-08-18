@@ -54,8 +54,6 @@ function generateMobileHtml(data) {
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     body {
@@ -75,7 +73,7 @@ function generateMobileHtml(data) {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(11, 13, 20, 0.85);
+      background: rgba(11, 13, 20, 0.9);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
@@ -143,7 +141,7 @@ function generateMobileHtml(data) {
 
     .icon-btn:active {
       transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     /* Day Tabs Filter */
@@ -173,6 +171,7 @@ function generateMobileHtml(data) {
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
+      outline: none;
     }
 
     .day-tab.active {
@@ -225,7 +224,7 @@ function generateMobileHtml(data) {
     .card-stage {
       position: relative;
       width: 100%;
-      min-height: 480px;
+      min-height: 460px;
       perspective: 1200px;
       margin-bottom: 12px;
     }
@@ -233,7 +232,7 @@ function generateMobileHtml(data) {
     .card-3d {
       width: 100%;
       height: 100%;
-      min-height: 480px;
+      min-height: 460px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -264,24 +263,13 @@ function generateMobileHtml(data) {
     /* Front Card Face */
     .card-front {
       background: linear-gradient(160deg, #181c2b 0%, #0d0f1a 100%);
-      border: 2px solid rgba(0, 242, 254, 0.25);
-    }
-
-    .card-front::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, transparent 70%);
-      pointer-events: none;
+      border: 2px solid rgba(0, 242, 254, 0.35);
     }
 
     /* Back Card Face */
     .card-back {
       background: linear-gradient(160deg, #092019 0%, #091319 100%);
-      border: 2px solid rgba(16, 185, 129, 0.35);
+      border: 2px solid rgba(16, 185, 129, 0.4);
       transform: rotateY(180deg);
     }
 
@@ -348,7 +336,7 @@ function generateMobileHtml(data) {
       padding: 16px 4px;
       z-index: 2;
       overflow-y: auto;
-      max-height: 320px;
+      max-height: 310px;
     }
 
     .word-title {
@@ -368,14 +356,14 @@ function generateMobileHtml(data) {
 
     .card-back .word-title {
       color: #34d399;
-      font-size: 21px;
+      font-size: 20px;
     }
 
     .word-trans-sub {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
-      color: #34d399;
-      margin-bottom: 12px;
+      color: #6ee7b7;
+      margin-bottom: 10px;
     }
 
     .tap-hint {
@@ -386,7 +374,7 @@ function generateMobileHtml(data) {
       gap: 6px;
       margin-top: 14px;
       background: rgba(255, 255, 255, 0.05);
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 99px;
       border: 1px solid var(--border);
     }
@@ -403,8 +391,6 @@ function generateMobileHtml(data) {
       margin-top: 6px;
       scrollbar-width: thin;
       scrollbar-color: #10b981 transparent;
-      user-select: text;
-      -webkit-user-select: text;
     }
 
     .example-section-header {
@@ -449,11 +435,18 @@ function generateMobileHtml(data) {
     }
 
     .example-speak {
-      font-size: 14px;
+      font-size: 15px;
       cursor: pointer;
       color: #38bdf8;
-      padding: 2px 4px;
+      padding: 2px 6px;
       flex-shrink: 0;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .example-speak:active {
+      transform: scale(0.9);
+      background: rgba(0, 242, 254, 0.2);
     }
 
     /* Card Bottom */
@@ -577,7 +570,7 @@ function generateMobileHtml(data) {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(11, 13, 20, 0.92);
+      background: rgba(11, 13, 20, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 100;
@@ -761,7 +754,7 @@ function generateMobileHtml(data) {
           </div>
 
           <div class="card-middle">
-            <div class="word-title" id="cardWord">word</div>
+            <div class="word-title" id="cardWord">Đang tải...</div>
             <div class="tap-hint">
               <span>👆</span>
               <span>Chạm thẻ để lật xem nghĩa & 10 ví dụ</span>
@@ -786,7 +779,7 @@ function generateMobileHtml(data) {
 
           <div class="card-middle" style="justify-content: flex-start;">
             <div class="word-title" id="cardTrans">Dịch nghĩa</div>
-            <div class="word-trans-sub" id="cardWordSub" style="color: #6ee7b7; font-size: 14px;">(Word)</div>
+            <div class="word-trans-sub" id="cardWordSub">(Word)</div>
             
             <div class="examples-container" id="examplesContainer">
               <!-- Dynamically populated examples -->
@@ -880,7 +873,7 @@ function generateMobileHtml(data) {
     function showToast(msg) {
       toast.textContent = msg;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1800);
+      setTimeout(function() { toast.classList.remove('show'); }, 1800);
     }
 
     function updateBadges() {
@@ -898,7 +891,7 @@ function generateMobileHtml(data) {
 
     function applyFilter(filter) {
       currentFilter = filter;
-      document.querySelectorAll('.day-tab').forEach(t => {
+      document.querySelectorAll('.day-tab').forEach(function(t) {
         t.classList.toggle('active', t.getAttribute('data-day') === filter);
       });
 
@@ -912,13 +905,13 @@ function generateMobileHtml(data) {
         filteredList = RAW_ITEMS.slice(D2_LIMIT);
         currentDayPill.textContent = 'Ngày 3 (Thẻ ' + (D2_LIMIT + 1) + ' - ' + TOTAL + ')';
       } else if (filter === 'due') {
-        filteredList = RAW_ITEMS.filter(x => dueIds.has(x.id));
+        filteredList = RAW_ITEMS.filter(function(x) { return dueIds.has(x.id); });
         currentDayPill.textContent = 'Cần ôn (' + filteredList.length + ' từ)';
       } else if (filter === 'mastered') {
-        filteredList = RAW_ITEMS.filter(x => masteredIds.has(x.id));
+        filteredList = RAW_ITEMS.filter(function(x) { return masteredIds.has(x.id); });
         currentDayPill.textContent = 'Đã thuộc (' + filteredList.length + ' từ)';
       } else {
-        filteredList = [...RAW_ITEMS];
+        filteredList = RAW_ITEMS.slice(0);
         currentDayPill.textContent = 'Tất cả (' + TOTAL + ' từ)';
       }
 
@@ -942,10 +935,10 @@ function generateMobileHtml(data) {
       if (currentIndex < 0) currentIndex = filteredList.length - 1;
 
       const item = filteredList[currentIndex];
-      const rawIndex = RAW_ITEMS.findIndex(x => x.id === item.id);
+      const rawIndex = RAW_ITEMS.findIndex(function(x) { return x.id === item.id; });
       const dayLabel = getDayForItem(rawIndex >= 0 ? rawIndex : 0);
 
-      currentCardIndex.textContent = \`Thẻ \${currentIndex + 1} / \${filteredList.length} (Tổng #\${rawIndex + 1})\`;
+      currentCardIndex.textContent = 'Thẻ ' + (currentIndex + 1) + ' / ' + filteredList.length + ' (Tổng #' + (rawIndex + 1) + ')';
       cardWord.textContent = item.word || '---';
       cardTrans.textContent = item.translation || '(Chưa có bản dịch)';
       cardWordSub.textContent = item.word || '';
@@ -971,12 +964,12 @@ function generateMobileHtml(data) {
         return;
       }
 
-      const lines = rawNotes.split('\\n').map(l => l.trim()).filter(Boolean);
+      const lines = rawNotes.split('\\n').map(function(l) { return l.trim(); }).filter(Boolean);
       const speakingItems = [];
       const writingItems = [];
       let currentCard = null;
 
-      lines.forEach(line => {
+      lines.forEach(function(line) {
         if (line.includes('Speaking') || line.startsWith('🗣️')) {
           if (currentCard) {
             if (currentCard.section === 'speaking') speakingItems.push(currentCard);
@@ -1007,42 +1000,58 @@ function generateMobileHtml(data) {
       let html = '';
       if (speakingItems.length > 0) {
         html += '<div class="example-section-header">🗣️ IELTS SPEAKING</div>';
-        speakingItems.forEach(sp => {
-          const cleanEn = sp.en.replace(/"/g, '&quot;');
-          html += \`
-            <div class="example-card">
-              <div class="example-en-row">
-                <div class="example-en">\${sp.en}</div>
-                <div class="example-speak" onclick="event.stopPropagation(); speakText('\${cleanEn}')">🔊</div>
-              </div>
-              \${sp.vi ? \`<div class="example-vi">👉 \${sp.vi}</div>\` : ''}
-            </div>
-          \`;
+        speakingItems.forEach(function(sp) {
+          const encoded = encodeURIComponent(sp.en);
+          html += '<div class="example-card">' +
+            '<div class="example-en-row">' +
+              '<div class="example-en">' + escapeHtml(sp.en) + '</div>' +
+              '<div class="example-speak" data-speak="' + encoded + '">🔊</div>' +
+            '</div>' +
+            (sp.vi ? '<div class="example-vi">👉 ' + escapeHtml(sp.vi) + '</div>' : '') +
+          '</div>';
         });
       }
 
       if (writingItems.length > 0) {
         html += '<div class="example-section-header" style="color: #60a5fa; margin-top: 10px;">✍️ IELTS WRITING</div>';
-        writingItems.forEach(wr => {
-          const cleanEn = wr.en.replace(/"/g, '&quot;');
-          html += \`
-            <div class="example-card">
-              <div class="example-en-row">
-                <div class="example-en">\${wr.en}</div>
-                <div class="example-speak" onclick="event.stopPropagation(); speakText('\${cleanEn}')">🔊</div>
-              </div>
-              \${wr.vi ? \`<div class="example-vi">👉 \${wr.vi}</div>\` : ''}
-            </div>
-          \`;
+        writingItems.forEach(function(wr) {
+          const encoded = encodeURIComponent(wr.en);
+          html += '<div class="example-card">' +
+            '<div class="example-en-row">' +
+              '<div class="example-en">' + escapeHtml(wr.en) + '</div>' +
+              '<div class="example-speak" data-speak="' + encoded + '">🔊</div>' +
+            '</div>' +
+            (wr.vi ? '<div class="example-vi">👉 ' + escapeHtml(wr.vi) + '</div>' : '') +
+          '</div>';
         });
       }
 
       if (!html) {
-        html = \`<div class="example-card"><div class="example-en">\${rawNotes.replace(/\\n/g, '<br>')}</div></div>\`;
+        html = '<div class="example-card"><div class="example-en">' + escapeHtml(rawNotes).replace(/\\n/g, '<br>') + '</div></div>';
       }
 
       examplesContainer.innerHTML = html;
     }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Event delegation for sentence speak buttons
+    examplesContainer.addEventListener('click', function(e) {
+      const speakBtn = e.target.closest('.example-speak');
+      if (speakBtn) {
+        e.stopPropagation();
+        const text = decodeURIComponent(speakBtn.getAttribute('data-speak') || '');
+        if (text) speakText(text);
+      }
+    });
 
     // Touch Swipe Gestures
     let touchStartX = 0;
@@ -1050,12 +1059,12 @@ function generateMobileHtml(data) {
     let touchEndX = 0;
     let touchEndY = 0;
 
-    card3d.addEventListener('touchstart', e => {
+    card3d.addEventListener('touchstart', function(e) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
-    card3d.addEventListener('touchend', e => {
+    card3d.addEventListener('touchend', function(e) {
       touchEndX = e.changedTouches[0].screenX;
       touchEndY = e.changedTouches[0].screenY;
       handleSwipe();
@@ -1064,87 +1073,86 @@ function generateMobileHtml(data) {
     function handleSwipe() {
       const dx = touchEndX - touchStartX;
       const dy = touchEndY - touchStartY;
-      // If horizontal swipe is significant and larger than vertical swipe
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
         if (dx < 0) {
-          // Swipe Left -> Next card
           document.getElementById('btnNext').click();
         } else {
-          // Swipe Right -> Prev card
           document.getElementById('btnPrev').click();
         }
       }
     }
 
     // Flip Card on tap
-    card3d.addEventListener('click', (e) => {
+    card3d.addEventListener('click', function(e) {
       if (e.target.closest('.speak-btn-bubble') || e.target.closest('.tiktok-btn') || e.target.closest('.example-speak') || e.target.closest('.flip-btn-sub')) {
         return;
       }
       card3d.classList.toggle('flipped');
     });
 
-    document.getElementById('btnFlipBack').addEventListener('click', (e) => {
+    document.getElementById('btnFlipBack').addEventListener('click', function(e) {
       e.stopPropagation();
       card3d.classList.remove('flipped');
     });
 
     // Navigation buttons
-    document.getElementById('btnNext').addEventListener('click', () => {
+    document.getElementById('btnNext').addEventListener('click', function() {
       if (filteredList.length === 0) return;
       currentIndex = (currentIndex + 1) % filteredList.length;
       renderCard();
     });
 
-    document.getElementById('btnPrev').addEventListener('click', () => {
+    document.getElementById('btnPrev').addEventListener('click', function() {
       if (filteredList.length === 0) return;
       currentIndex = (currentIndex - 1 + filteredList.length) % filteredList.length;
       renderCard();
     });
 
     // Speak buttons
-    document.getElementById('btnSpeakFront').addEventListener('click', (e) => {
+    document.getElementById('btnSpeakFront').addEventListener('click', function(e) {
       e.stopPropagation();
       if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
     });
-    document.getElementById('btnSpeakBack').addEventListener('click', (e) => {
+    document.getElementById('btnSpeakBack').addEventListener('click', function(e) {
       e.stopPropagation();
       if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
     });
 
     // Mark Status
-    document.getElementById('btnMarkMastered').addEventListener('click', () => {
+    document.getElementById('btnMarkMastered').addEventListener('click', function() {
       if (!filteredList[currentIndex]) return;
       const id = filteredList[currentIndex].id;
       masteredIds.add(id);
       dueIds.delete(id);
       updateBadges();
       showToast('🟢 Đã đánh dấu: Đã thuộc!');
-      setTimeout(() => document.getElementById('btnNext').click(), 300);
+      setTimeout(function() { document.getElementById('btnNext').click(); }, 300);
     });
 
-    document.getElementById('btnMarkDue').addEventListener('click', () => {
+    document.getElementById('btnMarkDue').addEventListener('click', function() {
       if (!filteredList[currentIndex]) return;
       const id = filteredList[currentIndex].id;
       dueIds.add(id);
       masteredIds.delete(id);
       updateBadges();
       showToast('🔴 Đã lưu vào mục Cần ôn!');
-      setTimeout(() => document.getElementById('btnNext').click(), 300);
+      setTimeout(function() { document.getElementById('btnNext').click(); }, 300);
     });
 
     // Day Tabs Click
-    document.querySelectorAll('.day-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
         applyFilter(tab.getAttribute('data-day'));
       });
     });
 
     // Shuffle Button
-    document.getElementById('btnShuffle').addEventListener('click', () => {
+    document.getElementById('btnShuffle').addEventListener('click', function() {
       for (let i = filteredList.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [filteredList[i], filteredList[j]] = [filteredList[j], filteredList[i]];
+        const temp = filteredList[i];
+        filteredList[i] = filteredList[j];
+        filteredList[j] = temp;
       }
       currentIndex = 0;
       renderCard();
@@ -1152,8 +1160,8 @@ function generateMobileHtml(data) {
     });
 
     // Voice test
-    document.getElementById('btnSoundSettings').addEventListener('click', () => {
-      speakText('Welcome to IELTS Flashcard Mastery! Let\'s boost your vocabulary.');
+    document.getElementById('btnSoundSettings').addEventListener('click', function() {
+      speakText("Welcome to IELTS Flashcard Mastery! Let us boost your vocabulary.");
     });
 
     // Search & List Modal
@@ -1161,24 +1169,24 @@ function generateMobileHtml(data) {
     const searchInput = document.getElementById('searchInput');
     const listResults = document.getElementById('listResults');
 
-    document.getElementById('btnSearchToggle').addEventListener('click', () => {
+    document.getElementById('btnSearchToggle').addEventListener('click', function() {
       searchModal.classList.add('active');
       searchInput.value = '';
       renderSearchResults('');
-      setTimeout(() => searchInput.focus(), 100);
+      setTimeout(function() { searchInput.focus(); }, 100);
     });
 
-    document.getElementById('btnCloseSearch').addEventListener('click', () => {
+    document.getElementById('btnCloseSearch').addEventListener('click', function() {
       searchModal.classList.remove('active');
     });
 
-    searchInput.addEventListener('input', (e) => {
+    searchInput.addEventListener('input', function(e) {
       renderSearchResults(e.target.value);
     });
 
     function renderSearchResults(query) {
       const q = (query || '').toLowerCase().trim();
-      const results = RAW_ITEMS.filter(x => {
+      const results = RAW_ITEMS.filter(function(x) {
         return (x.word || '').toLowerCase().includes(q) || (x.translation || '').toLowerCase().includes(q);
       }).slice(0, 50);
 
@@ -1188,21 +1196,19 @@ function generateMobileHtml(data) {
         return;
       }
 
-      results.forEach(item => {
+      results.forEach(function(item) {
         const div = document.createElement('div');
         div.className = 'list-item';
-        div.innerHTML = \`
-          <div>
-            <div class="list-item-word">\${item.word || '---'}</div>
-            <div class="list-item-trans">\${item.translation || ''}</div>
-          </div>
-          <div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>
-        \`;
-        div.addEventListener('click', () => {
+        div.innerHTML = '<div>' +
+          '<div class="list-item-word">' + escapeHtml(item.word || '---') + '</div>' +
+          '<div class="list-item-trans">' + escapeHtml(item.translation || '') + '</div>' +
+        '</div>' +
+        '<div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>';
+        
+        div.addEventListener('click', function() {
           searchModal.classList.remove('active');
-          // Switch to all tab
           applyFilter('all');
-          const idx = filteredList.findIndex(x => x.id === item.id);
+          const idx = filteredList.findIndex(function(x) { return x.id === item.id; });
           if (idx >= 0) currentIndex = idx;
           renderCard();
         });
@@ -1211,7 +1217,7 @@ function generateMobileHtml(data) {
     }
 
     // Keyboard navigation (for desktop preview)
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', function(e) {
       if (searchModal.classList.contains('active')) return;
       if (e.key === 'ArrowRight') document.getElementById('btnNext').click();
       if (e.key === 'ArrowLeft') document.getElementById('btnPrev').click();
