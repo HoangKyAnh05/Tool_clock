@@ -224,7 +224,7 @@ function generateMobileHtml(data) {
     .card-stage {
       position: relative;
       width: 100%;
-      min-height: 460px;
+      min-height: 500px;
       perspective: 1200px;
       margin-bottom: 12px;
     }
@@ -232,7 +232,7 @@ function generateMobileHtml(data) {
     .card-3d {
       width: 100%;
       height: 100%;
-      min-height: 460px;
+      min-height: 500px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -252,7 +252,7 @@ function generateMobileHtml(data) {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -287,9 +287,9 @@ function generateMobileHtml(data) {
     }
 
     .tag {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: 6px;
     }
 
@@ -306,13 +306,13 @@ function generateMobileHtml(data) {
     }
 
     .speak-btn-bubble {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      font-size: 18px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -333,17 +333,17 @@ function generateMobileHtml(data) {
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 16px 4px;
+      padding: 8px 2px;
       z-index: 2;
       overflow-y: auto;
-      max-height: 310px;
+      max-height: 380px;
     }
 
     .word-title {
       font-size: 26px;
       font-weight: 900;
       line-height: 1.3;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       letter-spacing: -0.3px;
       word-break: break-word;
     }
@@ -356,14 +356,17 @@ function generateMobileHtml(data) {
 
     .card-back .word-title {
       color: #34d399;
-      font-size: 20px;
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      line-height: 1.2;
     }
 
     .word-trans-sub {
-      font-size: 15px;
+      font-size: 12px;
       font-weight: 700;
       color: #6ee7b7;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .tap-hint {
@@ -385,68 +388,74 @@ function generateMobileHtml(data) {
       text-align: left;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
       overflow-y: auto;
       padding-right: 4px;
-      margin-top: 6px;
+      margin-top: 2px;
       scrollbar-width: thin;
       scrollbar-color: #10b981 transparent;
     }
 
     .example-section-header {
-      font-size: 11.5px;
+      font-size: 10px;
       font-weight: 800;
       color: #a7f3d0;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-top: 6px;
+      margin-top: 4px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      padding: 2px 0;
     }
 
     .example-card {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      transition: background 0.2s;
+    }
+
+    .example-card:active {
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .example-en-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
     }
 
     .example-en {
-      font-size: 13.5px;
+      font-size: 11.5px;
       font-weight: 600;
       color: #f1f5f9;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
     .example-vi {
-      font-size: 12px;
+      font-size: 10.5px;
       color: #94a3b8;
-      margin-top: 4px;
-      line-height: 1.35;
+      margin-top: 2px;
+      line-height: 1.3;
       font-style: italic;
     }
 
     .example-speak {
-      font-size: 15px;
+      font-size: 13px;
       cursor: pointer;
       color: #38bdf8;
-      padding: 2px 6px;
+      padding: 1px 5px;
       flex-shrink: 0;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .example-speak:active {
       transform: scale(0.9);
-      background: rgba(0, 242, 254, 0.2);
+      background: rgba(0, 242, 254, 0.25);
     }
 
     /* Card Bottom */
