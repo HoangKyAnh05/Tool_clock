@@ -6441,32 +6441,23 @@ function renderTkFlashcardList() {
         return;
       }
 
-      if (e.shiftKey && lastSelectedTkId) {
-        // Shift + Click: Range selection from start to end
+      if ((e.ctrlKey || e.metaKey || e.shiftKey) && lastSelectedTkId && lastSelectedTkId !== item.id) {
+        // Range select with Ctrl or Shift: Select ALL words from start to end (including words in between)
         const startIdx = items.findIndex(x => x.id === lastSelectedTkId);
         const endIdx = items.findIndex(x => x.id === item.id);
         if (startIdx !== -1 && endIdx !== -1) {
           const min = Math.min(startIdx, endIdx);
           const max = Math.max(startIdx, endIdx);
+          selectedTkCardIds.clear();
           for (let i = min; i <= max; i++) {
             selectedTkCardIds.add(items[i].id);
           }
         }
         if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.1);
-      } else if (e.ctrlKey || e.metaKey) {
-        // Ctrl + Click: Toggle individual selection
-        if (selectedTkCardIds.has(item.id)) {
-          selectedTkCardIds.delete(item.id);
-        } else {
-          selectedTkCardIds.add(item.id);
-        }
-        lastSelectedTkId = item.id;
-        if (typeof playTone === 'function') playTone(650, 0.05, 'sine', 0.1);
       } else {
-        // Normal click: single select
-        if (selectedTkCardIds.size > 0) {
-          selectedTkCardIds.clear();
-        }
+        // Normal click: pick this as the start anchor
+        selectedTkCardIds.clear();
+        selectedTkCardIds.add(item.id);
         lastSelectedTkId = item.id;
       }
 
