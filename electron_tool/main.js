@@ -1800,15 +1800,11 @@ ipcMain.handle('sync-flashcards-to-web', async (event, data) => {
     if (!fullVault) fullVault = { items: [] };
 
     // Determine what to write to web
-    let webItems = fullVault.items || [];
+    let webItems = [];
     if (data && Array.isArray(data.items) && data.items.length > 0) {
       webItems = data.items;
-      // If it's a full save from editor, update disk vault. If it's partial selection, keep full vault on disk!
-      if (!data.isPartial && data.items.length >= (fullVault.items || []).length) {
-        cachedMemorizeVault = data;
-        await fs.promises.writeFile(memorizePath, JSON.stringify(data, null, 2), 'utf8');
-        broadcastVaultUpdate('memorize', data);
-      }
+    } else {
+      webItems = fullVault.items || [];
     }
 
     // Generate standalone index.html & docs/index.html with EXACT selected/target items
