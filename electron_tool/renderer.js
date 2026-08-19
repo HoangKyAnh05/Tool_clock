@@ -9454,6 +9454,75 @@ Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), khô
 
 const DEFAULT_BRAIN_CHAIN_PRESETS = [
   {
+    id: "bc_preset_smartwatch",
+    question: "3. Is there any technology you want to buy?",
+    title: "3. Is there any technology you want to buy?",
+    answer: "Yes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget.",
+    category: "Tiếng Anh & Speaking",
+    level: 3,
+    context: "Phân rã logic học thuộc và phản xạ Speaking: Trả lời câu hỏi IELTS về thiết bị công nghệ muốn mua (Smartwatch).",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "BƯỚC 1 (A - Khởi điểm & Dự định): 'Yes, I've been thinking about buying a new smartwatch.' – Trực tiếp xác nhận món đồ công nghệ mong muốn kèm trạng thái ấp ủ (I've been thinking about).",
+      b: "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): 'My current one is old and the battery life is terrible.' – Đưa ra động cơ mua: Thiết bị cũ đã lỗi thời và thời lượng pin quá tệ (pain point).",
+      c: "BƯỚC 3 (C - Nhu cầu tính năng sức khỏe): 'I want one that can track my fitness activities, monitor my heart rate,' – Liệt kê tính năng mong muốn 1 & 2: Theo dõi tập luyện thể chất và đo nhịp tim.",
+      d: "BƯỚC 4 (D - Tính năng tiện ích giao tiếp): 'and let me answer calls without taking out my phone.' – Liệt kê tính năng mở rộng 3: Nhận cuộc gọi nhanh mà không cần rút điện thoại ra khỏi túi.",
+      insight: "BƯỚC 5 (INSIGHT - Đúc kết giá trị): 'It would be a time-saving gadget.' – Chốt hạ nhận thức cốt lõi: Đây là một công cụ giúp tiết kiệm thời gian và nâng cao chất lượng sống."
+    },
+    causeEffects: {
+      immediate: "Trả lời thẳng thắn và tự nhiên vào trọng tâm câu hỏi về thiết bị công nghệ muốn sở hữu.",
+      secondOrder: "Tạo lập tính thuyết phục bằng cách chỉ ra điểm đau cụ thể (Pin yếu & thiết bị cũ).",
+      thirdOrder: "Phác họa rõ chân dung nhu cầu thông qua bộ 3 tính năng: Fitness + Heart Rate + Call Handling.",
+      unexpected: "Biến một chiếc đồng hồ đeo tay từ món đồ trang sức thành một trung tâm điều khiển vi mô giúp tiết kiệm thời gian.",
+      longTerm: "Giúp người nói xây dựng phản xạ logic 3 tầng cho mọi câu hỏi 'What to buy': Xác nhận ➔ Động cơ thay thế ➔ Tính năng mới ➔ Giá trị thực tế."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao lại mở đầu bằng 'Yes, I've been thinking about'?", answer: "Vì thì hiện tại hoàn thành tiếp diễn thể hiện một ý định có quá trình suy ngẫm, nghe tự nhiên hơn 'I want to buy'." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao lại nhắc đến chiếc đồng hồ hiện tại?", answer: "Tạo ra lý do chính đáng để mua đồ mới (Pain Point: old & terrible battery life) thay vì mua sắm bốc đồng." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao lại chọn các tính năng theo dõi sức khỏe (fitness & heart rate)?", answer: "Vì chăm sóc sức khỏe là xu hướng thiết yếu của con người hiện đại, giúp câu trả lời có chiều sâu." },
+      { level: "4. Nguyên nhân hệ thống", question: "Tại sao lại nhắc đến việc nghe cuộc gọi không cần rút điện thoại?", answer: "Đó là giải pháp công nghệ giúp giảm thiểu ma sát thao tác trong lúc di chuyển hoặc tập luyện." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất vì sao smartwatch là 'time-saving gadget'?", answer: "Nó lọc bớt các thông tin vi mô lên cổ tay, giải phóng người dùng khỏi việc liên tục cầm điện thoại." }
+    ],
+    whatIf: {
+      scenario: "Nếu chỉ trả lời ngắn 'Yes, I want a smartwatch because it looks cool'?",
+      consequences: [
+        "Câu trả lời bị nông cạn, không thể hiện được vốn từ vựng và cấu trúc lập luận logic.",
+        "Mất cơ hội ghi điểm ở tiêu chí Fluency và Coherence trong bài thi Speaking.",
+        "Người nghe không cảm nhận được động cơ thực tế và tính cách của bạn."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Smartwatch Mới", "Vấn đề Pin & Máy Cũ", "Tính Năng Fitness", "Tính Năng Đo Tim", "Nhận Cuộc Gọi Nhanh", "Tiết Kiệm Thời Gian"],
+      directImpact: "Nâng cao trực tiếp trải nghiệm theo dõi sức khỏe và xử lý liên lạc rảnh tay.",
+      indirectImpact: "Giảm thời gian nhìn màn hình điện thoại (Screen time), tăng sự tập trung vào sinh hoạt.",
+      feedbackLoop: "Vòng lặp tích cực: Theo dõi sức khỏe tốt ➔ Thể lực cải thiện ➔ Tiết kiệm thời gian thao tác ➔ Năng suất ngày làm việc tăng cao."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Cần học thuộc lòng từng từ riêng lẻ mới nói được tiếng Anh'.",
+      fundamentalTruths: "Sự thật gốc: Mọi câu trả lời mua sắm đều theo cấu trúc 4 bước: [Đồ muốn mua] ➔ [Vấn đề đồ cũ] ➔ [Tính năng đồ mới] ➔ [Lợi ích chốt].",
+      reconstructedLogic: "Nắm vững khung sườn 4 bước để có thể áp dụng ngay cho Laptop, Tai nghe, Xe máy hay bất kỳ công nghệ nào."
+    },
+    contrarianThinking: {
+      argFor: "Smartwatch là trợ lý đắc lực theo dõi sức khỏe và thông báo tiện lợi.",
+      argAgainst: "Nhiều người mua smartwatch xong chỉ dùng để xem giờ hoặc cảm thấy phiền vì thông báo rung liên tục.",
+      conditions: "Thực sự giá trị khi bạn là người có thói quen tập luyện thể thao và bận rộn nhiều cuộc gọi.",
+      exceptions: "Người không thích sạc pin mỗi ngày hoặc chỉ thích đồng hồ cơ truyền thống.",
+      synthesis: "Giá trị của Smartwatch nằm ở kỷ luật sử dụng của người đeo, không phải ở số lượng tính năng trên giấy."
+    },
+    predictions: {
+      oneMonth: "Bạn sẽ thuộc lòng và phản xạ trôi chảy đoạn nói này trong 3 giây khi gặp câu hỏi công nghệ.",
+      oneYear: "Dễ dàng biến tấu câu trả lời này cho các thiết bị khác như Wireless Earbuds hay Tablet.",
+      fiveYears: "Hình thành tư duy phản xạ Speaking mạch lạc và chặt chẽ trong mọi cuộc phỏng vấn.",
+      blindSpots: "Chú ý nối âm tự nhiên ở cụm 'track my fitness activities' và 'let me answer calls'."
+    },
+    actionTakeaways: [
+      "Khắc ghi bộ 4 từ khóa trục chính: Been thinking about -> Battery life is terrible -> Track fitness & monitor heart rate -> Time-saving gadget.",
+      "Công thức trả lời mua sắm: Xác nhận ý định ➔ Nêu nhược điểm cái cũ ➔ Kể 2-3 tính năng cái mới ➔ Đúc kết giá trị cốt lõi.",
+      "Luyện tập nói theo nhịp 5 bước của Brain Chain (A ➔ B ➔ C ➔ D ➔ Insight) để đạt ngữ điệu tự nhiên nhất."
+    ],
+    userNotes: "Từ vựng đắt giá: I've been thinking about, terrible battery life, track fitness activities, monitor heart rate, answer calls without taking out my phone, time-saving gadget."
+  },
+  {
     id: "bc_preset_ielts_device",
     title: "To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most...",
     category: "Tiếng Anh & Speaking",
@@ -10169,9 +10238,11 @@ function renderBcEventList() {
     if (selectedCat !== 'all' && item.category !== selectedCat) return false;
     if (searchKeyword) {
       const matchTitle = (item.title || '').toLowerCase().includes(searchKeyword);
+      const matchQuestion = (item.question || '').toLowerCase().includes(searchKeyword);
+      const matchAnswer = (item.answer || '').toLowerCase().includes(searchKeyword);
       const matchContext = (item.context || '').toLowerCase().includes(searchKeyword);
       const matchInsight = (item.coreChain?.insight || '').toLowerCase().includes(searchKeyword);
-      return matchTitle || matchContext || matchInsight;
+      return matchTitle || matchQuestion || matchAnswer || matchContext || matchInsight;
     }
     return true;
   });
@@ -10183,7 +10254,7 @@ function renderBcEventList() {
     listEl.innerHTML = `
       <div style="text-align: center; padding: 24px 10px; color: var(--muted); font-size: 12px;">
         Không tìm thấy sự kiện nào.<br>
-        <button type="button" class="btn-modal" onclick="document.getElementById('btnBcAddEvent').click();" style="margin-top: 8px; font-size: 11.5px; height: 28px; padding: 0 10px; width: auto; color: #a78bfa;">➕ Thêm sự kiện</button>
+        <button type="button" class="btn-modal" onclick="document.getElementById('btnBcAddEvent').click();" style="margin-top: 8px; font-size: 11.5px; height: 28px; padding: 0 10px; width: auto; color: #a78bfa;">➕ Thêm câu / sự kiện</button>
       </div>
     `;
     return;
@@ -10198,16 +10269,19 @@ function renderBcEventList() {
       ? `<span class="bc-badge bc-badge-analyzed">✅ Đã phân tích</span>`
       : `<span class="bc-badge bc-badge-pending">⏳ Chờ JSON</span>`;
 
+    const displayTitle = item.question || item.title || 'Sự kiện không tên';
+    const displaySnippet = item.answer || item.context || item.coreChain?.insight || item.coreChain?.a || 'Chưa có chi tiết...';
+
     itemEl.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <span class="bc-badge bc-badge-cat">${escapeHtml(item.category || 'Chung')}</span>
         ${statusBadge}
       </div>
       <div style="font-weight: 700; font-size: 13px; color: #fff; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-        ${escapeHtml(item.title || 'Sự kiện không tên')}
+        ${escapeHtml(displayTitle)}
       </div>
       <div style="font-size: 11.5px; color: var(--muted); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-        ${escapeHtml(item.context || item.coreChain?.insight || 'Chưa có bối cảnh chi tiết...')}
+        ${escapeHtml(displaySnippet)}
       </div>
     `;
 
@@ -10236,21 +10310,38 @@ function renderBcActiveEvent(ev) {
   emptyState.style.display = 'none';
   activeWs.style.display = 'flex';
 
-  // Header info
+  // Header info: Question & Answer
   const titleEl = document.getElementById('bcEventTitle');
   const catBadge = document.getElementById('bcEventCatBadge');
   const statusBadge = document.getElementById('bcEventStatusBadge');
   const contextEl = document.getElementById('bcEventContext');
+  const btnCopyFullAnswer = document.getElementById('btnBcCopyFullAnswer');
 
-  if (titleEl) titleEl.textContent = ev.title || 'Sự kiện không tên';
-  if (catBadge) catBadge.textContent = ev.category || 'Kinh doanh';
+  const questionText = ev.question || ev.title || 'Sự kiện không tên';
+  const fullAnswerText = ev.answer || ev.context || ev.coreChain?.a || ev.title || '';
+
+  if (titleEl) titleEl.textContent = questionText;
+  if (catBadge) catBadge.textContent = ev.category || 'Tiếng Anh & Speaking';
   
   const hasAnalysis = Boolean(ev.coreChain && ev.coreChain.insight);
   if (statusBadge) {
     statusBadge.className = `bc-badge ${hasAnalysis ? 'bc-badge-analyzed' : 'bc-badge-pending'}`;
     statusBadge.textContent = hasAnalysis ? '✅ Đã có phân tích' : '⏳ Chưa nạp JSON AI';
   }
-  if (contextEl) contextEl.textContent = ev.context || 'Bối cảnh chưa được nhập chi tiết... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic đa tầng!';
+  if (contextEl) contextEl.textContent = fullAnswerText || 'Chưa có nội dung câu trả lời... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic!';
+
+  if (btnCopyFullAnswer) {
+    btnCopyFullAnswer.onclick = () => {
+      const textToCopy = fullAnswerText || '';
+      if (window.taskAPI && window.taskAPI.writeClipboardText) {
+        window.taskAPI.writeClipboardText(textToCopy);
+      } else {
+        navigator.clipboard.writeText(textToCopy);
+      }
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+      alert('📋 ĐÃ SAO CHÉP TOÀN BỘ CÂU TRẢ LỜI VÀO CLIPBOARD!');
+    };
+  }
 
   // Core Chain
   const nodeA = document.getElementById('bcNodeTextA');
@@ -10259,7 +10350,7 @@ function renderBcActiveEvent(ev) {
   const nodeD = document.getElementById('bcNodeTextD');
   const nodeInsight = document.getElementById('bcNodeTextInsight');
 
-  if (nodeA) nodeA.textContent = ev.coreChain?.a || ev.title || 'Bước A: Khởi nguồn sự kiện...';
+  if (nodeA) nodeA.textContent = ev.coreChain?.a || fullAnswerText || 'Bước A: Khởi nguồn...';
   if (nodeB) nodeB.textContent = ev.coreChain?.b || 'Chưa có phân tích... Bấm "📥 Nạp JSON AI" để nạp kết quả.';
   if (nodeC) nodeC.textContent = ev.coreChain?.c || 'Chưa có phân tích...';
   if (nodeD) nodeD.textContent = ev.coreChain?.d || 'Chưa có phân tích...';
@@ -10283,10 +10374,10 @@ function renderBcActiveEvent(ev) {
   if (whyLadder) {
     whyLadder.innerHTML = '';
     const whys = Array.isArray(ev.whyChain) && ev.whyChain.length > 0 ? ev.whyChain : [
-      { level: "1. Triệu chứng bề mặt", question: "Tại sao xảy ra sự việc này?", answer: ev.coreChain?.a || "..." },
-      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao lại có phản ứng trên?", answer: ev.coreChain?.b || "..." },
-      { level: "3. Nguyên nhân sâu xa", question: "Tại sao chuỗi phản ứng tiếp diễn?", answer: ev.coreChain?.c || "..." },
-      { level: "4. Nguyên nhân hệ thống", question: "Tại sao hệ thống cho phép điều này?", answer: ev.coreChain?.d || "..." },
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao câu văn mở đầu như vậy?", answer: ev.coreChain?.a || "..." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao lại đưa ra lý do này?", answer: ev.coreChain?.b || "..." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao lại chọn các tính năng/chi tiết này?", answer: ev.coreChain?.c || "..." },
+      { level: "4. Nguyên nhân hệ thống", question: "Cơ chế liên kết giữa các mệnh đề là gì?", answer: ev.coreChain?.d || "..." },
       { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi nằm ở đâu?", answer: ev.coreChain?.insight || "..." }
     ];
 
@@ -10311,7 +10402,7 @@ function renderBcActiveEvent(ev) {
   const nodesWrap = document.getElementById('bcSystemNodesWrap');
   if (nodesWrap) {
     nodesWrap.innerHTML = '';
-    const nodes = Array.isArray(ev.systemDynamics?.nodes) ? ev.systemDynamics.nodes : ['Thực thể A', 'Thực thể B', 'Đòn bẩy', 'Đầu ra'];
+    const nodes = Array.isArray(ev.systemDynamics?.nodes) ? ev.systemDynamics.nodes : ['Mở đầu', 'Lý do', 'Tính năng', 'Insight'];
     nodes.forEach(n => {
       const pill = document.createElement('span');
       pill.className = 'cm-tag-pill';
@@ -10366,7 +10457,7 @@ function renderBcActiveEvent(ev) {
     takeawaysList.innerHTML = '';
     const items = Array.isArray(ev.actionTakeaways) && ev.actionTakeaways.length > 0
       ? ev.actionTakeaways
-      : ['Tập trung vào nguyên lý gốc rễ thay vì xử lý triệu chứng.', 'Kiểm soát chặt chẽ điểm nghẽn vận hành trước khi mở rộng quy mô.'];
+      : ['Khắc ghi các từ khóa trục chính của câu.', 'Luyện tập nói theo nhịp 5 bước A -> B -> C -> D -> Insight.'];
     
     items.forEach(t => {
       const li = document.createElement('li');
@@ -10408,48 +10499,54 @@ function applyBcPracticeStep() {
 }
 
 function buildBrainChainPrompt(event) {
-  const title = event?.title || "Một quán cà phê giảm giá 30%";
+  const rawInput = event?.answer || event?.title || "3. Is there any technology you want to buy?\nAnswer:\nYes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget.";
   const category = event?.category || "Tiếng Anh & Speaking";
   const context = event?.context || "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.";
 
-  // Check if title or category is English or speech/sentence memorization
+  // Check if rawInput or category is English or sentence memorization
   const isEnglishOrSentence = category.includes('Tiếng Anh') || category.includes('Speaking') || 
-    /[a-zA-Z]{4,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{3,}/.test(title) || title.length > 60;
+    /[a-zA-Z]{4,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{3,}/.test(rawInput) || rawInput.length > 50;
 
   if (isEnglishOrSentence) {
     return `Bạn là BẬC THẦY TƯ DUY HỆ THỐNG, SUY LUẬN LOGIC & PHƯƠNG PHÁP GHI NHỚ TIẾNG ANH (LOGIC MEMORY MASTER).
 Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân rã câu/đoạn văn dưới đây thành một CHUỖI LOGIC LIÊN KHOÁ (A ➔ B ➔ C ➔ D ➔ INSIGHT), giúp người học HIỂU SÂU BẢN CHẤT, THUỘC LÒNG TRONG 10 GIÂY VÀ PHẢN XẠ NÓI TỰ NHIÊN.
 
-🎯 CÂU / ĐOẠN VĂN CẦN PHÂN TÍCH:
-- Nội dung gốc: "${title}"
+🎯 NỘI DUNG ĐẦU VÀO CẦN PHÂN TÍCH (Bao gồm cả câu hỏi & câu trả lời nếu có):
+"${rawInput}"
+
 - Lĩnh vực: ${category}
-- Bối cảnh/Mục tiêu: ${context}
+- Bối cảnh / Mục tiêu: ${context}
 
 # NGUYÊN TẮC BẺ KHÓA LOGIC (BRAIN CHAIN FOR SENTENCES):
-1. CORE CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT): Phân rã câu/đoạn thành 5 mắt xích theo dòng tư duy tự nhiên:
-   - A: Khởi nguồn & Lựa chọn ban đầu (Mệnh đề mở đầu)
-   - B: Lý do thứ nhất & Điểm mạnh (Mệnh đề phát triển 1)
-   - C: Phản đề & Chuyển ý (Mệnh đề tương phản / phát triển 2)
-   - D: Minh họa cụ thể & Tác vụ thực tế (Mệnh đề chi tiết hóa)
+1. NHẬN DIỆN & TÁCH BẠCH:
+   - Nếu nội dung chứa cả Câu hỏi và Câu trả lời (Ví dụ: "3. Is there...? Answer: Yes, I've been..."): Hãy tách riêng câu hỏi vào trường "question", toàn bộ câu trả lời gốc vào trường "answer".
+   - Nếu chỉ có 1 câu/đoạn văn: Đặt câu/đoạn đó vào cả "title" và "answer".
+2. CORE CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT): Phân rã câu trả lời thành 5 mắt xích theo dòng tư duy tự nhiên:
+   - A: Khởi nguồn & Lựa chọn / Ý định ban đầu (Mở đầu trực diện)
+   - B: Lý do thứ nhất & Điểm đau / Vấn đề hiện tại (Tại sao lại nghĩ như vậy?)
+   - C: Chuyển ý & Tính năng / Kỳ vọng mong muốn (Nhu cầu cốt lõi 1 & 2)
+   - D: Minh họa mở rộng & Tác vụ tiện ích thực tế (Nhu cầu mở rộng)
    - INSIGHT: Kết luận đúc kết chốt hạ giá trị toàn câu.
-2. 5 WHYS ROOT CAUSE: Đào sâu lý do đằng sau cách diễn đạt (Tại sao mở đầu như vậy? Tại sao dùng từ nối đó? Tại sao lại chốt câu như vậy?).
-3. FIRST PRINCIPLES: Chỉ ra nguyên lý giao tiếp gốc và điểm neo tư duy cốt lõi.
-4. ACTION TAKEAWAYS: 3 Điểm tựa ghi nhớ (Mnemonic Anchors) & quy tắc phản xạ trong 3 giây.
+3. 5 WHYS ROOT CAUSE: Đào sâu lý do đằng sau cách diễn đạt (Tại sao mở đầu như vậy? Tại sao dùng từ nối đó? Tại sao lại chốt câu như vậy?).
+4. FIRST PRINCIPLES: Chỉ ra nguyên lý giao tiếp gốc và điểm neo tư duy cốt lõi.
+5. ACTION TAKEAWAYS: 3 Điểm tựa ghi nhớ (Mnemonic Anchors) & quy tắc phản xạ trong 3 giây.
 
 ⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
 Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau:
 
 \`\`\`json
 {
-  "title": "${title.length > 80 ? title.substring(0, 80) + '...' : title}",
+  "question": "Câu hỏi nếu có (Ví dụ: 3. Is there any technology you want to buy?)",
+  "title": "Tiêu đề ngắn gọn hoặc câu hỏi",
+  "answer": "Toàn văn câu trả lời tiếng Anh đầy đủ không bị cắt",
   "category": "${category}",
   "context": "${context}",
   "coreChain": {
-    "a": "BƯỚC 1 (A - Khởi điểm & Lựa chọn): [Trích đoạn mệnh đề 1 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "b": "BƯỚC 2 (B - Lý do & Thế mạnh): [Trích đoạn mệnh đề 2 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "c": "BƯỚC 3 (C - Chuyển ý & Phản đề): [Trích đoạn mệnh đề 3 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "d": "BƯỚC 4 (D - Chi tiết hóa & Minh họa): [Trích đoạn mệnh đề 4 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "insight": "BƯỚC 5 (INSIGHT - Đúc kết chốt hạ): [Trích đoạn kết luận tiếng Anh kèm nhận thức cốt lõi]"
+    "a": "BƯỚC 1 (A - Khởi điểm & Ý định): [Trích đoạn mệnh đề 1 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): [Trích đoạn mệnh đề 2 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "c": "BƯỚC 3 (C - Nhu cầu tính năng): [Trích đoạn mệnh đề 3 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): [Trích đoạn mệnh đề 4 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): [Trích đoạn kết luận tiếng Anh kèm nhận thức cốt lõi]"
   },
   "causeEffects": {
     "immediate": "Tác động tức thì của ý tưởng mở đầu khi người nghe tiếp nhận.",
@@ -10461,7 +10558,7 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
   "whyChain": [
     { "level": "1. Triệu chứng bề mặt", "question": "Tại sao câu văn mở đầu bằng cấu trúc này?", "answer": "Giải thích logic ngữ dụng và cách tạo ấn tượng tự nhiên..." },
     { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại chọn ý thứ nhất để phát triển?", "answer": "Giải thích tính trực tiếp và tiện ích của ý thứ nhất..." },
-    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao cần bổ sung ý tương phản?", "answer": "Giải thích vai trò của góc nhìn đa chiều trong giao tiếp..." },
+    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao cần bổ sung ý tương phản hoặc tính năng mới?", "answer": "Giải thích vai trò của góc nhìn đa chiều trong giao tiếp..." },
     { "level": "4. Nguyên nhân hệ thống", "question": "Cơ chế liên kết giữa các mệnh đề là gì?", "answer": "Phân tích mạch tư duy nguyên nhân - kết quả - bổ trợ..." },
     { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi của thông điệp là gì?", "answer": "Đúc kết triết lý sống hoặc thông điệp giá trị cao nhất của câu..." }
   ],
@@ -10511,7 +10608,7 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
 Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân tích toàn diện sự kiện/hiện tượng dưới đây.
 
 🎯 SỰ KIỆN CẦN PHÂN TÍCH:
-- Tên sự kiện: "${title}"
+- Nội dung: "${rawInput}"
 - Lĩnh vực: ${category}
 - Bối cảnh: ${context}
 
@@ -10531,7 +10628,7 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
 
 \`\`\`json
 {
-  "title": "${title}",
+  "title": "${rawInput.length > 80 ? rawInput.substring(0, 80) + '...' : rawInput}",
   "category": "${category}",
   "context": "${context}",
   "coreChain": {
@@ -10596,6 +10693,97 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
 \`\`\``;
 }
 
+// Resilient JSON extractor: Handles markdown, preambles, and postambles without throw
+function extractValidJsonFromAi(raw) {
+  if (!raw || typeof raw !== 'string') throw new Error('Dữ liệu JSON rỗng!');
+  let text = raw.trim();
+
+  // 1. Remove markdown code blocks if any
+  if (text.includes('```')) {
+    const mdMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (mdMatch && mdMatch[1]) {
+      try {
+        return JSON.parse(mdMatch[1].trim());
+      } catch (e) {
+        text = mdMatch[1].trim();
+      }
+    }
+  }
+
+  // 2. Direct JSON.parse
+  try {
+    return JSON.parse(text);
+  } catch (e) {}
+
+  // 3. Find opening '{' or '[' and balance braces/brackets
+  const startIdxObj = text.indexOf('{');
+  const startIdxArr = text.indexOf('[');
+  let startIdx = -1;
+  let isArr = false;
+
+  if (startIdxObj !== -1 && startIdxArr !== -1) {
+    if (startIdxObj < startIdxArr) {
+      startIdx = startIdxObj;
+    } else {
+      startIdx = startIdxArr;
+      isArr = true;
+    }
+  } else if (startIdxObj !== -1) {
+    startIdx = startIdxObj;
+  } else if (startIdxArr !== -1) {
+    startIdx = startIdxArr;
+    isArr = true;
+  }
+
+  if (startIdx !== -1) {
+    const openChar = isArr ? '[' : '{';
+    const closeChar = isArr ? ']' : '}';
+    let depth = 0;
+    let inString = false;
+    let escape = false;
+    let endIdx = -1;
+
+    for (let i = startIdx; i < text.length; i++) {
+      const c = text[i];
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (c === '\\') {
+        escape = true;
+        continue;
+      }
+      if (c === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (!inString) {
+        if (c === openChar) depth++;
+        else if (c === closeChar) {
+          depth--;
+          if (depth === 0) {
+            endIdx = i;
+            break;
+          }
+        }
+      }
+    }
+
+    if (endIdx !== -1) {
+      const candidate = text.substring(startIdx, endIdx + 1);
+      try {
+        return JSON.parse(candidate);
+      } catch (e) {
+        // Try fixing common trailing commas
+        const cleaned = candidate.replace(/,\s*([\}\]])/g, '$1');
+        return JSON.parse(cleaned);
+      }
+    }
+  }
+
+  throw new Error("Không thể tìm thấy khối JSON hợp lệ. Vui lòng kiểm tra lại mã từ AI!");
+}
+
 function setupBcModals() {
   // 1. Event Modal (Add/Edit)
   let editingEventId = null;
@@ -10606,8 +10794,11 @@ function setupBcModals() {
     const lvlInp = document.getElementById('bcInputEventLevel');
     const ctxInp = document.getElementById('bcInputEventContext');
 
+    const text = (titleInp?.value || '').trim();
+
     return {
-      title: (titleInp?.value || '').trim(),
+      title: text,
+      answer: text,
       category: catInp?.value || 'Tiếng Anh & Speaking',
       level: parseInt(lvlInp?.value || '3'),
       context: (ctxInp?.value || '').trim()
@@ -10617,7 +10808,7 @@ function setupBcModals() {
   const copyPromptFromModal = (openUrl = null) => {
     const data = getEventModalData();
     if (!data.title) {
-      alert('Vui lòng nhập câu tiếng Anh hoặc tên sự kiện vào ô tiêu đề trước khi tạo Prompt!');
+      alert('Vui lòng dán câu hỏi & câu trả lời hoặc nội dung cần phân tích vào ô bên trên!');
       document.getElementById('bcInputEventTitle')?.focus();
       return false;
     }
@@ -10681,7 +10872,7 @@ function setupBcModals() {
 
     if (!modal) return;
     if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Câu / Sự Kiện' : '💡 Thêm Câu / Sự Kiện / Tình Huống Mới';
-    if (titleInp) titleInp.value = eventToEdit ? eventToEdit.title : '';
+    if (titleInp) titleInp.value = eventToEdit ? (eventToEdit.answer || eventToEdit.title || '') : '';
     if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Tiếng Anh & Speaking') : 'Tiếng Anh & Speaking';
     if (lvlInp) lvlInp.value = eventToEdit ? (eventToEdit.level || 3) : 3;
     if (ctxInp) ctxInp.value = eventToEdit ? (eventToEdit.context || '') : '';
@@ -10698,7 +10889,7 @@ function setupBcModals() {
     btnSaveEvent.onclick = async () => {
       const data = getEventModalData();
       if (!data.title) {
-        alert('Vui lòng nhập câu tiếng Anh hoặc tên sự kiện cốt lõi!');
+        alert('Vui lòng nhập câu hỏi & câu trả lời hoặc nội dung cần phân tích!');
         document.getElementById('bcInputEventTitle')?.focus();
         return;
       }
@@ -10707,6 +10898,7 @@ function setupBcModals() {
         const ev = brainChainData.events.find(x => x.id === editingEventId);
         if (ev) {
           ev.title = data.title;
+          ev.answer = data.answer;
           ev.category = data.category;
           ev.level = data.level;
           ev.context = data.context;
@@ -10716,6 +10908,7 @@ function setupBcModals() {
         const newEv = {
           id: 'bc_event_' + Date.now(),
           title: data.title,
+          answer: data.answer,
           category: data.category,
           level: data.level,
           context: data.context,
@@ -10749,7 +10942,7 @@ function setupBcModals() {
 
     if (!modal) return;
     const targetEv = event || brainChainData.events.find(x => x.id === brainChainData.activeEventId) || brainChainData.events[0];
-    if (nameLabel) nameLabel.textContent = targetEv ? targetEv.title : 'Chưa có sự kiện';
+    if (nameLabel) nameLabel.textContent = targetEv ? (targetEv.question || targetEv.title) : 'Chưa có sự kiện';
     if (promptText) promptText.value = buildBrainChainPrompt(targetEv);
 
     modal.classList.add('active');
@@ -10845,18 +11038,8 @@ function setupBcModals() {
         return;
       }
 
-      // Robust JSON extraction from AI markdown or chat replies
-      let jsonStr = raw;
-      if (jsonStr.startsWith('```')) {
-        jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-      }
-      const jsonMatch = jsonStr.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
-      if (jsonMatch) {
-        jsonStr = jsonMatch[0];
-      }
-
       try {
-        const parsed = JSON.parse(jsonStr);
+        const parsed = extractValidJsonFromAi(raw);
         let importedEvent = null;
 
         if (Array.isArray(parsed)) {

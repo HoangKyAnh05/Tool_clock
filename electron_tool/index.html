@@ -1844,36 +1844,49 @@
           <!-- Active Workspace (when an event is selected) -->
           <div id="bcActiveWorkspace" style="display: none; flex-direction: column; gap: 14px;">
             <!-- Event Header & Actions Bar -->
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
-              <div style="flex: 1; min-width: 260px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                  <span id="bcEventCatBadge" class="bc-badge bc-badge-cat">💼 Kinh doanh</span>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span id="bcEventCatBadge" class="bc-badge bc-badge-cat">🗣️ Tiếng Anh & Speaking</span>
                   <span id="bcEventStatusBadge" class="bc-badge bc-badge-analyzed">✅ Đã có phân tích</span>
                 </div>
-                <h2 id="bcEventTitle" style="margin: 0; font-size: 19px; font-weight: 800; color: #fff; line-height: 1.35;">
-                  Tên sự kiện
-                </h2>
-                <p id="bcEventContext" style="margin: 6px 0 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45;">
-                  Bối cảnh sự kiện...
-                </p>
+
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" id="btnBcCopyPromptQuick" class="btn-primary-glow"
+                    style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
+                    title="Sao chép toàn bộ Prompt phân tích câu này để gửi AI">📋 Copy Prompt AI</button>
+                  <button type="button" id="btnBcImportEventJson" class="btn-primary-glow"
+                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
+                    title="Dán kết quả JSON phân tích từ AI vào sự kiện này">📥 Nạp JSON AI</button>
+                  <button type="button" id="btnBcPracticeMode" class="btn-modal"
+                    style="height: 32px; font-size: 12px; padding: 0 12px; width: auto; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd;"
+                    title="Chế độ ẩn từng bước để tự suy luận A -> B -> C -> D">🎮 Luyện Tự Suy Luận</button>
+                  <button type="button" id="btnBcEditEvent" class="btn-modal"
+                    style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                    title="Chỉnh sửa thông tin">✏️</button>
+                  <button type="button" id="btnBcDeleteEvent" class="btn-modal btn-delete-red"
+                    style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                    title="Xóa mục này">🗑️</button>
+                </div>
               </div>
 
-              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button type="button" id="btnBcCopyPromptQuick" class="btn-primary-glow"
-                  style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
-                  title="Sao chép toàn bộ Prompt phân tích sự kiện này để gửi AI">📋 Copy Prompt AI</button>
-                <button type="button" id="btnBcImportEventJson" class="btn-primary-glow"
-                  style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 14px; height: 32px; font-size: 12px; font-weight: 700; width: auto; color: #fff; border-radius: 6px;"
-                  title="Dán kết quả JSON phân tích từ AI vào sự kiện này">📥 Nạp JSON AI</button>
-                <button type="button" id="btnBcPracticeMode" class="btn-modal"
-                  style="height: 32px; font-size: 12px; padding: 0 12px; width: auto; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd;"
-                  title="Chế độ ẩn từng bước để tự suy luận A -> B -> C -> D">🎮 Luyện Tự Suy Luận</button>
-                <button type="button" id="btnBcEditEvent" class="btn-modal"
-                  style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
-                  title="Chỉnh sửa thông tin sự kiện">✏️</button>
-                <button type="button" id="btnBcDeleteEvent" class="btn-modal btn-delete-red"
-                  style="height: 32px; width: 32px; font-size: 13px; padding: 0; display: flex; align-items: center; justify-content: center;"
-                  title="Xóa sự kiện này">🗑️</button>
+              <!-- Question Box (At the very top) -->
+              <div id="bcEventQuestionBox" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(99, 102, 241, 0.1) 100%); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 10px 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">❓ CÂU HỎI (QUESTION / TOPIC):</span>
+                <h2 id="bcEventTitle" style="margin: 0; font-size: 17px; font-weight: 800; color: #fff; line-height: 1.35;">
+                  Tên câu hỏi / Sự kiện
+                </h2>
+              </div>
+
+              <!-- Full Answer / Target Text Box -->
+              <div id="bcEventAnswerBox" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px;">💬 CÂU TRẢ LỜI GỐC (FULL ANSWER):</span>
+                  <button type="button" id="btnBcCopyFullAnswer" class="btn-modal" style="height: 24px; font-size: 11px; padding: 0 10px; color: #34d399; background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3);" title="Sao chép toàn bộ câu trả lời gốc">📋 Copy câu trả lời</button>
+                </div>
+                <p id="bcEventContext" style="margin: 0; font-size: 13.5px; color: #f1f5f9; line-height: 1.55; font-weight: 500;">
+                  Bối cảnh / Toàn văn câu trả lời...
+                </p>
               </div>
             </div>
 
@@ -2669,12 +2682,13 @@
       <h3 id="bcEventModalTitle" style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Thêm Câu / Sự Kiện / Tình Huống Mới</h3>
       <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập một câu văn/đoạn nói tiếng Anh cần học thuộc hoặc một hiện tượng, sự kiện đời sống để phân tích chuỗi logic.</p>
 
-      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 10px;">
+      <!-- Single Input Field for both Question + Answer or Event -->
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 12px;">
         <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span>Câu tiếng Anh / Tiêu đề sự kiện (*):</span>
-          <span style="font-size: 11px; color: #a78bfa; font-weight: 500;">Hỗ trợ cả câu văn dài & đoạn Speaking</span>
+          <span>📝 Nội dung câu hỏi & câu trả lời / Sự kiện (*):</span>
+          <span style="font-size: 11px; color: #34d399; font-weight: 600;">Dán cả câu hỏi và câu trả lời vào 1 ô</span>
         </label>
-        <textarea id="bcInputEventTitle" class="inp textarea-inp" placeholder="Dán câu tiếng Anh cần học thuộc hoặc tên sự kiện... Ví dụ: To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most..." style="height: 75px; font-size: 12.5px; line-height: 1.45; resize: vertical;"></textarea>
+        <textarea id="bcInputEventTitle" class="inp textarea-inp" placeholder="Dán cả câu hỏi và câu trả lời vào đây... Ví dụ:&#10;3. Is there any technology you want to buy?&#10;Answer:&#10;Yes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget." style="height: 110px; font-size: 12.5px; line-height: 1.5; resize: vertical;"></textarea>
       </div>
 
       <!-- Quick AI Action Bar in Event Modal -->
