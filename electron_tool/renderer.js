@@ -9454,6 +9454,73 @@ Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), khô
 
 const DEFAULT_BRAIN_CHAIN_PRESETS = [
   {
+    id: "bc_preset_ielts_device",
+    title: "To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most...",
+    category: "Tiếng Anh & Speaking",
+    level: 3,
+    context: "Phân rã logic học thuộc và phản xạ Speaking: So sánh Smartphone và Laptop trong đời sống hàng ngày.",
+    createdAt: new Date().toISOString(),
+    coreChain: {
+      a: "BƯỚC 1 (Khởi điểm & Lựa chọn): To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most.",
+      b: "BƯỚC 2 (Lý do chọn Smartphone): It's incredibly handy for staying in touch with friends and family, checking social media, and managing my daily schedule.",
+      c: "BƯỚC 3 (Chuyển ý sang Laptop): However, I also use my laptop frequently for work and study purposes, especially for tasks that require a larger screen and a proper keyboard,",
+      d: "BƯỚC 4 (Chi tiết hóa tác vụ Laptop): such as typing reports, taking online courses, or doing research.",
+      insight: "BƯỚC 5 (Đúc kết Insight): So, I'd say they both play an indispensable role in my life."
+    },
+    causeEffects: {
+      immediate: "Định vị ngay thiết bị ưu tiên số 1 (Smartphone) dựa trên tần suất cầm trên tay liên tục.",
+      secondOrder: "Phân chia ranh giới công năng: Smartphone phụ trách kết nối nhanh & quản lý vi mô.",
+      thirdOrder: "Kích hoạt nhu cầu công việc chiều sâu đòi hỏi Laptop (màn hình lớn, gõ chuẩn).",
+      unexpected: "Có điện thoại xịn không hề thay thế laptop, mà ngược lại nâng cao tính chuyên biệt cho laptop.",
+      longTerm: "Tạo nên hệ sinh thái 2 thiết bị bổ trợ hoàn hảo, thiếu 1 trong 2 đều gây nghẽn hiệu suất."
+    },
+    whyChain: [
+      { level: "1. Triệu chứng bề mặt", question: "Tại sao lại nói dựa vào Smartphone nhiều nhất?", answer: "Vì nó luôn ở trong túi và hỗ trợ liên lạc, lướt mạng, xem lịch mọi lúc mọi nơi." },
+      { level: "2. Nguyên nhân trực tiếp", question: "Tại sao smartphone không thể thay thế hoàn toàn laptop?", answer: "Kích thước màn hình nhỏ và thiếu bàn phím vật lý chuẩn giới hạn năng suất làm việc sâu." },
+      { level: "3. Nguyên nhân sâu xa", question: "Tại sao lại cần Laptop cho việc học và nghiên cứu?", answer: "Các tác vụ tư duy phức tạp (viết báo cáo, đa nhiệm tài liệu) đòi hỏi không gian hiển thị rộng và công cụ nhập liệu chuẩn xác." },
+      { level: "4. Nguyên nhân hệ thống", question: "Mô hình tương tác giữa 2 thiết bị là gì?", answer: "Smartphone xử lý giao tiếp tức thời & vi vụ; Laptop xử lý công việc chiều sâu & năng suất cao." },
+      { level: "5. Root Cause (Gốc rễ)", question: "Bản chất cốt lõi vì sao cả hai là 'indispensable'?", answer: "Con người hiện đại vận hành trên hai trạng thái song song: Kết nối xã hội liên tục (Mobility) và Lao động tri thức chuyên sâu (Deep Work)." }
+    ],
+    whatIf: {
+      scenario: "Nếu buộc phải bỏ hoàn toàn Laptop và chỉ dùng duy nhất Smartphone trong 1 tháng?",
+      consequences: [
+        "Tốc độ soạn thảo văn bản và nghiên cứu tài liệu giảm hơn 60% do giới hạn giao diện.",
+        "Mức độ mỏi mắt và căng thẳng nhận thức tăng cao khi xử lý bảng biểu/khóa học dài.",
+        "Phải tìm kiếm các giải pháp chắp vá như gắn thêm bàn phím rời và màn hình phụ."
+      ]
+    },
+    systemDynamics: {
+      nodes: ["Smartphone (Mobility)", "Laptop (Deep Work)", "Social Life & Schedule", "Work/Study Output", "Productivity Balance"],
+      directImpact: "Tối ưu hóa thời gian: Việc nhẹ xử lý trên điện thoại, việc nặng chuyển lên laptop.",
+      indirectImpact: "Giảm tải áp lực tâm lý khi có ranh giới rõ ràng giữa 'thiết bị kết nối' và 'thiết bị làm việc'.",
+      feedbackLoop: "Vòng lặp tương hỗ: Càng dùng smartphone sắp xếp lịch tốt ➔ Càng có nhiều khối thời gian tập trung làm việc chất lượng trên laptop."
+    },
+    firstPrinciples: {
+      brokenAssumptions: "Giả định sai: 'Một thiết bị thông minh hiện đại all-in-one có thể thay thế hoàn toàn các thiết bị khác'.",
+      fundamentalTruths: "Sự thật gốc: Trải nghiệm công thái học (Ergonomics) và diện tích hiển thị quyết định giới hạn năng suất nhận thức của não bộ.",
+      reconstructedLogic: "Thay vì tìm kiếm 1 thiết bị vạn năng, phân loại tác vụ theo form factor tối ưu (Smartphone = Quick Access; Laptop = Deep Creation)."
+    },
+    contrarianThinking: {
+      argFor: "Smartphone quan trọng nhất vì nó giải quyết 80% nhu cầu liên lạc và phản xạ hàng ngày.",
+      argAgainst: "Nếu chỉ có smartphone thì không thể tạo ra giá trị kinh tế hay học thuật chuyên sâu.",
+      conditions: "Đúng khi bạn là người làm việc tri thức cần cả giao tiếp lẫn xử lý tài liệu.",
+      exceptions: "Người làm nghề chỉ thuần túy bán hàng qua gọi điện/chat có thể chỉ cần duy nhất smartphone.",
+      synthesis: "Không có thiết bị tối cao, chỉ có sự phối hợp nhịp nhàng giữa tính di động (Smartphone) và tính tạo tác (Laptop)."
+    },
+    predictions: {
+      oneMonth: "Thói quen phản xạ Speaking theo cấu trúc Logic Chain này giúp bạn nói trôi chảy không cần dịch nhẩm.",
+      oneYear: "Sự tích hợp AI trên thiết bị sẽ làm ranh giới giữa Smartphone và Laptop thu hẹp dần.",
+      fiveYears: "Các thiết bị đeo thông minh (AR glasses / Foldables) có thể hợp nhất tính tiện dụng và màn hình lớn.",
+      blindSpots: "Cần kiểm tra xem liệu việc quá phụ thuộc vào smartphone có gây xao nhãng khi ngồi vào laptop làm việc hay không."
+    },
+    actionTakeaways: [
+      "Khắc ghi bộ 4 từ khóa trục chính: Rely on most -> Handy for -> Larger screen & keyboard -> Indispensable role.",
+      "Khi gặp câu hỏi lựa chọn 'A or B', luôn áp dụng công thức: Thừa nhận cả 2 -> Nghiêng về 1 phía -> Chỉ ra thế mạnh bù trừ -> Chốt giá trị của cả 2.",
+      "Luyện tập nói câu này theo nhịp thở của từng mắt xích (A -> B -> C -> D -> Insight) để tạo ngữ điệu tự nhiên."
+    ],
+    userNotes: "Công thức vàng cho IELTS Speaking Part 1/2: Thừa nhận cả hai (I use both) ➔ Chọn 1 cái ưu tiên (Rely on most) ➔ Nêu lý do tiện lợi (Handy for) ➔ Bổ sung nhu cầu chuyên sâu của cái còn lại (However... for work/study) ➔ Chốt hạ cả 2 đều thiết yếu (Indispensable role)."
+  },
+  {
     id: "bc_preset_1",
     title: "Một quán cà phê giảm giá 30%",
     category: "Kinh doanh",
@@ -10342,9 +10409,104 @@ function applyBcPracticeStep() {
 
 function buildBrainChainPrompt(event) {
   const title = event?.title || "Một quán cà phê giảm giá 30%";
-  const category = event?.category || "Kinh doanh";
-  const context = event?.context || "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá.";
+  const category = event?.category || "Tiếng Anh & Speaking";
+  const context = event?.context || "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.";
 
+  // Check if title or category is English or speech/sentence memorization
+  const isEnglishOrSentence = category.includes('Tiếng Anh') || category.includes('Speaking') || 
+    /[a-zA-Z]{4,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{3,}/.test(title) || title.length > 60;
+
+  if (isEnglishOrSentence) {
+    return `Bạn là BẬC THẦY TƯ DUY HỆ THỐNG, SUY LUẬN LOGIC & PHƯƠNG PHÁP GHI NHỚ TIẾNG ANH (LOGIC MEMORY MASTER).
+Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân rã câu/đoạn văn dưới đây thành một CHUỖI LOGIC LIÊN KHOÁ (A ➔ B ➔ C ➔ D ➔ INSIGHT), giúp người học HIỂU SÂU BẢN CHẤT, THUỘC LÒNG TRONG 10 GIÂY VÀ PHẢN XẠ NÓI TỰ NHIÊN.
+
+🎯 CÂU / ĐOẠN VĂN CẦN PHÂN TÍCH:
+- Nội dung gốc: "${title}"
+- Lĩnh vực: ${category}
+- Bối cảnh/Mục tiêu: ${context}
+
+# NGUYÊN TẮC BẺ KHÓA LOGIC (BRAIN CHAIN FOR SENTENCES):
+1. CORE CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT): Phân rã câu/đoạn thành 5 mắt xích theo dòng tư duy tự nhiên:
+   - A: Khởi nguồn & Lựa chọn ban đầu (Mệnh đề mở đầu)
+   - B: Lý do thứ nhất & Điểm mạnh (Mệnh đề phát triển 1)
+   - C: Phản đề & Chuyển ý (Mệnh đề tương phản / phát triển 2)
+   - D: Minh họa cụ thể & Tác vụ thực tế (Mệnh đề chi tiết hóa)
+   - INSIGHT: Kết luận đúc kết chốt hạ giá trị toàn câu.
+2. 5 WHYS ROOT CAUSE: Đào sâu lý do đằng sau cách diễn đạt (Tại sao mở đầu như vậy? Tại sao dùng từ nối đó? Tại sao lại chốt câu như vậy?).
+3. FIRST PRINCIPLES: Chỉ ra nguyên lý giao tiếp gốc và điểm neo tư duy cốt lõi.
+4. ACTION TAKEAWAYS: 3 Điểm tựa ghi nhớ (Mnemonic Anchors) & quy tắc phản xạ trong 3 giây.
+
+⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
+Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau:
+
+\`\`\`json
+{
+  "title": "${title.length > 80 ? title.substring(0, 80) + '...' : title}",
+  "category": "${category}",
+  "context": "${context}",
+  "coreChain": {
+    "a": "BƯỚC 1 (A - Khởi điểm & Lựa chọn): [Trích đoạn mệnh đề 1 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "b": "BƯỚC 2 (B - Lý do & Thế mạnh): [Trích đoạn mệnh đề 2 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "c": "BƯỚC 3 (C - Chuyển ý & Phản đề): [Trích đoạn mệnh đề 3 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "d": "BƯỚC 4 (D - Chi tiết hóa & Minh họa): [Trích đoạn mệnh đề 4 tiếng Anh kèm phân tích logic tiếng Việt]",
+    "insight": "BƯỚC 5 (INSIGHT - Đúc kết chốt hạ): [Trích đoạn kết luận tiếng Anh kèm nhận thức cốt lõi]"
+  },
+  "causeEffects": {
+    "immediate": "Tác động tức thì của ý tưởng mở đầu khi người nghe tiếp nhận.",
+    "secondOrder": "Hệ quả logic tiếp theo khi mở rộng luận điểm chính.",
+    "thirdOrder": "Sự cân bằng khi bổ sung góc nhìn phản biện hoặc đối lập.",
+    "unexpected": "Hệ quả bất ngờ / Điểm sáng tạo trong cách lập luận.",
+    "longTerm": "Lợi ích dài hạn giúp người học làm chủ phản xạ tư duy tự nhiên khi nói."
+  },
+  "whyChain": [
+    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao câu văn mở đầu bằng cấu trúc này?", "answer": "Giải thích logic ngữ dụng và cách tạo ấn tượng tự nhiên..." },
+    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại chọn ý thứ nhất để phát triển?", "answer": "Giải thích tính trực tiếp và tiện ích của ý thứ nhất..." },
+    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao cần bổ sung ý tương phản?", "answer": "Giải thích vai trò của góc nhìn đa chiều trong giao tiếp..." },
+    { "level": "4. Nguyên nhân hệ thống", "question": "Cơ chế liên kết giữa các mệnh đề là gì?", "answer": "Phân tích mạch tư duy nguyên nhân - kết quả - bổ trợ..." },
+    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi của thông điệp là gì?", "answer": "Đúc kết triết lý sống hoặc thông điệp giá trị cao nhất của câu..." }
+  ],
+  "whatIf": {
+    "scenario": "Nếu đảo ngược hoàn toàn thứ tự hoặc bỏ đi mệnh đề chuyển ý thì sao?",
+    "consequences": [
+      "Lập luận trở nên một chiều và thiếu tính thuyết phục.",
+      "Mất đi nhịp điệu tự nhiên của người bản xứ.",
+      "Người nghe không thấy được bức tranh toàn diện."
+    ]
+  },
+  "systemDynamics": {
+    "nodes": ["Từ Khóa Trục 1", "Từ Khóa Trục 2", "Liên Từ Chuyển Ý", "Ví Dụ Minh Họa", "Kết Luận Insight"],
+    "directImpact": "Tác động trực tiếp đến sự rõ ràng và mạch lạc (Coherence & Cohesion).",
+    "indirectImpact": "Tác động gián tiếp giúp não bộ ghi nhớ siêu nhanh nhờ các điểm neo ngữ nghĩa.",
+    "feedbackLoop": "Vòng lặp phản xạ: Càng hiểu rõ logic liên kết ➔ Càng nói trôi chảy không cần dịch nhẩm ➔ Tự tin mở rộng thêm ý mới."
+  },
+  "firstPrinciples": {
+    "brokenAssumptions": "Giả định sai: 'Học thuộc câu tiếng Anh là phải học vẹt từng từ riêng lẻ'.",
+    "fundamentalTruths": "Sự thật gốc: Bộ não con người ghi nhớ bằng dòng chảy nhân quả và hình ảnh logic, không nhớ các chuỗi ký tự vô nghĩa.",
+    "reconstructedLogic": "Thay vì học vẹt, xâu chuỗi các mệnh đề thành sợi dây nhân quả A ➔ B ➔ C ➔ D ➔ Insight để não tự động sinh từ."
+  },
+  "contrarianThinking": {
+    "argFor": "Tại sao cách lập luận trong câu này lại thuyết phục và tự nhiên?",
+    "argAgainst": "Trong trường hợp nào cách diễn đạt này có thể chưa tối ưu?",
+    "conditions": "Điều kiện để áp dụng mẫu câu và logic này hiệu quả nhất...",
+    "exceptions": "Các tình huống ngoại lệ cần thay đổi sắc thái từ ngữ...",
+    "synthesis": "Đúc kết cách tùy biến linh hoạt cho mọi chủ đề tương tự."
+  },
+  "predictions": {
+    "oneMonth": "Thuộc lòng và phản xạ trơn tru câu này trong vòng 3 giây khi được hỏi.",
+    "oneYear": "Tự động áp dụng khung logic này để trả lời hàng trăm câu hỏi Speaking khác.",
+    "fiveYears": "Hình thành tư duy phản biện và diễn đạt song ngữ tự nhiên như người bản xứ.",
+    "blindSpots": "Lưu ý ngữ điệu (Intonation) và điểm nhấn trọng âm để tránh đọc ngang như robot."
+  },
+  "actionTakeaways": [
+    "Khắc ghi 4 từ khóa trục chính của câu: [Từ khóa 1] ➔ [Từ khóa 2] ➔ [Từ khóa 3] ➔ [Từ khóa 4].",
+    "Luyện tập nói câu theo nhịp thở của 5 mắt xích (A ➔ B ➔ C ➔ D ➔ Insight).",
+    "Áp dụng cấu trúc logic này để tự tạo 1 câu tương tự cho chủ đề khác."
+  ]
+}
+\`\`\``;
+  }
+
+  // General Business / Life Event prompt
   return `Bạn là BẬC THẦY TƯ DUY HỆ THỐNG & SUY LUẬN LOGIC (SYSTEMS THINKER & LOGIC MASTER).
 Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân tích toàn diện sự kiện/hiện tượng dưới đây.
 
@@ -10438,6 +10600,76 @@ function setupBcModals() {
   // 1. Event Modal (Add/Edit)
   let editingEventId = null;
 
+  const getEventModalData = () => {
+    const titleInp = document.getElementById('bcInputEventTitle');
+    const catInp = document.getElementById('bcInputEventCategory');
+    const lvlInp = document.getElementById('bcInputEventLevel');
+    const ctxInp = document.getElementById('bcInputEventContext');
+
+    return {
+      title: (titleInp?.value || '').trim(),
+      category: catInp?.value || 'Tiếng Anh & Speaking',
+      level: parseInt(lvlInp?.value || '3'),
+      context: (ctxInp?.value || '').trim()
+    };
+  };
+
+  const copyPromptFromModal = (openUrl = null) => {
+    const data = getEventModalData();
+    if (!data.title) {
+      alert('Vui lòng nhập câu tiếng Anh hoặc tên sự kiện vào ô tiêu đề trước khi tạo Prompt!');
+      document.getElementById('bcInputEventTitle')?.focus();
+      return false;
+    }
+    const promptText = buildBrainChainPrompt(data);
+    if (window.taskAPI && window.taskAPI.writeClipboardText) {
+      window.taskAPI.writeClipboardText(promptText);
+    } else {
+      navigator.clipboard.writeText(promptText);
+    }
+    if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+
+    if (openUrl) {
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(openUrl);
+      } else {
+        window.open(openUrl, '_blank');
+      }
+    } else {
+      alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích logic đa tầng, sau đó bấm "📥 Dán JSON Ngay" để xem kết quả trực quan.');
+    }
+    return true;
+  };
+
+  // Connect action buttons inside Event Modal
+  const btnModalCopyPrompt = document.getElementById('btnBcModalCopyPrompt');
+  if (btnModalCopyPrompt) {
+    btnModalCopyPrompt.onclick = () => copyPromptFromModal();
+  }
+
+  const btnModalGemini = document.getElementById('btnBcModalOpenGemini');
+  if (btnModalGemini) {
+    btnModalGemini.onclick = () => copyPromptFromModal('https://gemini.google.com/');
+  }
+
+  const btnModalChatGPT = document.getElementById('btnBcModalOpenChatGPT');
+  if (btnModalChatGPT) {
+    btnModalChatGPT.onclick = () => copyPromptFromModal('https://chatgpt.com/');
+  }
+
+  const btnModalClaude = document.getElementById('btnBcModalOpenClaude');
+  if (btnModalClaude) {
+    btnModalClaude.onclick = () => copyPromptFromModal('https://claude.ai/');
+  }
+
+  const btnModalPasteJson = document.getElementById('btnBcModalPasteJson');
+  if (btnModalPasteJson) {
+    btnModalPasteJson.onclick = () => {
+      document.getElementById('bcEventModal')?.classList.remove('active');
+      openBcImportJsonModal(editingEventId);
+    };
+  }
+
   window.openBcEventModal = (eventToEdit = null) => {
     editingEventId = eventToEdit ? eventToEdit.id : null;
     const modal = document.getElementById('bcEventModal');
@@ -10448,9 +10680,9 @@ function setupBcModals() {
     const ctxInp = document.getElementById('bcInputEventContext');
 
     if (!modal) return;
-    if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Sự Kiện' : '💡 Thêm Sự Kiện / Tình Huống Mới';
+    if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Câu / Sự Kiện' : '💡 Thêm Câu / Sự Kiện / Tình Huống Mới';
     if (titleInp) titleInp.value = eventToEdit ? eventToEdit.title : '';
-    if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Kinh doanh') : 'Kinh doanh';
+    if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Tiếng Anh & Speaking') : 'Tiếng Anh & Speaking';
     if (lvlInp) lvlInp.value = eventToEdit ? (eventToEdit.level || 3) : 3;
     if (ctxInp) ctxInp.value = eventToEdit ? (eventToEdit.context || '') : '';
 
@@ -10464,37 +10696,32 @@ function setupBcModals() {
   const btnSaveEvent = document.getElementById('btnBcEventModalSave');
   if (btnSaveEvent) {
     btnSaveEvent.onclick = async () => {
-      const titleInp = document.getElementById('bcInputEventTitle');
-      const catInp = document.getElementById('bcInputEventCategory');
-      const lvlInp = document.getElementById('bcInputEventLevel');
-      const ctxInp = document.getElementById('bcInputEventContext');
-
-      const title = (titleInp?.value || '').trim();
-      if (!title) {
-        alert('Vui lòng nhập tên sự kiện hoặc tình huống cốt lõi!');
-        titleInp?.focus();
+      const data = getEventModalData();
+      if (!data.title) {
+        alert('Vui lòng nhập câu tiếng Anh hoặc tên sự kiện cốt lõi!');
+        document.getElementById('bcInputEventTitle')?.focus();
         return;
       }
 
       if (editingEventId) {
         const ev = brainChainData.events.find(x => x.id === editingEventId);
         if (ev) {
-          ev.title = title;
-          ev.category = catInp?.value || 'Kinh doanh';
-          ev.level = parseInt(lvlInp?.value || '3');
-          ev.context = (ctxInp?.value || '').trim();
+          ev.title = data.title;
+          ev.category = data.category;
+          ev.level = data.level;
+          ev.context = data.context;
           ev.updatedAt = new Date().toISOString();
         }
       } else {
         const newEv = {
           id: 'bc_event_' + Date.now(),
-          title: title,
-          category: catInp?.value || 'Kinh doanh',
-          level: parseInt(lvlInp?.value || '3'),
-          context: (ctxInp?.value || '').trim(),
+          title: data.title,
+          category: data.category,
+          level: data.level,
+          context: data.context,
           createdAt: new Date().toISOString(),
           coreChain: {
-            a: title,
+            a: data.title,
             b: "Bấm '⚡ Tạo Prompt AI' để sinh chuỗi tư duy đầy đủ...",
             c: "Đang chờ phân tích...",
             d: "Đang chờ phân tích...",
@@ -10618,13 +10845,18 @@ function setupBcModals() {
         return;
       }
 
-      // Strip markdown ```json ... ``` codeblocks if present
-      if (raw.startsWith('```')) {
-        raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      // Robust JSON extraction from AI markdown or chat replies
+      let jsonStr = raw;
+      if (jsonStr.startsWith('```')) {
+        jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      }
+      const jsonMatch = jsonStr.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[0];
       }
 
       try {
-        const parsed = JSON.parse(raw);
+        const parsed = JSON.parse(jsonStr);
         let importedEvent = null;
 
         if (Array.isArray(parsed)) {
@@ -10658,6 +10890,7 @@ function setupBcModals() {
           }
         }
 
+        brainChainData.practiceStep = 5; // Show full chain
         await saveBrainChainData();
         document.getElementById('bcImportJsonModal')?.classList.remove('active');
         renderBcEventList();
@@ -10669,7 +10902,7 @@ function setupBcModals() {
           setTimeout(() => playTone(784, 0.12, 'sine', 0.15), 160);
         }
 
-        alert('🎉 NẠP THÀNH CÔNG!\nChuỗi tư duy Brain Chain đã được cập nhật và hiển thị trực quan.');
+        alert('🎉 NẠP THÀNH CÔNG!\nChuỗi tư duy và giải thích chi tiết của câu đã được cập nhật và hiển thị trực quan.');
       } catch (err) {
         if (errBox) {
           errBox.style.display = 'block';

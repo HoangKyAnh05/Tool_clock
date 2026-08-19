@@ -2664,20 +2664,44 @@
 
   <!-- Modal: Tạo / Chỉnh Sửa Sự Kiện -->
   <div id="bcEventModal" class="modal-overlay">
-    <div class="modal-box modal-large" style="max-width: 540px; padding: 22px;">
+    <div class="modal-box modal-large" style="max-width: 580px; padding: 22px;">
       <div class="modal-icon" style="font-size: 32px;">💡</div>
-      <h3 id="bcEventModalTitle" style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Thêm Sự Kiện / Tình Huống Mới</h3>
-      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập một sự kiện thực tế, hiện tượng xã hội hoặc tình huống kinh doanh để phân tích chuỗi tư duy.</p>
+      <h3 id="bcEventModalTitle" style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Thêm Câu / Sự Kiện / Tình Huống Mới</h3>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập một câu văn/đoạn nói tiếng Anh cần học thuộc hoặc một hiện tượng, sự kiện đời sống để phân tích chuỗi logic.</p>
 
-      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 12px;">
-        <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: block; margin-bottom: 6px;">Tên sự kiện / Tình huống cốt lõi (*):</label>
-        <input type="text" id="bcInputEventTitle" class="inp" placeholder="Ví dụ: Một quán cà phê giảm giá 30%, Giá xăng tăng mạnh 15%, ..." style="height: 38px; font-size: 13px;" />
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 10px;">
+        <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span>Câu tiếng Anh / Tiêu đề sự kiện (*):</span>
+          <span style="font-size: 11px; color: #a78bfa; font-weight: 500;">Hỗ trợ cả câu văn dài & đoạn Speaking</span>
+        </label>
+        <textarea id="bcInputEventTitle" class="inp textarea-inp" placeholder="Dán câu tiếng Anh cần học thuộc hoặc tên sự kiện... Ví dụ: To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most..." style="height: 75px; font-size: 12.5px; line-height: 1.45; resize: vertical;"></textarea>
+      </div>
+
+      <!-- Quick AI Action Bar in Event Modal -->
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <span style="font-size: 11.5px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 5px;">⚡ Tạo Prompt từ câu trên:</span>
+          <div style="display: flex; gap: 5px;">
+            <button type="button" id="btnBcModalOpenGemini" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #38bdf8; background: rgba(56,189,248,0.15);" title="Copy Prompt & Mở Gemini">✨ Gemini</button>
+            <button type="button" id="btnBcModalOpenChatGPT" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #34d399; background: rgba(52,211,153,0.15);" title="Copy Prompt & Mở ChatGPT">🟢 ChatGPT</button>
+            <button type="button" id="btnBcModalOpenClaude" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #f472b6; background: rgba(244,114,182,0.15);" title="Copy Prompt & Mở Claude">🟣 Claude</button>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnBcModalCopyPrompt" class="btn-primary-glow" style="flex: 1; height: 32px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);">
+            📋 Sao Chép Prompt AI (1-Click)
+          </button>
+          <button type="button" id="btnBcModalPasteJson" class="btn-primary-glow" style="height: 32px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 14px;">
+            📥 Dán JSON Ngay
+          </button>
+        </div>
       </div>
 
       <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: left;">
         <div class="form-group">
           <label style="font-size: 12px; font-weight: 700; color: #a78bfa; display: block; margin-bottom: 6px;">Chủ đề / Lĩnh vực:</label>
           <select id="bcInputEventCategory" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
+            <option value="Tiếng Anh & Speaking" selected>🗣️ Tiếng Anh & Phản xạ Speaking</option>
             <option value="Kinh doanh">💼 Kinh doanh & Khởi nghiệp</option>
             <option value="Kinh tế">📈 Kinh tế & Thị trường</option>
             <option value="Công nghệ">🤖 Công nghệ & AI</option>
@@ -2688,7 +2712,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label style="font-size: 12px; font-weight: 700; color: #34d399; display: block; margin-bottom: 6px;">Mức độ phức tạp:</label>
+          <label style="font-size: 12px; font-weight: 700; color: #34d399; display: block; margin-bottom: 6px;">Mức độ phân tích:</label>
           <select id="bcInputEventLevel" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
             <option value="1">Level 1 - Cơ bản (A ➔ B)</option>
             <option value="2">Level 2 - Trung bình (A ➔ B ➔ C)</option>
@@ -2700,7 +2724,7 @@
 
       <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px;">
         <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">Bối cảnh chi tiết / Câu hỏi trọng tâm (Tùy chọn):</label>
-        <textarea id="bcInputEventContext" class="inp textarea-inp" placeholder="Mô tả thêm bối cảnh, câu hỏi muốn tìm lời giải hoặc các giả thiết ban đầu..." style="height: 85px; font-size: 12.5px; line-height: 1.45;"></textarea>
+        <textarea id="bcInputEventContext" class="inp textarea-inp" placeholder="Mô tả thêm bối cảnh, mục đích học tập hoặc câu hỏi muốn tìm lời giải..." style="height: 60px; font-size: 12.5px; line-height: 1.45;"></textarea>
       </div>
 
       <div class="modal-actions" style="gap: 10px; justify-content: flex-end;">

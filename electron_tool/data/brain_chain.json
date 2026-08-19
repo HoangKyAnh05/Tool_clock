@@ -1,6 +1,97 @@
 {
   "events": [
     {
+      "title": "To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Lựa chọn): \"To be honest, I use both quite regularly, but if I had to choose one, I'd say my smartphone is the device I rely on most.\" → Mở đầu bằng lời thú nhận chân thành giúp tạo thiện cảm và khẳng định quan điểm cá nhân. Lựa chọn điện thoại ngay từ đầu để dẫn dắt người nghe theo hướng tích cực.",
+        "b": "BƯỚC 2 (B - Lý do & Thế mạnh): \"It's incredibly handy for staying in touch with friends and family, checking social media, and managing my daily schedule.\" → Nhấn mạnh tính tiện lợi (handy) với ba chức năng cụ thể: kết nối xã hội, giải trí và tổ chức cuộc sống. Đây là các lợi ích thiết thực hàng ngày khiến điện thoại không thể thiếu.",
+        "c": "BƯỚC 3 (C - Chuyển ý & Phản đề): \"However, I also use my laptop frequently for work and study purposes,\" → Từ nối \"However\" tạo sự tương phản mềm mại, bổ sung vai trò quan trọng của laptop trong môi trường công việc và học tập, giúp lập luận trở nên đa chiều.",
+        "d": "BƯỚC 4 (D - Chi tiết hóa & Minh họa): \"especially for tasks that require a larger screen and a proper keyboard, such as typing reports, taking online courses, or doing research.\" → Cung cấp lý do cụ thể (màn hình lớn, bàn phím) và liệt kê các tác vụ tiêu biểu (báo cáo, khóa học, nghiên cứu) để minh họa rõ ràng, làm tăng độ thuyết phục.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết chốt hạ): \"So, I'd say they both play an indispensable role in my life.\" → Kết luận cân bằng khẳng định cả hai thiết bị đều không thể thay thế, phản ánh tầm quan trọng của công nghệ trong đời sống hiện đại và thể hiện sự linh hoạt trong tư duy."
+      },
+      "causeEffects": {
+        "immediate": "Tạo ấn tượng ngay lập tức về một người trung thực, có chính kiến nhưng vẫn cởi mở.",
+        "secondOrder": "Người nghe nắm bắt được hai lợi ích chính của điện thoại, hình dung rõ ràng về tiện ích hàng ngày.",
+        "thirdOrder": "Sự bổ sung của laptop giúp người nghe cảm thấy người nói không thiên vị, có góc nhìn toàn diện và thực tế.",
+        "unexpected": "Tạo điểm nhấn bất ngờ: từ một sự lựa chọn ban đầu (điện thoại) cuối cùng lại dẫn đến sự khẳng định cả hai đều quan trọng – lập luận đi lên không theo lối mòn.",
+        "longTerm": "Giúp người học làm chủ cấu trúc 4 bước: thừa nhận → lý do → phản đề → minh họa → kết luận, áp dụng cho mọi chủ đề so sánh lựa chọn."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc này?",
+          "answer": "Mở đầu bằng 'To be honest' tạo không khí thân mật, giảm khoảng cách với người nghe. Việc thừa nhận sử dụng cả hai nhưng vẫn chọn điện thoại giúp thể hiện sự khiêm tốn và xây dựng lòng tin trước khi đưa ra ý kiến."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn ý thứ nhất để phát triển?",
+          "answer": "Vì tiện ích của điện thoại gần gũi và dễ thuyết phục nhất. Người nói chọn ba khía cạnh quen thuộc (liên lạc, mạng xã hội, lịch trình) để người nghe dễ đồng cảm và ghi nhớ."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần bổ sung ý tương phản?",
+          "answer": "Để tránh cảm giác phiến diện và thiếu khách quan. 'However' là dụng cụ chuyển ý mềm mại, mở ra không gian cho đối tượng đối lập (laptop) mà không làm mất mạch chính, giúp bài nói sâu sắc hơn."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ tổng quan (dùng cả hai) → tập trung vào điểm mạnh của một bên → nêu ra tình huống của bên còn lại → chi tiết hóa → quay lại kết luận tổng quan. Các từ nối (but, however, so) đảm bảo mạch lạc nhân – quả – bổ trợ."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa: Trong cuộc sống hiện đại, công nghệ đa dạng phục vụ các nhu cầu khác nhau; sự cân bằng và tận dụng điểm mạnh của từng công cụ mới là chìa khóa. Người nói không chọn bên nào tuyệt đối mà đề cao sự bổ trợ lẫn nhau."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược hoàn toàn thứ tự hoặc bỏ đi mệnh đề chuyển ý thì sao?",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục (nếu chỉ nói về điện thoại).",
+          "Mất đi nhịp điệu tự nhiên của người bản xứ, gây cảm giác gượng ép hoặc quá cứng nhắc.",
+          "Người nghe không thấy được bức tranh toàn diện, khó đánh giá đúng mức độ quan trọng của từng thiết bị."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "thừa nhận (honest / both)",
+          "tiện ích (handy)",
+          "chuyển ý (however)",
+          "ví dụ cụ thể (tasks)",
+          "kết luận (indispensable)"
+        ],
+        "directImpact": "Sự phân bố rõ ràng các ý giúp người nói và người nghe dễ dàng theo dõi mạch logic, tạo sự gắn kết giữa các phần.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa (thành thật, tiện lợi, đối lập, minh họa, không thể thiếu) kích hoạt não bộ ghi nhớ theo chuỗi hình ảnh, siêu nhanh.",
+        "feedbackLoop": "Càng hiểu rõ logic liên kết (A→B→C→D→Insight) ➔ Càng nói trôi chảy không cần dịch nhẩm ➔ Tự tin mở rộng thêm ý mới từ bất kỳ chủ đề nào."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: 'Học thuộc câu tiếng Anh là phải học vẹt từng từ riêng lẻ và luyện đọc trơn không hiểu mạch ý'.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não con người ghi nhớ bằng dòng chảy nhân quả và hình ảnh logic, không nhớ các chuỗi ký tự vô nghĩa. Khi nắm được cấu trúc nguyên nhân – kết quả, não tự động tái tạo ngôn từ.",
+        "reconstructedLogic": "Thay vì học vẹt, hãy xâu chuỗi các mệnh đề thành sợi dây nhân quả: Mở đầu (thừa nhận + lựa chọn) ➔ Lý do cụ thể ➔ Phản đề chuyển ý ➔ Minh họa ➔ Kết luận cân bằng. Não sẽ tự sinh ra các từ tương ứng dựa trên khung logic này."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận trong câu này tự nhiên và thuyết phục vì nó bắt đầu từ quan điểm cá nhân, sau đó mở rộng ra bằng chứng và kết thúc bằng sự tổng hợp hài hòa. Người nói thể hiện sự chân thành, thực tế và khôn ngoan.",
+        "argAgainst": "Trong một số tình huống cần trả lời ngắn gọn (ví dụ trả lời câu hỏi yes/no), việc triển khai quá dài có thể làm mất tập trung. Nếu người hỏi chỉ muốn biết lựa chọn duy nhất, việc kết luận cả hai đều quan trọng có thể bị coi là né tránh.",
+        "conditions": "Áp dụng hiệu quả khi câu hỏi mở về thói quen hoặc sự ưu tiên (Speaking Part 1 hoặc Part 3) và khi người nói có đủ thời gian để phát triển ý. Cần giọng điệu tự nhiên, nhấn nhá các từ nối.",
+        "exceptions": "Trong tình huống phỏng vấn yêu cầu quyết định rõ ràng, người nói nên chọn một bên dứt khoát hơn và chỉ đề cập đến bên kia như một lưu ý nhỏ, không đi sâu vào chi tiết.",
+        "synthesis": "Đúc kết: Khung logic này có thể tùy biến bằng cách điều chỉnh độ dài các mắt xích. Luôn giữ 5 bước: Khởi điểm → Lý do chính → Chuyển ý → Minh họa → Kết luận, nhưng có thể lược bớt chi tiết nếu cần trả lời ngắn gọn."
+      },
+      "predictions": {
+        "oneMonth": "Thuộc lòng và phản xạ trơn tru câu này trong vòng 3 giây khi được hỏi về thiết bị yêu thích. Người học nói được toàn bộ đoạn văn mà không ngập ngừng nhờ nhớ chuỗi logic.",
+        "oneYear": "Tự động áp dụng khung logic này để trả lời hàng trăm câu hỏi Speaking khác nhau (so sánh hai lựa chọn, miêu tả sở thích, lợi ích của công nghệ).",
+        "fiveYears": "Hình thành tư duy phản biện và diễn đạt song ngữ tự nhiên như người bản xứ, biết cách triển khai ý theo nhiều tầng mà không cần chuẩn bị kịch bản.",
+        "blindSpots": "Cần chú ý ngữ điệu (Intonation) và điểm nhấn trọng âm ở các từ khóa như 'honest', 'handy', 'however', 'especially', 'indispensable' để tránh đọc ngang như robot và tăng tính biểu cảm."
+      },
+      "actionTakeaways": [
+        "Khắc ghi 4 từ khóa trục chính của câu: BOTH → SMARTPHONE → LAPTOP → INDISPENSABLE. Kết nối chúng bằng các từ nối: honestly, handy, however, especially, so.",
+        "Luyện tập nói câu theo nhịp thở của 5 mắt xích (A ➔ B ➔ C ➔ D ➔ Insight): hít vào trước mỗi mắt xích, thở ra khi nói. Điều này tạo nhịp điệu tự nhiên và giúp ghi nhớ sâu.",
+        "Áp dụng cấu trúc logic này để tự tạo 1 câu tương tự cho chủ đề khác (ví dụ: so sánh sách giấy và sách điện tử, hoặc đi xe máy và đi ô tô). Duy trì đúng trình tự: mở đầu thành thật → nêu lý do của A → chuyển ý → chi tiết B → kết luận cân bằng."
+      ],
+      "id": "bc_event_1787138030530",
+      "createdAt": "2026-08-19T11:13:50.530Z"
+    },
+    {
       "id": "bc_event_1787031398691",
       "title": "Thiếu ngủ, làm việc quá sức trong 100 ngày",
       "category": "Kinh doanh",
@@ -664,6 +755,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787031398691",
+  "activeEventId": "bc_event_1787138030530",
   "practiceStep": 5
 }
