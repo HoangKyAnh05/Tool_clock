@@ -185,7 +185,9 @@
             <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
               <span style="font-size: 11px; color: var(--purple2); font-weight: bold;">Đã chọn: <span
                   id="selectedCount">0</span> mục</span>
-              <div style="display: flex; gap: 4px;">
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                <button id="btnBulkCopyPrompt" class="btn-modal btn-confirm"
+                  style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: linear-gradient(135deg, rgba(168, 85, 247, 0.8) 0%, rgba(236, 72, 153, 0.8) 100%); border-color: #c084fc;" title="Sao chép prompt đặt câu / luyện viết cho các mục đã chọn">📋 Sao chép Prompt</button>
                 <button id="btnBulkExportHtml" class="btn-modal btn-confirm"
                   style="padding: 4px 8px; font-size: 11px; height: auto; width: auto; line-height: 1.2; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #059669;">📱
                   Học trên ĐT (3 ngày)</button>
@@ -1073,9 +1075,10 @@
             <button type="button" id="btnTkOpenRangeModal" class="btn-modal" style="flex: 1; height: 32px; font-size: 11.5px; font-weight: 700; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #c084fc; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Chọn từ số A đến số B">📍 Chọn đoạn (Từ A ➔ B)</button>
           </div>
 
-          <div id="tkSelectionBar" style="display: none; justify-content: space-between; align-items: center; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 8px; padding: 6px 10px; font-size: 11.5px; font-weight: 700; color: #00f2fe; margin-bottom: 6px;">
+          <div id="tkSelectionBar" style="display: none; justify-content: space-between; align-items: center; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 8px; padding: 6px 10px; font-size: 11.5px; font-weight: 700; color: #00f2fe; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
             <span>Đã chọn: <b id="tkSelectedCount" style="color: #fff; font-size: 13px;">0</b> từ</span>
-            <div style="display: flex; gap: 6px;">
+            <div style="display: flex; gap: 5px; align-items: center;">
+              <button type="button" id="btnTkCopyPrompt" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(236, 72, 153, 0.35) 100%); border: 1px solid #c084fc; color: #fdf4ff; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: all 0.2s;" title="Sao chép prompt đặt câu / viết đoạn văn chứa tất cả các từ đã chọn cho AI">📋 Sao chép Prompt</button>
               <button type="button" id="btnTkSelectAll" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer;">Tất cả</button>
               <button type="button" id="btnTkClearSelect" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: #fca5a5; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer;">Bỏ chọn</button>
             </div>

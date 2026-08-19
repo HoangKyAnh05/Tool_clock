@@ -1,6 +1,192 @@
 {
   "events": [
     {
+      "question": "",
+      "title": "Although I had always dreamed of earning a university degree, the demanding curriculum at my school required me to complete numerous assignments with strict deadlines, which was a far cry from the simple days of elementary school where learning felt more like play than pressure.",
+      "answer": "Although I had always dreamed of earning a university degree, the demanding curriculum at my school required me to complete numerous assignments with strict deadlines, which was a far cry from the simple days of elementary school where learning felt more like play than pressure.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): 'Although I had always dreamed of earning a university degree' – Mở đầu bằng ước mơ dài hạn, dùng 'Although' để báo hiệu sự tương phản với thực tế sắp nêu.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): 'the demanding curriculum at my school required me to complete numerous assignments with strict deadlines' – Thực tế khắc nghiệt: chương trình học khắt khe, nhiều bài tập, thời hạn chặt chẽ – đây là thử thách chính.",
+        "c": "BƯỚC 3 (C - Chuyển ý & So sánh): 'which was a far cry from' – Từ nối chuyển ý, nhấn mạnh sự khác biệt lớn, tạo bước ngoặt so sánh.",
+        "d": "BƯỚC 4 (D - Minh họa mở rộng): 'the simple days of elementary school where learning felt more like play than pressure' – Mô tả chi tiết về tiểu học: đơn giản, học tập như chơi, không áp lực – đối lập rõ ràng.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): [Kết luận ngầm] Ước mơ đại học đối diện với áp lực học tập khổng lồ, phản ánh sự trưởng thành và hy sinh cần thiết để đạt được mục tiêu, nhưng đồng thời gợi nhớ về sự trong sáng của tuổi thơ."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe nhận ra sự tương phản giữa khát vọng và hiện thực, tạo sự đồng cảm với khó khăn của người nói.",
+        "secondOrder": "Hình ảnh tiểu học bình yên làm nổi bật sự khắc nghiệt của đại học, khiến người nghe hiểu rõ nguyên nhân của căng thẳng.",
+        "thirdOrder": "Sự so sánh tạo nên cân bằng: không phủ nhận ước mơ mà chỉ ra giá trị của thử thách.",
+        "unexpected": "Điểm bất ngờ là cách dùng hình ảnh 'play than pressure' để khắc họa sự khác biệt, mang tính cảm xúc và dễ nhớ.",
+        "longTerm": "Giúp người học xây dựng kỹ năng diễn đạt sự tương phản và so sánh trong các chủ đề học tập, cuộc sống."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng 'Although'?",
+          "answer": "'Although' tạo mối quan hệ nhượng bộ, báo hiệu sự đối lập giữa ước mơ và thực tế, giúp câu văn có chiều sâu và logic chặt chẽ, gây sự chú ý ngay từ đầu."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn chi tiết 'numerous assignments with strict deadlines' để miêu tả chương trình học?",
+          "answer": "Đây là đặc điểm cụ thể, thực tế và phổ biến trong học tập, giúp người nghe dễ hình dung và đồng cảm, đồng thời là nguyên nhân trực tiếp gây áp lực."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần so sánh với tiểu học?",
+          "answer": "So sánh tạo ra sự tương phản rõ nét, giúp nhấn mạnh mức độ khó khăn và sự thay đổi trong trải nghiệm học tập, đồng thời gợi lại ký ức đẹp, tăng tính biểu cảm."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Chuỗi từ khóa: ước mơ (A) → thực tế khó khăn (B) → từ nối so sánh (C) → hình ảnh đối lập (D). Mạch tư duy đi từ lý tưởng đến thực tế, rồi phóng chiếu về quá khứ để làm bật hiện tại."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Hành trình trưởng thành trong học tập là sự đánh đổi giữa niềm vui đơn giản và áp lực để đạt được ước mơ; đại học không chỉ là kiến thức mà còn là bài học về sự kiên nhẫn và thích nghi."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu bỏ đi phần so sánh với tiểu học hoặc chỉ nêu thực tế khó khăn mà không có 'far cry' thì sao?",
+        "consequences": [
+          "Câu văn mất đi sự tương phản, trở nên đơn điệu và ít sức nặng.",
+          "Người nghe khó cảm nhận được sự khác biệt, giảm tính thuyết phục.",
+          "Mất đi yếu tố cảm xúc và ký ức, khiến câu nói khô khan hơn."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "dreamed of university",
+          "demanding curriculum, strict deadlines",
+          "far cry",
+          "simple days, play than pressure",
+          "contrast between dream and reality"
+        ],
+        "directImpact": "Các từ khóa kết nối tạo mạch so sánh, giúp câu văn rõ ràng và có tổ chức, dễ theo dõi.",
+        "indirectImpact": "Não bộ ghi nhớ nhanh nhờ hình ảnh tương phản: đại học áp lực ↔ tiểu học vui vẻ, tạo thành cặp đối lập dễ nhớ.",
+        "feedbackLoop": "Càng hiểu rõ cấu trúc nhượng bộ - so sánh, càng dễ dàng tạo ra các câu tương tự với chủ đề khác, tự tin diễn đạt phức tạp."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: 'Chỉ cần mô tả thực tế học tập, không cần yếu tố cảm xúc hay so sánh'.",
+        "fundamentalTruths": "Sự thật gốc: Não bộ tiếp nhận tốt nhất khi có sự tương phản và hình ảnh cụ thể; việc đặt đối tượng trong một khung so sánh làm nổi bật ý nghĩa.",
+        "reconstructedLogic": "Thay vì kể đơn thuần, hãy dùng cấu trúc: Mục tiêu mơ ước → Thực tế khắc nghiệt → So sánh với quá khứ → Rút ra bài học về sự trưởng thành."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này thuyết phục vì nó bao quát cả lý tưởng, thực tế và ký ức, tạo một câu chuyện có chiều sâu và cảm xúc.",
+        "argAgainst": "Trong giao tiếp ngắn, câu dài có thể khó theo dõi; nên tách thành hai câu để rõ ràng hơn, đặc biệt khi nói.",
+        "conditions": "Phù hợp khi muốn diễn đạt sự phức tạp của cảm xúc và trải nghiệm, thường dùng trong viết hoặc Speaking Part 2.",
+        "exceptions": "Nếu đối phương cần thông tin ngắn gọn, nên rút gọn bỏ bớt phần so sánh.",
+        "synthesis": "Có thể áp dụng cho các chủ đề tương tự: thay 'university degree' bằng 'career goal', 'elementary school' bằng 'childhood', vẫn giữ cấu trúc tương phản."
+      },
+      "predictions": {
+        "oneMonth": "Người học sẽ thuộc và diễn đạt lại câu này một cách trôi chảy, nhấn đúng trọng âm các từ khóa.",
+        "oneYear": "Tự động áp dụng cấu trúc 'Although + ước mơ, + thực tế + far cry' để kể về các chủ đề học tập, công việc.",
+        "fiveYears": "Hình thành thói quen diễn đạt so sánh tương phản tự nhiên, giúp bài nói phong phú và có chiều sâu.",
+        "blindSpots": "Chú ý trọng âm: 'ALTHOUGH', 'DREAMED', 'deMANDing', 'STRICT', 'FAR cry', 'SIMPLE', 'PLAY', 'PRESsure' để tránh đọc đều."
+      },
+      "actionTakeaways": [
+        "Khắc ghi 4 từ khóa trục chính: dreamed → demanding → far cry → play vs pressure.",
+        "Luyện đọc câu theo nhịp: nhượng bộ (A) hạ giọng, thực tế (B) nhấn mạnh, so sánh (C) chậm lại, chi tiết (D) nhẹ nhàng, kết luận (Insight) trầm lắng.",
+        "Tạo câu tương tự cho chủ đề khác: 'Although I always wanted to travel abroad, the heavy workload at my office required me to work overtime every day, which was a far cry from the carefree weekends of my college days where life felt more like relaxation than stress.'"
+      ],
+      "id": "bc_event_1787140374728",
+      "createdAt": "2026-08-19T11:52:54.728Z"
+    },
+    {
+      "question": "Describe a time you used your cellphone/smartphone to do something important.",
+      "title": "Describe a time you used your cellphone/smartphone to do something important.",
+      "answer": "I'd like to talk about a time my smartphone was absolutely indispensable.\n\nWhat happened and when:\nAbout a year ago, my best friend received devastating news about a family emergency while travelling in another city. She was distraught and couldn't book a flight home.\n\nWhat I did with my phone:\nI immediately used my smartphone to search for flights. I compared options, found the earliest departure, and booked the ticket using the airline's app. I then forwarded the e-ticket to her via email.\n\nHow important the phone was:\nMy phone was crucial. Without it, I couldn't have accessed real-time flight information or made the payment instantly. It also allowed me to stay in constant communication with her.\n\nHow I felt:\nI felt an immense sense of relief that I could help her. It was empowering to use technology to support someone I care about during a stressful time.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): 'I'd like to talk about a time my smartphone was absolutely indispensable.' – Mở đầu trực tiếp, giới thiệu chủ đề và khẳng định tính thiết yếu tuyệt đối của điện thoại, tạo sự chú ý.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): 'About a year ago, my best friend received devastating news about a family emergency while travelling in another city. She was distraught and couldn't book a flight home.' – Nêu bối cảnh cụ thể: bạn thân gặp tin xấu, hoảng loạn, không thể đặt vé, đây là vấn đề cấp bách cần giải quyết.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): 'I immediately used my smartphone to search for flights. I compared options, found the earliest departure, and booked the ticket using the airline's app.' – Hành động cụ thể với smartphone: tìm kiếm, so sánh, đặt vé qua app, thể hiện tính năng tìm kiếm và thanh toán.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): 'I then forwarded the e-ticket to her via email. ... It also allowed me to stay in constant communication with her.' – Mở rộng thêm việc gửi vé và duy trì liên lạc, nhấn mạnh tính năng chia sẻ và kết nối liên tục.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): 'I felt an immense sense of relief that I could help her. It was empowering to use technology to support someone I care about during a stressful time.' – Kết luận cảm xúc: nhẹ nhõm, cảm thấy mạnh mẽ khi công nghệ giúp hỗ trợ người thân trong lúc khó khăn, khẳng định giá trị tinh thần và tính kết nối của công nghệ."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe cảm nhận ngay sự khẩn cấp và vai trò thiết yếu của smartphone qua phần mở đầu và tình huống khó khăn.",
+        "secondOrder": "Khi biết bạn không thể đặt vé, người nghe hiểu được sự bất lực và tầm quan trọng của sự giúp đỡ kịp thời.",
+        "thirdOrder": "Việc miêu tả chi tiết các bước sử dụng smartphone (tìm kiếm, so sánh, đặt, gửi email) cho thấy sự tiện lợi và đa năng của thiết bị.",
+        "unexpected": "Điểm bất ngờ là cảm xúc cuối cùng – không chỉ giải quyết vấn đề mà còn tạo ra cảm giác trao quyền và kết nối tình cảm, không chỉ là công cụ kỹ thuật.",
+        "longTerm": "Giúp người học xây dựng phản xạ kể câu chuyện theo cấu trúc: giới thiệu chủ đề → bối cảnh/vấn đề → hành động cụ thể → lợi ích mở rộng → cảm xúc/ý nghĩa, áp dụng cho nhiều chủ đề trải nghiệm."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu trả lời mở đầu bằng 'I'd like to talk about...' thay vì trả lời trực tiếp?",
+          "answer": "Đây là cách mở đầu trang trọng và tự nhiên trong Speaking, thể hiện ý muốn kể câu chuyện, tạo sự chuẩn bị tâm lý cho người nghe và giúp người nói có thời gian sắp xếp ý tưởng."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn câu chuyện về bạn bè gặp khủng hoảng gia đình?",
+          "answer": "Đây là tình huống giàu cảm xúc và dễ gây sự đồng cảm, đồng thời thể hiện rõ ràng sự cần thiết của điện thoại trong việc giải quyết vấn đề khẩn cấp, tăng tính thuyết phục."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần miêu tả chi tiết từng bước sử dụng smartphone?",
+          "answer": "Để minh họa cụ thể cách công nghệ giúp đỡ, tạo sự tin tưởng và cho thấy sự đa chức năng của điện thoại (tìm kiếm, so sánh, đặt vé, email), không chỉ dừng lại ở lý thuyết."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy: giới thiệu (A) → tình huống và vấn đề (B) → hành động cụ thể (C) → các lợi ích bổ sung (D) → cảm nhận cá nhân và ý nghĩa (Insight). Các phần được phân tách rõ ràng bằng tiêu đề phụ, tạo sự mạch lạc."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Công nghệ không chỉ là công cụ tiện ích mà còn là cầu nối cảm xúc, giúp con người hỗ trợ nhau vượt qua khủng hoảng; sự kết hợp giữa chức năng kỹ thuật và giá trị tinh thần là điều cốt yếu."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu bỏ qua phần cảm xúc cuối cùng và chỉ dừng lại ở hành động đặt vé thì sao?",
+        "consequences": [
+          "Câu chuyện trở nên khô khan, chỉ là một chuỗi thao tác kỹ thuật, thiếu chiều sâu.",
+          "Người nghe không thấy được tác động tình cảm, khó ghi nhớ và đồng cảm.",
+          "Mất đi yếu tố thuyết phục về giá trị nhân văn của công nghệ."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "smartphone indispensable",
+          "devastating news, couldn't book",
+          "search, compare, book, forward",
+          "communication",
+          "relief, empowering"
+        ],
+        "directImpact": "Các từ khóa kết nối tạo mạch kể chuyện rõ ràng từ vấn đề đến giải pháp và cảm xúc, giúp câu trả lời có tổ chức.",
+        "indirectImpact": "Não bộ dễ dàng ghi nhớ chuỗi sự kiện: tình huống khó khăn -> hành động với smartphone -> kết quả và cảm xúc, tạo thành một câu chuyện hoàn chỉnh.",
+        "feedbackLoop": "Càng hiểu rõ logic vấn đề - giải pháp - ý nghĩa, càng nói trôi chảy, có thể thêm chi tiết khác mà không làm hỏng cấu trúc."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: 'Chỉ cần liệt kê tính năng công nghệ là đủ, không cần cảm xúc hay bối cảnh'.",
+        "fundamentalTruths": "Sự thật gốc: Người nghe bị thuyết phục bởi câu chuyện có bối cảnh, hành động cụ thể và kết thúc bằng cảm xúc chân thật; sự kết hợp giữa lý trí và trái tim tạo sức mạnh.",
+        "reconstructedLogic": "Thay vì mô tả chung chung, hãy xây dựng câu chuyện theo sơ đồ: Giới thiệu → Tình huống khó khăn → Hành động công nghệ → Kết quả và lợi ích mở rộng → Cảm xúc và bài học."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này thuyết phục vì nó cụ thể, dễ hình dung, có nhân vật, bối cảnh và cảm xúc, phản ánh đúng vai trò của công nghệ trong đời sống.",
+        "argAgainst": "Trong một số tình huống phỏng vấn ngắn, câu chuyện dài có thể bị coi là lan man; cần rút gọn chỉ giữ lại các bước quan trọng và cảm xúc chính.",
+        "conditions": "Phù hợp nhất cho các câu hỏi yêu cầu kể về kinh nghiệm cá nhân (Speaking Part 2) hoặc khi cần minh họa chi tiết.",
+        "exceptions": "Nếu người nghe muốn câu trả lời ngắn gọn, có thể chỉ cần nêu sự việc và hành động chính, bỏ qua phần cảm xúc hoặc lược bớt.",
+        "synthesis": "Có thể áp dụng cho nhiều chủ đề khác: 'Describe a time you used something to solve a problem' bằng cách thay đổi đối tượng (máy tính, xe hơi...) và giữ nguyên cấu trúc câu chuyện."
+      },
+      "predictions": {
+        "oneMonth": "Người học sẽ thuộc và kể lại câu chuyện này một cách trôi chảy trong vòng 3 giây khi được hỏi về trải nghiệm sử dụng điện thoại.",
+        "oneYear": "Người học sẽ tự động áp dụng khung kể chuyện này cho các chủ đề tương tự về công nghệ, du lịch, giúp đỡ người khác.",
+        "fiveYears": "Hình thành thói quen diễn đạt mạch lạc, giàu cảm xúc và có cấu trúc, tự tin chia sẻ các trải nghiệm cá nhân bằng tiếng Anh.",
+        "blindSpots": "Chú ý ngữ điệu và trọng âm: nhấn vào 'absolutely indispensable', 'devastating', 'immediately', 'crucial', 'relief', 'empowering' để tăng hiệu ứng kể chuyện."
+      },
+      "actionTakeaways": [
+        "Khắc ghi 4 từ khóa trục chính: indispensable → devastating/couldn't book → search/book/forward → relief/empowering.",
+        "Luyện tập kể chuyện theo nhịp: mở đầu (A) chậm rãi, tình huống (B) căng thẳng, hành động (C) nhanh, lợi ích (D) nhấn mạnh, cảm xúc (Insight) chậm và sâu lắng.",
+        "Tập tạo câu chuyện tương tự cho chủ đề khác: 'Describe a time you used your laptop to do something urgent' với cấu trúc tương tự."
+      ],
+      "id": "bc_event_1787140243132",
+      "createdAt": "2026-08-19T11:50:43.132Z"
+    },
+    {
       "question": "4. Is technology important in your life?",
       "title": "4. Is technology important in your life? - Absolutely. Technology plays a pivotal role...",
       "answer": "Absolutely. Technology plays a pivotal role in my daily life. I use it for everything – managing my schedule, staying connected with friends, studying, working, and relaxing. I honestly can't imagine life without my smartphone and laptop.",
@@ -1125,6 +1311,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787139637503",
+  "activeEventId": "bc_event_1787140374728",
   "practiceStep": 5
 }

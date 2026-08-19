@@ -5914,6 +5914,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnBulkCopyPrompt = document.getElementById('btnBulkCopyPrompt');
+  if (btnBulkCopyPrompt) {
+    btnBulkCopyPrompt.addEventListener('click', async () => {
+      if (selectedIeltsItemIds.size === 0) {
+        alert('Vui lòng chọn ít nhất 1 mục để tạo prompt!');
+        return;
+      }
+      const items = (ieltsVaultData.items || []).filter(item => selectedIeltsItemIds.has(item.id));
+      if (items.length === 0) return;
+
+      const lines = items.map((it, idx) => `${idx + 1}. **${it.title || 'Mục ' + (idx + 1)}** (${it.skill || 'English'}): ${(it.content || '').substring(0, 150)}...`).join('\n');
+      const promptText = `Bạn là một chuyên gia ngôn ngữ và giảng viên IELTS xuất sắc.
+
+🎯 NHIỆM VỤ:
+Hãy đặt câu hoặc viết một đoạn văn ngắn tự nhiên (1 - 3 câu) bằng tiếng Anh, kết nối logic và sử dụng toàn bộ các từ vựng / chủ đề sau:
+
+📋 DANH SÁCH ${items.length} MỤC ĐÃ CHỌN:
+${lines}
+
+✨ YÊU CẦU ĐẦU RA:
+1. 📝 ĐOẠN VĂN / CÂU TIẾNG ANH HOÀN CHỈNH: Tự nhiên, học thuật (in đậm từ/ý chính).
+2. 🇻🇳 BẢN DỊCH TIẾNG VIỆT TRỌN VẸN.
+3. 💡 PHÂN TÍCH CẤU TRÚC & COLLOCATIONS ĐẮT GIÁ.`;
+
+      let copied = false;
+      if (window.taskAPI && window.taskAPI.writeClipboardText) {
+        try {
+          await window.taskAPI.writeClipboardText(promptText);
+          copied = true;
+        } catch (e) { }
+      }
+      if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(promptText);
+          copied = true;
+        } catch (e) { }
+      }
+
+      if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+
+      const origHtml = btnBulkCopyPrompt.innerHTML;
+      btnBulkCopyPrompt.innerHTML = `✅ Đã copy (${items.length})!`;
+      setTimeout(() => {
+        btnBulkCopyPrompt.innerHTML = origHtml;
+      }, 2000);
+    });
+  }
+
   const btnCancelBulk = document.getElementById('btnCancelBulk');
   if (btnCancelBulk) {
     btnCancelBulk.addEventListener('click', () => {
@@ -6167,6 +6215,49 @@ let activeTkCardId = null;
 let selectedTkCardIds = new Set();
 let lastSelectedTkId = null;
 let tkInitialized = false;
+
+function getTkSelectedItems() {
+  if (!tkFlashcardData || !Array.isArray(tkFlashcardData.items)) return [];
+  const filtered = (typeof getTkFilteredItems === 'function') ? getTkFilteredItems() : tkFlashcardData.items;
+  const selected = filtered.filter(x => selectedTkCardIds.has(x.id));
+  if (selected.length > 0) return selected;
+  return tkFlashcardData.items.filter(x => selectedTkCardIds.has(x.id));
+}
+
+function buildPromptForSelectedWords(items) {
+  if (!items || items.length === 0) return '';
+
+  const wordLines = items.map((item, idx) => {
+    let line = `${idx + 1}. **${item.word || 'Unknown'}**`;
+    if (item.phonetic) line += ` /${item.phonetic}/`;
+    if (item.translation) line += ` : ${item.translation}`;
+    return line;
+  }).join('\n');
+
+  return `Bạn là một chuyên gia khảo thí và giảng dạy tiếng Anh IELTS / Academic English xuất sắc.
+
+🎯 NHIỆM VỤ:
+Hãy đặt câu hoặc viết một đoạn văn ngắn tự nhiên (1 - 3 câu) bằng tiếng Anh, trong đó BẮT BUỘC SỬ DỤNG VÀ KẾT NỐI TẤT CẢ ${items.length} từ vựng sau đây trong cùng một ngữ cảnh logic, mạch lạc:
+
+📋 DANH SÁCH ${items.length} TỪ VỰNG CẦN SỬ DỤNG:
+${wordLines}
+
+⛔ QUY TẮC BẮT BUỘC (TUYỆT ĐỐI KHÔNG DÙNG DẤU BA CHẤM "..."):
+- TUYỆT ĐỐI KHÔNG dùng dấu ba chấm "..." để viết tắt, bỏ lửng câu hay cắt bớt ý.
+- Viết trọn vẹn 100% từng câu chữ tiếng Anh và bản dịch tiếng Việt đầy đủ.
+
+✨ YÊU CẦU ĐẦU RA:
+1. 📝 ĐOẠN VĂN / CÂU TIẾNG ANH HOÀN CHỈNH:
+   - Viết câu/đoạn văn liền mạch, tự nhiên theo chuẩn văn phong học thuật / IELTS Speaking & Writing hoặc giao tiếp thực tế nâng cao.
+   - IN ĐẬM (**từ vựng**) mỗi khi từ trong danh sách trên xuất hiện.
+
+2. 🇻🇳 BẢN DỊCH TIẾNG VIỆT TRỌN VẸN:
+   - Dịch nghĩa mượt mà, chính xác và sát văn cảnh tiếng Việt (viết đầy đủ, không dùng "...").
+
+3. 💡 PHÂN TÍCH COLLOCATIONS & ĐIỂM SÁNG NGỮ PHÁP:
+   - Chỉ ra cụm từ kết hợp (collocation) hoặc cấu trúc ghi điểm của từng từ trong câu.
+   - Gợi ý cách ứng dụng các từ này vào bài thi IELTS Speaking/Writing.`;
+}
 
 function updateTkSelectionUI() {
   const bar = document.getElementById('tkSelectionBar');
@@ -7690,6 +7781,44 @@ Yêu cầu gồm:
   if (btnPlayerSyncWeb) btnPlayerSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
 
   // Selection toolbar buttons
+  const btnTkCopyPrompt = document.getElementById('btnTkCopyPrompt');
+  if (btnTkCopyPrompt) {
+    btnTkCopyPrompt.addEventListener('click', async () => {
+      const selectedItems = getTkSelectedItems();
+      if (selectedItems.length === 0) {
+        alert('Vui lòng chọn ít nhất 1 từ vựng để tạo prompt!');
+        return;
+      }
+      const promptText = buildPromptForSelectedWords(selectedItems);
+      let copied = false;
+      if (window.taskAPI && window.taskAPI.writeClipboardText) {
+        try {
+          await window.taskAPI.writeClipboardText(promptText);
+          copied = true;
+        } catch (e) { }
+      }
+      if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(promptText);
+          copied = true;
+        } catch (e) { }
+      }
+
+      if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+
+      const origHtml = btnTkCopyPrompt.innerHTML;
+      btnTkCopyPrompt.innerHTML = `✅ Đã copy (${selectedItems.length} từ)!`;
+      btnTkCopyPrompt.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      btnTkCopyPrompt.style.borderColor = '#10b981';
+
+      setTimeout(() => {
+        btnTkCopyPrompt.innerHTML = origHtml;
+        btnTkCopyPrompt.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(236, 72, 153, 0.35) 100%)';
+        btnTkCopyPrompt.style.borderColor = '#c084fc';
+      }, 2000);
+    });
+  }
+
   const btnSelectAll = document.getElementById('btnTkSelectAll');
   if (btnSelectAll) {
     btnSelectAll.addEventListener('click', () => {
@@ -10517,9 +10646,14 @@ Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi T�
 - Lĩnh vực: ${category}
 - Bối cảnh / Mục tiêu: ${context}
 
+⛔ QUY TẮC BẮT BUỘC: TUYỆT ĐỐI KHÔNG DÙNG DẤU BA CHẤM "..." HOẶC CẮT BỚT NỘI DUNG
+1. KHÔNG BAO GIỜ dùng dấu ba chấm "..." để rút gọn câu, ngắt câu hay bỏ lửng ý trong BẤT KỲ trường nào.
+2. TRÍCH DẪN ĐẦY ĐỦ 100%: Trong các bước "coreChain" (a, b, c, d, insight), khi trích dẫn câu tiếng Anh, PHẢI TRÍCH ĐẦY ĐỦ TOÀN BỘ CÂU CHỮ NGUYÊN VĂN KHÔNG THIẾU TỪ NÀO, tuyệt đối không được dùng "..." để nối hoặc bỏ bớt đoạn giữa/cuối câu.
+3. Mọi câu phân tích logic, 5 Whys, Cause-Effects, First Principles PHẢI viết hoàn chỉnh, rõ ràng và kết thúc bằng dấu chấm câu rõ ràng.
+
 # NGUYÊN TẮC BẺ KHÓA LOGIC (BRAIN CHAIN FOR SENTENCES):
 1. NHẬN DIỆN & TÁCH BẠCH:
-   - Nếu nội dung chứa cả Câu hỏi và Câu trả lời (Ví dụ: "3. Is there...? Answer: Yes, I've been..."): Hãy tách riêng câu hỏi vào trường "question", toàn bộ câu trả lời gốc vào trường "answer".
+   - Nếu nội dung chứa cả Câu hỏi và Câu trả lời: Hãy tách riêng câu hỏi vào trường "question", toàn bộ câu trả lời gốc nguyên vẹn vào trường "answer".
    - Nếu chỉ có 1 câu/đoạn văn: Đặt câu/đoạn đó vào cả "title" và "answer".
 2. CORE CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT): Phân rã câu trả lời thành 5 mắt xích theo dòng tư duy tự nhiên:
    - A: Khởi nguồn & Lựa chọn / Ý định ban đầu (Mở đầu trực diện)
@@ -10536,34 +10670,34 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
 
 \`\`\`json
 {
-  "question": "Câu hỏi nếu có (Ví dụ: 3. Is there any technology you want to buy?)",
+  "question": "Câu hỏi đầy đủ nếu có",
   "title": "Tiêu đề ngắn gọn hoặc câu hỏi",
-  "answer": "Toàn văn câu trả lời tiếng Anh đầy đủ không bị cắt",
+  "answer": "Toàn văn câu trả lời tiếng Anh đầy đủ nguyên vẹn 100% không bị cắt",
   "category": "${category}",
   "context": "${context}",
   "coreChain": {
-    "a": "BƯỚC 1 (A - Khởi điểm & Ý định): [Trích đoạn mệnh đề 1 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): [Trích đoạn mệnh đề 2 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "c": "BƯỚC 3 (C - Nhu cầu tính năng): [Trích đoạn mệnh đề 3 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): [Trích đoạn mệnh đề 4 tiếng Anh kèm phân tích logic tiếng Việt]",
-    "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): [Trích đoạn kết luận tiếng Anh kèm nhận thức cốt lõi]"
+    "a": "BƯỚC 1 (A - Khởi điểm & Ý định): [Trích trọn vẹn mệnh đề 1 tiếng Anh đầy đủ không dùng dấu ba chấm] - [Phân tích logic tiếng Việt trọn vẹn]",
+    "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): [Trích trọn vẹn mệnh đề 2 tiếng Anh đầy đủ không dùng dấu ba chấm] - [Phân tích logic tiếng Việt trọn vẹn]",
+    "c": "BƯỚC 3 (C - Nhu cầu tính năng): [Trích trọn vẹn mệnh đề 3 tiếng Anh đầy đủ không dùng dấu ba chấm] - [Phân tích logic tiếng Việt trọn vẹn]",
+    "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): [Trích trọn vẹn mệnh đề 4 tiếng Anh đầy đủ không dùng dấu ba chấm] - [Phân tích logic tiếng Việt trọn vẹn]",
+    "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): [Trích trọn vẹn câu kết luận tiếng Anh đầy đủ] - [Nhận thức cốt lõi tiếng Việt]"
   },
   "causeEffects": {
     "immediate": "Tác động tức thì của ý tưởng mở đầu khi người nghe tiếp nhận.",
     "secondOrder": "Hệ quả logic tiếp theo khi mở rộng luận điểm chính.",
     "thirdOrder": "Sự cân bằng khi bổ sung góc nhìn phản biện hoặc đối lập.",
-    "unexpected": "Hệ quả bất ngờ / Điểm sáng tạo trong cách lập luận.",
+    "unexpected": "Hệ quả bất ngờ và điểm sáng tạo trong cách lập luận.",
     "longTerm": "Lợi ích dài hạn giúp người học làm chủ phản xạ tư duy tự nhiên khi nói."
   },
   "whyChain": [
-    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao câu văn mở đầu bằng cấu trúc này?", "answer": "Giải thích logic ngữ dụng và cách tạo ấn tượng tự nhiên..." },
-    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại chọn ý thứ nhất để phát triển?", "answer": "Giải thích tính trực tiếp và tiện ích của ý thứ nhất..." },
-    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao cần bổ sung ý tương phản hoặc tính năng mới?", "answer": "Giải thích vai trò của góc nhìn đa chiều trong giao tiếp..." },
-    { "level": "4. Nguyên nhân hệ thống", "question": "Cơ chế liên kết giữa các mệnh đề là gì?", "answer": "Phân tích mạch tư duy nguyên nhân - kết quả - bổ trợ..." },
-    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi của thông điệp là gì?", "answer": "Đúc kết triết lý sống hoặc thông điệp giá trị cao nhất của câu..." }
+    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao câu văn mở đầu bằng cấu trúc này?", "answer": "Giải thích logic ngữ dụng và cách tạo ấn tượng tự nhiên cho người nghe." },
+    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại chọn ý thứ nhất để phát triển?", "answer": "Giải thích tính trực tiếp và tiện ích của ý thứ nhất trong ngữ cảnh." },
+    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao cần bổ sung ý tương phản hoặc tính năng mới?", "answer": "Giải thích vai trò của góc nhìn đa chiều trong giao tiếp học thuật." },
+    { "level": "4. Nguyên nhân hệ thống", "question": "Cơ chế liên kết giữa các mệnh đề là gì?", "answer": "Phân tích mạch tư duy nguyên nhân, kết quả và bổ trợ ý." },
+    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi của thông điệp là gì?", "answer": "Đúc kết triết lý sống hoặc thông điệp giá trị cao nhất của câu." }
   ],
   "whatIf": {
-    "scenario": "Nếu đảo ngược hoàn toàn thứ tự hoặc bỏ đi mệnh đề chuyển ý thì sao?",
+    "scenario": "Nếu đảo ngược hoàn toàn thứ tự hoặc bỏ đi mệnh đề chuyển ý thì mạch văn sẽ bị mất tự nhiên.",
     "consequences": [
       "Lập luận trở nên một chiều và thiếu tính thuyết phục.",
       "Mất đi nhịp điệu tự nhiên của người bản xứ.",
@@ -10572,38 +10706,39 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
   },
   "systemDynamics": {
     "nodes": ["Từ Khóa Trục 1", "Từ Khóa Trục 2", "Liên Từ Chuyển Ý", "Ví Dụ Minh Họa", "Kết Luận Insight"],
-    "directImpact": "Tác động trực tiếp đến sự rõ ràng và mạch lạc (Coherence & Cohesion).",
+    "directImpact": "Tác động trực tiếp đến sự rõ ràng và mạch lạc trong cấu trúc diễn đạt.",
     "indirectImpact": "Tác động gián tiếp giúp não bộ ghi nhớ siêu nhanh nhờ các điểm neo ngữ nghĩa.",
     "feedbackLoop": "Vòng lặp phản xạ: Càng hiểu rõ logic liên kết ➔ Càng nói trôi chảy không cần dịch nhẩm ➔ Tự tin mở rộng thêm ý mới."
   },
   "firstPrinciples": {
-    "brokenAssumptions": "Giả định sai: 'Học thuộc câu tiếng Anh là phải học vẹt từng từ riêng lẻ'.",
+    "brokenAssumptions": "Giả định sai: Học thuộc câu tiếng Anh là phải học vẹt từng từ riêng lẻ.",
     "fundamentalTruths": "Sự thật gốc: Bộ não con người ghi nhớ bằng dòng chảy nhân quả và hình ảnh logic, không nhớ các chuỗi ký tự vô nghĩa.",
     "reconstructedLogic": "Thay vì học vẹt, xâu chuỗi các mệnh đề thành sợi dây nhân quả A ➔ B ➔ C ➔ D ➔ Insight để não tự động sinh từ."
   },
   "contrarianThinking": {
-    "argFor": "Tại sao cách lập luận trong câu này lại thuyết phục và tự nhiên?",
-    "argAgainst": "Trong trường hợp nào cách diễn đạt này có thể chưa tối ưu?",
-    "conditions": "Điều kiện để áp dụng mẫu câu và logic này hiệu quả nhất...",
-    "exceptions": "Các tình huống ngoại lệ cần thay đổi sắc thái từ ngữ...",
+    "argFor": "Lập luận ủng hộ: Cách diễn đạt này mạch lạc, tự nhiên và đáp ứng chuẩn tiêu chí chấm điểm.",
+    "argAgainst": "Lập luận phản biện: Trong các bối cảnh trang trọng tuyệt đối, một số từ lóng hoặc từ nối thân mật cần được thay thế.",
+    "conditions": "Điều kiện để áp dụng mẫu câu và logic này hiệu quả nhất khi giao tiếp.",
+    "exceptions": "Các tình huống ngoại lệ cần thay đổi sắc thái từ ngữ cho phù hợp ngữ cảnh.",
     "synthesis": "Đúc kết cách tùy biến linh hoạt cho mọi chủ đề tương tự."
   },
   "predictions": {
     "oneMonth": "Thuộc lòng và phản xạ trơn tru câu này trong vòng 3 giây khi được hỏi.",
     "oneYear": "Tự động áp dụng khung logic này để trả lời hàng trăm câu hỏi Speaking khác.",
     "fiveYears": "Hình thành tư duy phản biện và diễn đạt song ngữ tự nhiên như người bản xứ.",
-    "blindSpots": "Lưu ý ngữ điệu (Intonation) và điểm nhấn trọng âm để tránh đọc ngang như robot."
+    "blindSpots": "Lưu ý ngữ điệu và điểm nhấn trọng âm để tránh đọc ngang như robot."
   },
   "actionTakeaways": [
-    "Khắc ghi 4 từ khóa trục chính của câu: [Từ khóa 1] ➔ [Từ khóa 2] ➔ [Từ khóa 3] ➔ [Từ khóa 4].",
-    "Luyện tập nói câu theo nhịp thở của 5 mắt xích (A ➔ B ➔ C ➔ D ➔ Insight).",
-    "Áp dụng cấu trúc logic này để tự tạo 1 câu tương tự cho chủ đề khác."
+    "Khắc ghi các từ khóa trục chính của câu theo đúng mạch logic.",
+    "Luyện tập nói câu theo nhịp thở của 5 mắt xích từ A đến Insight.",
+    "Áp dụng cấu trúc logic này để tự tạo một câu tương tự cho chủ đề khác."
   ]
 }
 \`\`\``;
   }
 
   // General Business / Life Event prompt
+  const safeTitle = (rawInput.length > 80 ? rawInput.substring(0, 80) : rawInput).replace(/"/g, "'");
   return `Bạn là BẬC THẦY TƯ DUY HỆ THỐNG & SUY LUẬN LOGIC (SYSTEMS THINKER & LOGIC MASTER).
 Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi Tư Duy Đa Tầng) để phân tích toàn diện sự kiện/hiện tượng dưới đây.
 
@@ -10611,6 +10746,10 @@ Nhiệm vụ của bạn là áp dụng phương pháp "BRAIN CHAIN" (Chuỗi T�
 - Nội dung: "${rawInput}"
 - Lĩnh vực: ${category}
 - Bối cảnh: ${context}
+
+⛔ QUY TẮC BẮT BUỘC: TUYỆT ĐỐI KHÔNG DÙNG DẤU BA CHẤM "..." HOẶC CẮT BỚT NỘI DUNG
+1. KHÔNG BAO GIỜ sử dụng dấu ba chấm "..." trong BẤT KỲ trường nào của JSON.
+2. Mọi phân tích, lập luận, hệ quả và nguyên nhân PHẢI VIẾT ĐẦY ĐỦ 100% TỪNG CÂU CHỮ HOÀN CHỈNH, kết thúc bằng dấu chấm rõ ràng.
 
 # NGUYÊN TẮC CỐT LÕI CỦA BRAIN CHAIN:
 1. CORE LOOP: Từ một thứ -> suy ra thứ khác -> tiếp tục suy ra thứ khác -> cuối cùng tạo thành một Insight sắc bén (A -> B -> C -> D -> INSIGHT).
@@ -10628,66 +10767,66 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
 
 \`\`\`json
 {
-  "title": "${rawInput.length > 80 ? rawInput.substring(0, 80) + '...' : rawInput}",
+  "title": "${safeTitle}",
   "category": "${category}",
   "context": "${context}",
   "coreChain": {
-    "a": "BƯỚC 1 (A): Khởi nguồn sự kiện / Hành động ban đầu cụ thể...",
-    "b": "BƯỚC 2 (B): Tác động trực tiếp đầu tiên xảy ra ngay sau đó...",
-    "c": "BƯỚC 3 (C): Phản ứng dây chuyền bậc hai lan sang các bộ phận / đối tượng khác...",
-    "d": "BƯỚC 4 (D): Hệ quả dây chuyền sâu rộng làm thay đổi hành vi / vận hành...",
+    "a": "BƯỚC 1 (A): Khởi nguồn sự kiện hoặc hành động ban đầu cụ thể được mô tả đầy đủ.",
+    "b": "BƯỚC 2 (B): Tác động trực tiếp đầu tiên xảy ra ngay sau đó một cách rõ ràng.",
+    "c": "BƯỚC 3 (C): Phản ứng dây chuyền bậc hai lan sang các bộ phận và đối tượng liên quan.",
+    "d": "BƯỚC 4 (D): Hệ quả dây chuyền sâu rộng làm thay đổi hành vi và quy trình vận hành.",
     "insight": "BƯỚC 5 (INSIGHT): Đúc kết nhận thức đột phá, quy luật bất biến hoặc bài học chiến lược cốt lõi."
   },
   "causeEffects": {
-    "immediate": "Điều gì xảy ra ngay lập tức sau sự kiện?",
-    "secondOrder": "Sau đó điều gì xảy ra tiếp theo?",
-    "thirdOrder": "Một thời gian sau hệ quả lan sang đâu?",
-    "unexpected": "Hệ quả bất ngờ ngoài dự kiến mà ít người nghĩ tới là gì?",
-    "longTerm": "Sau 1-3 năm bức tranh toàn cảnh thay đổi ra sao?"
+    "immediate": "Điều xảy ra ngay lập tức sau sự kiện được phân tích trọn vẹn.",
+    "secondOrder": "Hệ quả logic tiếp theo diễn ra sau đó.",
+    "thirdOrder": "Hệ quả lan tỏa sâu rộng trong hệ thống.",
+    "unexpected": "Hệ quả bất ngờ ngoài dự kiến mà ít người lường trước.",
+    "longTerm": "Bức tranh toàn cảnh thay đổi sau 1 đến 3 năm."
   },
   "whyChain": [
-    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao xảy ra điều này?", "answer": "Câu trả lời tầng 1..." },
-    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại có nguyên nhân đó?", "answer": "Câu trả lời tầng 2..." },
-    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao yếu tố đó tồn tại?", "answer": "Câu trả lời tầng 3..." },
-    { "level": "4. Nguyên nhân hệ thống", "question": "Tại sao hệ thống cho phép điều này?", "answer": "Câu trả lời tầng 4..." },
-    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi nằm ở đâu?", "answer": "Câu trả lời tầng 5 (Root Cause)..." }
+    { "level": "1. Triệu chứng bề mặt", "question": "Tại sao xảy ra điều này?", "answer": "Câu trả lời phân tích đầy đủ tầng 1." },
+    { "level": "2. Nguyên nhân trực tiếp", "question": "Tại sao lại có nguyên nhân đó?", "answer": "Câu trả lời phân tích đầy đủ tầng 2." },
+    { "level": "3. Nguyên nhân sâu xa", "question": "Tại sao yếu tố đó tồn tại?", "answer": "Câu trả lời phân tích đầy đủ tầng 3." },
+    { "level": "4. Nguyên nhân hệ thống", "question": "Tại sao hệ thống cho phép điều này?", "answer": "Câu trả lời phân tích đầy đủ tầng 4." },
+    { "level": "5. Root Cause (Gốc rễ)", "question": "Bản chất cốt lõi nằm ở đâu?", "answer": "Câu trả lời phân tích đầy đủ tầng 5 gốc rễ." }
   ],
   "whatIf": {
-    "scenario": "Tình huống giả định đảo ngược hoặc thay đổi biến số chính...",
+    "scenario": "Tình huống giả định đảo ngược hoặc thay đổi biến số chính trong sự kiện.",
     "consequences": [
-      "Hệ quả phi trực giác 1",
-      "Hệ quả phi trực giác 2",
-      "Hệ quả phi trực giác 3"
+      "Hệ quả phi trực giác thứ nhất được mô tả chi tiết.",
+      "Hệ quả phi trực giác thứ hai được mô tả chi tiết.",
+      "Hệ quả phi trực giác thứ ba được mô tả chi tiết."
     ]
   },
   "systemDynamics": {
-    "nodes": ["Node 1", "Node 2", "Node 3", "Node 4", "Node 5"],
-    "directImpact": "Tác động trực tiếp đến các thành tố...",
-    "indirectImpact": "Tác động gián tiếp xuyên suốt hệ thống...",
-    "feedbackLoop": "Mô tả vòng lặp phản hồi tăng cường (Reinforcing) hoặc cân bằng (Balancing)..."
+    "nodes": ["Thành tố 1", "Thành tố 2", "Thành tố 3", "Thành tố 4", "Thành tố 5"],
+    "directImpact": "Tác động trực tiếp đến các thành tố chủ chốt trong hệ thống.",
+    "indirectImpact": "Tác động gián tiếp lan tỏa xuyên suốt các bộ phận.",
+    "feedbackLoop": "Mô tả vòng lặp phản hồi tăng cường hoặc cân bằng tạo nên kết quả."
   },
   "firstPrinciples": {
-    "brokenAssumptions": "Giả định ngầm định bị phá vỡ...",
-    "fundamentalTruths": "Sự thật nguyên lý gốc bất biến...",
-    "reconstructedLogic": "Logic xây dựng lại từ nền tảng vững chắc..."
+    "brokenAssumptions": "Giả định ngầm định sai lầm bị phá vỡ hoàn toàn.",
+    "fundamentalTruths": "Sự thật nguyên lý gốc bất biến làm nền tảng.",
+    "reconstructedLogic": "Logic xây dựng lại từ nền tảng nguyên lý gốc vững chắc."
   },
   "contrarianThinking": {
-    "argFor": "Tại sao quan điểm này đúng? Lập luận ủng hộ...",
-    "argAgainst": "Tại sao có thể sai? Lập luận phản biện sắc sảo...",
-    "conditions": "Điều kiện cần và đủ để quan điểm này đúng...",
-    "exceptions": "Các trường hợp ngoại lệ quan trọng...",
-    "synthesis": "Kết luận tổng hợp đa chiều, cân bằng thực tế..."
+    "argFor": "Lập luận ủng hộ quan điểm này dựa trên các bằng chứng thực tế.",
+    "argAgainst": "Lập luận phản biện sắc sảo chỉ ra các rủi ro tiềm ẩn.",
+    "conditions": "Điều kiện cần và đủ để quan điểm này phát huy tối đa hiệu quả.",
+    "exceptions": "Các trường hợp ngoại lệ quan trọng cần hết sức lưu ý.",
+    "synthesis": "Kết luận tổng hợp đa chiều giúp đưa ra quyết định tối ưu."
   },
   "predictions": {
-    "oneMonth": "Dự đoán diễn biến trong 1 tháng tới...",
-    "oneYear": "Dự đoán diễn biến trong 1 năm tới...",
-    "fiveYears": "Dự đoán dài hạn trong 5 năm tới...",
-    "blindSpots": "Điểm mù và giả thiết cần theo dõi kiểm chứng thực tế..."
+    "oneMonth": "Dự đoán diễn biến ngắn hạn trong vòng 1 tháng tới.",
+    "oneYear": "Dự đoán diễn biến trung hạn trong vòng 1 năm tới.",
+    "fiveYears": "Dự đoán tác động dài hạn trong vòng 5 năm tới.",
+    "blindSpots": "Điểm mù và các giả thiết cần liên tục theo dõi kiểm chứng."
   },
   "actionTakeaways": [
-    "Bài học hành động cụ thể 1",
-    "Bài học hành động cụ thể 2",
-    "Bài học hành động cụ thể 3"
+    "Bài học hành động cụ thể thứ nhất có thể áp dụng ngay.",
+    "Bài học hành động cụ thể thứ hai giúp tối ưu quy trình.",
+    "Bài học hành động cụ thể thứ ba tạo lợi thế lâu dài."
   ]
 }
 \`\`\``;
