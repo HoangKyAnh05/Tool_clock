@@ -10734,7 +10734,9 @@ function initBrainChainTab() {
       const targetTab = btn.getAttribute('data-bc-tab');
 
       document.querySelectorAll('.bc-tab-content').forEach(p => p.style.display = 'none');
-      if (targetTab === 'chain') document.getElementById('bcPaneTabChain').style.display = 'block';
+      if (targetTab === 'exam-breakdown') document.getElementById('bcPaneTabExamBreakdown').style.display = 'block';
+      else if (targetTab === 'vocab-table') document.getElementById('bcPaneTabVocabTable').style.display = 'block';
+      else if (targetTab === 'chain') document.getElementById('bcPaneTabChain').style.display = 'block';
       else if (targetTab === 'effects') document.getElementById('bcPaneTabEffects').style.display = 'block';
       else if (targetTab === 'whys') document.getElementById('bcPaneTabWhys').style.display = 'block';
       else if (targetTab === 'system') document.getElementById('bcPaneTabSystem').style.display = 'block';
@@ -10745,6 +10747,25 @@ function initBrainChainTab() {
       if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.08);
     });
   });
+
+  // Question Breakdown expand/collapse buttons
+  const btnExpandAll = document.getElementById('btnBcExpandAllQuestions');
+  if (btnExpandAll) {
+    btnExpandAll.onclick = () => {
+      document.querySelectorAll('.bc-question-body').forEach(el => el.style.display = 'flex');
+      document.querySelectorAll('.bc-question-toggle-icon').forEach(el => el.textContent = '▲');
+      if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.1);
+    };
+  }
+
+  const btnCollapseAll = document.getElementById('btnBcCollapseAllQuestions');
+  if (btnCollapseAll) {
+    btnCollapseAll.onclick = () => {
+      document.querySelectorAll('.bc-question-body').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.bc-question-toggle-icon').forEach(el => el.textContent = '▼');
+      if (typeof playTone === 'function') playTone(450, 0.05, 'sine', 0.1);
+    };
+  }
 
   // User Notes auto-save
   const notesInput = document.getElementById('bcUserNotesInput');
@@ -11019,33 +11040,6 @@ function setupBcImageHandlers() {
   if (btnPasteImage) {
     btnPasteImage.addEventListener('click', () => pasteBcImageToActiveEvent());
   }
-
-  // Global clipboard paste listener for Modal
-  document.addEventListener('paste', async (e) => {
-    const bcModal = document.getElementById('bcEventModal');
-    if (bcModal && bcModal.classList.contains('active')) {
-      const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
-      if (items) {
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].type && items[i].type.indexOf('image') !== -1) {
-            const file = items[i].getAsFile();
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (ev) => {
-                if (typeof window.setBcModalImage === 'function') {
-                  window.setBcModalImage(ev.target.result);
-                }
-                if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
-              };
-              reader.readAsDataURL(file);
-              e.preventDefault();
-              return;
-            }
-          }
-        }
-      }
-    }
-  });
 
   const btnViewImage = document.getElementById('btnBcViewImage');
   if (btnViewImage) {
@@ -11565,18 +11559,18 @@ function renderBcActiveEvent(ev) {
     };
   }
 
-  // Core Chain
+  // Core Chain formatted nodes
   const nodeA = document.getElementById('bcNodeTextA');
   const nodeB = document.getElementById('bcNodeTextB');
   const nodeC = document.getElementById('bcNodeTextC');
   const nodeD = document.getElementById('bcNodeTextD');
   const nodeInsight = document.getElementById('bcNodeTextInsight');
 
-  if (nodeA) nodeA.textContent = ev.coreChain?.a || fullAnswerText || 'Bước A: Khởi nguồn...';
-  if (nodeB) nodeB.textContent = ev.coreChain?.b || 'Chưa có phân tích... Bấm "📥 Nạp JSON AI" để nạp kết quả.';
-  if (nodeC) nodeC.textContent = ev.coreChain?.c || 'Chưa có phân tích...';
-  if (nodeD) nodeD.textContent = ev.coreChain?.d || 'Chưa có phân tích...';
-  if (nodeInsight) nodeInsight.textContent = ev.coreChain?.insight || 'Chưa có đúc kết insight...';
+  if (nodeA) nodeA.innerHTML = formatChainText(ev.coreChain?.a || fullAnswerText || 'Bước A: Khởi nguồn...');
+  if (nodeB) nodeB.innerHTML = formatChainText(ev.coreChain?.b || 'Chưa có phân tích... Bấm "📥 Nạp JSON AI" để nạp kết quả.');
+  if (nodeC) nodeC.innerHTML = formatChainText(ev.coreChain?.c || 'Chưa có phân tích...');
+  if (nodeD) nodeD.innerHTML = formatChainText(ev.coreChain?.d || 'Chưa có phân tích...');
+  if (nodeInsight) nodeInsight.innerHTML = formatChainText(ev.coreChain?.insight || 'Chưa có đúc kết insight...');
 
   // Multi-order Effects
   const effImm = document.getElementById('bcEffectImmediate');
@@ -11692,8 +11686,443 @@ function renderBcActiveEvent(ev) {
     notesInput.value = ev.userNotes || '';
   }
 
+  // Render Question by Question breakdown & Vocab table
+  renderBcQuestionsBreakdown(ev);
+  renderBcVocabTable(ev);
+
   applyBcPracticeStep();
   setupTextSelectionSearch(document.getElementById('bcActiveWorkspace'), 'bc');
+}
+
+function formatChainText(rawText) {
+  if (!rawText) return '...';
+  const text = String(rawText).trim();
+
+  let items = [];
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  
+  if (lines.length > 1) {
+    items = lines.map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
+  } else if (text.includes(' - ') || text.includes(' • ')) {
+    items = text.split(/\s+[-•*]\s+(?=[A-Za-z0-9\(\[])/).map(s => s.trim().replace(/^[-•*]\s*/, '')).filter(Boolean);
+  }
+
+  if (items.length <= 1) {
+    return escapeHtml(text);
+  }
+
+  return items.map((item) => {
+    const match = item.match(/^([^:\-–]+[:\-–])\s*(.*)$/s) || item.match(/^(\d+[\.\)]\s+[^:\-–]+[:\-–]?)\s*(.*)$/s);
+    if (match) {
+      const headerPart = match[1].trim();
+      const bodyPart = match[2].trim();
+      return `
+        <div style="background: rgba(15, 23, 42, 0.65); border-left: 3.5px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+          <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+            <span>📍</span> <span>${escapeHtml(headerPart)}</span>
+          </div>
+          <div style="color: #f1f5f9; padding-left: 2px;">${escapeHtml(bodyPart)}</div>
+        </div>
+      `;
+    }
+    return `
+      <div style="background: rgba(15, 23, 42, 0.45); border-left: 3px solid rgba(167, 139, 250, 0.4); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; color: #f1f5f9;">
+        <span style="color: #a78bfa; margin-right: 6px; font-weight: 700;">▪</span>${escapeHtml(item)}
+      </div>
+    `;
+  }).join('');
+}
+
+function parseQuestionsFromEvent(ev) {
+  if (!ev) return [];
+  if (Array.isArray(ev.questionsBreakdown) && ev.questionsBreakdown.length > 0) {
+    return ev.questionsBreakdown;
+  }
+
+  const rawA = ev.coreChain?.a || '';
+  const rawB = ev.coreChain?.b || '';
+  const rawC = ev.coreChain?.c || '';
+  const rawD = ev.coreChain?.d || '';
+  const rawAns = ev.answer || '';
+  const rawInsight = ev.coreChain?.insight || '';
+
+  const splitItems = (str) => {
+    if (!str) return [];
+    const cleaned = str.replace(/^BƯỚC\s*\d[^:]*:\s*/i, '').trim();
+    if (cleaned.includes(' - ')) {
+      return cleaned.split(/\s+-\s+(?=[A-Za-z0-9\(\[])/).map(s => s.trim().replace(/^-\s*/, '')).filter(Boolean);
+    }
+    return cleaned.split(/\r?\n/).map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
+  };
+
+  const aItems = splitItems(rawA);
+  const bItems = splitItems(rawB);
+  const cItems = splitItems(rawC);
+  const dItems = splitItems(rawD);
+
+  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') || /Question\s*\d|Questions\s*\d|LISTENING|READING|Transcript|Bài làm/i.test(ev.title || ev.question || '');
+
+  if (aItems.length === 0 && !isExam) {
+    return [];
+  }
+
+  // Answer map
+  const ansMap = {};
+  if (rawAns) {
+    const ansParts = rawAns.split(/[|;\n]/).map(s => s.trim()).filter(Boolean);
+    ansParts.forEach(p => {
+      const m = p.match(/^(\d+(?:-\d+)?|\(Q\d+\)|Q\d+)[\.:\s-]+(.*)$/i);
+      if (m) {
+        ansMap[m[1].toLowerCase().replace(/[^\d-]/g, '')] = m[2].trim();
+      }
+    });
+  }
+
+  const questions = [];
+  const baseItems = aItems.length > 0 ? aItems : (bItems.length > 0 ? bItems : (rawAns ? rawAns.split(/[|;\n]/).filter(Boolean) : []));
+
+  baseItems.forEach((item, idx) => {
+    let qNo = `${idx + 1}`;
+    let qTitle = `Câu ${idx + 1}`;
+    let qEvidence = item;
+
+    const headerMatch = item.match(/^([^:\-–]+[:\-–])\s*(.*)$/s);
+    if (headerMatch) {
+      qTitle = headerMatch[1].replace(/[:\-–]/g, '').trim();
+      qEvidence = headerMatch[2].trim();
+      const noMatch = qTitle.match(/(?:Q|Question|Câu)\s*(\d+(?:-\d+)?)/i) || qTitle.match(/\((\d+(?:-\d+)?)\)/) || qTitle.match(/^(\d+(?:-\d+)?)/);
+      if (noMatch) qNo = noMatch[1];
+    }
+
+    const bText = bItems[idx] || (bItems.find(b => b.toLowerCase().includes(qNo) || (qTitle.length > 3 && b.toLowerCase().includes(qTitle.toLowerCase()))) || '');
+    const cText = cItems[idx] || (cItems.find(c => c.toLowerCase().includes(qNo) || (qTitle.length > 3 && c.toLowerCase().includes(qTitle.toLowerCase()))) || '');
+    const dText = dItems[idx] || (dItems.find(d => d.toLowerCase().includes(qNo) || (qTitle.length > 3 && d.toLowerCase().includes(qTitle.toLowerCase()))) || '');
+    const matchedAns = ansMap[qNo] || '';
+
+    questions.push({
+      questionNo: qNo,
+      questionTitle: qTitle,
+      correctAnswer: matchedAns,
+      evidence: qEvidence,
+      paraphrase: bText,
+      whyCorrect: cText,
+      whyIncorrect: dText,
+      tips: rawInsight || ''
+    });
+  });
+
+  return questions;
+}
+
+function renderBcQuestionsBreakdown(ev) {
+  const container = document.getElementById('bcQuestionsBreakdownContainer');
+  const subtabBtn = document.getElementById('bcSubtabBtnExamBreakdown');
+  const countLabel = document.getElementById('bcExamQuestionsCount');
+  if (!container) return;
+
+  container.innerHTML = '';
+  if (!ev) {
+    if (subtabBtn) subtabBtn.style.display = 'none';
+    return;
+  }
+
+  const questions = parseQuestionsFromEvent(ev);
+  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') || questions.length > 0;
+
+  if (!isExam && questions.length === 0) {
+    if (subtabBtn) subtabBtn.style.display = 'none';
+    return;
+  }
+
+  if (subtabBtn) {
+    subtabBtn.style.display = 'inline-flex';
+  }
+
+  if (countLabel) {
+    countLabel.textContent = `${questions.length} câu hỏi / đề mục phân tích`;
+  }
+
+  if (questions.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 24px; color: var(--muted); background: rgba(15, 23, 42, 0.4); border-radius: 8px;">
+        Chưa có câu hỏi chi tiết nào được phân tích. Hãy nạp đề thi hoặc bấm "⚡ Tạo Prompt AI" để nhận mã JSON!
+      </div>
+    `;
+    return;
+  }
+
+  questions.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'bc-question-item-card';
+    card.style.cssText = 'background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.3); transition: all 0.2s ease;';
+
+    const qNo = q.questionNo || `${idx + 1}`;
+    const qTitle = q.questionTitle || `Câu ${qNo}`;
+    const ans = q.correctAnswer || '';
+    const evidence = q.evidence || '';
+    const paraphrase = q.paraphrase || '';
+    const whyCorrect = q.whyCorrect || '';
+    const whyIncorrect = q.whyIncorrect || '';
+    const tips = q.tips || '';
+
+    card.innerHTML = `
+      <!-- Card Header -->
+      <div class="bc-question-header" style="padding: 12px 16px; background: rgba(30, 41, 59, 0.6); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="background: linear-gradient(135deg, #0284c7 0%, #6366f1 100%); color: #fff; font-weight: 800; font-size: 11.5px; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(2,132,199,0.4);">
+            Q${escapeHtml(qNo)}
+          </span>
+          <span style="font-size: 14px; font-weight: 700; color: #f8fafc;">${escapeHtml(qTitle)}</span>
+          ${ans ? `<span style="background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); font-size: 11.5px; font-weight: 700; padding: 2px 10px; border-radius: 6px;">✅ Đáp án: ${escapeHtml(ans)}</span>` : ''}
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="bc-question-toggle-icon" style="font-size: 11px; color: var(--muted); transition: transform 0.2s ease;">▲</span>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="bc-question-body" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+        ${evidence ? `
+          <div style="background: rgba(245, 158, 11, 0.08); border-left: 3.5px solid #f59e0b; border-radius: 6px; padding: 9px 13px;">
+            <div style="font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>📍 VÙNG CHỨA THÔNG TIN (TRANSCRIPT / EVIDENCE):</span>
+            </div>
+            <div style="font-size: 13px; color: #fef08a; line-height: 1.5; font-style: italic;">
+              ${escapeHtml(evidence)}
+            </div>
+          </div>
+        ` : ''}
+
+        ${paraphrase ? `
+          <div style="background: rgba(56, 189, 248, 0.08); border-left: 3.5px solid #38bdf8; border-radius: 6px; padding: 9px 13px;">
+            <div style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>🔍 ĐỐI CHIẾU TỪ KHÓA & PARAPHRASE:</span>
+            </div>
+            <div style="font-size: 13px; color: #e0f2fe; line-height: 1.5;">
+              ${escapeHtml(paraphrase)}
+            </div>
+          </div>
+        ` : ''}
+
+        ${whyCorrect ? `
+          <div style="background: rgba(16, 185, 129, 0.08); border-left: 3.5px solid #10b981; border-radius: 6px; padding: 9px 13px;">
+            <div style="font-size: 11px; font-weight: 800; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>💡 TẠI SAO ĐÁP ÁN NÀY ĐÚNG:</span>
+            </div>
+            <div style="font-size: 13px; color: #d1fae5; line-height: 1.5;">
+              ${escapeHtml(whyCorrect)}
+            </div>
+          </div>
+        ` : ''}
+
+        ${whyIncorrect ? `
+          <div style="background: rgba(244, 63, 94, 0.08); border-left: 3.5px solid #f43f5e; border-radius: 6px; padding: 9px 13px;">
+            <div style="font-size: 11px; font-weight: 800; color: #fb7185; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>⚠️ BẺ KHÓA BẪY & TẠI SAO CÁC CÂU KHÁC SAI:</span>
+            </div>
+            <div style="font-size: 13px; color: #ffe4e6; line-height: 1.5;">
+              ${escapeHtml(whyIncorrect)}
+            </div>
+          </div>
+        ` : ''}
+
+        ${tips ? `
+          <div style="background: rgba(139, 92, 246, 0.08); border-left: 3.5px solid #8b5cf6; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #ddd6fe; display: flex; align-items: center; gap: 6px;">
+            <span style="font-weight: 800; color: #a78bfa;">💎 Mẹo làm bài:</span> <span>${escapeHtml(tips)}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    const headerEl = card.querySelector('.bc-question-header');
+    const bodyEl = card.querySelector('.bc-question-body');
+    const iconEl = card.querySelector('.bc-question-toggle-icon');
+    if (headerEl && bodyEl && iconEl) {
+      headerEl.onclick = () => {
+        const isHidden = bodyEl.style.display === 'none';
+        bodyEl.style.display = isHidden ? 'flex' : 'none';
+        iconEl.textContent = isHidden ? '▲' : '▼';
+      };
+    }
+
+    container.appendChild(card);
+  });
+}
+
+function parseVocabAndParaphraseFromEvent(ev) {
+  if (!ev) return { vocab: [], paraphrase: [], structures: [] };
+
+  let vocab = Array.isArray(ev.vocabularyTable) ? ev.vocabularyTable : [];
+  let paraphrase = Array.isArray(ev.paraphraseTable) ? ev.paraphraseTable : [];
+  let structures = Array.isArray(ev.grammarStructures) ? ev.grammarStructures : [];
+
+  // Fallback parsing for paraphrase if not in array
+  if (paraphrase.length === 0) {
+    const rawB = ev.coreChain?.b || '';
+    const lines = rawB.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const items = lines.length > 1 ? lines : (rawB.includes(' - ') ? rawB.split(/\s+-\s+(?=[A-Za-z0-9'"`\[])/) : [rawB]);
+
+    items.forEach(item => {
+      const cleaned = item.replace(/^[-•*]\s*/, '').trim();
+      const match = cleaned.match(/['"`]([^'"`]+)['"`]\s*(?:➔|↔|->|=|–)\s*['"`]([^'"`]+)['"`]\s*(?:\((.*)\)|:?\s*(.*))?/) ||
+                    cleaned.match(/^([^➔↔=–]+)\s*(?:➔|↔|->|=|–)\s*([^:\(]+)(?:\((.*)\)|:?\s*(.*))?/);
+      if (match) {
+        paraphrase.push({
+          questionKeyword: match[1].trim(),
+          passageEquivalent: match[2].trim(),
+          explanation: (match[3] || match[4] || '').trim()
+        });
+      }
+    });
+  }
+
+  // Fallback for vocabulary if not in array
+  if (vocab.length === 0 && (ev.category?.includes('đề thi') || ev.category?.includes('Exam') || ev.title?.includes('IELTS'))) {
+    const rawSynth = ev.contrarianThinking?.synthesis || '';
+    if (rawSynth.includes(':')) {
+      rawSynth.split('|').forEach(part => {
+        const p = part.trim();
+        const m = p.match(/^([^:=]+)[:=]\s*(.*)$/);
+        if (m) {
+          vocab.push({
+            word: m[1].trim(),
+            type: 'collocation',
+            contextSentence: '',
+            vietnameseMeaning: m[2].trim()
+          });
+        }
+      });
+    }
+  }
+
+  return { vocab, paraphrase, structures };
+}
+
+function renderBcVocabTable(ev) {
+  const subtabBtn = document.getElementById('bcSubtabBtnVocabTable');
+  const paraWrap = document.getElementById('bcParaphraseTableWrap');
+  const vocabWrap = document.getElementById('bcVocabTableWrap');
+  const structWrap = document.getElementById('bcStructuresListWrap');
+  const paraBadge = document.getElementById('bcParaphraseCountBadge');
+  const vocabBadge = document.getElementById('bcVocabCountBadge');
+
+  if (!paraWrap || !vocabWrap) return;
+
+  if (!ev) {
+    if (subtabBtn) subtabBtn.style.display = 'none';
+    return;
+  }
+
+  const { vocab, paraphrase, structures } = parseVocabAndParaphraseFromEvent(ev);
+  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') || vocab.length > 0 || paraphrase.length > 0;
+
+  if (!isExam && vocab.length === 0 && paraphrase.length === 0) {
+    if (subtabBtn) subtabBtn.style.display = 'none';
+    return;
+  }
+
+  if (subtabBtn) subtabBtn.style.display = 'inline-flex';
+  if (paraBadge) paraBadge.textContent = `${paraphrase.length} Cặp từ`;
+  if (vocabBadge) vocabBadge.textContent = `${vocab.length} Từ vựng`;
+
+  // 1. Render Paraphrase Table
+  if (paraphrase.length > 0) {
+    let html = `
+      <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left;">
+        <thead>
+          <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 2px solid rgba(251, 191, 36, 0.3);">
+            <th style="padding: 10px 12px; color: #fbbf24; font-weight: 700; width: 30%;">🔍 TỪ KHÓA TRONG ĐỀ BÀI</th>
+            <th style="padding: 10px 12px; color: #34d399; font-weight: 700; width: 35%;">🎯 CỤM TỪ TRONG BÀI THI</th>
+            <th style="padding: 10px 12px; color: #38bdf8; font-weight: 700; width: 35%;">💡 GIẢI THÍCH & NGỮ CẢNH</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    paraphrase.forEach((p, idx) => {
+      const bg = idx % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'rgba(30, 41, 59, 0.3)';
+      html += `
+        <tr style="background: ${bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 10px 12px; color: #fde68a; font-weight: 600;">${escapeHtml(p.questionKeyword || '')}</td>
+          <td style="padding: 10px 12px; color: #6ee7b7; font-weight: 600;">${escapeHtml(p.passageEquivalent || '')}</td>
+          <td style="padding: 10px 12px; color: #cbd5e1; line-height: 1.45;">${escapeHtml(p.explanation || 'Đối chiếu trực tiếp')}</td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table>`;
+    paraWrap.innerHTML = html;
+  } else {
+    paraWrap.innerHTML = `
+      <div style="padding: 16px; color: var(--muted); text-align: center; font-size: 12.5px;">
+        Chưa có dữ liệu bảng Paraphrase. Hãy nạp JSON bài thi mới để xem bảng từ khóa đối chiếu!
+      </div>
+    `;
+  }
+
+  // 2. Render Vocabulary Table
+  if (vocab.length > 0) {
+    let html = `
+      <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left;">
+        <thead>
+          <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 2px solid rgba(56, 189, 248, 0.3);">
+            <th style="padding: 10px 12px; color: #38bdf8; font-weight: 700; width: 22%;">📖 TỪ VỰNG / PHRASAL VERB</th>
+            <th style="padding: 10px 12px; color: #a78bfa; font-weight: 700; width: 12%;">LOẠI TỪ</th>
+            <th style="padding: 10px 12px; color: #fde68a; font-weight: 700; width: 38%;">💬 CÂU GỐC TRONG BÀI THI</th>
+            <th style="padding: 10px 12px; color: #34d399; font-weight: 700; width: 28%;">🇻🇳 Ý NGHĨA ANH - VIỆT</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    vocab.forEach((v, idx) => {
+      const bg = idx % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'rgba(30, 41, 59, 0.3)';
+      const typeBadgeColor = v.type?.includes('v') ? '#f43f5e' : (v.type?.includes('adj') ? '#fbbf24' : '#a78bfa');
+      html += `
+        <tr style="background: ${bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 10px 12px; color: #e0f2fe; font-weight: 700; font-size: 13px;">${escapeHtml(v.word || '')}</td>
+          <td style="padding: 10px 12px;">
+            <span style="background: rgba(255,255,255,0.08); color: ${typeBadgeColor}; border: 1px solid rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+              ${escapeHtml(v.type || 'n/a')}
+            </span>
+          </td>
+          <td style="padding: 10px 12px; color: #fef08a; font-style: italic; line-height: 1.45;">"${escapeHtml(v.contextSentence || '')}"</td>
+          <td style="padding: 10px 12px; color: #a7f3d0; line-height: 1.45; font-weight: 500;">
+            ${escapeHtml(v.vietnameseMeaning || v.englishMeaning || '')}
+            ${v.englishMeaning && v.vietnameseMeaning ? `<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">(${escapeHtml(v.englishMeaning)})</div>` : ''}
+          </td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table>`;
+    vocabWrap.innerHTML = html;
+  } else {
+    vocabWrap.innerHTML = `
+      <div style="padding: 16px; color: var(--muted); text-align: center; font-size: 12.5px;">
+        Chưa có danh sách từ vựng chi tiết. Hãy nạp JSON bài thi mới để xem bảng từ vựng!
+      </div>
+    `;
+  }
+
+  // 3. Render Grammar Structures
+  if (structWrap) {
+    if (structures.length > 0) {
+      let html = '';
+      structures.forEach(s => {
+        html += `
+          <div style="background: rgba(30, 41, 59, 0.5); border-left: 3.5px solid #a78bfa; border-radius: 6px; padding: 10px 14px;">
+            <div style="font-weight: 700; color: #c4b5fd; font-size: 13px; margin-bottom: 3px;">✨ ${escapeHtml(s.structure || '')}</div>
+            ${s.exampleInScript ? `<div style="font-size: 12.5px; color: #fef08a; font-style: italic; margin-bottom: 2px;">Ví dụ: "${escapeHtml(s.exampleInScript)}"</div>` : ''}
+            ${s.explanation ? `<div style="font-size: 12px; color: #cbd5e1;">➔ ${escapeHtml(s.explanation)}</div>` : ''}
+          </div>
+        `;
+      });
+      structWrap.innerHTML = html;
+    } else {
+      structWrap.innerHTML = `
+        <div style="padding: 12px; color: var(--muted); text-align: center; font-size: 12px;">
+          Chưa có mẫu câu ngữ pháp nào được ghi chú.
+        </div>
+      `;
+    }
+  }
 }
 
 function applyBcPracticeStep() {
@@ -11731,12 +12160,14 @@ function buildBrainChainPrompt(event) {
     category.includes('Exam') || /Question\s*\d|Questions\s*\d|Transcript|LISTENING|READING|WRITING|Bài làm|Task\s*\d|Label the map|Keyword Table|Choose TWO letters/i.test(rawInput);
 
   if (isExamExplanation) {
-    return `Bạn là BẬC THẦY GIẢI ĐỀ & GIẢI THÍCH CHI TIẾT ĐÁP ÁN ĐỀ THI (EXAM MASTER & EVIDENCE DECODER - IELTS / TOEIC / THPTQG / SAT / TOÁN / KHOA HỌC).
+    return `Bạn là BẬC THẦY GIẢI ĐỀ, ĐỊNH VỊ DẪN CHỨNG & TỪ VỰNG HỌC THUẬT (EXAM MASTER, EVIDENCE DECODER & VOCABULARY EXPERT - IELTS / TOEIC / THPTQG / SAT / TOÁN / KHOA HỌC).
 Nhiệm vụ của bạn là nhận toàn bộ nội dung đề bài (Bao gồm Script / Transcript nghe, Bài đọc Reading, Danh sách câu hỏi, Hình ảnh bản đồ/biểu đồ, Bài làm & Đáp án nếu có) và thực hiện BẺ KHÓA LOGIC TOÀN DIỆN:
-1. ĐỊNH VỊ CHÍNH XÁC VÙNG CHỨA THÔNG TIN (EVIDENCE LOCATOR): Trích dẫn từng câu chữ cụ thể trong bài đọc/transcript là nguồn gốc sinh ra đáp án.
-2. GIẢI THÍCH TẠI SAO ĐÁP ÁN NÀY ĐÚNG (LOGICAL EXPLANATION): Phân tích ngữ nghĩa, ngữ cảnh, từ khóa đồng nghĩa (Paraphrasing Mapping) và mối liên hệ không gian/thời gian.
-3. BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI (DISTRACTOR TRAP ANALYSIS): Chỉ rõ người ra đề đã gài bẫy như thế nào (thông tin bị phủ định, đổi thì quá khứ/hiện tại, nhắc tới đối tượng khác, hoặc không có trong bài).
-4. XÂU CHUỖI TOÀN BỘ VÀO SCHEMA JSON BRAIN CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT) ĐỂ HIỂN THỊ TRỰC QUAN.
+1. ĐỊNH VỊ VÙNG CHỨA THÔNG TIN TỪNG CÂU (EVIDENCE LOCATOR): Trích dẫn từng câu chữ cụ thể trong bài đọc/transcript là nguồn gốc sinh ra đáp án.
+2. TÁCH BIỆT GIẢI THÍCH CHO TỪNG CÂU HỎI (QUESTIONS BREAKDOWN): Mỗi câu hỏi có thẻ riêng với Câu hỏi, Đáp án đúng, Dẫn chứng, Paraphrase, Tại sao đúng, Bẫy nhiễu & Tại sao các câu khác sai.
+3. BẢNG TỪ KHÓA & PARAPHRASING MAPPING (KEYWORD TABLE - TASK 1): Đối chiếu toàn bộ các cặp từ khóa trong câu hỏi vs các cụm từ tương đương trong bài nghe/đọc.
+4. BẢNG TỪ VỰNG, THÀNH NGỮ & CỤM TỪ TRỌNG TÂM (VOCABULARY TABLE - TASK 2): Trích xuất ít nhất 8-15 từ vựng/cụm từ/phrasal verbs hay nhất trong Transcript/Bài đọc kèm loại từ (n, v, adj, adv, idiom, phrasal verb), câu gốc trong bài và nghĩa Anh - Việt.
+5. CẤU TRÚC NGỮ PHÁP & MẪU CÂU ĂN ĐIỂM (KEY STRUCTURES): Trích xuất các cấu trúc hay có thể ứng dụng vào Speaking & Writing.
+6. XÂU CHUỖI TOÀN BỘ VÀO SCHEMA JSON BRAIN CHAIN ĐỂ HIỂN THỊ TRỰC QUAN TRÊN ỨNG DỤNG.
 
 🎯 NỘI DUNG ĐỀ BÀI CẦN PHÂN TÍCH & GIẢI THÍCH CHI TIẾT:
 "${rawInput}"
@@ -11747,7 +12178,7 @@ Nhiệm vụ của bạn là nhận toàn bộ nội dung đề bài (Bao gồm 
 ⛔ QUY TẮC BẮT BUỘC: TUYỆT ĐỐI KHÔNG DÙNG DẤU BA CHẤM "..." HOẶC CẮT BỚT NỘI DUNG
 1. KHÔNG BAO GIỜ dùng dấu ba chấm "..." để rút gọn câu hay bỏ lửng ý trong BẤT KỲ trường nào của JSON.
 2. DẪN CHỨNG ĐẦY ĐỦ 100%: Khi trích dẫn Transcript / Bài đọc, PHẢI TRÍCH ĐẦY ĐỦ CÂU NGUYÊN VĂN KHÔNG THIẾU TỪ NÀO.
-3. Mọi phần giải thích tại sao đúng, tại sao sai, bẫy đề thi PHẢI viết hoàn chỉnh, rõ ràng, chi tiết và có căn cứ vững chắc.
+3. BẢNG TỪ VỰNG & PARAPHRASE PHẢI ĐẦY ĐỦ: Liệt kê chi tiết toàn bộ các từ vựng mới và cặp paraphrase, không được viết tắt hay để trống.
 
 ⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
 Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau:
@@ -11758,7 +12189,130 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
   "title": "Tiêu đề đề bài ngắn gọn (ví dụ: [IELTS LISTENING - Croft Valley Park Map] Giải Thích Đáp Án Chi Tiết)",
   "answer": "BẢNG TỔNG HỢP ĐÁP ÁN & DẪN CHỨNG TÓM TẮT (Ghi rõ số câu + Đáp án + Trích dẫn câu gốc ngắn gọn)",
   "category": "${category}",
-  "context": "Giải mã chi tiết vùng chứa đáp án, bảng từ khóa đồng nghĩa (Keyword Mapping) và phân tích bẫy đề thi.",
+  "context": "Giải mã chi tiết vùng chứa đáp án, bảng từ khóa đồng nghĩa (Keyword Mapping) và bảng từ vựng học thuật.",
+  "questionsBreakdown": [
+    {
+      "questionNo": "1",
+      "questionTitle": "Tên câu hỏi (ví dụ: Cafe)",
+      "correctAnswer": "Đáp án đúng (ví dụ: D - Next to old museum & overlooking the lake)",
+      "evidence": "Transcript: 'The cafe continues to serve and is still in the same place, looking out over the lake and next to the old museum.'",
+      "paraphrase": "Next to old museum ➔ vị trí liền kề bảo tàng cũ; looking out over the lake ➔ nhìn thẳng ra hồ nước",
+      "whyCorrect": "Trên bản đồ, điểm D thỏa mãn cả 2 điều kiện: cạnh bảo tàng cũ và nhìn ra hồ.",
+      "whyIncorrect": "Các vị trí khác không tiếp giáp đồng thời với cả bảo tàng và hồ.",
+      "tips": "Bắt 2 mốc định vị không gian: 'lake' và 'old museum'."
+    }
+  ],
+  "paraphraseTable": [
+    {
+      "questionKeyword": "No payment is required",
+      "passageEquivalent": "entrance is completely free",
+      "explanation": "Đồng nghĩa trực tiếp: miễn phí vé vào = không cần thanh toán"
+    },
+    {
+      "questionKeyword": "Children must be supervised",
+      "passageEquivalent": "do ask adults not to leave them on their own",
+      "explanation": "Không để trẻ em ở một mình = trẻ phải có người lớn giám sát"
+    },
+    {
+      "questionKeyword": "They are closed at weekends",
+      "passageEquivalent": "open Mondays to Thursdays, hoped to extend to weekend soon",
+      "explanation": "Hiện tại chỉ mở T2-T4 và hy vọng mở cuối tuần sau này = cuối tuần hiện đang đóng cửa"
+    },
+    {
+      "questionKeyword": "They were badly damaged by fire",
+      "passageEquivalent": "damage following the disastrous fire that destroyed western side",
+      "explanation": "disastrous fire destroyed = badly damaged by fire"
+    }
+  ],
+  "vocabularyTable": [
+    {
+      "word": "chair",
+      "type": "n",
+      "contextSentence": "As chair of the town council subcommittee on park facilities,...",
+      "englishMeaning": "the person in charge of a meeting or committee",
+      "vietnameseMeaning": "chủ tịch / người chủ trì cuộc họp hoặc ủy ban"
+    },
+    {
+      "word": "hand out",
+      "type": "phrasal verb",
+      "contextSentence": "So if you could just take a look at the map I handed out,...",
+      "englishMeaning": "to distribute to a group of people",
+      "vietnameseMeaning": "phát tài liệu, phân phát cho mọi người"
+    },
+    {
+      "word": "look out over",
+      "type": "phrasal verb",
+      "contextSentence": "The cafe continues to serve and is still in the same place, looking out over the lake...",
+      "englishMeaning": "to have a view of something from above or opposite",
+      "vietnameseMeaning": "có tầm nhìn hướng thẳng ra (hồ nước, phong cảnh)"
+    },
+    {
+      "word": "out of the way",
+      "type": "idiom / adj",
+      "contextSentence": "as they're a bit out of the way at present",
+      "englishMeaning": "far from the center, difficult to reach",
+      "vietnameseMeaning": "hẻo lánh, ở góc xa, khuất lối đi"
+    },
+    {
+      "word": "in constant use",
+      "type": "collocation",
+      "contextSentence": "It's in constant use during the evenings and holidays...",
+      "englishMeaning": "being used all the time continuously",
+      "vietnameseMeaning": "được sử dụng liên tục không ngừng"
+    },
+    {
+      "word": "lead off (from)",
+      "type": "phrasal verb",
+      "contextSentence": "at the end of a little path that leads off from the main path",
+      "englishMeaning": "to start at a place and go in a particular direction / branch off",
+      "vietnameseMeaning": "rẽ nhánh từ đường chính, bắt nguồn từ"
+    },
+    {
+      "word": "let off steam",
+      "type": "idiom",
+      "contextSentence": "We were aware that we had nowhere for children to let off steam,...",
+      "englishMeaning": "to get rid of excess energy, stress, or strong emotions",
+      "vietnameseMeaning": "xả năng lượng, vui chơi giải tỏa căng thẳng"
+    },
+    {
+      "word": "year-round",
+      "type": "adj / adv",
+      "contextSentence": "It's open year-round, though it closes early in the winter months",
+      "englishMeaning": "operating throughout the entire year",
+      "vietnameseMeaning": "quanh năm, suốt cả năm"
+    },
+    {
+      "word": "disastrous fire",
+      "type": "collocation",
+      "contextSentence": "repair the damage following the disastrous fire that recently destroyed their western side",
+      "englishMeaning": "a destructive fire causing huge damage",
+      "vietnameseMeaning": "vụ hỏa hoạn thảm khốc tàn phá nặng nề"
+    },
+    {
+      "word": "tropical palm trees",
+      "type": "n",
+      "contextSentence": "the collection of tropical palm trees has proved too expensive to replace up to now",
+      "englishMeaning": "palm trees from tropical regions",
+      "vietnameseMeaning": "bộ sưu tập cây cọ nhiệt đới"
+    }
+  ],
+  "grammarStructures": [
+    {
+      "structure": "S + used to + V (inf) ..., but now / at present + S + V ...",
+      "exampleInScript": "They used to be behind the old museum, but we’re now used the space near the south gate...",
+      "explanation": "Cấu trúc tương phản giữa thói quen/vị trí trong quá khứ và hiện tại (rất hay gặp trong IELTS Speaking & Listening)."
+    },
+    {
+      "structure": "prove + adj / to be + adj (Chứng tỏ là / Hóa ra là)",
+      "exampleInScript": "the collection of tropical palm trees has proved too expensive to replace up to now.",
+      "explanation": "Diễn đạt một kết luận hoặc thực tế sau khi đã trải nghiệm hoặc đánh giá chi phí."
+    },
+    {
+      "structure": "ask / require + somebody + not to + V (Yêu cầu ai không làm gì)",
+      "exampleInScript": "we do ask adults not to leave them on their own there.",
+      "explanation": "Mẫu câu quy định lịch sự nhưng mang tính bắt buộc (đồng nghĩa với 'must be supervised')."
+    }
+  ],
   "coreChain": {
     "a": "BƯỚC 1 (ĐỊNH VỊ VÙNG THÔNG TIN - EVIDENCE IN SCRIPT): [Trích dẫn chính xác 100% câu thoại trong Transcript hoặc đoạn văn trong Bài đọc chứa đáp án cho từng câu hỏi, kèm mốc vị trí/dấu hiệu nhận biết]",
     "b": "BƯỚC 2 (BẢNG TỪ KHÓA & PARAPHRASING MAPPING): [Liệt kê chi tiết các cặp từ khóa đối chiếu giữa Đề bài vs Transcript/Bài đọc. Ví dụ: 'No payment' ➔ 'entrance is completely free'; 'supervised' ➔ 'do ask adults not to leave them on their own']",
@@ -12182,11 +12736,12 @@ function setupBcModals() {
   };
 
   window.setBcModalImage = (base64OrArray) => {
-    if (Array.isArray(base64OrArray)) {
-      modalCurrentImages = [...modalCurrentImages, ...base64OrArray.filter(Boolean)];
-    } else if (base64OrArray) {
-      modalCurrentImages.push(base64OrArray);
-    }
+    const list = Array.isArray(base64OrArray) ? base64OrArray.filter(Boolean) : (base64OrArray ? [base64OrArray] : []);
+    list.forEach(img => {
+      if (!modalCurrentImages.includes(img)) {
+        modalCurrentImages.push(img);
+      }
+    });
     updateModalImageDisplay();
   };
 
@@ -12297,8 +12852,7 @@ function setupBcModals() {
     btnModalPasteImage.onclick = async () => {
       const imgData = await getClipboardImageData();
       if (imgData) {
-        modalCurrentImages.push(imgData);
-        updateModalImageDisplay();
+        window.setBcModalImage(imgData);
         if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
       } else {
         // If clipboard is empty, open file picker
