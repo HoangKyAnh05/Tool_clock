@@ -10781,26 +10781,117 @@ function initBrainChainTab() {
 }
 
 // ----------------------------------------------------
-// Brain Chain Image Helpers (Copy, Paste, View Lightbox)
+// Brain Chain Image Helpers (Multi-image Lightbox, Copy, Paste)
 // ----------------------------------------------------
+let bcLightboxImages = [];
+let bcLightboxCurrentIdx = 0;
 let bcLightboxZoomed = false;
+let bcActiveEventImageIndex = 0;
 
-function openBcImageLightbox(imageSrc, title) {
+function updateBcLightboxDisplay(title = '') {
   const modal = document.getElementById('bcImageLightboxModal');
   const img = document.getElementById('bcLightboxImg');
   const titleEl = document.getElementById('bcLightboxTitle');
+  const counterEl = document.getElementById('bcLightboxCounter');
+  const prevBtn = document.getElementById('btnBcLightboxPrev');
+  const nextBtn = document.getElementById('btnBcLightboxNext');
+  const floatingPrev = document.getElementById('btnBcLightboxFloatingPrev');
+  const floatingNext = document.getElementById('btnBcLightboxFloatingNext');
+  const strip = document.getElementById('bcLightboxThumbnailsStrip');
   const zoomBtn = document.getElementById('btnBcLightboxZoomToggle');
-  if (!modal || !img || !imageSrc) return;
 
-  img.src = imageSrc;
-  if (titleEl) titleEl.textContent = title || 'Xem Hình Ảnh Biểu Đồ / Đề Bài';
-  
+  if (!modal || !img || bcLightboxImages.length === 0) return;
+
+  if (bcLightboxCurrentIdx < 0) bcLightboxCurrentIdx = 0;
+  if (bcLightboxCurrentIdx >= bcLightboxImages.length) bcLightboxCurrentIdx = bcLightboxImages.length - 1;
+
+  const currentSrc = bcLightboxImages[bcLightboxCurrentIdx];
+  img.src = currentSrc;
+
+  if (titleEl) {
+    titleEl.textContent = title || 'Xem Hình Ảnh Biểu Đồ / Đề Bài';
+  }
+
+  const hasMultiple = bcLightboxImages.length > 1;
+
+  if (counterEl) {
+    counterEl.style.display = hasMultiple ? 'inline-block' : 'none';
+    counterEl.textContent = `${bcLightboxCurrentIdx + 1} / ${bcLightboxImages.length}`;
+  }
+
+  if (prevBtn) prevBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
+  if (nextBtn) nextBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
+  if (floatingPrev) floatingPrev.style.display = hasMultiple ? 'flex' : 'none';
+  if (floatingNext) floatingNext.style.display = hasMultiple ? 'flex' : 'none';
+
+  // Render thumbnail strip
+  if (strip) {
+    if (hasMultiple) {
+      strip.style.display = 'flex';
+      strip.innerHTML = '';
+      bcLightboxImages.forEach((src, idx) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.style.width = '48px';
+        thumb.style.height = '36px';
+        thumb.style.objectFit = 'cover';
+        thumb.style.borderRadius = '4px';
+        thumb.style.cursor = 'pointer';
+        thumb.style.transition = 'all 0.15s ease';
+        thumb.style.border = idx === bcLightboxCurrentIdx ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.2)';
+        thumb.style.opacity = idx === bcLightboxCurrentIdx ? '1' : '0.6';
+
+        thumb.addEventListener('click', (e) => {
+          e.stopPropagation();
+          bcLightboxCurrentIdx = idx;
+          updateBcLightboxDisplay(title);
+        });
+        strip.appendChild(thumb);
+      });
+    } else {
+      strip.style.display = 'none';
+    }
+  }
+
+  // Reset zoom
   bcLightboxZoomed = false;
   img.style.maxWidth = '100%';
   img.style.maxHeight = '100%';
   img.style.transform = 'scale(1)';
   img.style.cursor = 'zoom-in';
   if (zoomBtn) zoomBtn.textContent = '🔍 Zoom 100%';
+}
+
+function bcLightboxPrev() {
+  if (bcLightboxImages.length <= 1) return;
+  bcLightboxCurrentIdx = (bcLightboxCurrentIdx - 1 + bcLightboxImages.length) % bcLightboxImages.length;
+  updateBcLightboxDisplay(document.getElementById('bcLightboxTitle')?.textContent);
+  if (typeof playTone === 'function') playTone(700, 0.04, 'sine', 0.08);
+}
+
+function bcLightboxNext() {
+  if (bcLightboxImages.length <= 1) return;
+  bcLightboxCurrentIdx = (bcLightboxCurrentIdx + 1) % bcLightboxImages.length;
+  updateBcLightboxDisplay(document.getElementById('bcLightboxTitle')?.textContent);
+  if (typeof playTone === 'function') playTone(700, 0.04, 'sine', 0.08);
+}
+
+function openBcImageLightbox(imagesOrSingle, startIndex = 0, title = '') {
+  const modal = document.getElementById('bcImageLightboxModal');
+  if (!modal) return;
+
+  if (Array.isArray(imagesOrSingle)) {
+    bcLightboxImages = imagesOrSingle.filter(Boolean);
+  } else if (imagesOrSingle) {
+    bcLightboxImages = [imagesOrSingle];
+  } else {
+    bcLightboxImages = [];
+  }
+
+  if (bcLightboxImages.length === 0) return;
+
+  bcLightboxCurrentIdx = Math.max(0, Math.min(startIndex, bcLightboxImages.length - 1));
+  updateBcLightboxDisplay(title || 'Xem Hình Ảnh Biểu Đồ / Đề Bài');
 
   modal.classList.add('active');
   modal.style.display = 'flex';
@@ -10904,7 +10995,9 @@ async function pasteBcImageToActiveEvent() {
 
   const imageData = await getClipboardImageData();
   if (imageData) {
-    curEv.image = imageData;
+    const existing = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+    curEv.images = [...existing, imageData];
+    curEv.image = curEv.images[0];
     curEv.updatedAt = new Date().toISOString();
     await saveBrainChainData();
     renderBcActiveEvent(curEv);
@@ -10958,8 +11051,11 @@ function setupBcImageHandlers() {
   if (btnViewImage) {
     btnViewImage.addEventListener('click', () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && curEv.image) {
-        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      if (curEv) {
+        const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+        if (imgs.length > 0) {
+          openBcImageLightbox(imgs, bcActiveEventImageIndex, curEv.question || curEv.title);
+        }
       }
     });
   }
@@ -10968,8 +11064,11 @@ function setupBcImageHandlers() {
   if (imageBadge) {
     imageBadge.addEventListener('click', () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && curEv.image) {
-        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      if (curEv) {
+        const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+        if (imgs.length > 0) {
+          openBcImageLightbox(imgs, bcActiveEventImageIndex, curEv.question || curEv.title);
+        }
       }
     });
   }
@@ -10978,8 +11077,11 @@ function setupBcImageHandlers() {
   if (previewZoom) {
     previewZoom.addEventListener('click', () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && curEv.image) {
-        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      if (curEv) {
+        const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+        if (imgs.length > 0) {
+          openBcImageLightbox(imgs, bcActiveEventImageIndex, curEv.question || curEv.title);
+        }
       }
     });
   }
@@ -10988,8 +11090,11 @@ function setupBcImageHandlers() {
   if (clickArea) {
     clickArea.addEventListener('click', () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && curEv.image) {
-        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      if (curEv) {
+        const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+        if (imgs.length > 0) {
+          openBcImageLightbox(imgs, bcActiveEventImageIndex, curEv.question || curEv.title);
+        }
       }
     });
   }
@@ -10998,8 +11103,23 @@ function setupBcImageHandlers() {
   if (copyClipBtn) {
     copyClipBtn.addEventListener('click', () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && curEv.image) {
-        copyBcImage(curEv.image);
+      if (curEv) {
+        const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+        if (imgs.length > 0) {
+          copyBcImage(imgs[bcActiveEventImageIndex] || imgs[0]);
+        }
+      }
+    });
+  }
+
+  const addMoreBtn = document.getElementById('btnBcImageAddMore');
+  if (addMoreBtn) {
+    addMoreBtn.addEventListener('click', () => {
+      const fileInp = document.getElementById('bcImageFileInput');
+      if (fileInp) {
+        fileInp.setAttribute('data-target-mode', 'active-event');
+        fileInp.setAttribute('data-action', 'append');
+        fileInp.click();
       }
     });
   }
@@ -11010,6 +11130,7 @@ function setupBcImageHandlers() {
       const fileInp = document.getElementById('bcImageFileInput');
       if (fileInp) {
         fileInp.setAttribute('data-target-mode', 'active-event');
+        fileInp.removeAttribute('data-action');
         fileInp.click();
       }
     });
@@ -11019,53 +11140,83 @@ function setupBcImageHandlers() {
   if (removeBtn) {
     removeBtn.addEventListener('click', async () => {
       const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-      if (curEv && confirm('Bạn có chắc chắn muốn gỡ hình ảnh này khỏi câu hỏi?')) {
-        delete curEv.image;
-        curEv.updatedAt = new Date().toISOString();
-        await saveBrainChainData();
-        renderBcActiveEvent(curEv);
-        renderBcEventList();
-        if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+      if (!curEv) return;
+      const imgs = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+      if (imgs.length === 0) return;
+
+      if (imgs.length === 1) {
+        if (confirm('Bạn có chắc chắn muốn gỡ hình ảnh này khỏi câu hỏi?')) {
+          delete curEv.image;
+          delete curEv.images;
+          curEv.updatedAt = new Date().toISOString();
+          await saveBrainChainData();
+          renderBcActiveEvent(curEv);
+          renderBcEventList();
+          if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+        }
+      } else {
+        const choice = confirm(`Câu hỏi đang có ${imgs.length} ảnh.\n- Bấm OK để xóa ảnh hiện tại (#${bcActiveEventImageIndex + 1})\n- Bấm Cancel để giữ nguyên`);
+        if (choice) {
+          imgs.splice(bcActiveEventImageIndex, 1);
+          curEv.images = imgs;
+          curEv.image = imgs[0] || '';
+          if (bcActiveEventImageIndex >= imgs.length) bcActiveEventImageIndex = Math.max(0, imgs.length - 1);
+          curEv.updatedAt = new Date().toISOString();
+          await saveBrainChainData();
+          renderBcActiveEvent(curEv);
+          renderBcEventList();
+          if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+        }
       }
     });
   }
 
-  // File input change handler
+  // File input change handler (Supports multiple files simultaneously)
   const fileInp = document.getElementById('bcImageFileInput');
   if (fileInp) {
-    fileInp.addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        const base64Data = ev.target.result;
-        const bcModal = document.getElementById('bcEventModal');
-        let targetMode = fileInp.getAttribute('data-target-mode') || 'active-event';
+    fileInp.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
 
-        if (bcModal && bcModal.classList.contains('active')) {
-          targetMode = 'modal';
-        }
+      const readPromises = files.map(file => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      }));
 
-        if (targetMode === 'active-event') {
-          const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
-          if (curEv) {
-            curEv.image = base64Data;
-            curEv.updatedAt = new Date().toISOString();
-            await saveBrainChainData();
-            renderBcActiveEvent(curEv);
-            renderBcEventList();
-            if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
-            alert('🖼️ ĐÃ NẠP ẢNH TỪ FILE VÀO CÂU HỎI THÀNH CÔNG!');
-          }
-        } else if (targetMode === 'modal') {
-          if (typeof window.setBcModalImage === 'function') {
-            window.setBcModalImage(base64Data);
-          }
+      const base64List = (await Promise.all(readPromises)).filter(Boolean);
+      if (base64List.length === 0) return;
+
+      const bcModal = document.getElementById('bcEventModal');
+      let targetMode = fileInp.getAttribute('data-target-mode') || 'active-event';
+      if (bcModal && bcModal.classList.contains('active')) {
+        targetMode = 'modal';
+      }
+
+      if (targetMode === 'active-event') {
+        const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+        if (curEv) {
+          const isAppend = fileInp.getAttribute('data-action') === 'append';
+          const existing = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+          curEv.images = isAppend ? [...existing, ...base64List] : base64List;
+          curEv.image = curEv.images[0] || '';
+          curEv.updatedAt = new Date().toISOString();
+          await saveBrainChainData();
+          renderBcActiveEvent(curEv);
+          renderBcEventList();
           if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+          alert(`🖼️ ĐÃ NẠP THÀNH CÔNG ${base64List.length} ẢNH VÀO CÂU HỎI!`);
         }
-        fileInp.value = '';
-      };
-      reader.readAsDataURL(file);
+      } else if (targetMode === 'modal') {
+        if (typeof window.setBcModalImage === 'function') {
+          window.setBcModalImage(base64List);
+        }
+        if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+      }
+
+      fileInp.value = '';
+      fileInp.removeAttribute('data-action');
     });
   }
 
@@ -11078,6 +11229,18 @@ function setupBcImageHandlers() {
       if (e.target === lightboxModal) closeBcImageLightbox();
     });
   }
+
+  const btnLightboxPrev = document.getElementById('btnBcLightboxPrev');
+  if (btnLightboxPrev) btnLightboxPrev.addEventListener('click', () => bcLightboxPrev());
+
+  const btnLightboxNext = document.getElementById('btnBcLightboxNext');
+  if (btnLightboxNext) btnLightboxNext.addEventListener('click', () => bcLightboxNext());
+
+  const btnFloatingPrev = document.getElementById('btnBcLightboxFloatingPrev');
+  if (btnFloatingPrev) btnFloatingPrev.addEventListener('click', () => bcLightboxPrev());
+
+  const btnFloatingNext = document.getElementById('btnBcLightboxFloatingNext');
+  if (btnFloatingNext) btnFloatingNext.addEventListener('click', () => bcLightboxNext());
 
   const btnLightboxCopy = document.getElementById('btnBcLightboxCopy');
   if (btnLightboxCopy) {
@@ -11110,9 +11273,18 @@ function setupBcImageHandlers() {
     lightboxImg.addEventListener('click', toggleZoom);
   }
 
-  // Global Ctrl+V & Escape listeners
+  // Global Ctrl+V & Escape & Arrow keys listeners
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeBcImageLightbox();
+    const modal = document.getElementById('bcImageLightboxModal');
+    if (modal && modal.classList.contains('active')) {
+      if (e.key === 'Escape') {
+        closeBcImageLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        bcLightboxPrev();
+      } else if (e.key === 'ArrowRight') {
+        bcLightboxNext();
+      }
+    }
   });
 
   window.addEventListener('paste', async (e) => {
@@ -11161,7 +11333,9 @@ function setupBcImageHandlers() {
             e.preventDefault();
             const reader = new FileReader();
             reader.onload = async (event) => {
-              curEv.image = event.target.result;
+              const existing = Array.isArray(curEv.images) && curEv.images.length > 0 ? curEv.images : (curEv.image ? [curEv.image] : []);
+              curEv.images = [...existing, event.target.result];
+              curEv.image = curEv.images[0];
               curEv.updatedAt = new Date().toISOString();
               await saveBrainChainData();
               renderBcActiveEvent(curEv);
@@ -11221,8 +11395,9 @@ function renderBcEventList() {
       ? `<span class="bc-badge bc-badge-analyzed">✅ Đã phân tích</span>`
       : `<span class="bc-badge bc-badge-pending">⏳ Chờ JSON</span>`;
 
-    const imageBadgeHtml = item.image 
-      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">🖼️ Ảnh</span>` 
+    const itemImages = Array.isArray(item.images) && item.images.length > 0 ? item.images : (item.image ? [item.image] : []);
+    const imageBadgeHtml = itemImages.length > 0
+      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">${itemImages.length > 1 ? `🖼️ ${itemImages.length} Ảnh` : '🖼️ Ảnh'}</span>` 
       : '';
 
     const testNoBadgeHtml = item.testNo 
@@ -11251,6 +11426,7 @@ function renderBcEventList() {
 
     itemEl.addEventListener('click', () => {
       brainChainData.activeEventId = item.id;
+      bcActiveEventImageIndex = 0;
       renderBcEventList();
       renderBcActiveEvent(item);
       if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.08);
@@ -11282,6 +11458,8 @@ function renderBcActiveEvent(ev) {
   const btnViewImage = document.getElementById('btnBcViewImage');
   const imageBox = document.getElementById('bcEventImageBox');
   const imageTag = document.getElementById('bcEventImageTag');
+  const imageHeaderLabel = document.getElementById('bcEventImageHeaderLabel');
+  const thumbnailsStrip = document.getElementById('bcEventThumbnailsStrip');
   const contextEl = document.getElementById('bcEventContext');
   const btnCopyFullAnswer = document.getElementById('btnBcCopyFullAnswer');
   const testNoInp = document.getElementById('bcEventTestNoInput');
@@ -11311,33 +11489,67 @@ function renderBcActiveEvent(ev) {
     statusBadge.textContent = hasAnalysis ? '✅ Đã có phân tích' : '⏳ Chưa nạp JSON AI';
   }
 
-  // Image status and preview
-  if (ev.image) {
-    if (imageBadge) imageBadge.style.display = 'inline-flex';
+  // Multi-Image status and preview
+  const imgs = Array.isArray(ev.images) && ev.images.length > 0 ? ev.images : (ev.image ? [ev.image] : []);
+  if (imgs.length > 0) {
+    if (bcActiveEventImageIndex >= imgs.length) bcActiveEventImageIndex = 0;
+    if (imageBadge) {
+      imageBadge.style.display = 'inline-flex';
+      imageBadge.textContent = imgs.length > 1 ? `🖼️ ${imgs.length} Ảnh` : '🖼️ Ảnh';
+    }
     if (btnViewImage) btnViewImage.style.display = 'inline-flex';
     if (imageBox) imageBox.style.display = 'flex';
-    if (imageTag) imageTag.src = ev.image;
+    if (imageTag) imageTag.src = imgs[bcActiveEventImageIndex] || imgs[0];
+    if (imageHeaderLabel) {
+      imageHeaderLabel.textContent = imgs.length > 1 
+        ? `🖼️ HÌNH ẢNH / BIỂU ĐỒ ĐỀ BÀI (${imgs.length} ẢNH - #${bcActiveEventImageIndex + 1}):`
+        : `🖼️ HÌNH ẢNH / BIỂU ĐỒ ĐỀ BÀI (IMAGE / CHART):`;
+    }
+
+    // Render thumbnail gallery strip when multiple images exist
+    if (thumbnailsStrip) {
+      if (imgs.length > 1) {
+        thumbnailsStrip.style.display = 'flex';
+        thumbnailsStrip.innerHTML = '';
+        imgs.forEach((imgSrc, idx) => {
+          const thumbWrap = document.createElement('div');
+          thumbWrap.style.position = 'relative';
+          thumbWrap.style.flex = 'none';
+          thumbWrap.style.width = '64px';
+          thumbWrap.style.height = '48px';
+          thumbWrap.style.borderRadius = '5px';
+          thumbWrap.style.overflow = 'hidden';
+          thumbWrap.style.cursor = 'pointer';
+          thumbWrap.style.border = idx === bcActiveEventImageIndex ? '2px solid #fbbf24' : '1px solid rgba(255,255,255,0.15)';
+          thumbWrap.style.boxShadow = idx === bcActiveEventImageIndex ? '0 0 8px rgba(245, 158, 11, 0.4)' : 'none';
+          thumbWrap.style.background = '#0b1120';
+          thumbWrap.title = `Bấm xem ảnh #${idx + 1}`;
+
+          thumbWrap.innerHTML = `
+            <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover;" />
+            <span style="position: absolute; bottom: 1px; left: 2px; background: rgba(0,0,0,0.7); color: #fbbf24; font-size: 9px; font-weight: 700; padding: 0 3px; border-radius: 2px;">#${idx + 1}</span>
+          `;
+
+          thumbWrap.addEventListener('click', (e) => {
+            e.stopPropagation();
+            bcActiveEventImageIndex = idx;
+            renderBcActiveEvent(ev);
+          });
+
+          thumbnailsStrip.appendChild(thumbWrap);
+        });
+      } else {
+        thumbnailsStrip.style.display = 'none';
+      }
+    }
   } else {
     if (imageBadge) imageBadge.style.display = 'none';
     if (btnViewImage) btnViewImage.style.display = 'none';
     if (imageBox) imageBox.style.display = 'none';
     if (imageTag) imageTag.src = '';
+    if (thumbnailsStrip) thumbnailsStrip.style.display = 'none';
   }
 
-  if (contextEl) contextEl.textContent = fullAnswerText || 'Chưa có nội dung câu trả lời... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic!';
-
-  if (btnCopyFullAnswer) {
-    btnCopyFullAnswer.onclick = () => {
-      const textToCopy = fullAnswerText || '';
-      if (window.taskAPI && window.taskAPI.writeClipboardText) {
-        window.taskAPI.writeClipboardText(textToCopy);
-      } else {
-        navigator.clipboard.writeText(textToCopy);
-      }
-      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
-      alert('📋 ĐÃ SAO CHÉP TOÀN BỘ CÂU TRẢ LỜI VÀO CLIPBOARD!');
-    };
-  }
   if (contextEl) contextEl.textContent = fullAnswerText || 'Chưa có nội dung câu trả lời... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic!';
 
   if (btnCopyFullAnswer) {
@@ -11511,8 +11723,104 @@ function applyBcPracticeStep() {
 
 function buildBrainChainPrompt(event) {
   const rawInput = event?.answer || event?.title || "3. Is there any technology you want to buy?\nAnswer:\nYes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget.";
-  const category = event?.category || "Tiếng Anh & Speaking";
-  const context = event?.context || "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.";
+  const category = event?.category || "Giải thích đáp án đề thi";
+  const context = event?.context || "Phân tích nguồn gốc đáp án, định vị vị trí câu chứa thông tin trong Transcript/Bài đọc, giải thích tại sao đúng và bẻ khóa bẫy đề thi.";
+
+  // Check if mode is Exam Answer Explanation
+  const isExamExplanation = category.includes('Giải thích đáp án') || category.includes('đề thi') || category.includes('Đề thi') ||
+    category.includes('Exam') || /Question\s*\d|Questions\s*\d|Transcript|LISTENING|READING|WRITING|Bài làm|Task\s*\d|Label the map|Keyword Table|Choose TWO letters/i.test(rawInput);
+
+  if (isExamExplanation) {
+    return `Bạn là BẬC THẦY GIẢI ĐỀ & GIẢI THÍCH CHI TIẾT ĐÁP ÁN ĐỀ THI (EXAM MASTER & EVIDENCE DECODER - IELTS / TOEIC / THPTQG / SAT / TOÁN / KHOA HỌC).
+Nhiệm vụ của bạn là nhận toàn bộ nội dung đề bài (Bao gồm Script / Transcript nghe, Bài đọc Reading, Danh sách câu hỏi, Hình ảnh bản đồ/biểu đồ, Bài làm & Đáp án nếu có) và thực hiện BẺ KHÓA LOGIC TOÀN DIỆN:
+1. ĐỊNH VỊ CHÍNH XÁC VÙNG CHỨA THÔNG TIN (EVIDENCE LOCATOR): Trích dẫn từng câu chữ cụ thể trong bài đọc/transcript là nguồn gốc sinh ra đáp án.
+2. GIẢI THÍCH TẠI SAO ĐÁP ÁN NÀY ĐÚNG (LOGICAL EXPLANATION): Phân tích ngữ nghĩa, ngữ cảnh, từ khóa đồng nghĩa (Paraphrasing Mapping) và mối liên hệ không gian/thời gian.
+3. BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI (DISTRACTOR TRAP ANALYSIS): Chỉ rõ người ra đề đã gài bẫy như thế nào (thông tin bị phủ định, đổi thì quá khứ/hiện tại, nhắc tới đối tượng khác, hoặc không có trong bài).
+4. XÂU CHUỖI TOÀN BỘ VÀO SCHEMA JSON BRAIN CHAIN (A ➔ B ➔ C ➔ D ➔ INSIGHT) ĐỂ HIỂN THỊ TRỰC QUAN.
+
+🎯 NỘI DUNG ĐỀ BÀI CẦN PHÂN TÍCH & GIẢI THÍCH CHI TIẾT:
+"${rawInput}"
+
+- Lĩnh vực: ${category}
+- Bối cảnh / Yêu cầu: ${context}
+
+⛔ QUY TẮC BẮT BUỘC: TUYỆT ĐỐI KHÔNG DÙNG DẤU BA CHẤM "..." HOẶC CẮT BỚT NỘI DUNG
+1. KHÔNG BAO GIỜ dùng dấu ba chấm "..." để rút gọn câu hay bỏ lửng ý trong BẤT KỲ trường nào của JSON.
+2. DẪN CHỨNG ĐẦY ĐỦ 100%: Khi trích dẫn Transcript / Bài đọc, PHẢI TRÍCH ĐẦY ĐỦ CÂU NGUYÊN VĂN KHÔNG THIẾU TỪ NÀO.
+3. Mọi phần giải thích tại sao đúng, tại sao sai, bẫy đề thi PHẢI viết hoàn chỉnh, rõ ràng, chi tiết và có căn cứ vững chắc.
+
+⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
+Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau:
+
+\`\`\`json
+{
+  "question": "Toàn văn các câu hỏi cần giải thích kèm các lựa chọn (A, B, C, D...) hoặc yêu cầu Map Labelling",
+  "title": "Tiêu đề đề bài ngắn gọn (ví dụ: [IELTS LISTENING - Croft Valley Park Map] Giải Thích Đáp Án Chi Tiết)",
+  "answer": "BẢNG TỔNG HỢP ĐÁP ÁN & DẪN CHỨNG TÓM TẮT (Ghi rõ số câu + Đáp án + Trích dẫn câu gốc ngắn gọn)",
+  "category": "${category}",
+  "context": "Giải mã chi tiết vùng chứa đáp án, bảng từ khóa đồng nghĩa (Keyword Mapping) và phân tích bẫy đề thi.",
+  "coreChain": {
+    "a": "BƯỚC 1 (ĐỊNH VỊ VÙNG THÔNG TIN - EVIDENCE IN SCRIPT): [Trích dẫn chính xác 100% câu thoại trong Transcript hoặc đoạn văn trong Bài đọc chứa đáp án cho từng câu hỏi, kèm mốc vị trí/dấu hiệu nhận biết]",
+    "b": "BƯỚC 2 (BẢNG TỪ KHÓA & PARAPHRASING MAPPING): [Liệt kê chi tiết các cặp từ khóa đối chiếu giữa Đề bài vs Transcript/Bài đọc. Ví dụ: 'No payment' ➔ 'entrance is completely free'; 'supervised' ➔ 'do ask adults not to leave them on their own']",
+    "c": "BƯỚC 3 (GIẢI THÍCH TẠI SAO ĐÁP ÁN ĐÚNG): [Phân tích logic lập luận chi tiết vì sao đáp án này hoàn toàn khớp với dẫn chứng, hướng di chuyển trên bản đồ (nếu có map) hoặc mối quan hệ nhân quả]",
+    "d": "BƯỚC 4 (BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI): [Chỉ rõ vì sao các phương án nhiễu bị loại bỏ - ví dụ: Bẫy thì 'used to be' (trước đây) vs 'now' (hiện tại), bẫy phủ định ngầm, bẫy thông tin không được nhắc tới]",
+    "insight": "BƯỚC 5 (INSIGHT & QUY LUẬT LÀM ĐỀ ĐỈNH CAO): [Đúc kết quy luật ra đề của giám khảo, phản xạ nhận diện bẫy trong 3 giây và chiến thuật xử lý mọi đề tương tự]"
+  },
+  "causeEffects": {
+    "immediate": "Tín hiệu nghe / đọc đầu tiên (Signposting words / Keyword cue) xuất hiện báo hiệu người nói đang chuyển sang câu hỏi.",
+    "secondOrder": "Cách người ra đề đưa ra thông tin nhiễu để bẫy thí sinh thiếu tập trung (Distractor shift).",
+    "thirdOrder": "Câu chốt hạ then chốt khẳng định đáp án chính xác không thể bàn cãi.",
+    "unexpected": "Bẫy tinh vi nhất trong bài thi khiến đa số thí sinh bị mất điểm oan.",
+    "longTerm": "Kỹ năng định vị dẫn chứng (Scan & Skim, Listening for Signal Words) giúp tăng điểm tuyệt đối cho các đề thi sau."
+  },
+  "whyChain": [
+    { "level": "1. Vị trí dẫn chứng", "question": "Thông tin câu hỏi này nằm ở đâu trong bài?", "answer": "Trích dẫn chính xác đoạn văn hoặc câu thoại trong Transcript mang thông tin cốt lõi." },
+    { "level": "2. Kỹ thuật Paraphrase", "question": "Từ khóa trong đề được biến đổi (paraphrase) như thế nào?", "answer": "Phân tích các cặp từ đồng nghĩa, cấu trúc hoán đổi chủ động - bị động hoặc giải nghĩa tương đương." },
+    { "level": "3. Logic đáp án đúng", "question": "Tại sao đáp án này là lựa chọn chính xác duy nhất?", "answer": "Chứng minh sự tương thích 100% giữa đáp án và ngữ nghĩa của câu dẫn chứng." },
+    { "level": "4. Cơ chế bẫy nhiễu", "question": "Người ra đề đã thiết kế các bẫy sai (distractors) như thế nào?", "answer": "Phân tích cụ thể lý do từng phương án sai (đối tượng khác, sai mốc thời gian, bị phủ định, thông tin sai sự thật)." },
+    { "level": "5. Root Rule (Quy luật gốc)", "question": "Quy luật cốt lõi của dạng câu hỏi này trong kỳ thi là gì?", "answer": "Đúc kết nguyên tắc thiết kế đề của Cambridge / ETS và công thức ăn trọn điểm." }
+  ],
+  "whatIf": {
+    "scenario": "Nếu thí sinh chỉ nghe bắt âm trùng lặp (Keyword matching trap) mà không chú ý từ nối phủ định hoặc thì của động từ:",
+    "consequences": [
+      "Sẽ chọn ngay phương án bẫy được nhắc tới đầu tiên trước khi người nói đổi ý.",
+      "Bị nhầm lẫn giữa vị trí cũ (used to be) và vị trí mới hiện tại (now used the space).",
+      "Mất điểm ở các câu hỏi phủ định ngầm hoặc các câu yêu cầu chọn 2 đáp án (Choose TWO letters)."
+    ]
+  },
+  "systemDynamics": {
+    "nodes": ["Từ Khóa Đề Bài", "Mốc Định Vị (Landmarks)", "Từ Đồng Nghĩa (Paraphrase)", "Dẫn Chứng Gốc", "Đáp Án Chính Xác"],
+    "directImpact": "Mối liên kết trực tiếp giữa từ khóa trong câu hỏi và vị trí câu thoại trong bài nghe/đọc.",
+    "indirectImpact": "Các liên từ chuyển ý (However, But, Actually, At present) điều hướng luồng thông tin thật.",
+    "feedbackLoop": "Quy trình giải đề đỉnh cao: Đọc quét từ khóa ➔ Bắt mốc định vị ➔ Nhận diện tín hiệu chuyển ý ➔ Đối chiếu Paraphrase ➔ Loại trừ bẫy ➔ Chốt đáp án đúng 100%."
+  },
+  "firstPrinciples": {
+    "brokenAssumptions": "Giả định sai lầm: Nghe thấy từ nào giống hệt trong đề là chọn từ đó (Bẫy trùng âm 90% là distractor).",
+    "fundamentalTruths": "Sự thật nguyên lý gốc: Đề thi quốc tế đo lường năng lực hiểu bản chất ngữ nghĩa và nhận diện Paraphrasing, không đo lường khả năng bắt âm vô thức.",
+    "reconstructedLogic": "Chiến thuật chuẩn: Nghe hiểu ý niệm toàn câu + Bắt cặp từ đồng nghĩa + Luôn cảnh giác với các từ nối tương phản 'but/though/actually'."
+  },
+  "contrarianThinking": {
+    "argFor": "Luận điểm chứng minh đáp án đúng là hoàn toàn không thể tranh cãi dựa trên dẫn chứng Transcript/Bài đọc.",
+    "argAgainst": "Phân tích lý do tâm lý khiến nhiều thí sinh bị đánh lừa bởi phương án nhiễu.",
+    "conditions": "Điều kiện tuyệt đối để khẳng định một đáp án là chính xác (phải thỏa mãn đủ các ràng buộc trong câu hỏi).",
+    "exceptions": "Các trường hợp người nói tự đính chính thông tin (Self-correction) cần đặc biệt lưu ý.",
+    "synthesis": "Bảng từ vựng & Cụm từ học thuật trọng tâm (Vocabulary & Collocations Table) cần học thuộc từ đề bài."
+  },
+  "predictions": {
+    "oneMonth": "Thuộc làu toàn bộ từ vựng và bảng Paraphrase của bài thi này.",
+    "oneYear": "Phản xạ nhận diện bẫy đề thi trong vòng 3 giây, đạt điểm số mục tiêu (Band 8.0+ / 900+ TOEIC / 9+ THPTQG).",
+    "fiveYears": "Năng lực đọc hiểu và nghe phân tích thông tin quốc tế chuẩn xác, không bao giờ bị dắt mũi bởi thông tin nhiễu.",
+    "blindSpots": "Cần chú ý hiện tượng nối âm, nuốt âm (connected speech) và các từ định lượng (only, all, some, never)."
+  },
+  "actionTakeaways": [
+    "Luôn gạch chân từ khóa và dự đoán trước từ đồng nghĩa (Paraphrase) trước khi nghe/đọc.",
+    "Chú ý các mốc định vị không gian (North/South, next to, opposite, between, bend in the path) khi làm bài dạng Map.",
+    "Lập Bảng từ khóa (Keyword Table) sau mỗi lần giải đề để tích lũy kho từ vựng phản xạ."
+  ]
+}
+\`\`\`
+`;
+  }
 
   // Check if rawInput or category is English or sentence memorization
   const isEnglishOrSentence = category.includes('Tiếng Anh') || category.includes('Speaking') || 
@@ -11808,35 +12116,77 @@ function extractValidJsonFromAi(raw) {
 function setupBcModals() {
   // 1. Event Modal (Add/Edit)
   let editingEventId = null;
-  let modalCurrentImg = null;
+  let modalCurrentImages = [];
 
   const updateModalImageDisplay = () => {
     const statusEl = document.getElementById('bcModalImageStatus');
     const previewWrap = document.getElementById('bcModalImagePreviewWrap');
-    const previewImg = document.getElementById('bcModalImagePreview');
+    const grid = document.getElementById('bcModalImageGrid');
     const removeBtn = document.getElementById('btnBcModalRemoveImage');
 
-    if (modalCurrentImg) {
+    if (modalCurrentImages.length > 0) {
       if (statusEl) {
-        statusEl.textContent = '✅ Đã có ảnh đính kèm';
+        statusEl.textContent = `✅ Đã có ${modalCurrentImages.length} ảnh đính kèm`;
         statusEl.style.color = '#34d399';
       }
       if (previewWrap) previewWrap.style.display = 'block';
-      if (previewImg) previewImg.src = modalCurrentImg;
       if (removeBtn) removeBtn.style.display = 'inline-flex';
+
+      if (grid) {
+        grid.innerHTML = '';
+        modalCurrentImages.forEach((imgBase64, idx) => {
+          const card = document.createElement('div');
+          card.style.position = 'relative';
+          card.style.width = '100px';
+          card.style.height = '75px';
+          card.style.borderRadius = '6px';
+          card.style.overflow = 'hidden';
+          card.style.border = '1px solid rgba(255,255,255,0.15)';
+          card.style.background = '#0f172a';
+          card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4)';
+          card.style.cursor = 'pointer';
+          card.style.transition = 'transform 0.15s ease, border-color 0.15s ease';
+          card.title = `Bấm xem phóng to (#${idx + 1})`;
+
+          card.innerHTML = `
+            <img src="${imgBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+            <span style="position: absolute; bottom: 2px; left: 3px; background: rgba(0,0,0,0.75); color: #fbbf24; font-size: 10px; font-weight: 700; padding: 1px 4px; border-radius: 3px;">#${idx + 1}</span>
+            <button type="button" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(239, 68, 68, 0.9); border: none; color: #fff; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5);" title="Xóa ảnh #${idx + 1}">✕</button>
+          `;
+
+          const imgEl = card.querySelector('img');
+          imgEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openBcImageLightbox(modalCurrentImages, idx, 'Xem trước ảnh #' + (idx + 1));
+          });
+
+          const delBtn = card.querySelector('button');
+          delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalCurrentImages.splice(idx, 1);
+            updateModalImageDisplay();
+          });
+
+          grid.appendChild(card);
+        });
+      }
     } else {
       if (statusEl) {
         statusEl.textContent = 'Chưa có ảnh';
         statusEl.style.color = 'var(--muted)';
       }
       if (previewWrap) previewWrap.style.display = 'none';
-      if (previewImg) previewImg.src = '';
+      if (grid) grid.innerHTML = '';
       if (removeBtn) removeBtn.style.display = 'none';
     }
   };
 
-  window.setBcModalImage = (base64) => {
-    modalCurrentImg = base64;
+  window.setBcModalImage = (base64OrArray) => {
+    if (Array.isArray(base64OrArray)) {
+      modalCurrentImages = [...modalCurrentImages, ...base64OrArray.filter(Boolean)];
+    } else if (base64OrArray) {
+      modalCurrentImages.push(base64OrArray);
+    }
     updateModalImageDisplay();
   };
 
@@ -11854,7 +12204,8 @@ function setupBcModals() {
       category: catInp?.value || 'Tiếng Anh & Speaking',
       level: parseInt(lvlInp?.value || '3'),
       jsonCode: (jsonInp?.value || '').trim(),
-      image: modalCurrentImg
+      image: modalCurrentImages.length > 0 ? modalCurrentImages[0] : '',
+      images: [...modalCurrentImages]
     };
   };
 
@@ -11866,8 +12217,9 @@ function setupBcModals() {
       return false;
     }
     const promptText = buildBrainChainPrompt(data);
-    if (data.image && window.taskAPI && window.taskAPI.copyPromptAndImage) {
-      window.taskAPI.copyPromptAndImage(promptText, data.image);
+    const primaryImg = data.image || (data.images && data.images[0]);
+    if (primaryImg && window.taskAPI && window.taskAPI.copyPromptAndImage) {
+      window.taskAPI.copyPromptAndImage(promptText, primaryImg);
     } else if (window.taskAPI && window.taskAPI.writeClipboardText) {
       window.taskAPI.writeClipboardText(promptText);
     } else {
@@ -11882,7 +12234,7 @@ function setupBcModals() {
         window.open(openUrl, '_blank');
       }
     } else {
-      alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!' + (data.image ? ' (ĐÃ KÈM HÌNH ẢNH)' : '') + '\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích logic đa tầng, sau đó bấm "📥 Dán JSON Ngay" để xem kết quả trực quan.');
+      alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!' + (primaryImg ? ' (ĐÃ KÈM HÌNH ẢNH)' : '') + '\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích logic đa tầng, sau đó bấm "📥 Dán JSON Ngay" để xem kết quả trực quan.');
     }
     return true;
   };
@@ -11945,7 +12297,7 @@ function setupBcModals() {
     btnModalPasteImage.onclick = async () => {
       const imgData = await getClipboardImageData();
       if (imgData) {
-        modalCurrentImg = imgData;
+        modalCurrentImages.push(imgData);
         updateModalImageDisplay();
         if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
       } else {
@@ -11973,15 +12325,42 @@ function setupBcModals() {
   const btnModalRemoveImage = document.getElementById('btnBcModalRemoveImage');
   if (btnModalRemoveImage) {
     btnModalRemoveImage.onclick = () => {
-      modalCurrentImg = null;
+      modalCurrentImages = [];
       updateModalImageDisplay();
       if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
     };
   }
 
+  // Modal drag & drop support for images
+  const eventModalBox = document.querySelector('#bcEventModal .modal-box');
+  if (eventModalBox) {
+    eventModalBox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    eventModalBox.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type && f.type.startsWith('image/'));
+      if (files.length > 0) {
+        const readPromises = files.map(f => new Promise((res) => {
+          const r = new FileReader();
+          r.onload = (ev) => res(ev.target.result);
+          r.onerror = () => res(null);
+          r.readAsDataURL(f);
+        }));
+        const base64List = (await Promise.all(readPromises)).filter(Boolean);
+        if (base64List.length > 0) {
+          window.setBcModalImage(base64List);
+          if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+        }
+      }
+    });
+  }
+
   const closeEventModal = () => {
     editingEventId = null;
-    modalCurrentImg = null;
+    modalCurrentImages = [];
     updateModalImageDisplay();
     const fileInp = document.getElementById('bcImageFileInput');
     if (fileInp) fileInp.setAttribute('data-target-mode', 'active-event');
@@ -11990,7 +12369,7 @@ function setupBcModals() {
 
   window.openBcEventModal = (eventToEdit = null) => {
     editingEventId = eventToEdit ? eventToEdit.id : null;
-    modalCurrentImg = eventToEdit ? (eventToEdit.image || null) : null;
+    modalCurrentImages = eventToEdit ? (Array.isArray(eventToEdit.images) && eventToEdit.images.length > 0 ? [...eventToEdit.images] : (eventToEdit.image ? [eventToEdit.image] : [])) : [];
     const modal = document.getElementById('bcEventModal');
     const modalTitle = document.getElementById('bcEventModalTitle');
     const titleInp = document.getElementById('bcInputEventTitle');
@@ -12066,10 +12445,12 @@ function setupBcModals() {
             ev.category = data.category;
             ev.level = data.level;
           }
-          if (data.image) {
-            ev.image = data.image;
-          } else if (!parsedFromJson?.image) {
+          if (modalCurrentImages.length > 0) {
+            ev.images = [...modalCurrentImages];
+            ev.image = modalCurrentImages[0];
+          } else if (!parsedFromJson?.image && !parsedFromJson?.images) {
             delete ev.image;
+            delete ev.images;
           }
           ev.updatedAt = new Date().toISOString();
         }
@@ -12081,7 +12462,10 @@ function setupBcModals() {
           newEv.id = 'bc_event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
           if (!newEv.title) newEv.title = data.title;
           if (!newEv.answer) newEv.answer = data.answer || data.title;
-          if (data.image) newEv.image = data.image;
+          if (modalCurrentImages.length > 0) {
+            newEv.images = [...modalCurrentImages];
+            newEv.image = modalCurrentImages[0];
+          }
           newEv.createdAt = new Date().toISOString();
         } else {
           newEv = {
@@ -12090,7 +12474,8 @@ function setupBcModals() {
             answer: data.answer,
             category: data.category,
             level: data.level,
-            image: data.image || undefined,
+            image: modalCurrentImages.length > 0 ? modalCurrentImages[0] : undefined,
+            images: modalCurrentImages.length > 0 ? [...modalCurrentImages] : undefined,
             createdAt: new Date().toISOString(),
             coreChain: {
               a: data.title,
@@ -12105,6 +12490,7 @@ function setupBcModals() {
         brainChainData.activeEventId = newEv.id;
       }
 
+      bcActiveEventImageIndex = 0;
       brainChainData.practiceStep = 5;
       await saveBrainChainData();
       closeEventModal();

@@ -1929,13 +1929,16 @@
           <div style="display: flex; gap: 8px;">
             <input type="text" id="bcSearchInput" class="inp" placeholder="🔍 Tìm kiếm sự kiện..."
               style="height: 34px; font-size: 12px; flex: 1;" />
-            <select id="bcCategoryFilter" class="inp select-inp" style="height: 34px; font-size: 11.5px; width: 120px;">
+            <select id="bcCategoryFilter" class="inp select-inp" style="height: 34px; font-size: 11.5px; width: 130px;">
               <option value="all">Tất cả chủ đề</option>
+              <option value="Giải thích đáp án đề thi">📝 Giải thích đề thi</option>
+              <option value="Tiếng Anh & Speaking">🗣️ Tiếng Anh & Speaking</option>
               <option value="Kinh doanh">💼 Kinh doanh</option>
               <option value="Kinh tế">📈 Kinh tế</option>
               <option value="Công nghệ">🤖 Công nghệ</option>
               <option value="Đời sống">👥 Đời sống</option>
               <option value="Tâm lý">🧠 Tâm lý</option>
+              <option value="Giáo dục">🎓 Giáo dục</option>
               <option value="Giả định">🌀 Giả định</option>
             </select>
           </div>
@@ -2023,10 +2026,11 @@
               <!-- Attached Image Box (When event has an image) -->
               <div id="bcEventImageBox" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 10px; padding: 12px 14px; flex-direction: column; gap: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                  <span style="font-size: 11.5px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                  <span id="bcEventImageHeaderLabel" style="font-size: 11.5px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
                     🖼️ HÌNH ẢNH / BIỂU ĐỒ ĐỀ BÀI (IMAGE / CHART):
                   </span>
                   <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" id="btnBcImageAddMore" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 10px; color: #34d399; background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.35);" title="Thêm ảnh từ máy tính hoặc clipboard">➕ Thêm Ảnh</button>
                     <button type="button" id="btnBcImagePreviewZoom" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 10px; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4);" title="Phóng to ảnh xem chi tiết">🔍 Phóng To</button>
                     <button type="button" id="btnBcImageCopyClipboard" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 10px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);" title="Sao chép ảnh vào Clipboard">📋 Copy Ảnh</button>
                     <button type="button" id="btnBcImageReplace" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 10px; color: #a78bfa; background: rgba(167, 139, 250, 0.12); border-color: rgba(167, 139, 250, 0.3);" title="Thay ảnh khác từ Clipboard hoặc máy tính">🔄 Thay Ảnh</button>
@@ -2039,6 +2043,8 @@
                     🔍 Bấm để phóng to
                   </div>
                 </div>
+                <!-- Thumbnails strip when event has multiple images -->
+                <div id="bcEventThumbnailsStrip" style="display: none; gap: 8px; overflow-x: auto; padding: 6px 2px; align-items: center;"></div>
               </div>
 
               <!-- Full Answer / Target Text Box -->
@@ -2887,7 +2893,8 @@
         <div class="form-group">
           <label style="font-size: 12px; font-weight: 700; color: #a78bfa; display: block; margin-bottom: 6px;">Chủ đề / Lĩnh vực:</label>
           <select id="bcInputEventCategory" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
-            <option value="Tiếng Anh & Speaking" selected>🗣️ Tiếng Anh & Phản xạ Speaking</option>
+            <option value="Giải thích đáp án đề thi" selected>📝 Giải Thích Đáp Án Đề Thi (Listening/Reading/Writing/Toán...)</option>
+            <option value="Tiếng Anh & Speaking">🗣️ Tiếng Anh & Phản xạ Speaking</option>
             <option value="Kinh doanh">💼 Kinh doanh & Khởi nghiệp</option>
             <option value="Kinh tế">📈 Kinh tế & Thị trường</option>
             <option value="Công nghệ">🤖 Công nghệ & AI</option>
@@ -2911,16 +2918,16 @@
       <!-- Image attachment in Event Modal -->
       <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 10px 12px;">
         <label style="font-size: 12px; font-weight: 700; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span>🖼️ Hình ảnh đính kèm (Biểu đồ / Hình vẽ đề bài):</span>
+          <span>🖼️ Hình ảnh đính kèm (Biểu đồ / Hình vẽ đề bài - Hỗ trợ nhiều ảnh):</span>
           <span id="bcModalImageStatus" style="font-size: 11px; color: var(--muted); font-weight: 600;">Chưa có ảnh</span>
         </label>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-          <button type="button" id="btnBcModalPasteImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); flex: none;" title="Dán ảnh trực tiếp từ Clipboard">📋 Dán từ Clipboard</button>
-          <button type="button" id="btnBcModalChooseImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); flex: none;" title="Chọn file ảnh từ máy tính">📁 Chọn từ file...</button>
-          <button type="button" id="btnBcModalRemoveImage" class="btn-modal btn-delete-red" style="display: none; height: 30px; font-size: 11.5px; padding: 0 10px; width: auto; flex: none;">🗑️ Xóa ảnh</button>
+          <button type="button" id="btnBcModalPasteImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); flex: none;" title="Dán ảnh trực tiếp từ Clipboard (Ctrl+V)">📋 Dán từ Clipboard</button>
+          <button type="button" id="btnBcModalChooseImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); flex: none;" title="Chọn 1 hoặc nhiều file ảnh từ máy tính">📁 Chọn từ file... (Nhiều ảnh)</button>
+          <button type="button" id="btnBcModalRemoveImage" class="btn-modal btn-delete-red" style="display: none; height: 30px; font-size: 11.5px; padding: 0 10px; width: auto; flex: none;" title="Xóa toàn bộ ảnh đã đính kèm">🗑️ Xóa tất cả ảnh</button>
         </div>
-        <div id="bcModalImagePreviewWrap" style="display: none; margin-top: 10px; text-align: center; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px;">
-          <img id="bcModalImagePreview" src="" alt="Ảnh xem trước" style="max-width: 100%; max-height: 140px; object-fit: contain; border-radius: 4px;" />
+        <div id="bcModalImagePreviewWrap" style="display: none; margin-top: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
+          <div id="bcModalImageGrid" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;"></div>
         </div>
       </div>
 
@@ -2931,28 +2938,35 @@
     </div>
   </div>
 
-  <!-- Hidden File Input for Brain Chain Images -->
-  <input type="file" id="bcImageFileInput" accept="image/*" style="display: none;" />
+  <!-- Hidden File Input for Brain Chain Images (Supports Multiple) -->
+  <input type="file" id="bcImageFileInput" accept="image/*" multiple style="display: none;" />
 
   <!-- Modal: Xem ảnh Lightbox Toàn Màn Hình -->
   <div id="bcImageLightboxModal" class="modal-overlay" style="z-index: 10000; background: rgba(10, 15, 30, 0.96); backdrop-filter: blur(14px);">
-    <div style="width: 94vw; max-width: 1200px; height: 92vh; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.85); overflow: hidden;">
+    <div style="width: 94vw; max-width: 1200px; height: 92vh; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.85); overflow: hidden; position: relative;">
       <!-- Lightbox Header -->
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.35);">
         <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
           <span style="font-size: 20px;">🖼️</span>
-          <h4 id="bcLightboxTitle" style="margin: 0; font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw;">Xem Hình Ảnh Biểu Đồ / Đề Bài</h4>
+          <h4 id="bcLightboxTitle" style="margin: 0; font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50vw;">Xem Hình Ảnh Biểu Đồ / Đề Bài</h4>
+          <span id="bcLightboxCounter" style="font-size: 12px; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 2px 8px; font-weight: 700; display: none;">1 / 1</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" id="btnBcLightboxPrev" class="btn-modal" style="height: 30px; font-size: 12px; padding: 0 10px; width: auto; color: #a78bfa; background: rgba(167, 139, 250, 0.15); border-color: rgba(167, 139, 250, 0.4); display: none;" title="Ảnh trước (Phím mũi tên Trái ◀)">◀ Trước</button>
+          <button type="button" id="btnBcLightboxNext" class="btn-modal" style="height: 30px; font-size: 12px; padding: 0 10px; width: auto; color: #a78bfa; background: rgba(167, 139, 250, 0.15); border-color: rgba(167, 139, 250, 0.4); display: none;" title="Ảnh tiếp theo (Phím mũi tên Phải ▶)">Tiếp ▶</button>
           <button type="button" id="btnBcLightboxCopy" class="btn-modal" style="height: 30px; font-size: 12px; padding: 0 12px; width: auto; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4);" title="Sao chép ảnh vào clipboard">📋 Copy Ảnh</button>
           <button type="button" id="btnBcLightboxZoomToggle" class="btn-modal" style="height: 30px; font-size: 12px; padding: 0 12px; width: auto; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4);" title="Phóng to 100% / Vừa màn hình">🔍 Zoom 100%</button>
           <button type="button" id="btnBcLightboxClose" class="btn-modal btn-cancel" style="height: 30px; width: 30px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Đóng (Esc)">✕</button>
         </div>
       </div>
       <!-- Lightbox Body -->
-      <div id="bcLightboxBody" style="flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(circle at center, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);">
+      <div id="bcLightboxBody" style="flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(circle at center, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%); position: relative;">
+        <button type="button" id="btnBcLightboxFloatingPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 20px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s ease;" title="Ảnh trước (◀)">❮</button>
         <img id="bcLightboxImg" src="" alt="Hình ảnh phóng to" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: transform 0.2s ease; cursor: zoom-in;" />
+        <button type="button" id="btnBcLightboxFloatingNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 20px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s ease;" title="Ảnh tiếp theo (▶)">❯</button>
       </div>
+      <!-- Lightbox Thumbnails Strip (if multiple images) -->
+      <div id="bcLightboxThumbnailsStrip" style="display: none; padding: 8px 16px; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.1); overflow-x: auto; gap: 8px; align-items: center; justify-content: center;"></div>
     </div>
   </div>
 
