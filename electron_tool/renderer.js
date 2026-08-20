@@ -4345,8 +4345,6 @@ function isInsideSelectableArea(node) {
   if (curr.closest('input, textarea, button, select, .selection-search-tooltip, .titlebar-controls, .modal-actions, .bc-nav-item, .nav-btn, .tab-btn')) {
     return false;
   }
-
-  // Allow inside selectable containers
   if (curr.closest(
     '.selectable-text, .detail-section-val, #studyDetailContent, #detailContentScroll, ' +
     '#bcActiveWorkspace, #bcEventContext, #bcEventQuestionBox, #bcEventTitle, ' +
@@ -4371,6 +4369,7 @@ let ttsPronounceTimeout = null;
 let selectionTooltip = null;
 let activeSelectionContainer = null;
 let activeSelectionType = 'ielts';
+let activeTooltipText = '';
 
 function findFirstTextNode(el) {
   if (!el) return null;
@@ -4512,6 +4511,10 @@ function setupTextSelectionSearch(containerEl, type) {
   }
 
   const handleSelection = () => {
+    if (selectionTooltip && (selectionTooltip.contains(document.activeElement) || (window.event && window.event.target && selectionTooltip.contains(window.event.target)))) {
+      return;
+    }
+
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) {
       if (ttsPronounceTimeout) {
@@ -4529,6 +4532,10 @@ function setupTextSelectionSearch(containerEl, type) {
         ttsPronounceTimeout = null;
       }
       hideTooltip();
+      return;
+    }
+
+    if (activeTooltipText === selectedText && selectionTooltip && selectionTooltip.style.display === 'flex') {
       return;
     }
 
@@ -4643,6 +4650,9 @@ function setupTextSelectionSearch(containerEl, type) {
   };
 
   const handleMouseUp = (e) => {
+    if (selectionTooltip && selectionTooltip.contains(e.target)) {
+      return;
+    }
     const sel = window.getSelection();
     if (sel && !sel.isCollapsed && sel.toString().trim().length > 0) {
       if (isInsideSelectableArea(sel.anchorNode) || isInsideSelectableArea(e.target)) {
@@ -4678,6 +4688,11 @@ function setupTextSelectionSearch(containerEl, type) {
       hideSelectionTimeout = null;
     }
 
+    if (activeTooltipText === text && selectionTooltip && selectionTooltip.style.display === 'flex') {
+      return;
+    }
+    activeTooltipText = text;
+
     if (!selectionTooltip) {
       selectionTooltip = document.createElement('div');
       selectionTooltip.className = 'selection-search-tooltip';
@@ -4701,7 +4716,10 @@ function setupTextSelectionSearch(containerEl, type) {
     selectionTooltip.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <span class="tooltip-header" style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">DỊCH NGHĨA</span>
-        <button class="tooltip-speak-btn" style="background: none; border: none; color: #38bdf8; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: 700; display: flex; align-items: center; gap: 3px;" title="Phát âm từ/đoạn này">🔊 Nghe</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="tooltip-copy-btn" style="background: none; border: none; color: #38bdf8; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: 700; display: flex; align-items: center; gap: 3px;" title="Sao chép từ tiếng Anh này vào Clipboard">📋 Copy Từ</button>
+          <button class="tooltip-speak-btn" style="background: none; border: none; color: #38bdf8; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: 700; display: flex; align-items: center; gap: 3px;" title="Phát âm từ/đoạn này">🔊 Nghe</button>
+        </div>
       </div>
       <div class="translation-text" style="font-size: 16px; font-weight: 700; color: #ffffff; line-height: 1.35; margin: 4px 0 10px 0;">⏳ Đang dịch...</div>
       <div class="tooltip-btn-row" style="display: flex; gap: 6px; align-items: center;">
@@ -4710,6 +4728,33 @@ function setupTextSelectionSearch(containerEl, type) {
         <button class="tooltip-tk-btn" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1.2; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎵 Flashcard</button>
       </div>
     `;
+
+    const copyBtn = selectionTooltip.querySelector('.tooltip-copy-btn');
+    if (copyBtn) {
+      copyBtn.onclick = async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        try {
+          if (window.taskAPI && window.taskAPI.writeClipboardText) {
+            await window.taskAPI.writeClipboardText(text);
+          } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          }
+          if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+          const originalHtml = copyBtn.innerHTML;
+          copyBtn.innerHTML = '✅ Đã Copy';
+          copyBtn.style.color = '#34d399';
+          setTimeout(() => {
+            if (copyBtn) {
+              copyBtn.innerHTML = originalHtml;
+              copyBtn.style.color = '#38bdf8';
+            }
+          }, 1500);
+        } catch (err) {
+          console.error('Failed to copy word:', err);
+        }
+      };
+    }
 
     const speakBtn = selectionTooltip.querySelector('.tooltip-speak-btn');
     if (speakBtn) {
@@ -10737,6 +10782,25 @@ async function getClipboardImageData() {
 }
 
 async function pasteBcImageToActiveEvent() {
+  const bcModal = document.getElementById('bcEventModal');
+  if (bcModal && bcModal.classList.contains('active')) {
+    const imageData = await getClipboardImageData();
+    if (imageData) {
+      if (typeof window.setBcModalImage === 'function') {
+        window.setBcModalImage(imageData);
+      }
+      if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+      alert('🖼️ ĐÃ DÁN ẢNH VÀO MODAL CÂU HỎI MỚI THÀNH CÔNG!');
+    } else {
+      const fileInp = document.getElementById('bcImageFileInput');
+      if (fileInp) {
+        fileInp.setAttribute('data-target-mode', 'modal');
+        fileInp.click();
+      }
+    }
+    return;
+  }
+
   const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
   if (!curEv) {
     alert('Vui lòng chọn hoặc tạo một câu hỏi / sự kiện trước khi dán ảnh!');
@@ -10767,6 +10831,33 @@ function setupBcImageHandlers() {
   if (btnPasteImage) {
     btnPasteImage.addEventListener('click', () => pasteBcImageToActiveEvent());
   }
+
+  // Global clipboard paste listener for Modal
+  document.addEventListener('paste', async (e) => {
+    const bcModal = document.getElementById('bcEventModal');
+    if (bcModal && bcModal.classList.contains('active')) {
+      const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            const file = items[i].getAsFile();
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                if (typeof window.setBcModalImage === 'function') {
+                  window.setBcModalImage(ev.target.result);
+                }
+                if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+              };
+              reader.readAsDataURL(file);
+              e.preventDefault();
+              return;
+            }
+          }
+        }
+      }
+    }
+  });
 
   const btnViewImage = document.getElementById('btnBcViewImage');
   if (btnViewImage) {
@@ -10853,7 +10944,12 @@ function setupBcImageHandlers() {
       const reader = new FileReader();
       reader.onload = async (ev) => {
         const base64Data = ev.target.result;
-        const targetMode = fileInp.getAttribute('data-target-mode') || 'active-event';
+        const bcModal = document.getElementById('bcEventModal');
+        let targetMode = fileInp.getAttribute('data-target-mode') || 'active-event';
+
+        if (bcModal && bcModal.classList.contains('active')) {
+          targetMode = 'modal';
+        }
 
         if (targetMode === 'active-event') {
           const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
@@ -10925,6 +11021,32 @@ function setupBcImageHandlers() {
   });
 
   window.addEventListener('paste', async (e) => {
+    const bcModal = document.getElementById('bcEventModal');
+    if (bcModal && bcModal.classList.contains('active')) {
+      // Modal is active: Route image paste to modal state
+      const items = e.clipboardData ? e.clipboardData.items : null;
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            const file = items[i].getAsFile();
+            if (file) {
+              e.preventDefault();
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                if (typeof window.setBcModalImage === 'function') {
+                  window.setBcModalImage(ev.target.result);
+                }
+                if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+              };
+              reader.readAsDataURL(file);
+              return;
+            }
+          }
+        }
+      }
+      return;
+    }
+
     const bcWorkspace = document.getElementById('bcActiveWorkspace');
     if (!bcWorkspace || bcWorkspace.style.display === 'none' || bcWorkspace.offsetParent === null) return;
     
@@ -11743,6 +11865,15 @@ function setupBcModals() {
     };
   }
 
+  const closeEventModal = () => {
+    editingEventId = null;
+    modalCurrentImg = null;
+    updateModalImageDisplay();
+    const fileInp = document.getElementById('bcImageFileInput');
+    if (fileInp) fileInp.setAttribute('data-target-mode', 'active-event');
+    document.getElementById('bcEventModal')?.classList.remove('active');
+  };
+
   window.openBcEventModal = (eventToEdit = null) => {
     editingEventId = eventToEdit ? eventToEdit.id : null;
     modalCurrentImg = eventToEdit ? (eventToEdit.image || null) : null;
@@ -11752,6 +11883,9 @@ function setupBcModals() {
     const catInp = document.getElementById('bcInputEventCategory');
     const lvlInp = document.getElementById('bcInputEventLevel');
     const jsonInp = document.getElementById('bcInputEventJson');
+    const fileInp = document.getElementById('bcImageFileInput');
+
+    if (fileInp) fileInp.setAttribute('data-target-mode', 'modal');
 
     if (!modal) return;
     if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Câu / Sự Kiện' : '💡 Thêm Câu / Sự Kiện / Tình Huống Mới';
@@ -11774,7 +11908,14 @@ function setupBcModals() {
   };
 
   const btnCancelEvent = document.getElementById('btnBcEventModalCancel');
-  if (btnCancelEvent) btnCancelEvent.onclick = () => document.getElementById('bcEventModal')?.classList.remove('active');
+  if (btnCancelEvent) btnCancelEvent.onclick = () => closeEventModal();
+
+  const bcEventModalEl = document.getElementById('bcEventModal');
+  if (bcEventModalEl) {
+    bcEventModalEl.onclick = (e) => {
+      if (e.target === bcEventModalEl) closeEventModal();
+    };
+  }
 
   const btnSaveEvent = document.getElementById('btnBcEventModalSave');
   if (btnSaveEvent) {
@@ -11822,14 +11963,15 @@ function setupBcModals() {
         let newEv;
         if (parsedFromJson && typeof parsedFromJson === 'object' && !Array.isArray(parsedFromJson)) {
           newEv = Object.assign({}, parsedFromJson);
-          if (!newEv.id) newEv.id = 'bc_event_' + Date.now();
+          // Always force a brand new unique ID for new events so it never reuses an existing event ID
+          newEv.id = 'bc_event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
           if (!newEv.title) newEv.title = data.title;
           if (!newEv.answer) newEv.answer = data.answer || data.title;
           if (data.image) newEv.image = data.image;
           newEv.createdAt = new Date().toISOString();
         } else {
           newEv = {
-            id: 'bc_event_' + Date.now(),
+            id: 'bc_event_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
             title: data.title,
             answer: data.answer,
             category: data.category,
@@ -11851,7 +11993,7 @@ function setupBcModals() {
 
       brainChainData.practiceStep = 5;
       await saveBrainChainData();
-      document.getElementById('bcEventModal')?.classList.remove('active');
+      closeEventModal();
       renderBcEventList();
       const currentEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
       if (currentEv) renderBcActiveEvent(currentEv);
