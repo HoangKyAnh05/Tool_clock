@@ -60,7 +60,12 @@ const SFX = {
     );
   },
   delete() { playTone(220, 0.12, 'triangle', 0.2); },
-  add() { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(550, 0.15), 80); }
+  add() { playTone(440, 0.1, 'sine', 0.2); setTimeout(() => playTone(550, 0.15), 80); },
+  alarm() {
+    [523, 659, 784, 1047, 1318].forEach((f, i) =>
+      setTimeout(() => playTone(f, 0.18, 'sine', 0.35), i * 140)
+    );
+  }
 };
 
 // -------------------------------------------------------
@@ -2838,6 +2843,7 @@ function handleSaveVideoDayChanges() {
 function initTabs() {
   const tabs = [
     { btn: document.getElementById('tabBtnTasks'), pane: document.getElementById('paneTasks') },
+    { btn: document.getElementById('tabBtnTimer'), pane: document.getElementById('paneTimer'), onOpen: () => { if (typeof initTimerTab === 'function') initTimerTab(); } },
     { btn: document.getElementById('tabBtnIelts'), pane: document.getElementById('paneIelts'), onOpen: () => { renderChallengeGrid(); renderIeltsList(); } },
     { btn: document.getElementById('tabBtnSpeaking'), pane: document.getElementById('paneSpeaking'), onOpen: () => { renderSpeakingList(); } },
     { btn: document.getElementById('tabBtnVideoChallenge'), pane: document.getElementById('paneVideoChallenge'), onOpen: () => { renderVideoProjectsList(); } },
@@ -12360,3 +12366,466 @@ function setupBcModals() {
     };
   }
 }
+
+// =========================================================
+// ⏱️ TIMER & STOPWATCH SUITE MODULE
+// =========================================================
+let timerState = {
+  mode: 'countdown', // 'countdown' | 'stopwatch'
+  status: 'stopped', // 'stopped' | 'running' | 'paused' | 'completed'
+  targetSeconds: 1500, // Default 25 minutes
+  remainingSeconds: 1500,
+  stopwatchSeconds: 0,
+  lastLapSeconds: 0,
+  laps: [],
+  soundEnabled: true,
+  taskTitle: '',
+  timerInterval: null,
+  alarmInterval: null,
+  startTimestamp: null
+};
+
+function formatTimerClock(sec) {
+  if (isNaN(sec) || sec < 0) sec = 0;
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  if (h > 0) {
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function updateTimerUI() {
+  const mainClock = document.getElementById('timerMainClock');
+  const subStatus = document.getElementById('timerSubStatus');
+  const miniDisplay = document.getElementById('miniTimerDisplay');
+  const miniBadge = document.getElementById('miniTimerStateBadge');
+  const miniLabel = document.getElementById('miniTimerLabel');
+  const startBtn = document.getElementById('btnTimerStartPause');
+  const miniToggleBtn = document.getElementById('btnMiniTimerToggle');
+  const ringFill = document.getElementById('timerRingProgress');
+  const lapBtn = document.getElementById('btnTimerLap');
+  const adjustRow = document.getElementById('timerAdjustRow');
+  const countdownControls = document.getElementById('timerCountdownControls');
+  const stopwatchLapsBox = document.getElementById('timerStopwatchLapsBox');
+
+  const currentDisplaySec = timerState.mode === 'countdown' ? timerState.remainingSeconds : timerState.stopwatchSeconds;
+  const clockText = formatTimerClock(currentDisplaySec);
+
+  if (mainClock) mainClock.textContent = clockText;
+  if (miniDisplay) miniDisplay.textContent = clockText;
+
+  // Title in browser window titlebar when timer running
+  if (timerState.status === 'running') {
+    document.title = `(${clockText}) ${timerState.taskTitle || 'Task Countdown'}`;
+  } else {
+    document.title = 'Task Countdown';
+  }
+
+  // Label display
+  const titleText = timerState.taskTitle ? `📝 ${timerState.taskTitle}` : (timerState.mode === 'countdown' ? 'Đồng hồ đếm ngược tập trung' : 'Đồng hồ bấm giờ đếm xuôi');
+  if (miniLabel) miniLabel.textContent = titleText;
+
+  // Progress Ring logic (Radius = 96, Circumference = 2 * PI * 96 ≈ 603.18)
+  const circumference = 603.18;
+  if (ringFill) {
+    if (timerState.mode === 'countdown') {
+      const pct = timerState.targetSeconds > 0 ? (timerState.remainingSeconds / timerState.targetSeconds) : 0;
+      const offset = circumference * (1 - Math.max(0, Math.min(1, pct)));
+      ringFill.style.strokeDashoffset = offset;
+      if (timerState.status === 'completed') {
+        ringFill.style.stroke = '#ef4444';
+      } else if (pct < 0.2) {
+        ringFill.style.stroke = '#f59e0b';
+      } else {
+        ringFill.style.stroke = '#00f2fe';
+      }
+    } else {
+      // Stopwatch mode ring pulses / spins linearly per minute
+      const pct = (timerState.stopwatchSeconds % 60) / 60;
+      const offset = circumference * (1 - pct);
+      ringFill.style.strokeDashoffset = offset;
+      ringFill.style.stroke = '#8b5cf6';
+    }
+  }
+
+  // Mode UI toggle (Countdown vs Stopwatch)
+  if (timerState.mode === 'countdown') {
+    if (lapBtn) lapBtn.style.display = 'none';
+    if (adjustRow) adjustRow.style.display = 'flex';
+    if (countdownControls) countdownControls.style.display = 'flex';
+    if (stopwatchLapsBox) stopwatchLapsBox.style.display = 'none';
+  } else {
+    if (lapBtn) lapBtn.style.display = 'inline-block';
+    if (adjustRow) adjustRow.style.display = 'none';
+    if (countdownControls) countdownControls.style.display = 'none';
+    if (stopwatchLapsBox) stopwatchLapsBox.style.display = 'flex';
+  }
+
+  // Status & Button Text
+  if (mainClock) mainClock.classList.remove('alert-active');
+  
+  if (timerState.status === 'running') {
+    if (startBtn) {
+      startBtn.textContent = '⏸️ TẠM DỪNG';
+      startBtn.className = 'timer-btn timer-btn-primary pause-state';
+    }
+    if (miniToggleBtn) {
+      miniToggleBtn.textContent = '⏸️ Tạm dừng';
+      miniToggleBtn.className = 'btn-mini-timer btn-start pause-mode';
+    }
+    if (subStatus) subStatus.textContent = timerState.mode === 'countdown' ? `Đang đếm ngược... (Còn ${clockText})` : `Đang bấm giờ... (${clockText})`;
+    if (miniBadge) {
+      miniBadge.textContent = 'Đang chạy ⚡';
+      miniBadge.className = 'mini-timer-badge running';
+    }
+  } else if (timerState.status === 'paused') {
+    if (startBtn) {
+      startBtn.textContent = '▶️ TIẾP TỤC';
+      startBtn.className = 'timer-btn timer-btn-primary';
+    }
+    if (miniToggleBtn) {
+      miniToggleBtn.textContent = '▶️ Tiếp tục';
+      miniToggleBtn.className = 'btn-mini-timer btn-start';
+    }
+    if (subStatus) subStatus.textContent = `Đã tạm dừng ở ${clockText}`;
+    if (miniBadge) {
+      miniBadge.textContent = 'Tạm dừng ⏸️';
+      miniBadge.className = 'mini-timer-badge paused';
+    }
+  } else if (timerState.status === 'completed') {
+    if (startBtn) {
+      startBtn.textContent = '🔄 ĐẶT LẠI';
+      startBtn.className = 'timer-btn timer-btn-primary';
+    }
+    if (miniToggleBtn) {
+      miniToggleBtn.textContent = '🔄 Đặt lại';
+      miniToggleBtn.className = 'btn-mini-timer btn-start';
+    }
+    if (subStatus) subStatus.textContent = '⏰ ĐÃ HẾT GIỜ!';
+    if (miniBadge) {
+      miniBadge.textContent = 'ĐÃ HẾT GIỜ ⏰';
+      miniBadge.className = 'mini-timer-badge completed';
+    }
+    if (mainClock) mainClock.classList.add('alert-active');
+  } else {
+    // Stopped / Ready
+    if (startBtn) {
+      startBtn.textContent = '▶️ BẮT ĐẦU';
+      startBtn.className = 'timer-btn timer-btn-primary';
+    }
+    if (miniToggleBtn) {
+      miniToggleBtn.textContent = '▶️ Bắt đầu';
+      miniToggleBtn.className = 'btn-mini-timer btn-start';
+    }
+    if (subStatus) subStatus.textContent = timerState.mode === 'countdown' ? `Sẵn sàng đếm ngược (${formatTimerClock(timerState.targetSeconds)})` : 'Sẵn sàng bấm giờ đếm xuôi';
+    if (miniBadge) {
+      miniBadge.textContent = 'Sẵn sàng';
+      miniBadge.className = 'mini-timer-badge';
+    }
+  }
+}
+
+function startTimer() {
+  if (timerState.status === 'running') {
+    pauseTimer();
+    return;
+  }
+  if (timerState.status === 'completed') {
+    resetTimer();
+  }
+
+  timerState.status = 'running';
+  const now = Date.now();
+
+  if (timerState.mode === 'countdown') {
+    timerState.startTimestamp = now - (timerState.targetSeconds - timerState.remainingSeconds) * 1000;
+  } else {
+    timerState.startTimestamp = now - timerState.stopwatchSeconds * 1000;
+  }
+
+  clearInterval(timerState.timerInterval);
+  timerState.timerInterval = setInterval(tickTimer, 200);
+
+  if (SFX.add && timerState.soundEnabled) SFX.add();
+  updateTimerUI();
+}
+
+function pauseTimer() {
+  if (timerState.status !== 'running') return;
+  timerState.status = 'paused';
+  clearInterval(timerState.timerInterval);
+  if (SFX.tick && timerState.soundEnabled) SFX.tick();
+  updateTimerUI();
+}
+
+function resetTimer() {
+  timerState.status = 'stopped';
+  clearInterval(timerState.timerInterval);
+  stopAlarmSound();
+  if (timerState.mode === 'countdown') {
+    timerState.remainingSeconds = timerState.targetSeconds;
+  } else {
+    timerState.stopwatchSeconds = 0;
+    timerState.lastLapSeconds = 0;
+  }
+  if (SFX.delete && timerState.soundEnabled) SFX.delete();
+  updateTimerUI();
+}
+
+function tickTimer() {
+  if (timerState.status !== 'running') return;
+  const now = Date.now();
+  const elapsedSec = Math.floor((now - timerState.startTimestamp) / 1000);
+
+  if (timerState.mode === 'countdown') {
+    const left = timerState.targetSeconds - elapsedSec;
+    if (left <= 0) {
+      timerState.remainingSeconds = 0;
+      onTimerComplete();
+    } else {
+      timerState.remainingSeconds = left;
+    }
+  } else {
+    timerState.stopwatchSeconds = elapsedSec;
+  }
+
+  updateTimerUI();
+}
+
+function onTimerComplete() {
+  timerState.status = 'completed';
+  clearInterval(timerState.timerInterval);
+  updateTimerUI();
+
+  if (timerState.soundEnabled) {
+    playAlarmSound();
+  }
+
+  // Desktop notification if supported
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('⏰ ĐÃ HẾT GIỜ!', {
+      body: timerState.taskTitle ? `Nhiệm vụ: ${timerState.taskTitle}` : 'Thời gian đếm ngược của bạn đã kết thúc!',
+      icon: 'icon.ico'
+    });
+  } else if ('Notification' in window && Notification.permission !== 'denied') {
+    Notification.requestPermission();
+  }
+}
+
+function playAlarmSound() {
+  stopAlarmSound();
+  if (SFX.alarm) SFX.alarm();
+  timerState.alarmInterval = setInterval(() => {
+    if (timerState.status === 'completed' && timerState.soundEnabled && SFX.alarm) {
+      SFX.alarm();
+    } else {
+      stopAlarmSound();
+    }
+  }, 3500);
+}
+
+function stopAlarmSound() {
+  if (timerState.alarmInterval) {
+    clearInterval(timerState.alarmInterval);
+    timerState.alarmInterval = null;
+  }
+}
+
+function setCountdownDuration(seconds, presetBtn = null) {
+  timerState.targetSeconds = seconds;
+  timerState.remainingSeconds = seconds;
+  if (timerState.status === 'running') {
+    timerState.startTimestamp = Date.now();
+  }
+
+  if (presetBtn) {
+    document.querySelectorAll('.timer-preset-badge').forEach(b => b.classList.remove('active'));
+    presetBtn.classList.add('active');
+  }
+
+  // Update inputs
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  const inpH = document.getElementById('inpTimerHours');
+  const inpM = document.getElementById('inpTimerMinutes');
+  const inpS = document.getElementById('inpTimerSeconds');
+  if (inpH) inpH.value = String(h).padStart(2, '0');
+  if (inpM) inpM.value = String(m).padStart(2, '0');
+  if (inpS) inpS.value = String(s).padStart(2, '0');
+
+  if (SFX.tick && timerState.soundEnabled) SFX.tick();
+  updateTimerUI();
+}
+
+function adjustTime(deltaSeconds) {
+  if (timerState.mode !== 'countdown') return;
+  timerState.targetSeconds = Math.max(10, timerState.targetSeconds + deltaSeconds);
+  timerState.remainingSeconds = Math.max(0, timerState.remainingSeconds + deltaSeconds);
+  if (timerState.status === 'running') {
+    timerState.startTimestamp += deltaSeconds * 1000;
+  }
+  if (SFX.tick && timerState.soundEnabled) SFX.tick();
+  updateTimerUI();
+}
+
+function recordLap() {
+  if (timerState.mode !== 'stopwatch') return;
+  const totalSec = timerState.stopwatchSeconds;
+  const lapSec = totalSec - timerState.lastLapSeconds;
+  timerState.lastLapSeconds = totalSec;
+
+  const lapNum = timerState.laps.length + 1;
+  timerState.laps.unshift({
+    num: lapNum,
+    lapTime: formatTimerClock(lapSec),
+    totalTime: formatTimerClock(totalSec)
+  });
+
+  renderLapsTable();
+  if (SFX.tick && timerState.soundEnabled) SFX.tick();
+}
+
+function renderLapsTable() {
+  const tbody = document.getElementById('timerLapsList');
+  if (!tbody) return;
+  if (timerState.laps.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted); padding: 12px;">Chưa có vòng nào. Bấm "🚩 GHI VÒNG (LAP)" khi đang bấm giờ!</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = timerState.laps.map(l => `
+    <tr>
+      <td><strong>Vòng ${l.num}</strong></td>
+      <td style="color: var(--primary); font-weight: 700;">+${l.lapTime}</td>
+      <td>${l.totalTime}</td>
+    </tr>
+  `).join('');
+}
+
+function clearLaps() {
+  timerState.laps = [];
+  timerState.lastLapSeconds = 0;
+  renderLapsTable();
+  if (SFX.delete && timerState.soundEnabled) SFX.delete();
+}
+
+let timerInitialized = false;
+
+function initTimerTab() {
+  if (timerInitialized) {
+    updateTimerUI();
+    return;
+  }
+  timerInitialized = true;
+
+  // Sound toggle button
+  const soundBtn = document.getElementById('btnTimerSoundToggle');
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      timerState.soundEnabled = !timerState.soundEnabled;
+      soundBtn.textContent = timerState.soundEnabled ? '🔊 Âm thanh ON' : '🔇 Âm thanh OFF';
+      soundBtn.className = `timer-icon-btn ${timerState.soundEnabled ? 'active' : ''}`;
+      if (!timerState.soundEnabled) stopAlarmSound();
+    });
+  }
+
+  // Mode Switcher buttons
+  const btnCountdown = document.getElementById('btnModeCountdown');
+  const btnStopwatch = document.getElementById('btnModeStopwatch');
+  if (btnCountdown && btnStopwatch) {
+    btnCountdown.addEventListener('click', () => {
+      btnCountdown.classList.add('active');
+      btnStopwatch.classList.remove('active');
+      timerState.mode = 'countdown';
+      resetTimer();
+    });
+    btnStopwatch.addEventListener('click', () => {
+      btnStopwatch.classList.add('active');
+      btnCountdown.classList.remove('active');
+      timerState.mode = 'stopwatch';
+      resetTimer();
+    });
+  }
+
+  // Task title input
+  const titleInp = document.getElementById('timerTaskTitle');
+  if (titleInp) {
+    titleInp.addEventListener('input', () => {
+      timerState.taskTitle = titleInp.value.trim();
+      updateTimerUI();
+    });
+  }
+
+  // Main controls
+  const btnStartPause = document.getElementById('btnTimerStartPause');
+  const btnReset = document.getElementById('btnTimerReset');
+  const btnLap = document.getElementById('btnTimerLap');
+  if (btnStartPause) btnStartPause.addEventListener('click', startTimer);
+  if (btnReset) btnReset.addEventListener('click', resetTimer);
+  if (btnLap) btnLap.addEventListener('click', recordLap);
+
+  // Mini-timer widget controls
+  const btnMiniToggle = document.getElementById('btnMiniTimerToggle');
+  const btnMiniReset = document.getElementById('btnMiniTimerReset');
+  const btnMiniPlus5 = document.getElementById('btnMiniTimerPlus5');
+  const btnMiniExpand = document.getElementById('btnMiniTimerOpenFull');
+  if (btnMiniToggle) btnMiniToggle.addEventListener('click', startTimer);
+  if (btnMiniReset) btnMiniReset.addEventListener('click', resetTimer);
+  if (btnMiniPlus5) btnMiniPlus5.addEventListener('click', () => adjustTime(300));
+  if (btnMiniExpand) {
+    btnMiniExpand.addEventListener('click', () => {
+      const tabTimerBtn = document.getElementById('tabBtnTimer');
+      if (tabTimerBtn) tabTimerBtn.click();
+    });
+  }
+
+  // Quick preset badges
+  document.querySelectorAll('.timer-preset-badge').forEach(badge => {
+    badge.addEventListener('click', () => {
+      const sec = parseInt(badge.dataset.preset, 10);
+      if (!isNaN(sec)) setCountdownDuration(sec, badge);
+    });
+  });
+
+  // Time adjustment (+1m, +5m, -1m, -5m)
+  document.querySelectorAll('.btn-time-adjust').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const delta = parseInt(btn.dataset.adjust, 10);
+      if (!isNaN(delta)) adjustTime(delta);
+    });
+  });
+
+  // Custom time inputs
+  const btnCustomSet = document.getElementById('btnSetCustomTimer');
+  if (btnCustomSet) {
+    btnCustomSet.addEventListener('click', () => {
+      const h = parseInt(document.getElementById('inpTimerHours')?.value || '0', 10);
+      const m = parseInt(document.getElementById('inpTimerMinutes')?.value || '0', 10);
+      const s = parseInt(document.getElementById('inpTimerSeconds')?.value || '0', 10);
+      const totalSec = (h * 3600) + (m * 60) + s;
+      if (totalSec > 0) {
+        setCountdownDuration(totalSec, null);
+      } else {
+        alert('Vui lòng nhập thời gian đếm ngược lớn hơn 0!');
+      }
+    });
+  }
+
+  // Clear laps
+  const btnClearLaps = document.getElementById('btnClearLaps');
+  if (btnClearLaps) btnClearLaps.addEventListener('click', clearLaps);
+
+  updateTimerUI();
+}
+
+// Auto init timer module on startup
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    initTimerTab();
+  } catch (e) {
+    console.error('Init timer failed:', e);
+  }
+});
+

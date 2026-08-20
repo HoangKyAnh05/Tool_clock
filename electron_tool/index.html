@@ -28,6 +28,7 @@
   <!-- Tab navigation -->
   <div class="tab-nav">
     <button class="tab-btn active" id="tabBtnTasks" data-tab="tasks">⏱ Đếm ngược & Task hằng ngày</button>
+    <button class="tab-btn" id="tabBtnTimer" data-tab="timer">⏳ Đồng Hồ Bấm Giờ & Đếm Ngược</button>
     <button class="tab-btn" id="tabBtnIelts" data-tab="ielts">🎓 IELTS & Study Vault</button>
     <button class="tab-btn" id="tabBtnSpeaking" data-tab="speaking">🌐 Kho Web Lấy Đề</button>
     <button class="tab-btn" id="tabBtnVideoChallenge" data-tab="videoChallenge">🎬 Hành Trình 100 Ngày Video</button>
@@ -54,6 +55,26 @@
         </div>
         <div class="day-sub">
           <span id="timeElapsed">--</span> đã qua &nbsp;|&nbsp; còn <span id="timeLeft">--</span>
+        </div>
+      </div>
+
+      <!-- Mini Quick Timer Widget -->
+      <div class="mini-timer-card">
+        <div class="mini-timer-left">
+          <span class="mini-timer-icon">⏳</span>
+          <div class="mini-timer-info">
+            <div class="mini-timer-clock-row">
+              <span id="miniTimerDisplay" class="mini-timer-display">25:00</span>
+              <span id="miniTimerStateBadge" class="mini-timer-badge">Sẵn sàng</span>
+            </div>
+            <span id="miniTimerLabel" class="mini-timer-label">Đồng hồ đếm ngược tập trung</span>
+          </div>
+        </div>
+        <div class="mini-timer-actions">
+          <button id="btnMiniTimerToggle" class="btn-mini-timer btn-start" title="Bắt đầu / Tạm dừng">▶️ Bắt đầu</button>
+          <button id="btnMiniTimerPlus5" class="btn-mini-timer btn-add-time" title="Thêm 5 phút vào đếm ngược">+5m</button>
+          <button id="btnMiniTimerReset" class="btn-mini-timer btn-reset" title="Đặt lại về thời gian mặc định">🔄 Đặt lại</button>
+          <button id="btnMiniTimerOpenFull" class="btn-mini-timer btn-expand" title="Mở Màn Hình Bấm Giờ Chi Tiết">⚙️ Bấm giờ đầy đủ</button>
         </div>
       </div>
 
@@ -100,7 +121,110 @@
       </div>
     </div>
 
-    <!-- Tab 2: IELTS 9.0 Study Vault -->
+    <!-- Tab 2: Đồng Hồ Bấm Giờ & Đếm Ngược -->
+    <div id="paneTimer" class="tab-pane">
+      <div class="timer-container">
+        <!-- Header Controls & Mode Switcher -->
+        <div class="timer-header-card">
+          <div class="timer-mode-switcher">
+            <button id="btnModeCountdown" class="timer-mode-btn active">⏳ Đếm Ngược (Countdown)</button>
+            <button id="btnModeStopwatch" class="timer-mode-btn">⏱️ Bấm Giờ Đếm Xuôi (Stopwatch)</button>
+          </div>
+          <div class="timer-top-actions">
+            <button id="btnTimerSoundToggle" class="timer-icon-btn active" title="Bật/Tắt âm thanh thông báo">🔊 Âm thanh ON</button>
+          </div>
+        </div>
+
+        <!-- Task / Activity Label Input -->
+        <div class="timer-task-label-row">
+          <input type="text" id="timerTaskTitle" class="inp timer-task-inp" placeholder="📝 Đặt tên hoạt động cần bấm giờ (vd: Luyện đề Listening, 25p Pomodoro, Chạy deadline...)" />
+        </div>
+
+        <!-- Main Clock & Circular Progress Ring -->
+        <div class="timer-display-hero">
+          <div class="timer-ring-wrapper">
+            <svg class="timer-ring-svg" viewBox="0 0 220 220">
+              <circle class="timer-ring-bg" cx="110" cy="110" r="96" />
+              <circle id="timerRingProgress" class="timer-ring-fill" cx="110" cy="110" r="96" />
+            </svg>
+            <div class="timer-center-content">
+              <div id="timerMainClock" class="timer-giant-clock">25:00</div>
+              <div id="timerSubStatus" class="timer-sub-status">Sẵn sàng đếm ngược (25 phút)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Action Controls -->
+        <div class="timer-controls-row">
+          <button id="btnTimerStartPause" class="timer-btn timer-btn-primary">▶️ BẮT ĐẦU</button>
+          <button id="btnTimerReset" class="timer-btn timer-btn-secondary">🔄 ĐẶT LẠI</button>
+          <button id="btnTimerLap" class="timer-btn timer-btn-lap" style="display: none;">🚩 GHI VÒNG (LAP)</button>
+        </div>
+
+        <!-- Quick Time Adjustment Buttons (+1m, +5m, -1m, -5m) -->
+        <div id="timerAdjustRow" class="timer-adjust-row">
+          <button class="btn-time-adjust" data-adjust="-300">-5 phút</button>
+          <button class="btn-time-adjust" data-adjust="-60">-1 phút</button>
+          <button class="btn-time-adjust" data-adjust="60">+1 phút</button>
+          <button class="btn-time-adjust" data-adjust="300">+5 phút</button>
+        </div>
+
+        <!-- Section: Countdown Quick Presets & Custom Input -->
+        <div id="timerCountdownControls" class="timer-section-box">
+          <h4 class="timer-section-title">⚡ Chọn nhanh thời lượng đếm ngược:</h4>
+          <div class="timer-presets-grid">
+            <button class="timer-preset-badge" data-preset="60">1 phút</button>
+            <button class="timer-preset-badge" data-preset="180">3 phút</button>
+            <button class="timer-preset-badge" data-preset="300">5 phút</button>
+            <button class="timer-preset-badge" data-preset="600">10 phút</button>
+            <button class="timer-preset-badge" data-preset="900">15 phút</button>
+            <button class="timer-preset-badge active" data-preset="1500">25 phút (Pomodoro)</button>
+            <button class="timer-preset-badge" data-preset="1800">30 phút</button>
+            <button class="timer-preset-badge" data-preset="2700">45 phút (Tiết học)</button>
+            <button class="timer-preset-badge" data-preset="3600">60 phút (1 giờ)</button>
+            <button class="timer-preset-badge" data-preset="5400">90 phút (Thi thử)</button>
+          </div>
+
+          <div class="timer-custom-inputs-row">
+            <span class="timer-input-lbl">Tùy chỉnh thời gian đếm ngược:</span>
+            <div class="timer-time-inputs">
+              <input type="number" id="inpTimerHours" class="inp time-num-inp" min="0" max="99" placeholder="00" value="00" />
+              <span class="time-colon">:</span>
+              <input type="number" id="inpTimerMinutes" class="inp time-num-inp" min="0" max="59" placeholder="25" value="25" />
+              <span class="time-colon">:</span>
+              <input type="number" id="inpTimerSeconds" class="inp time-num-inp" min="0" max="59" placeholder="00" value="00" />
+              <button id="btnSetCustomTimer" class="btn-primary-glow timer-apply-btn">🎯 Đặt giờ đếm ngược</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Stopwatch Laps Table -->
+        <div id="timerStopwatchLapsBox" class="timer-section-box" style="display: none;">
+          <div class="laps-header-row">
+            <h4 class="timer-section-title">🚩 Lịch sử bấm vòng (Laps):</h4>
+            <button id="btnClearLaps" class="btn-modal btn-cancel" style="padding: 2px 10px; font-size: 11px;">🗑️ Xóa vòng</button>
+          </div>
+          <div class="laps-table-wrapper">
+            <table class="laps-table">
+              <thead>
+                <tr>
+                  <th># Vòng</th>
+                  <th>Thời gian vòng</th>
+                  <th>Tổng thời gian</th>
+                </tr>
+              </thead>
+              <tbody id="timerLapsList">
+                <tr>
+                  <td colspan="3" style="text-align: center; color: var(--muted); padding: 12px;">Chưa có vòng nào. Bấm "🚩 GHI VÒNG (LAP)" khi đang bấm giờ!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: IELTS 9.0 Study Vault -->
     <div id="paneIelts" class="tab-pane">
       <!-- Challenge & Grid Section -->
       <div class="ielts-challenge-card">

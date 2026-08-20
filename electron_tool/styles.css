@@ -2392,7 +2392,527 @@ html, body {
   border-radius: 4px;
 }
 
+/* =========================================================
+   ⏱️ MINI TIMER CARD & FULL TIMER / STOPWATCH MODULE
+   ========================================================= */
 
+/* --- Mini Quick Timer Card (Tab 1) --- */
+.mini-timer-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(19, 23, 34, 0.95) 0%, rgba(13, 14, 21, 0.95) 100%);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
+.mini-timer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
+.mini-timer-icon {
+  font-size: 26px;
+  animation: timer-icon-bounce 2s infinite ease-in-out;
+}
 
+@keyframes timer-icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.mini-timer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-timer-clock-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mini-timer-display {
+  font-family: 'Inter', monospace;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+}
+
+.mini-timer-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mini-timer-badge.running {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.mini-timer-badge.paused {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.mini-timer-badge.completed {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.5);
+  animation: timer-pulse-alert 1s infinite alternate;
+}
+
+.mini-timer-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.mini-timer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-mini-timer {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mini-timer:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-mini-timer.btn-start {
+  background: var(--primary-gradient);
+  color: #000;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.35);
+}
+
+.btn-mini-timer.btn-start:hover {
+  box-shadow: 0 0 18px rgba(0, 242, 254, 0.6);
+}
+
+.btn-mini-timer.btn-start.pause-mode {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
+.btn-mini-timer.btn-add-time {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.btn-mini-timer.btn-expand {
+  background: rgba(0, 242, 254, 0.12);
+  color: #38bdf8;
+  border-color: rgba(0, 242, 254, 0.3);
+}
+
+/* --- Full Timer / Stopwatch Pane --- */
+.timer-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timer-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.timer-mode-switcher {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+  border: 1px solid var(--border);
+}
+
+.timer-mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timer-mode-btn:hover {
+  color: var(--text);
+}
+
+.timer-mode-btn.active {
+  background: var(--primary-gradient);
+  color: #000;
+  box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3);
+}
+
+.timer-icon-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timer-icon-btn.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.timer-task-label-row {
+  width: 100%;
+}
+
+.timer-task-inp {
+  font-size: 14px;
+  padding: 12px 16px;
+  text-align: center;
+  background: rgba(19, 23, 34, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* --- Hero Display & Circular SVG Progress Ring --- */
+.timer-display-hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.timer-ring-wrapper {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 10;
+}
+
+.timer-ring-fill {
+  fill: none;
+  stroke: url(#timerGradient);
+  stroke: #00f2fe;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 603; /* 2 * PI * 96 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.3s linear, stroke 0.3s ease;
+  filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.6));
+}
+
+.timer-center-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.timer-giant-clock {
+  font-family: 'Inter', monospace;
+  font-size: 46px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+  transition: color 0.3s ease;
+}
+
+.timer-giant-clock.alert-active {
+  color: #ef4444;
+  text-shadow: 0 0 30px rgba(239, 68, 68, 0.9);
+  animation: timer-pulse-alert 0.6s infinite alternate;
+}
+
+@keyframes timer-pulse-alert {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.06); opacity: 0.85; }
+}
+
+.timer-sub-status {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* --- Control Action Buttons --- */
+.timer-controls-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+}
+
+.timer-btn {
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.timer-btn-primary {
+  background: var(--primary-gradient);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4);
+}
+
+.timer-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 26px rgba(0, 242, 254, 0.65);
+}
+
+.timer-btn-primary.pause-state {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+}
+
+.timer-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.timer-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.timer-btn-lap {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+
+.timer-btn-lap:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55);
+}
+
+/* --- Quick Adjust Buttons --- */
+.timer-adjust-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-time-adjust {
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-time-adjust:hover {
+  background: rgba(139, 92, 246, 0.25);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* --- Presets & Custom Input Section --- */
+.timer-section-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timer-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.timer-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.timer-preset-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.timer-preset-badge:hover {
+  background: rgba(0, 242, 254, 0.1);
+  border-color: rgba(0, 242, 254, 0.3);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.timer-preset-badge.active {
+  background: rgba(0, 242, 254, 0.18);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+}
+
+.timer-custom-inputs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.timer-input-lbl {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.timer-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-num-inp {
+  width: 58px;
+  text-align: center;
+  font-family: 'Inter', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 4px;
+}
+
+.time-colon {
+  font-weight: 800;
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.timer-apply-btn {
+  width: auto !important;
+  padding: 0 16px !important;
+  height: 36px;
+  font-size: 12.5px;
+  margin-left: 6px;
+}
+
+/* --- Stopwatch Laps Table --- */
+.laps-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.laps-table-wrapper {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(11, 13, 20, 0.6);
+}
+
+.laps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.laps-table th {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
+.laps-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: 'Inter', monospace;
+  color: var(--text);
+}
+
+.laps-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}

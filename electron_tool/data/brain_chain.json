@@ -1,6 +1,291 @@
 {
   "events": [
     {
+      "question": "The table below gives information on the salaries of secondary teachers in five countries in 2009. Summarize the information by selecting and reporting the main points and make comparisons where relevant.",
+      "title": "Salaries of secondary teachers in five countries in 2009",
+      "answer": "The table compares the annual compensation of secondary school teachers in five countries in 2009, along with information about how many years it took for them to secure the highest rates. Overall, teachers in all countries shown received higher salaries after 15 years, and those in Luxembourg consistently earned the most by far. In addition, Danish teachers reached the top salary the quickest, while their Korean counterparts took the longest to do so. In Denmark, teachers were paid a total of $47,000 in their first year, moderately higher than their Australian counterparts' $34,000. Notably, it took less than a decade for teachers to receive the maximum levels of $54,000 in the former country and $48,000 in the latter one. Regarding the remaining countries, Luxembourg offered the highest initial salary for teachers, at $80,000, while their Korean and Japanese counterparts were paid the least, earning approximately $30,000. After 15 years of teaching, the salary of teachers in Luxembourg rose to $112,000, requiring an additional 15 years to reach the peak earnings of $139,000. Meanwhile, with 15 years of experience, Korean and Japanese teachers’ pay nearly doubled, reaching the level of about $50,000, and they needed around 35 years in total to receive peak salaries of $84,500 and $62,400, respectively.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The table compares the annual compensation of secondary school teachers in five countries in 2009, along with information about how many years it took for them to secure the highest rates. - Mở đầu giới thiệu mục đích của bảng, xác định đối tượng (lương giáo viên trung học ở 5 nước) và hai loại thông tin chính: mức lương hàng năm và số năm để đạt mức lương cao nhất. Câu này đặt khung so sánh và định hướng cho toàn bộ phân tích.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, teachers in all countries shown received higher salaries after 15 years, and those in Luxembourg consistently earned the most by far. In addition, Danish teachers reached the top salary the quickest, while their Korean counterparts took the longest to do so. - Tổng quan nêu ba điểm nổi bật: tất cả giáo viên đều có lương cao hơn sau 15 năm, Luxembourg có mức lương cao nhất, Đan Mạch đạt mức lương cao nhất nhanh nhất còn Hàn Quốc chậm nhất. Điều này tạo ra sự phân hóa rõ ràng và đặt nền tảng cho các so sánh chi tiết.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): In Denmark, teachers were paid a total of $47,000 in their first year, moderately higher than their Australian counterparts' $34,000. Notably, it took less than a decade for teachers to receive the maximum levels of $54,000 in the former country and $48,000 in the latter one. - Chi tiết hóa nhóm Đan Mạch và Úc, cung cấp số liệu cụ thể về lương khởi điểm và thời gian ngắn (dưới 10 năm) để đạt mức lương tối đa. Điều này minh họa cho nhận định về tốc độ đạt đỉnh nhanh và mức lương trung bình khá.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Regarding the remaining countries, Luxembourg offered the highest initial salary for teachers, at $80,000, while their Korean and Japanese counterparts were paid the least, earning approximately $30,000. After 15 years of teaching, the salary of teachers in Luxembourg rose to $112,000, requiring an additional 15 years to reach the peak earnings of $139,000. - Mở rộng sang ba nước còn lại, làm rõ sự tương phản giữa Luxembourg (lương khởi điểm và sau 15 năm rất cao, nhưng cần thêm 15 năm để đạt đỉnh) và Hàn Quốc/Nhật Bản (lương khởi điểm thấp, tăng gấp đôi sau 15 năm). Điều này hoàn thiện bức tranh về sự đa dạng trong chính sách lương.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): Meanwhile, with 15 years of experience, Korean and Japanese teachers’ pay nearly doubled, reaching the level of about $50,000, and they needed around 35 years in total to receive peak salaries of $84,500 and $62,400, respectively. - Kết luận bằng cách nhấn mạnh sự khác biệt về thời gian và mức lương đỉnh điểm: dù khởi điểm thấp nhưng Hàn Quốc và Nhật Bản có sự tăng trưởng đáng kể sau 15 năm, nhưng phải mất tới 35 năm mới đạt được mức lương cao nhất, cho thấy lộ trình thăng tiến chậm hơn so với các nước khác, phản ánh các mô hình trả lương khác nhau giữa các quốc gia."
+      },
+      "causeEffects": {
+        "immediate": "Người đọc ngay lập tức nắm được hai loại thông tin chính (lương và số năm để đạt đỉnh) và biết rằng bài báo cáo sẽ tập trung vào so sánh giữa các nước.",
+        "secondOrder": "Tổng quan về việc tất cả đều tăng lương sau 15 năm và sự dẫn đầu của Luxembourg tạo kỳ vọng về các số liệu cụ thể, đồng thời sự khác biệt về tốc độ đạt đỉnh khiến người đọc tò mò về chi tiết từng nước.",
+        "thirdOrder": "Phân tích nhóm Đan Mạch và Úc cho thấy hai nước có mức lương trung bình và thời gian đạt đỉnh nhanh, tạo sự cân bằng với nhóm có lương cao (Luxembourg) và nhóm có lương thấp (Hàn Quốc, Nhật Bản).",
+        "unexpected": "Điểm bất ngờ là Luxembourg, dù có lương khởi điểm cao nhất và sau 15 năm rất cao, nhưng phải mất thêm 15 năm nữa mới đạt đỉnh, trong khi Đan Mạch và Úc chỉ mất chưa đến 10 năm, cho thấy tốc độ tăng lương không tỷ lệ với mức lương tuyệt đối.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích bảng số liệu có hai biến số (lương theo thời gian và số năm để đạt đỉnh), áp dụng cho các chủ đề so sánh chính sách tiền lương hoặc các lĩnh vực có dữ liệu về thời gian và mức độ đạt được."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu bảng và cả hai loại thông tin?",
+          "answer": "Mở đầu bằng việc xác định đối tượng và hai khía cạnh dữ liệu giúp người đọc định hình ngay lập tức về nội dung và cấu trúc của báo cáo. Việc đề cập đến cả lương và số năm đạt đỉnh ngay từ đầu báo hiệu rằng so sánh sẽ không chỉ dừng lại ở con số mà còn ở quá trình thăng tiến, tạo sự phong phú cho phân tích."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn nhận định 'Luxembourg earned the most' và 'Danish reached the top salary the quickest' làm các điểm chính trong tổng quan?",
+          "answer": "Đây là hai điểm cực đoan và nổi bật nhất trong dữ liệu: Luxembourg có mức lương cao nhất tuyệt đối, còn Đan Mạch có thời gian đạt đỉnh ngắn nhất. Nhấn mạnh chúng giúp người đọc hình dung ngay các giá trị biên, từ đó dễ dàng so sánh các nước khác nằm trong khoảng giữa."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần tách riêng Đan Mạch và Úc thành một đoạn trước khi nói về các nước còn lại?",
+          "answer": "Vì Đan Mạch và Úc có đặc điểm chung là mức lương trung bình và thời gian đạt đỉnh ngắn (dưới 10 năm), tạo thành một nhóm riêng. Việc tách nhóm giúp làm nổi bật sự tương phản với nhóm còn lại (Luxembourg, Hàn Quốc, Nhật Bản), trong đó Luxembourg có lương cao nhưng thời gian dài, còn Hàn Quốc và Nhật Bản có lương thấp và thời gian rất dài."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ giới thiệu bảng → tổng quan (ba điểm chính) → chi tiết nhóm Đan Mạch và Úc → chi tiết nhóm còn lại (Luxembourg, Hàn Quốc, Nhật Bản) → kết thúc bằng so sánh về thời gian và mức lương đỉnh của hai nước cuối cùng. Các từ nối 'Overall', 'In addition', 'Notably', 'Regarding' tạo sự mạch lạc và liên kết logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là chính sách tiền lương và lộ trình thăng tiến của giáo viên trung học khác biệt đáng kể giữa các quốc gia: Luxembourg trả lương rất cao nhưng yêu cầu thời gian dài để đạt đỉnh, Đan Mạch và Úc có lộ trình nhanh với mức lương trung bình, trong khi Hàn Quốc và Nhật Bản khởi điểm thấp nhưng có sự tăng trưởng rõ rệt qua thời gian, phản ánh các ưu tiên khác nhau trong đầu tư cho giáo dục và chính sách đãi ngộ nhà giáo."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: bắt đầu bằng nhóm còn lại trước rồi mới đến Đan Mạch và Úc, hoặc bỏ đi phần tổng quan về Luxembourg và Đan Mạch thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, làm người đọc khó nắm bắt các điểm cực đoan và xu hướng chính.",
+          "Người đọc không thấy được sự tương phản rõ rệt giữa các nhóm, đặc biệt là giữa nhóm có thời gian đạt đỉnh nhanh và nhóm có thời gian dài, làm giảm hiệu quả so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu bảng",
+          "tổng quan (tăng sau 15 năm, Luxembourg cao nhất, Đan Mạch nhanh nhất)",
+          "Đan Mạch và Úc",
+          "Luxembourg, Hàn Quốc, Nhật Bản",
+          "thời gian đạt đỉnh và mức lương cuối cùng"
+        ],
+        "directImpact": "Cấu trúc phân tích theo nhóm (hai nhóm chính) và theo từng quốc gia giúp bài báo cáo rõ ràng, mạch lạc, đáp ứng tiêu chí Coherence và Cohesion.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'In addition', 'Notably', 'Regarding' giúp não bộ ghi nhớ trình tự phân tích và cách tổ chức thông tin theo nhóm, từ đó dễ dàng tái tạo cho các chủ đề so sánh tiền lương hoặc các dữ liệu có hai biến số.",
+        "feedbackLoop": "Càng hiểu rõ logic phân nhóm và mối quan hệ giữa lương và thời gian, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các bảng số liệu phức tạp mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Khi mô tả bảng có nhiều cột và hàng, phải liệt kê tất cả các ô số liệu theo thứ tự.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất khi thông tin được nhóm theo các đặc điểm chung và so sánh các cực trị. Việc nhóm các nước có cùng tốc độ tăng lương hoặc mức lương tương tự giúp người đọc dễ dàng nắm bắt xu hướng và sự khác biệt.",
+        "reconstructedLogic": "Thay vì liệt kê từng con số, xây dựng khung tư duy: Giới thiệu → Tổng quan (các điểm nổi bật) → Nhóm nhanh (Đan Mạch, Úc) → Nhóm chậm và cao/thấp (Luxembourg, Hàn Quốc, Nhật Bản) → Kết luận về mối quan hệ giữa lương và thời gian. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích cả năm nước và hai loại thông tin có thể làm mất thời gian; có thể cần rút gọn chỉ tập trung vào hai hoặc ba nước có sự khác biệt lớn nhất.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các đối tượng và giữa các loại dữ liệu, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi bảng chỉ có ít dữ liệu, người viết có thể lược bớt các chi tiết về nhóm trung bình, chỉ giữ lại các cực trị và so sánh trực tiếp.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần C và D tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh các điểm cực trị và mối quan hệ giữa lương và thời gian."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích bảng số liệu về lương và thời gian hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ thứ bậc và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ bảng nào có hai biến số (giá trị và thời gian), từ kinh tế, xã hội đến giáo dục, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'while', 'whereas', và các con số quan trọng để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: table compares annual compensation and years to top → overall higher after 15 years, Luxembourg top, Denmark fastest → Denmark and Australia moderate and fast → Luxembourg high but slow, Korea/Japan low and slow → relationship between starting salary, time, and peak. Xâu chuỗi thành dòng tư duy: 'Bảng so sánh lương và số năm đạt đỉnh → tổng quan: tăng sau 15 năm, Luxembourg cao nhất, Đan Mạch nhanh nhất → Đan Mạch và Úc: trung bình và nhanh → Luxembourg: cao nhưng chậm, Hàn/Nhật: thấp và chậm → mối quan hệ giữa lương khởi điểm, thời gian và đỉnh'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The table shows the starting salaries and years to reach maximum salary for teachers in six countries in 2020', duy trì đúng trình tự: giới thiệu → tổng quan → nhóm nhanh → nhóm còn lại → kết luận về mối quan hệ."
+      ],
+      "id": "bc_event_1787217698902_ot6by",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787217698902_ot6by_1787218049759_637.png",
+      "createdAt": "2026-08-20T09:21:38.902Z",
+      "testNo": "7"
+    },
+    {
+      "question": "The chart shows information about the actual and expected figures of population of three cities, Jakarta, Sao Paulo, and Shanghai. Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
+      "title": "Population of three cities: Jakarta, Sao Paulo, Shanghai (1990-2000)",
+      "answer": "The bar chart gives information about the population sizes of three cities, namely Jakarta, Shanghai, and Sao Paulo, in 1990 and the projections for 2000, alongside the actual figures for the latter year. Overall, for each city, the real numbers in 2000 surpassed the forecasted ones, with Shanghai having been the only city expected to decrease in population. In addition, Sao Paulo consistently stayed ahead of other cities in population, at nearly double the figures for Jakarta. Looking at Sao Paulo and Jakarta, in 1990, the former had a population of 17 million, which was more than double the 8 million of the latter. By 2000, Sao Paulo's population was predicted to rise significantly to 22 million, while the actual figure exceeded expectations, at 24 million. Jakarta followed a similar upward trend, with its predicted population being 11 million and the final result growing to 12 million. In contrast, Shanghai was the only city that did not follow the prediction. Starting with a population of 12 million in 1990, it was projected to decline to 11 million by 2000. This forecast, however, was contradicted by the actual results, as an unexpected rise to 15 million was recorded.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The bar chart gives information about the population sizes of three cities, namely Jakarta, Shanghai, and Sao Paulo, in 1990 and the projections for 2000, alongside the actual figures for the latter year. - Mở đầu giới thiệu trực tiếp loại biểu đồ (cột), đối tượng (ba thành phố), thời gian (1990 và dự báo cho 2000 cùng số liệu thực tế năm 2000). Câu này đặt khung tham chiếu rõ ràng, làm nền cho các so sánh giữa dự báo và thực tế.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, for each city, the real numbers in 2000 surpassed the forecasted ones, with Shanghai having been the only city expected to decrease in population. - Tổng quan nêu điểm nổi bật: tất cả các thành phố đều có số liệu thực tế năm 2000 vượt dự báo, và Thượng Hải là thành phố duy nhất được dự báo sẽ giảm dân số. Đây là luận điểm chính, tạo ra mâu thuẫn cần được làm rõ ở phần chi tiết.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): In addition, Sao Paulo consistently stayed ahead of other cities in population, at nearly double the figures for Jakarta. - Bổ sung thêm một điểm so sánh quan trọng: São Paulo luôn dẫn đầu về dân số, gần gấp đôi Jakarta. Điều này giúp người đọc có thêm thông tin về vị thế của các thành phố, tạo ra sự tương phản giữa nhóm dẫn đầu và nhóm còn lại.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Looking at Sao Paulo and Jakarta, in 1990, the former had a population of 17 million, which was more than double the 8 million of the latter. By 2000, Sao Paulo's population was predicted to rise significantly to 22 million, while the actual figure exceeded expectations, at 24 million. Jakarta followed a similar upward trend, with its predicted population being 11 million and the final result growing to 12 million. - Chi tiết hóa hai thành phố có xu hướng tăng (São Paulo và Jakarta), đưa ra các số liệu cụ thể năm 1990, dự báo 2000 và thực tế 2000, đồng thời so sánh mức độ chênh lệch giữa dự báo và thực tế. Điều này minh họa rõ xu hướng chung và mức độ vượt dự báo.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): In contrast, Shanghai was the only city that did not follow the prediction. Starting with a population of 12 million in 1990, it was projected to decline to 11 million by 2000. This forecast, however, was contradicted by the actual results, as an unexpected rise to 15 million was recorded. - Kết luận về trường hợp ngoại lệ Thượng Hải, nhấn mạnh sự đối lập hoàn toàn so với dự báo: thay vì giảm, dân số lại tăng mạnh. Điều này khẳng định tầm quan trọng của việc kiểm chứng dự báo bằng số liệu thực tế và tạo ra một bất ngờ, làm nổi bật tính không chắc chắn của các dự đoán dân số."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức nhận biết được đối tượng và phạm vi của biểu đồ (ba thành phố, số liệu dự báo và thực tế), từ đó sẵn sàng so sánh giữa hai loại số liệu.",
+        "secondOrder": "Tổng quan về việc tất cả thành phố đều vượt dự báo tạo kỳ vọng về những con số cụ thể, đồng thời điểm nhấn về Thượng Hải là thành phố duy nhất được dự báo giảm khiến người đọc tò mò về kết quả thực tế.",
+        "thirdOrder": "Thông tin São Paulo luôn dẫn đầu giúp cân bằng góc nhìn, cho thấy mặc dù tất cả đều vượt dự báo nhưng quy mô khác nhau, và vị thế tương đối giữa các thành phố được bảo toàn.",
+        "unexpected": "Điểm bất ngờ là Thượng Hải không những không giảm mà còn tăng mạnh lên 15 triệu, trái ngược hoàn toàn với dự báo giảm xuống 11 triệu, cho thấy sự thiếu chính xác của dự báo và sự biến động khó lường của dân số đô thị.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích biểu đồ có hai loại số liệu (dự báo và thực tế), áp dụng cho các chủ đề về dân số, kinh tế hoặc các lĩnh vực có dữ liệu dự đoán."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu biểu đồ cột và cả hai loại số liệu?",
+          "answer": "Mở đầu bằng việc xác định loại biểu đồ, đối tượng và các mốc thời gian giúp người đọc định hình ngay lập tức. Việc đề cập đến cả 'projections' và 'actual figures' ngay từ đầu báo hiệu rằng trọng tâm là so sánh giữa dự báo và thực tế, tạo khung cho toàn bộ phân tích."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn nhận định 'real numbers surpassed forecasted ones' làm ý tổng quan đầu tiên?",
+          "answer": "Đây là điểm chung và nổi bật nhất của cả ba thành phố, cho thấy một xu hướng thú vị: các dự báo đều thấp hơn thực tế. Nêu bật điều này trước giúp người đọc thấy được xu hướng chung, sau đó mới đi vào chi tiết từng thành phố."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần bổ sung thông tin về São Paulo luôn dẫn đầu và gấp đôi Jakarta?",
+          "answer": "Để tạo sự tương phản và cung cấp thông tin về vị thế tương đối giữa các thành phố, giúp người đọc hình dung được quy mô khác biệt, không chỉ dừng lại ở sự vượt dự báo. Điều này làm cho báo cáo phong phú và có chiều sâu hơn."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ giới thiệu biểu đồ → tổng quan (vượt dự báo) → bổ sung so sánh (São Paulo dẫn đầu) → chi tiết nhóm tăng (São Paulo và Jakarta) → chi tiết nhóm ngoại lệ (Shanghai). Các từ nối 'Overall', 'In addition', 'Looking at', 'In contrast' tạo sự mạch lạc và logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là các dự báo dân số có thể sai lệch đáng kể so với thực tế, và sự tăng trưởng đô thị không phải lúc nào cũng đi theo quỹ đạo dự kiến. Trường hợp Thượng Hải cho thấy một sự phục hồi hoặc tăng trưởng đột biến, trong khi São Paulo và Jakarta tăng ổn định hơn, phản ánh sự phức tạp và tính bất định của các mô hình dân số."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: bắt đầu bằng Thượng Hải trước rồi mới đến São Paulo và Jakarta, hoặc bỏ đi phần tổng quan về việc vượt dự báo thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, làm người đọc khó nắm bắt xu hướng chung trước khi đi vào chi tiết.",
+          "Người đọc không thấy được sự tương phản rõ rệt giữa nhóm tuân theo dự báo (tăng) và nhóm ngoại lệ (Thượng Hải), làm giảm hiệu quả so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu biểu đồ",
+          "vượt dự báo",
+          "São Paulo dẫn đầu",
+          "chi tiết São Paulo và Jakarta",
+          "chi tiết Shanghai ngoại lệ"
+        ],
+        "directImpact": "Cấu trúc rõ ràng, tuần tự từ tổng quan đến chi tiết và từ nhóm chung đến trường hợp đặc biệt giúp bài báo cáo dễ hiểu và mạch lạc, đáp ứng tiêu chí Coherence và Cohesion.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'In addition', 'Looking at', 'In contrast' giúp não bộ ghi nhớ trình tự phân tích và cách tổ chức thông tin theo nhóm (dự báo so với thực tế), từ đó dễ dàng tái tạo cho các chủ đề tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic so sánh giữa dự báo và thực tế, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các biểu đồ có dữ liệu dự đoán mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Khi mô tả biểu đồ có cả dự báo và thực tế, chỉ cần liệt kê các con số mà không cần nhấn mạnh sự chênh lệch.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất thông qua các so sánh và sự đối chiếu giữa các tập dữ liệu, không phải qua các con số riêng lẻ. Việc làm nổi bật sự khác biệt giữa dự báo và thực tế giúp người đọc thấy được câu chuyện đằng sau số liệu.",
+        "reconstructedLogic": "Thay vì học thuộc các con số, xây dựng khung tư duy: Giới thiệu → Tổng quan (vượt dự báo) → So sánh vị thế → Chi tiết nhóm tăng → Chi tiết nhóm ngoại lệ. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích cả ba thành phố và cả dự báo lẫn thực tế có thể làm mất thời gian; có thể cần rút gọn chỉ tập trung vào sự chênh lệch và trường hợp ngoại lệ.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các đối tượng và giữa dự báo với thực tế, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi biểu đồ chỉ có ít dữ liệu, người viết có thể lược bớt các chi tiết về vị thế, chỉ giữ lại những con số nổi bật nhất và so sánh trực tiếp.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần C và D tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh sự khác biệt giữa dự báo và thực tế, cũng như các trường hợp ngoại lệ."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích biểu đồ có dữ liệu dự báo và thực tế hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ sự vượt dự báo và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ biểu đồ nào có số liệu dự đoán, từ kinh tế, dân số đến môi trường, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'however', 'in contrast', và các con số chênh lệch để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: bar chart → actual vs projected → all surpassed → Sao Paulo ahead → Shanghai exception. Xâu chuỗi thành dòng tư duy: 'Biểu đồ cột → thực tế vs dự báo → tất cả vượt → São Paulo dẫn đầu → Thượng Hải ngoại lệ'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The chart shows the predicted and actual sales figures for three products in 2020', duy trì đúng trình tự: giới thiệu → tổng quan (vượt dự báo) → bổ sung so sánh → chi tiết nhóm tăng → trường hợp ngoại lệ."
+      ],
+      "id": "bc_event_1787217144059_sv0id",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787217144059_sv0id_1787218049761_463.png",
+      "createdAt": "2026-08-20T09:12:24.059Z",
+      "testNo": "6"
+    },
+    {
+      "question": "The chart below shows the proportion of survey respondents that showed interest in particular sports in the UK. Summarise the information by selecting, reporting the main features, and make comparisons where relevant.",
+      "title": "Interest in sports in the UK 1995-2005",
+      "answer": "The bar chart compares the percentage of people interested in six sports across the UK in three different years, 1995, 2000, and 2005. Overall, football held its position as the UK's most popular sport throughout the period. In addition, while football, swimming, and rugby experienced upward trends in popularity over the period, interest in snooker, tennis, and golf declined. Regarding the sports with increased public interest, in 1995, football was the most popular sport, attracting approximately 40% of respondents, whereas about 23% of people expressed a preference for swimming and rugby. In the later surveys, football continued to dominate, with interest gradually rising to approximately 45% by 2005. Meanwhile, swimming's popularity peaked at around 29% by 2000, before falling to 25% in 2005. The opposite trend was true for rugby, with its figures dropping to 19% by 2000, before surging to 27% by the final year. With regard to the remaining sports, in 1995, people expressed similar levels of interest in snooker and tennis, with respective figures of 30% and 29%, closely followed by golf's 27%. In the following years, both snooker and tennis experienced sharp declines, ending up at around 23% each in 2005. Meanwhile, golf maintained relatively stable interest levels across the three given years, hovering around the 25% mark.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The bar chart compares the percentage of people interested in six sports across the UK in three different years, 1995, 2000, and 2005. - Mở đầu giới thiệu trực tiếp loại biểu đồ (cột), đối tượng (tỷ lệ người quan tâm đến sáu môn thể thao), phạm vi không gian (Vương quốc Anh) và thời gian (ba năm). Câu này đặt nền tảng và định hướng cho toàn bộ bài phân tích số liệu.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, football held its position as the UK's most popular sport throughout the period. In addition, while football, swimming, and rugby experienced upward trends in popularity over the period, interest in snooker, tennis, and golf declined. - Nhận định tổng quan về xu hướng chính: bóng đá luôn là môn phổ biến nhất; ba môn tăng (bóng đá, bơi lội, bóng bầu dục) và ba môn giảm (snooker, tennis, golf). Điều này phân chia rõ ràng hai nhóm, tạo cấu trúc cho phần chi tiết.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): Regarding the sports with increased public interest, in 1995, football was the most popular sport, attracting approximately 40% of respondents, whereas about 23% of people expressed a preference for swimming and rugby. In the later surveys, football continued to dominate, with interest gradually rising to approximately 45% by 2005. Meanwhile, swimming's popularity peaked at around 29% by 2000, before falling to 25% in 2005. The opposite trend was true for rugby, with its figures dropping to 19% by 2000, before surging to 27% by the final year. - Chi tiết hóa nhóm môn có xu hướng tăng, bắt đầu bằng số liệu năm 1995 (bóng đá 40%, bơi và bóng bầu dục 23%), sau đó mô tả diễn biến của từng môn đến 2005, nhấn mạnh sự thống trị của bóng đá và sự thay đổi trái chiều giữa bơi và bóng bầu dục.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): With regard to the remaining sports, in 1995, people expressed similar levels of interest in snooker and tennis, with respective figures of 30% and 29%, closely followed by golf's 27%. In the following years, both snooker and tennis experienced sharp declines, ending up at around 23% each in 2005. - Mở rộng sang nhóm môn giảm, cung cấp số liệu năm 1995 (snooker 30%, tennis 29%, golf 27%) và sự suy giảm mạnh của snooker và tennis, hoàn thiện bức tranh về các môn thể thao còn lại.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): Meanwhile, golf maintained relatively stable interest levels across the three given years, hovering around the 25% mark. - Kết luận về golf, cho thấy đây là môn duy nhất trong nhóm còn lại giữ được sự ổn định, trong khi hai môn kia đều giảm, qua đó nhấn mạnh sự phân hóa rõ rệt trong xu hướng quan tâm của công chúng: bóng đá dẫn đầu, nhóm tăng có biến động, nhóm giảm có sự khác biệt (snooker và tennis giảm, golf ổn định)."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức nhận biết được loại biểu đồ, đối tượng và thời gian, từ đó dễ dàng theo dõi các số liệu và xu hướng được trình bày sau đó.",
+        "secondOrder": "Khi tổng quan được đưa ra với sự phân chia hai nhóm (tăng và giảm), người đọc hình dung được cấu trúc của báo cáo và kỳ vọng các chi tiết cụ thể để minh họa cho từng nhóm.",
+        "thirdOrder": "Phân tích chi tiết từng nhóm giúp người đọc thấy được sự phức tạp: không phải tất cả các môn trong nhóm tăng đều tăng liên tục (bơi tăng rồi giảm, bóng bầu dục giảm rồi tăng), tạo góc nhìn đa chiều.",
+        "unexpected": "Điểm bất ngờ là sự đảo chiều của bóng bầu dục: từ mức 23% năm 1995 giảm xuống 19% năm 2000 rồi bật tăng lên 27% năm 2005, vượt cả bơi, cho thấy một sự phục hồi ngoạn mục.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích biểu đồ cột theo nhóm và thời gian, áp dụng cho các chủ đề về thể thao, giải trí, hoặc bất kỳ lĩnh vực nào có dữ liệu so sánh theo năm."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu biểu đồ cột?",
+          "answer": "Mở đầu bằng việc xác định loại biểu đồ và đối tượng giúp người đọc định hình ngay lập tức và biết được thông tin sẽ được trình bày theo ba mốc thời gian. Đây là cách mở bài chuẩn mực trong IELTS Writing Task 1, tạo sự chuyên nghiệp và rõ ràng."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn nhận định football là môn phổ biến nhất làm ý chính trong tổng quan?",
+          "answer": "Vì đây là điểm nổi bật và xuyên suốt nhất của dữ liệu: bóng đá luôn đứng đầu và có xu hướng tăng nhẹ. Việc nêu bật điều này trước giúp người đọc biết được môn thể thao trọng tâm, từ đó so sánh với các môn khác."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần tách biệt nhóm môn tăng và nhóm môn giảm thành các đoạn riêng?",
+          "answer": "Để làm rõ sự khác biệt giữa hai xu hướng và tạo cấu trúc dễ theo dõi. Việc phân nhóm theo xu hướng giúp người đọc nắm bắt nhanh chóng những môn nào đang lên và những môn nào đang xuống, đồng thời tạo điều kiện cho so sánh trong từng nhóm."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ giới thiệu biểu đồ → tổng quan phân nhóm → chi tiết nhóm tăng → chi tiết nhóm giảm → kết thúc bằng nhận xét về một môn cụ thể (golf). Các cụm từ 'Overall', 'In addition', 'Regarding', 'With regard to' tạo sự mạch lạc và liên kết logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là sở thích thể thao của người Anh có sự thay đổi theo thời gian: bóng đá vẫn chiếm ưu thế tuyệt đối, các môn như bơi và bóng bầu dục có biến động thú vị, trong khi snooker và tennis mất dần sức hút, còn golf giữ được sự ổn định, phản ánh sự chuyển dịch văn hóa và thị hiếu giải trí của công chúng."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: bắt đầu bằng nhóm giảm trước rồi mới đến nhóm tăng, hoặc bỏ đi phần tổng quan thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, gây khó khăn cho người đọc trong việc nắm bắt xu hướng chính.",
+          "Người đọc không thấy được sự tương phản giữa hai nhóm, làm giảm hiệu quả so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu biểu đồ",
+          "bóng đá phổ biến nhất",
+          "nhóm tăng (football, swimming, rugby)",
+          "nhóm giảm (snooker, tennis, golf)",
+          "golf ổn định"
+        ],
+        "directImpact": "Cấu trúc rõ ràng, tuần tự theo nhóm xu hướng giúp bài báo cáo dễ hiểu và mạch lạc, đáp ứng tiêu chí Coherence và Cohesion.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'In addition', 'Regarding', 'With regard to' giúp não bộ ghi nhớ trình tự phân tích và cách tổ chức thông tin theo nhóm, từ đó dễ dàng tái tạo cho các biểu đồ tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic phân nhóm và sự đối lập giữa các xu hướng, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các dạng biểu đồ khác mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Khi mô tả biểu đồ cột có nhiều năm, phải đề cập tất cả các cột theo thứ tự thời gian cho từng môn.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất thông qua các xu hướng nổi bật và sự so sánh giữa các nhóm, không phải qua các điểm dữ liệu rời rạc. Việc nhóm các môn theo xu hướng tăng/giảm giúp người đọc dễ nắm bắt bức tranh tổng thể.",
+        "reconstructedLogic": "Thay vì liệt kê từng môn và từng năm, xây dựng khung tư duy: Giới thiệu → Tổng quan (phân nhóm) → Chi tiết nhóm tăng → Chi tiết nhóm giảm → Kết luận. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích cả sáu môn và diễn biến chi tiết của từng môn có thể làm mất thời gian; có thể cần rút gọn chỉ tập trung vào các môn có thay đổi lớn nhất.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các đối tượng và theo thời gian, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi biểu đồ chỉ có ít môn, người viết có thể lược bớt các chi tiết phụ, chỉ giữ lại những con số nổi bật nhất và so sánh trực tiếp.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần C và D tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh các xu hướng đối lập và sự thay đổi đáng chú ý giữa các nhóm."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích biểu đồ cột hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ xu hướng và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ biểu đồ cột hoặc thanh nào, từ kinh tế, xã hội đến văn hóa, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'whereas', 'meanwhile', và các số liệu quan trọng để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: bar chart compares → football most popular → football, swimming, rugby increase → snooker, tennis, golf decrease → golf stable. Xâu chuỗi thành dòng tư duy: 'Biểu đồ cột → bóng đá số một → ba môn tăng → ba môn giảm → golf ổn định'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The bar chart shows the percentage of people using different forms of transport in a city in 1990, 2000, and 2010', duy trì đúng trình tự: giới thiệu → tổng quan → chi tiết nhóm tăng → chi tiết nhóm giảm → kết luận."
+      ],
+      "id": "bc_event_1787215835263_fyu1e",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787215835263_fyu1e_1787215835270_99.png",
+      "createdAt": "2026-08-20T08:50:35.263Z",
+      "testNo": "5"
+    },
+    {
       "question": "The chart below shows the percentage of water in UK rivers that was classified as having good chemical quality between 1990 and 2002. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
       "title": "Water quality in UK rivers 1990-2002",
       "answer": "The line chart illustrates the percentages of river water meeting good chemical quality standards, in four countries in the UK, from 1990 to 2002. Overall, rivers in Northern Ireland and Wales consistently had the cleanest water. Additionally, with the exception of Wales, all the regions showed improvements in their water quality over the period shown. With regards to the two leading nations, in 1990, roughly 96% of rivers in Wales were classified as having good chemical levels, noticeably higher than Northern Ireland's 83%. In the following years, Wales’s river cleanliness remained relatively stable until 1998, before declining sharply to around 80% by 2002. In contrast, Northern Ireland's river quality gradually improved, with its purity rising to nearly 100% in 2000, and then slightly falling to 96% by 2002, having surpassed Wales since 1999. Regarding the remaining countries, in 1990, Scotland's rivers were of the lowest quality in terms of chemical composition, with only 20% of river water there up to par, less than half of England's 45%. Subsequently, the latter's purity rose sharply to a peak of 70% by 1996, and then dramatically fell back to a low of 30% in 1998, followed by a significant recovery to 50% by 2002. Similarly, the percentage of clean water in Scotland rose steadily, reaching 60% in 2000 before declining to 40% over the final two years.",
@@ -1787,6 +2072,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787212047504_hwkkx",
+  "activeEventId": "bc_event_1787217698902_ot6by",
   "practiceStep": 5
 }
