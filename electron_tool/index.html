@@ -1883,7 +1883,7 @@
               <!-- Question Box (At the very top) -->
               <div id="bcEventQuestionBox" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(99, 102, 241, 0.1) 100%); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 10px 14px;">
                 <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">❓ CÂU HỎI (QUESTION / TOPIC):</span>
-                <h2 id="bcEventTitle" style="margin: 0; font-size: 17px; font-weight: 800; color: #fff; line-height: 1.35;">
+                <h2 id="bcEventTitle" class="selectable-text" style="margin: 0; font-size: 17px; font-weight: 800; color: #fff; line-height: 1.35; user-select: text; -webkit-user-select: text; cursor: text;">
                   Tên câu hỏi / Sự kiện
                 </h2>
               </div>
@@ -1915,7 +1915,7 @@
                   <span style="font-size: 11px; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px;">💬 CÂU TRẢ LỜI GỐC (FULL ANSWER):</span>
                   <button type="button" id="btnBcCopyFullAnswer" class="btn-modal" style="height: 24px; font-size: 11px; padding: 0 10px; color: #34d399; background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3);" title="Sao chép toàn bộ câu trả lời gốc">📋 Copy câu trả lời</button>
                 </div>
-                <p id="bcEventContext" style="margin: 0; font-size: 13.5px; color: #f1f5f9; line-height: 1.55; font-weight: 500;">
+                <p id="bcEventContext" class="selectable-text" style="margin: 0; font-size: 13.5px; color: #f1f5f9; line-height: 1.55; font-weight: 500; user-select: text; -webkit-user-select: text; cursor: text;">
                   Bối cảnh / Toàn văn câu trả lời...
                 </p>
               </div>
@@ -2708,41 +2708,50 @@
 
   <!-- Modal: Tạo / Chỉnh Sửa Sự Kiện -->
   <div id="bcEventModal" class="modal-overlay">
-    <div class="modal-box modal-large" style="max-width: 580px; padding: 22px;">
+    <div class="modal-box modal-large" style="max-width: 620px; max-height: 90vh; overflow-y: auto; padding: 24px;">
       <div class="modal-icon" style="font-size: 32px;">💡</div>
       <h3 id="bcEventModalTitle" style="font-size: 18px; margin-bottom: 4px; font-weight: 700; color: #fff;">Thêm Câu / Sự Kiện / Tình Huống Mới</h3>
-      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập một câu văn/đoạn nói tiếng Anh cần học thuộc hoặc một hiện tượng, sự kiện đời sống để phân tích chuỗi logic.</p>
+      <p style="margin-bottom: 14px; font-size: 12.5px; color: var(--muted); text-align: center;">Nhập câu hỏi, câu trả lời tiếng Anh và nạp mã JSON phân tích logic để hiển thị chuỗi tư duy trực quan.</p>
 
       <!-- Single Input Field for both Question + Answer or Event -->
       <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 12px;">
         <label style="font-size: 12px; font-weight: 700; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span>📝 Nội dung câu hỏi & câu trả lời / Sự kiện (*):</span>
+          <span>📝 1. Nội dung câu hỏi & câu trả lời / Sự kiện (*):</span>
           <span style="font-size: 11px; color: #34d399; font-weight: 600;">Dán cả câu hỏi và câu trả lời vào 1 ô</span>
         </label>
-        <textarea id="bcInputEventTitle" class="inp textarea-inp" placeholder="Dán cả câu hỏi và câu trả lời vào đây... Ví dụ:&#10;3. Is there any technology you want to buy?&#10;Answer:&#10;Yes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget." style="height: 110px; font-size: 12.5px; line-height: 1.5; resize: vertical;"></textarea>
+        <textarea id="bcInputEventTitle" class="inp textarea-inp" placeholder="Dán cả câu hỏi và câu trả lời vào đây... Ví dụ:&#10;3. Is there any technology you want to buy?&#10;Answer:&#10;Yes, I've been thinking about buying a new smartwatch. My current one is old and the battery life is terrible. I want one that can track my fitness activities, monitor my heart rate, and let me answer calls without taking out my phone. It would be a time-saving gadget." style="height: 100px; font-size: 12.5px; line-height: 1.5; resize: vertical;"></textarea>
       </div>
 
       <!-- Quick AI Action Bar in Event Modal -->
-      <div style="background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-          <span style="font-size: 11.5px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 5px;">⚡ Tạo Prompt từ câu trên:</span>
-          <div style="display: flex; gap: 5px;">
-            <button type="button" id="btnBcModalOpenGemini" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #38bdf8; background: rgba(56,189,248,0.15);" title="Copy Prompt & Mở Gemini">✨ Gemini</button>
-            <button type="button" id="btnBcModalOpenChatGPT" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #34d399; background: rgba(52,211,153,0.15);" title="Copy Prompt & Mở ChatGPT">🟢 ChatGPT</button>
-            <button type="button" id="btnBcModalOpenClaude" class="btn-modal" style="height: 26px; font-size: 11px; padding: 0 8px; color: #f472b6; background: rgba(244,114,182,0.15);" title="Copy Prompt & Mở Claude">🟣 Claude</button>
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 11.5px; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 5px;">⚡ Tạo Prompt từ câu trên & gửi AI:</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" id="btnBcModalOpenGemini" class="btn-modal" style="height: 28px; font-size: 11px; padding: 0 10px; color: #38bdf8; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); border-radius: 6px; flex: none;" title="Copy Prompt & Mở Gemini">✨ Gemini</button>
+            <button type="button" id="btnBcModalOpenChatGPT" class="btn-modal" style="height: 28px; font-size: 11px; padding: 0 10px; color: #34d399; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); border-radius: 6px; flex: none;" title="Copy Prompt & Mở ChatGPT">🟢 ChatGPT</button>
+            <button type="button" id="btnBcModalOpenClaude" class="btn-modal" style="height: 28px; font-size: 11px; padding: 0 10px; color: #f472b6; background: rgba(244,114,182,0.15); border: 1px solid rgba(244,114,182,0.3); border-radius: 6px; flex: none;" title="Copy Prompt & Mở Claude">🟣 Claude</button>
           </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" id="btnBcModalCopyPrompt" class="btn-primary-glow" style="flex: 1; height: 32px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);">
-            📋 Sao Chép Prompt AI (1-Click)
-          </button>
-          <button type="button" id="btnBcModalPasteJson" class="btn-primary-glow" style="height: 32px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0 14px;">
-            📥 Dán JSON Ngay
-          </button>
-        </div>
+        <button type="button" id="btnBcModalCopyPrompt" class="btn-primary-glow" style="width: 100%; height: 34px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border-radius: 6px;">
+          📋 Sao Chép Prompt AI (1-Click)
+        </button>
       </div>
 
-      <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: left;">
+      <!-- JSON Input Field (Replaced old Bối cảnh field) -->
+      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 6px; margin: 0;">
+            <span>📥 2. Nạp Mã JSON Phân Tích từ AI (Tùy chọn):</span>
+          </label>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" id="btnBcModalPasteJsonClipboard" class="btn-modal" style="height: 24px; font-size: 11px; padding: 0 10px; color: #34d399; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); border-radius: 4px; flex: none;" title="Dán nhanh từ Clipboard">📋 Dán từ Clipboard</button>
+            <button type="button" id="btnBcModalPasteDemoJson" class="btn-modal" style="height: 24px; font-size: 11px; padding: 0 10px; color: #a78bfa; background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.3); border-radius: 4px; flex: none;" title="Dán mẫu JSON thử nghiệm">📝 Mẫu thử</button>
+          </div>
+        </div>
+        <textarea id="bcInputEventJson" class="inp textarea-inp" placeholder="Dán mã JSON mà AI vừa phân tích vào đây để hệ thống hiển thị trực quan toàn bộ chuỗi A ➔ B ➔ C ➔ D ➔ Insight...&#10;(Nếu chưa có, bạn có thể để trống và nạp sau)." style="height: 120px; font-family: 'Consolas', monospace; font-size: 11.5px; line-height: 1.45; resize: vertical;"></textarea>
+      </div>
+
+      <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; text-align: left;">
         <div class="form-group">
           <label style="font-size: 12px; font-weight: 700; color: #a78bfa; display: block; margin-bottom: 6px;">Chủ đề / Lĩnh vực:</label>
           <select id="bcInputEventCategory" class="inp select-inp" style="height: 36px; font-size: 12.5px;">
@@ -2767,11 +2776,6 @@
         </div>
       </div>
 
-      <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px;">
-        <label style="font-size: 12px; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">Bối cảnh chi tiết / Câu hỏi trọng tâm (Tùy chọn):</label>
-        <textarea id="bcInputEventContext" class="inp textarea-inp" placeholder="Mô tả thêm bối cảnh, mục đích học tập hoặc câu hỏi muốn tìm lời giải..." style="height: 60px; font-size: 12.5px; line-height: 1.45;"></textarea>
-      </div>
-
       <!-- Image attachment in Event Modal -->
       <div class="form-group" style="text-align: left; width: 100%; margin-bottom: 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 10px 12px;">
         <label style="font-size: 12px; font-weight: 700; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -2779,9 +2783,9 @@
           <span id="bcModalImageStatus" style="font-size: 11px; color: var(--muted); font-weight: 600;">Chưa có ảnh</span>
         </label>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-          <button type="button" id="btnBcModalPasteImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4);" title="Dán ảnh trực tiếp từ Clipboard">📋 Dán từ Clipboard</button>
-          <button type="button" id="btnBcModalChooseImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3);" title="Chọn file ảnh từ máy tính">📁 Chọn từ file...</button>
-          <button type="button" id="btnBcModalRemoveImage" class="btn-modal btn-delete-red" style="display: none; height: 30px; font-size: 11.5px; padding: 0 10px; width: auto;">🗑️ Xóa ảnh</button>
+          <button type="button" id="btnBcModalPasteImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #fbbf24; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); flex: none;" title="Dán ảnh trực tiếp từ Clipboard">📋 Dán từ Clipboard</button>
+          <button type="button" id="btnBcModalChooseImage" class="btn-modal" style="height: 30px; font-size: 11.5px; padding: 0 12px; width: auto; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); flex: none;" title="Chọn file ảnh từ máy tính">📁 Chọn từ file...</button>
+          <button type="button" id="btnBcModalRemoveImage" class="btn-modal btn-delete-red" style="display: none; height: 30px; font-size: 11.5px; padding: 0 10px; width: auto; flex: none;">🗑️ Xóa ảnh</button>
         </div>
         <div id="bcModalImagePreviewWrap" style="display: none; margin-top: 10px; text-align: center; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px;">
           <img id="bcModalImagePreview" src="" alt="Ảnh xem trước" style="max-width: 100%; max-height: 140px; object-fit: contain; border-radius: 4px;" />
@@ -2789,8 +2793,8 @@
       </div>
 
       <div class="modal-actions" style="gap: 10px; justify-content: flex-end;">
-        <button type="button" id="btnBcEventModalCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px;">✕ Hủy bỏ</button>
-        <button type="button" id="btnBcEventModalSave" class="btn-primary-glow" style="width: auto; padding: 0 22px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">💾 Lưu Sự Kiện</button>
+        <button type="button" id="btnBcEventModalCancel" class="btn-modal btn-cancel" style="width: auto; padding: 0 18px; height: 36px; font-size: 12.5px; flex: none;">✕ Hủy bỏ</button>
+        <button type="button" id="btnBcEventModalSave" class="btn-primary-glow" style="width: auto; padding: 0 22px; height: 36px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); border-radius: 6px;">💾 Lưu Sự Kiện & Áp Dụng</button>
       </div>
     </div>
   </div>

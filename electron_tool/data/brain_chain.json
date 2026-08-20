@@ -1,6 +1,196 @@
 {
   "events": [
     {
+      "question": "Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
+      "title": "Fuel types used for electricity generation in five Asian countries in 2005",
+      "answer": "The given table illustrates how the proportions of four different types of fuel used for electricity generation differed in five countries across Asia in 2005. Overall, there were marked differences in energy preferences among these nations, with Japan and South Korea using cleaner options like nuclear and hydro power for over half their electricity, while Southeast Asian countries relied more heavily on fossil fuels. Regarding eco-friendly sources, nuclear power dominated in the two East Asian countries, contributing 49% and 33% of electricity production in Japan and South Korea respectively. While this source was moderately used in Malaysia at 19% and Singapore at 13%, it was unavailable in Thailand. In terms of hydro and wind power, South Korea led with 48% of its electricity coming from these renewable sources, and it was followed by Thailand at 19%, while remaining minimal at 5% or less in other nations. As for conventional fossil fuels, coal and lignite were predominant in Malaysia at 61%, and Singapore at 42%, while the remaining countries used considerably less of these sources, at no more than 6%. Petroleum products featured prominently only in Thailand at 36%, with negligible usage of 2%-3% elsewhere. Other unnamed energy sources were most prevalent in Thailand at 42%, slightly higher than the figure for Singapore and Japan, both at 39%, while Malaysia and South Korea used these kinds of energy for just over one-tenth of their total electrical power.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The given table illustrates how the proportions of four different types of fuel used for electricity generation differed in five countries across Asia in 2005. - Mở đầu trực tiếp giới thiệu mục đích của bảng, xác định rõ ràng đối tượng (tỷ lệ của bốn loại nhiên liệu) và phạm vi không gian (năm quốc gia châu Á) cùng thời gian (năm 2005). Câu này đặt nền tảng và định hướng cho toàn bộ bài phân tích số liệu.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, there were marked differences in energy preferences among these nations, with Japan and South Korea using cleaner options like nuclear and hydro power for over half their electricity, while Southeast Asian countries relied more heavily on fossil fuels. - Nhận định tổng quát về sự khác biệt rõ rệt trong sở thích năng lượng, phân chia thành hai nhóm: các nước Đông Á ưu tiên nguồn sạch, trong khi các nước Đông Nam Á phụ thuộc nhiều vào nhiên liệu hóa thạch. Điều này tạo ra sự tương phản mạnh, là xu hướng chính cần được phân tích.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): Regarding eco-friendly sources, nuclear power dominated in the two East Asian countries, contributing 49% and 33% of electricity production in Japan and South Korea respectively. While this source was moderately used in Malaysia at 19% and Singapore at 13%, it was unavailable in Thailand. In terms of hydro and wind power, South Korea led with 48% of its electricity coming from these renewable sources, and it was followed by Thailand at 19%, while remaining minimal at 5% or less in other nations. - Chi tiết hóa nhóm nguồn năng lượng thân thiện với môi trường, bao gồm hạt nhân và thủy điện/gió. Các số liệu cụ thể cho từng quốc gia giúp làm rõ sự dẫn đầu của Nhật Bản và Hàn Quốc, cũng như sự khác biệt giữa các nước còn lại.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): As for conventional fossil fuels, coal and lignite were predominant in Malaysia at 61%, and Singapore at 42%, while the remaining countries used considerably less of these sources, at no more than 6%. Petroleum products featured prominently only in Thailand at 36%, with negligible usage of 2%-3% elsewhere. - Cung cấp chi tiết về nhiên liệu hóa thạch, nhấn mạnh sự chiếm ưu thế của than và than non tại Malaysia và Singapore, và dầu mỏ chỉ nổi bật ở Thái Lan. Điều này bổ sung đối trọng với nguồn sạch, thể hiện rõ sự phân hóa khu vực.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): Other unnamed energy sources were most prevalent in Thailand at 42%, slightly higher than the figure for Singapore and Japan, both at 39%, while Malaysia and South Korea used these kinds of energy for just over one-tenth of their total electrical power. - Kết thúc bằng thông tin về các nguồn năng lượng không được đặt tên, cho thấy Thái Lan dẫn đầu về tỷ lệ này, trong khi Malaysia và Hàn Quốc sử dụng ít nhất. Điều này bổ sung bức tranh toàn diện về cơ cấu năng lượng, khẳng định sự đa dạng và sự khác biệt sâu sắc giữa các quốc gia."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức nhận biết được chủ đề là so sánh tỷ lệ nhiên liệu của các nước châu Á, và hiểu rõ phạm vi thời gian, không gian, từ đó dễ dàng theo dõi các số liệu tiếp theo.",
+        "secondOrder": "Khi tổng quan được đưa ra với sự phân hóa Đông Á - Đông Nam Á, người đọc kỳ vọng sẽ thấy các số liệu cụ thể chứng minh cho sự khác biệt đó, đồng thời hình thành khuôn khổ so sánh giữa hai nhóm.",
+        "thirdOrder": "Việc trình bày chi tiết từng loại nhiên liệu giúp người đọc có cái nhìn cân bằng và đa chiều, không chỉ tập trung vào một nhóm mà còn thấy được sự chuyển tiếp và bổ trợ giữa các nguồn năng lượng.",
+        "unexpected": "Điểm bất ngờ là sự đa dạng trong việc sử dụng các nguồn năng lượng không tên, với Thái Lan sử dụng tỷ lệ cao (42%) gần bằng các nước khác, nhưng Malaysia và Hàn Quốc lại sử dụng rất thấp, cho thấy có những yếu tố địa chính trị hoặc công nghệ ảnh hưởng.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích dữ liệu so sánh giữa các nhóm: giới thiệu tổng thể → nhận định xu hướng → chi tiết từng nhóm nhỏ → bổ sung các yếu tố ngoại lệ, từ đó áp dụng cho mọi dạng biểu đồ có nhiều biến số."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc mô tả bảng thay vì trực tiếp vào số liệu?",
+          "answer": "Cách mở đầu này giúp người đọc định hình ngay đối tượng, phạm vi và mục đích của bài báo cáo. Việc nêu rõ 'bốn loại nhiên liệu' và 'năm quốc gia' tạo ra một khung tham chiếu, làm cho các số liệu sau đó dễ hiểu và có tổ chức hơn."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn nhận định 'differences in energy preferences' làm ý tổng quan?",
+          "answer": "Vì đây là điểm nổi bật nhất của dữ liệu: sự phân hóa rõ rệt giữa các nước Đông Á và Đông Nam Á. Câu tổng quan này bao quát được toàn bộ sự khác biệt và tạo nền tảng cho việc phân tích từng nhóm nhiên liệu cụ thể."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần tách biệt giữa nguồn sạch và nhiên liệu hóa thạch thành hai đoạn riêng?",
+          "answer": "Việc tách bạch giúp làm nổi bật sự đối lập giữa hai nhóm năng lượng, đồng thời giúp người đọc dễ dàng so sánh các con số trong cùng một nhóm. Đây là cách tổ chức thông tin tối ưu cho báo cáo dữ liệu đa biến."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ tổng quan (giới thiệu bảng) → nhận định chính (phân hóa) → chi tiết nhóm sạch → chi tiết nhóm hóa thạch → bổ sung nhóm nguồn khác. Các từ nối như 'Overall', 'Regarding', 'As for' tạo sự mạch lạc và liên kết logic giữa các phần."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là sự phụ thuộc năng lượng phản ánh trình độ phát triển và chiến lược của mỗi quốc gia: các nước phát triển hơn (Nhật Bản, Hàn Quốc) ưu tiên nguồn sạch và hiện đại, trong khi các nước đang phát triển (Thái Lan, Malaysia, Singapore) vẫn phụ thuộc vào nhiên liệu hóa thạch và các nguồn không xác định, cho thấy một bức tranh đa dạng về chính sách năng lượng ở châu Á."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: bắt đầu bằng nhóm hóa thạch trước rồi mới đến nguồn sạch, hoặc bỏ đi từ nối 'Overall' thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, gây khó khăn cho người đọc trong việc nắm bắt bức tranh tổng thể.",
+          "Người đọc không thấy được sự tương phản rõ rệt giữa hai nhóm nước, làm giảm hiệu quả của việc so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu bảng",
+          "phân hóa Đông Á - Đông Nam Á",
+          "nguồn sạch (hạt nhân, thủy điện)",
+          "nhiên liệu hóa thạch (than, dầu)",
+          "nguồn năng lượng khác"
+        ],
+        "directImpact": "Cấu trúc phân tích rõ ràng theo nhóm đối tượng giúp bài báo cáo dễ hiểu, mạch lạc, đáp ứng tiêu chí Coherence và Cohesion trong đánh giá kỹ năng viết và nói.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'Regarding', 'As for' giúp não bộ ghi nhớ trình tự và cách phân nhóm, từ đó tái tạo dễ dàng cho các chủ đề so sánh đa chiều khác.",
+        "feedbackLoop": "Càng hiểu rõ logic phân nhóm và sự đối lập giữa các khu vực, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các bảng số liệu phức tạp mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Muốn mô tả bảng số liệu phải liệt kê tất cả các số liệu theo thứ tự xuất hiện trong bảng.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất khi thông tin được tổ chức theo các nhóm logic và xu hướng nổi bật. Việc nhóm các nước hoặc loại nhiên liệu giúp người đọc dễ dàng so sánh và nắm bắt thông điệp chính.",
+        "reconstructedLogic": "Thay vì học thuộc các con số, xây dựng khung tư duy: Giới thiệu → Nhận định tổng thể → Chi tiết nhóm 1 → Chi tiết nhóm 2 → Bổ sung nhóm còn lại. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích từng nhóm nhỏ có thể làm mất thời gian và gây nhàm chán; cần rút gọn hoặc chỉ tập trung vào sự khác biệt lớn nhất.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các nhóm và giữa các năm (nếu có), thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi chỉ có một vài số liệu đơn giản, người viết có thể lược bỏ một số chi tiết, chỉ giữ lại những con số nổi bật nhất và so sánh trực tiếp.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần C và D tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh các xu hướng đối lập và mối liên hệ giữa các nhóm."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích bảng số liệu hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ sự khác biệt và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ bảng số liệu hoặc biểu đồ nào, từ kinh tế, xã hội đến năng lượng, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'while', 'whereas', và các số liệu chính để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: table illustrates → differences → eco-friendly sources → conventional fossil fuels → other unnamed sources. Xâu chuỗi thành dòng tư duy: 'Bảng minh họa → sự khác biệt → nguồn sạch → nhiên liệu hóa thạch → nguồn khác'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The bar chart shows the percentage of urban population in different continents in 2000 and 2010', duy trì đúng trình tự: giới thiệu → tổng quan → chi tiết nhóm 1 → chi tiết nhóm 2 → bổ sung nhóm còn lại."
+      ],
+      "id": "bc_event_1787202423967",
+      "createdAt": "2026-08-20T05:07:03.967Z",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787202423967_1787202483692_707.png",
+      "updatedAt": "2026-08-20T05:08:03.687Z"
+    },
+    {
+      "question": "Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
+      "title": "Market shares of computer operating systems from 2012 to 2015",
+      "answer": "The pie charts compare the market shares of different computer operating systems (OS) on a global scale from 2012 to 2015. Overall, there were significant changes in the market shares, with OS 1 experiencing the most significant growth to become the most widely used. As a result, the collective share of other unspecified operating systems declined considerably, while OS 2 and OS 3 maintained relatively stable positions throughout the period. Regarding OS 1 and other types of OSs, in 2012, other operating systems had almost half of the market, with a combined 48% share of the market, whereas OS 1 accounted for a lower proportion, at one-fifth of the global market. Over the next three years, the latter’s market presence grew rapidly, reaching 52% by 2015. There was a corresponding fall in the use of other OSs, as they ended up with 15% of the market. As for OS 2 and OS 3, the former remained almost unchanged at 16-17% throughout, and the latter ranged between 10% and 15%, starting and ending at the latter level.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The pie charts compare the market shares of different computer operating systems (OS) on a global scale from 2012 to 2015. - Mở đầu trực tiếp giới thiệu chủ đề và phạm vi thời gian, xác định rõ ràng đối tượng so sánh là thị phần các hệ điều hành trên toàn cầu. Câu này tạo khung tham chiếu và định hướng cho toàn bộ phân tích dữ liệu.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, there were significant changes in the market shares, with OS 1 experiencing the most significant growth to become the most widely used. - Tổng quan nêu bật sự thay đổi lớn, nhấn mạnh sự tăng trưởng vượt trội của OS 1 và việc nó trở thành hệ điều hành phổ biến nhất. Đây là luận điểm chính xuyên suốt bài báo cáo, thu hút sự chú ý vào xu hướng nổi bật nhất.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): As a result, the collective share of other unspecified operating systems declined considerably, while OS 2 and OS 3 maintained relatively stable positions throughout the period. - Chuyển ý bằng cách chỉ ra hệ quả trực tiếp của sự tăng trưởng của OS 1: sự suy giảm mạnh của các hệ điều hành khác và sự ổn định của OS 2 và OS 3. Điều này giúp thấy được sự phân hóa rõ rệt trong thị trường, cung cấp bức tranh cân bằng giữa các nhóm.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Regarding OS 1 and other types of OSs, in 2012, other operating systems had almost half of the market, with a combined 48% share of the market, whereas OS 1 accounted for a lower proportion, at one-fifth of the global market. Over the next three years, the latter’s market presence grew rapidly, reaching 52% by 2015. There was a corresponding fall in the use of other OSs, as they ended up with 15% of the market. - Cung cấp số liệu cụ thể cho nhóm OS 1 và các OS khác, minh họa rõ ràng sự thay đổi từ năm 2012 đến 2015. Chi tiết hóa mức độ tăng trưởng của OS 1 và sự suy giảm tương ứng của nhóm còn lại, làm bằng chứng thuyết phục cho các xu hướng đã nêu.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): As for OS 2 and OS 3, the former remained almost unchanged at 16-17% throughout, and the latter ranged between 10% and 15%, starting and ending at the latter level. - Kết luận phần còn lại của thị trường với hai hệ điều hành OS 2 và OS 3, cho thấy sự ổn định tương đối của chúng. Điều này khẳng định rằng sự biến động mạnh chỉ tập trung vào OS 1 và nhóm khác, đồng thời nhấn mạnh rằng OS 2 và OS 3 giữ vững vị thế, tạo nên sự đa dạng trong thị phần."
+      },
+      "causeEffects": {
+        "immediate": "Người đọc hoặc người nghe ngay lập tức nắm bắt được mục đích so sánh và thời gian, từ đó dễ dàng theo dõi các số liệu và xu hướng được trình bày sau đó.",
+        "secondOrder": "Việc nêu rõ sự tăng trưởng của OS 1 dẫn đến kỳ vọng về những biến động khác, tạo tiền đề cho việc phân tích chi tiết các nhóm còn lại và so sánh tương phản.",
+        "thirdOrder": "Sự bổ sung thông tin về OS 2 và OS 3 ở cuối bài mang lại cái nhìn toàn diện, giúp người đọc thấy được sự phân hóa thị trường không chỉ ở một nhóm mà còn ở tính ổn định của các nhóm khác.",
+        "unexpected": "Điểm bất ngờ là sự thay đổi ngoạn mục của OS 1 từ vị thế thấp (20%) lên chiếm hơn một nửa thị trường (52%), và sự sụt giảm tương ứng của nhóm OS khác từ 48% xuống 15%, cho thấy một cuộc chuyển dịch thị phần rất mạnh mẽ.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích dữ liệu: giới thiệu tổng thể → nêu xu hướng chính → mô tả hệ quả → chi tiết nhóm lớn → bổ sung nhóm còn lại, từ đó áp dụng cho mọi dạng biểu đồ tròn hoặc bảng so sánh theo thời gian."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu biểu đồ?",
+          "answer": "Mở đầu bằng việc xác định loại biểu đồ và phạm vi so sánh giúp người đọc định hình ngay nội dung và bối cảnh. Đây là cách chuẩn mực trong các bài báo cáo dữ liệu, tạo sự chuyên nghiệp và rõ ràng từ những dòng đầu tiên."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn OS 1 và sự tăng trưởng của nó làm ý chính trong tổng quan?",
+          "answer": "Vì đây là điểm nổi bật và biến động mạnh nhất trong dữ liệu. Việc nhấn mạnh OS 1 trở thành phổ biến nhất sẽ thu hút sự chú ý và làm nổi bật xu hướng then chốt, từ đó mở đường cho các so sánh về sự suy giảm của nhóm khác."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần bổ sung chi tiết về OS 2 và OS 3 ở cuối bài?",
+          "answer": "Nhằm hoàn thiện bức tranh thị trường, đảm bảo không có nhóm nào bị bỏ sót. Việc đề cập đến sự ổn định của OS 2 và OS 3 tạo sự cân bằng với sự biến động của OS 1 và nhóm khác, làm cho báo cáo trở nên khách quan và toàn diện hơn."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ tổng quan (giới thiệu biểu đồ và xu hướng chính) đến phân tích nhóm OS 1 và các OS khác, sau đó kết thúc bằng nhóm OS 2 và OS 3. Các cụm từ chuyển ý như 'Overall', 'As a result', 'Regarding', 'As for' tạo nên sự mạch lạc và logic nhân – quả rõ ràng."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là sự thay đổi trong thị phần phản ánh sự cạnh tranh và chuyển dịch công nghệ, nơi một hệ điều hành chiếm ưu thế vượt trội khiến các đối thủ khác bị thu hẹp đáng kể, nhưng vẫn tồn tại những nhóm duy trì vị thế ổn định, minh họa cho tính đa dạng và sự thích ứng của thị trường."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự, bắt đầu bằng chi tiết OS 2 và OS 3 rồi mới đến OS 1, hoặc bỏ đi phần chuyển ý 'As a result' thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không theo trật tự từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, gây khó khăn cho người đọc trong việc nắm bắt trọng tâm.",
+          "Người đọc không thấy được mối quan hệ nhân quả giữa sự tăng trưởng của OS 1 và sự suy giảm của nhóm khác, làm giảm hiệu quả của việc so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu biểu đồ",
+          "thay đổi thị phần",
+          "OS1 tăng trưởng",
+          "OS khác suy giảm",
+          "OS2 và OS3 ổn định"
+        ],
+        "directImpact": "Cấu trúc phân tích rõ ràng, tuần tự giúp bài báo cáo dễ theo dõi, đáp ứng tiêu chí Coherence và Cohesion trong đánh giá kỹ năng viết và nói.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'As a result', 'Regarding', 'As for' giúp não bộ ghi nhớ trình tự và liên kết giữa các nhóm dữ liệu, từ đó tái tạo dễ dàng cho các chủ đề tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic liên kết giữa các nhóm và xu hướng, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các dạng biểu đồ khác mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Muốn mô tả biểu đồ tròn phải nhớ từng con số và nói theo thứ tự xuất hiện trong biểu đồ.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất thông qua các xu hướng và so sánh nổi bật, không phải qua danh sách số liệu rời rạc. Việc tổ chức thông tin theo nhóm và mối quan hệ nhân quả giúp não tự động sắp xếp và diễn đạt.",
+        "reconstructedLogic": "Thay vì học thuộc các số liệu, xây dựng khung tư duy: Giới thiệu → Tổng quan (xu hướng chính) → Hệ quả → Chi tiết nhóm lớn → Chi tiết nhóm còn lại. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích từng nhóm chi tiết có thể làm mất thời gian và gây nhàm chán; cần lược bớt hoặc tóm gọn chỉ vào điểm chính.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh rõ ràng giữa các nhóm và theo thời gian, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi chỉ có một biểu đồ đơn giản, người viết có thể rút ngắn bằng cách chỉ tập trung vào hai hoặc ba nhóm chính, bỏ qua các nhóm ít thay đổi.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần D và Insight tùy theo thời lượng và yêu cầu. Luôn nhấn mạnh các xu hướng chính và mối quan hệ nhân quả giữa các nhóm."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích biểu đồ tròn hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ so sánh và miêu tả xu hướng.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ biểu đồ, bảng số liệu nào, từ kinh tế, xã hội đến môi trường, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh vào các từ chỉ sự tăng trưởng, suy giảm và từ nối để tạo điểm nhấn, tránh đọc đều đều như danh sách số liệu."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: pie charts compare → significant changes → OS1 growth → OS2 & OS3 stable. Xâu chuỗi thành dòng tư duy: 'Biểu đồ so sánh → thay đổi lớn → OS1 tăng trưởng → OS khác giảm → OS2 và OS3 ổn định'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The bar chart shows the sales of different products in 2010 and 2020', duy trì đúng trình tự: giới thiệu → tổng quan → hệ quả → chi tiết nhóm lớn → nhóm còn lại."
+      ],
+      "id": "bc_event_1787196137260",
+      "createdAt": "2026-08-20T03:22:17.260Z",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787196137260_1787202483696_605.png",
+      "updatedAt": "2026-08-20T03:22:34.942Z"
+    },
+    {
       "question": "The table below shows employment patterns for males and females in New Zealand in 1993 and 2003. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
       "title": "Employment patterns for males and females in New Zealand in 1993 and 2003",
       "answer": "The table compares the percentages of male and female workers across different sectors in New Zealand in 1993 and 2003. Overall, there were significant changes in employment patterns, with a more balanced gender distribution being seen in most sectors at the end of the decade. Additionally, agriculture and manufacturing generally declined in popularity, while business and service-related fields attracted more participation from the workforce. Regarding the largest sectors, services and transport employed the highest proportions of both genders' workforces for most of the period, with female participation falling from around a half to 36%, and that of men rising from 22% to 31%. The next most important sector was manufacturing, providing work for a quarter and a sixth of working men and women in 1993, and 12% and 17% in 2003, respectively. Meanwhile, the agricultural sector was much more male dominated in 1993, with 38% of the male workers in field compared to 8% of their female counterparts, and by 2003, the proportions were more balanced, falling to just around 7% for both sexes. As for the remaining fields, the business sector was insignificant in 1993, employing only 7% of men and almost no women in the labour force, but over the 10 years, it gained in popularity, rising to around 25% for both genders. Similarly, the building sector had no female representation in 1993, but then their participation increased to 6%, while the percentage of men working in this field decreased slightly from 12% to 10%. Finally, the social service sector had become more important, as the percentages increased from 13% and 5% of working males and females to 18% and 9% over the decade.",
@@ -92,7 +282,8 @@
       ],
       "id": "bc_event_1787155287161",
       "createdAt": "2026-08-19T16:01:27.161Z",
-      "updatedAt": "2026-08-20T03:03:04.374Z"
+      "updatedAt": "2026-08-20T03:20:10.021Z",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787155287161_1787196010024_978.png"
     },
     {
       "question": "",
@@ -1405,6 +1596,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787155287161",
+  "activeEventId": "bc_event_1787202423967",
   "practiceStep": 5
 }

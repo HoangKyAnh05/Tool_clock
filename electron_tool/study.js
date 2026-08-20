@@ -1171,12 +1171,6 @@ Trả về duy nhất 1 JSON object:
   showTkToast(`Đã tự động lưu từ "${cleanWord}" vào Flashcard TikTok!`);
 }
 
-let currentSelectionHandler = null;
-let currentMouseDownHandler = null;
-let currentDblClickHandler = null;
-let anchorWordRange = null;
-let ttsPronounceTimeout = null;
-
 function findFirstTextNode(el) {
   if (!el) return null;
   if (el.nodeType === Node.TEXT_NODE) return el;
@@ -1296,7 +1290,52 @@ function mergeRanges(rangeA, rangeB) {
   }
 }
 
+function isInsideSelectableArea(node) {
+  if (!node) return false;
+  let curr = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+  while (curr && curr !== document.body && curr !== document.documentElement) {
+    if (curr.classList) {
+      if (
+        curr.tagName === 'INPUT' || 
+        curr.tagName === 'TEXTAREA' || 
+        curr.classList.contains('selection-search-tooltip') ||
+        curr.classList.contains('btn-modal') ||
+        curr.classList.contains('btn-primary-glow')
+      ) {
+        return false;
+      }
+      if (
+        curr.classList.contains('detail-section-val') ||
+        curr.classList.contains('vocab-inline-hover') ||
+        curr.classList.contains('selectable-text') ||
+        curr.classList.contains('bc-node-content') ||
+        curr.classList.contains('bc-why-step') ||
+        curr.classList.contains('comment-content') ||
+        curr.id === 'studyDetailContent' ||
+        curr.id === 'detailContentScroll'
+      ) {
+        return true;
+      }
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+let currentSelectionHandler = null;
+let currentMouseDownHandler = null;
+let currentDblClickHandler = null;
+let currentMouseUpHandler = null;
+let currentKeyDownHandler = null;
+let anchorWordRange = null;
+let ttsPronounceTimeout = null;
+let activeSelectionContainer = null;
+let activeSelectionType = 'ielts';
+
 function setupTextSelectionSearch(containerEl, type) {
+  activeSelectionContainer = containerEl;
+  activeSelectionType = type || 'ielts';
+
   if (currentSelectionHandler) {
     document.removeEventListener('selectionchange', currentSelectionHandler);
   }
@@ -1305,6 +1344,12 @@ function setupTextSelectionSearch(containerEl, type) {
   }
   if (currentDblClickHandler) {
     document.removeEventListener('dblclick', currentDblClickHandler);
+  }
+  if (currentMouseUpHandler) {
+    document.removeEventListener('mouseup', currentMouseUpHandler);
+  }
+  if (currentKeyDownHandler) {
+    document.removeEventListener('keydown', currentKeyDownHandler);
   }
 
   const handleSelection = () => {
@@ -1328,17 +1373,7 @@ function setupTextSelectionSearch(containerEl, type) {
       return;
     }
     
-    let node = selection.anchorNode;
-    let isInsideValue = false;
-    while (node) {
-      if (node.classList && node.classList.contains('detail-section-val')) {
-        isInsideValue = true;
-        break;
-      }
-      node = node.parentNode;
-    }
-    
-    if (!isInsideValue) {
+    if (!isInsideSelectableArea(selection.anchorNode) && !isInsideSelectableArea(selection.focusNode)) {
       if (ttsPronounceTimeout) {
         clearTimeout(ttsPronounceTimeout);
         ttsPronounceTimeout = null;
@@ -1360,25 +1395,58 @@ function setupTextSelectionSearch(containerEl, type) {
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
-      showTooltip(rect, selectedText, containerEl);
+      showTooltip(rect, selectedText, activeSelectionContainer || containerEl);
     }
   };
   
   let hideSelectionTimeout = null;
 
   const handleMouseDown = (e) => {
+    if (selectionTooltip && selectionTooltip.contains(e.target)) {
+      return;
+    }
     if (selectionTooltip && !selectionTooltip.contains(e.target)) {
       if (hideSelectionTimeout) clearTimeout(hideSelectionTimeout);
       hideSelectionTimeout = setTimeout(hideTooltip, 150);
     }
-    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
-      anchorWordRange = null;
+
+    const isModifierPressed = Boolean(e.ctrlKey || e.metaKey || e.shiftKey);
+    const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
+
+    if (isModifierPressed && isInsideSelectableArea(e.target) && clickedWordRange) {
+      const existingSel = window.getSelection();
+      const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
+        ? existingSel.getRangeAt(0) 
+        : null;
+      const activeAnchor = anchorWordRange || existingRange;
+
+      if (activeAnchor) {
+        e.preventDefault();
+        try {
+          const combinedRange = mergeRanges(activeAnchor, clickedWordRange);
+          anchorWordRange = activeAnchor;
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(combinedRange);
+          handleSelection();
+          return;
+        } catch (err) {
+          console.warn('Error expanding range on Ctrl+click:', err);
+        }
+      }
+    }
+
+    if (!isModifierPressed) {
+      if (clickedWordRange && isInsideSelectableArea(e.target)) {
+        anchorWordRange = clickedWordRange.cloneRange();
+      } else {
+        anchorWordRange = null;
+      }
     }
   };
 
   const handleDblClick = (e) => {
-    const targetVal = e.target.closest ? e.target.closest('.detail-section-val') : null;
-    if (!targetVal) return;
+    if (!isInsideSelectableArea(e.target)) return;
 
     const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
     if (!clickedWordRange) return;
@@ -1414,14 +1482,36 @@ function setupTextSelectionSearch(containerEl, type) {
     handleSelection();
     e.preventDefault();
   };
+
+  const handleMouseUp = (e) => {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed && sel.toString().trim().length > 0) {
+      if (isInsideSelectableArea(sel.anchorNode) || isInsideSelectableArea(e.target)) {
+        if (sel.rangeCount > 0) {
+          anchorWordRange = sel.getRangeAt(0).cloneRange();
+        }
+        handleSelection();
+      }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      hideTooltip();
+    }
+  };
   
   currentSelectionHandler = handleSelection;
   currentMouseDownHandler = handleMouseDown;
   currentDblClickHandler = handleDblClick;
+  currentMouseUpHandler = handleMouseUp;
+  currentKeyDownHandler = handleKeyDown;
   
   document.addEventListener('selectionchange', handleSelection);
   document.addEventListener('mousedown', handleMouseDown);
   document.addEventListener('dblclick', handleDblClick);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('keydown', handleKeyDown);
   
   async function showTooltip(rect, text, containerEl) {
     if (hideSelectionTimeout) {
@@ -1432,49 +1522,44 @@ function setupTextSelectionSearch(containerEl, type) {
     if (!selectionTooltip) {
       selectionTooltip = document.createElement('div');
       selectionTooltip.className = 'selection-search-tooltip';
-      Object.assign(selectionTooltip.style, {
-        position: 'fixed',
-        zIndex: '10000',
-        background: 'rgba(15, 23, 42, 0.95)',
-        backdropFilter: 'blur(8px)',
-        color: '#fff',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '10px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-        cursor: 'default',
-        padding: '10px 14px',
-        display: 'none',
-        flexDirection: 'column',
-        gap: '6px',
-        maxWidth: '260px',
-        fontFamily: 'inherit'
-      });
       document.body.appendChild(selectionTooltip);
     }
     
-    const tooltipHeight = 85;
-    const tooltipWidth = 240;
+    const tooltipHeight = 110;
+    const tooltipWidth = 270;
     
-    let top = rect.top + window.scrollY - tooltipHeight - 10;
+    let top = rect.top + window.scrollY - tooltipHeight - 12;
     let left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2);
     
-    if (top < window.scrollY) top = rect.bottom + window.scrollY + 10;
-    if (left < 8) left = 8;
-    if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 8;
+    if (top < window.scrollY + 10) top = rect.bottom + window.scrollY + 12;
+    if (left < 10) left = 10;
+    if (left + tooltipWidth > window.innerWidth - 10) left = window.innerWidth - tooltipWidth - 10;
     
     selectionTooltip.style.top = `${top}px`;
     selectionTooltip.style.left = `${left}px`;
     selectionTooltip.style.display = 'flex';
     
     selectionTooltip.innerHTML = `
-      <div style="font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Dịch nghĩa</div>
-      <div class="translation-text" style="font-size: 13px; font-weight: 500; color: #f8fafc; line-height: 1.4;">⏳ Đang dịch...</div>
-      <div style="display: flex; gap: 5px; margin-top: 4px;">
-        <button class="tooltip-search-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; outline: none; transition: background 0.2s;">🔍 Tìm</button>
-        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; display: none; outline: none; transition: transform 0.2s;">➕ Thêm từ</button>
-        <button class="tooltip-tk-btn" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); border: none; color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; flex: 1.2; display: none; outline: none; transition: transform 0.2s; white-space: nowrap;">🎵 Flashcard</button>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="tooltip-header" style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">DỊCH NGHĨA</span>
+        <button class="tooltip-speak-btn" style="background: none; border: none; color: #38bdf8; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: 700; display: flex; align-items: center; gap: 3px;" title="Phát âm từ/đoạn này">🔊 Nghe</button>
+      </div>
+      <div class="translation-text" style="font-size: 16px; font-weight: 700; color: #ffffff; line-height: 1.35; margin: 4px 0 10px 0;">⏳ Đang dịch...</div>
+      <div class="tooltip-btn-row" style="display: flex; gap: 6px; align-items: center;">
+        <button class="tooltip-search-btn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">🔍 Tìm</button>
+        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1.1; outline: none; display: none; align-items: center; justify-content: center; gap: 4px;">➕ Thêm từ</button>
+        <button class="tooltip-tk-btn" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1.2; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎵 Flashcard</button>
       </div>
     `;
+
+    const speakBtn = selectionTooltip.querySelector('.tooltip-speak-btn');
+    if (speakBtn) {
+      speakBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        speakPronunciation(text);
+      };
+    }
     
     const searchBtn = selectionTooltip.querySelector('.tooltip-search-btn');
     searchBtn.onclick = (e) => {

@@ -4009,10 +4009,194 @@ function extractSearchTerm(line) {
   return clean;
 }
 
+function isInsideSelectableArea(node) {
+  if (!node) return false;
+  let curr = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+  while (curr && curr !== document.body && curr !== document.documentElement) {
+    if (curr.classList) {
+      if (
+        curr.tagName === 'INPUT' || 
+        curr.tagName === 'TEXTAREA' || 
+        curr.classList.contains('selection-search-tooltip') ||
+        curr.classList.contains('btn-modal') ||
+        curr.classList.contains('btn-primary-glow') ||
+        curr.classList.contains('btn-delete-red')
+      ) {
+        return false;
+      }
+      if (
+        curr.classList.contains('detail-section-val') ||
+        curr.classList.contains('bc-node-content') ||
+        curr.classList.contains('bc-why-step') ||
+        curr.classList.contains('bc-tab-content') ||
+        curr.classList.contains('bc-chain-flow') ||
+        curr.classList.contains('comment-content') ||
+        curr.classList.contains('comment-card') ||
+        curr.classList.contains('vocab-inline-hover') ||
+        curr.classList.contains('selectable-text') ||
+        curr.id === 'bcEventContext' ||
+        curr.id === 'bcEventTitle' ||
+        curr.id === 'bcActiveWorkspace' ||
+        curr.id === 'bcVaultGoldenInsight' ||
+        curr.id === 'bcVaultTakeawaysList' ||
+        curr.id === 'ieltsDetailScroll' ||
+        curr.id === 'generalDetailScroll' ||
+        curr.id === 'bcMainStudio'
+      ) {
+        return true;
+      }
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+function showTkToast(msg) {
+  let toast = document.getElementById('tkCustomFloatingToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'tkCustomFloatingToast';
+    toast.style.cssText = 'position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #1e1b2e 0%, #2d1b4e 100%); border: 1.5px solid #00f2fe; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 9999999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(20px); opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px;';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<span style="font-size: 16px;">✨</span> <span>${msg}</span>`;
+  toast.style.transform = 'translateY(0)';
+  toast.style.opacity = '1';
+  setTimeout(() => {
+    toast.style.transform = 'translateY(20px)';
+    toast.style.opacity = '0';
+  }, 3500);
+}
+
+function getBestVoiceForLang(langCode) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  let match = voices.find(v => v.lang.toLowerCase().startsWith(langCode.substring(0, 2).toLowerCase()));
+  if (!match) {
+    match = voices.find(v => v.lang.toLowerCase() === langCode.toLowerCase());
+  }
+  return match;
+}
+
+function speakPronunciation(text) {
+  if (!text) return;
+  text = text.trim();
+  if (text.length === 0) return;
+
+  text = text.replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"']+|[.,\/#!$%\^&\*;:{}=\-_`~()?"']+$/g, "");
+  if (text.length === 0) return;
+
+  const viRegex = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+  const lang = viRegex.test(text) ? 'vi-VN' : 'en-US';
+
+  if (typeof window !== 'undefined' && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  const bestVoice = getBestVoiceForLang(lang);
+  if (bestVoice) {
+    utterance.voice = bestVoice;
+  }
+  utterance.lang = lang;
+  utterance.rate = 1.0;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+async function saveWordToTiktokFlashcardDirect(word, translation) {
+  if (!word || !word.trim()) return;
+  const cleanWord = word.trim();
+  let cleanTrans = (translation || '').trim();
+
+  if (!cleanTrans || cleanTrans === 'Đang cập nhật' || cleanTrans.includes('Không tìm thấy')) {
+    if (window.taskAPI && window.taskAPI.translateText) {
+      try {
+        const rawRes = await window.taskAPI.translateText(cleanWord, 'vi');
+        if (typeof rawRes === 'string') {
+          cleanTrans = rawRes;
+        } else if (Array.isArray(rawRes) && Array.isArray(rawRes[0])) {
+          cleanTrans = rawRes[0].map(item => item && item[0] ? item[0] : '').filter(Boolean).join(' ');
+        }
+      } catch (e) {}
+    }
+  }
+  if (!cleanTrans || cleanTrans.includes('Không tìm thấy')) cleanTrans = 'Đang cập nhật';
+
+  let notes = [
+    `🗣️ Speaking 1: "In daily life, I often encounter the need to ${cleanWord} to reach my goals."`,
+    `🗣️ Speaking 2: "From my perspective, using the word '${cleanWord}' makes answers sound natural."`,
+    `✍️ Writing 1: "In academic discussions, the concept of '${cleanWord}' is frequently highlighted."`,
+    `✍️ Writing 2: "Numerous studies demonstrate how '${cleanWord}' can significantly influence results."`,
+    `✍️ Writing 3: "Therefore, gaining a deep understanding of '${cleanWord}' is essential."`
+  ].join('\n');
+
+  let vaultData = { items: [] };
+  if (window.taskAPI && window.taskAPI.loadMemorizeVault) {
+    try {
+      const loaded = await window.taskAPI.loadMemorizeVault();
+      if (loaded && Array.isArray(loaded.items)) vaultData = loaded;
+    } catch (e) {}
+  }
+
+  let tiktokUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(cleanWord)}`;
+  let chosenMusicUrl = localStorage.getItem('tk_last_chosen_music_url') || '';
+  if (window.taskAPI && window.taskAPI.loadTiktokMusic) {
+    try {
+      const musicData = await window.taskAPI.loadTiktokMusic();
+      if (musicData && musicData.lastChosenUrl) {
+        chosenMusicUrl = musicData.lastChosenUrl;
+      }
+    } catch (e) {}
+  }
+  if (!chosenMusicUrl) chosenMusicUrl = 'https://www.tiktok.com/music/Perfect-6655492047723563778';
+  if (window.taskAPI && window.taskAPI.extractTiktokMusicVideos) {
+    try {
+      const res = await window.taskAPI.extractTiktokMusicVideos(chosenMusicUrl);
+      if (res && res.success && Array.isArray(res.videos) && res.videos.length > 0) {
+        const randomIndex = Math.floor(Math.random() * res.videos.length);
+        tiktokUrl = res.videos[randomIndex];
+      }
+    } catch (e) {}
+  }
+
+  let existing = vaultData.items.find(x => x.word && x.word.toLowerCase().trim() === cleanWord.toLowerCase());
+  if (existing) {
+    existing.translation = cleanTrans;
+    existing.notes = notes;
+    existing.tiktokUrl = tiktokUrl;
+    existing.linkType = 'direct';
+  } else {
+    const newItem = {
+      id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      word: cleanWord,
+      translation: cleanTrans,
+      notes: notes,
+      tiktokUrl: tiktokUrl,
+      linkType: 'direct',
+      level: 1,
+      interval: 1,
+      nextReviewDate: new Date().toISOString().split('T')[0]
+    };
+    vaultData.items.unshift(newItem);
+  }
+
+  if (window.taskAPI && window.taskAPI.saveMemorizeVault) {
+    await window.taskAPI.saveMemorizeVault(vaultData);
+  }
+
+  if (typeof playTone === 'function') {
+    playTone(523, 0.08, 'sine', 0.1);
+    setTimeout(() => playTone(784, 0.12, 'sine', 0.15), 100);
+  }
+
+  showTkToast(`Đã tự động lưu từ "${cleanWord}" vào Flashcard TikTok!`);
+}
+
 function highlightWordInDetailSection(sectionEl, word) {
   if (!word || word.trim() === "") return false;
 
-  const valDiv = sectionEl.querySelector('.detail-section-val');
+  const valDiv = sectionEl.querySelector ? (sectionEl.querySelector('.detail-section-val') || sectionEl) : sectionEl;
   if (!valDiv) return false;
 
   if (!valDiv.dataset.originalText) {
@@ -4057,9 +4241,11 @@ function highlightWordInDetailSection(sectionEl, word) {
 }
 
 function clearHighlights(containerEl) {
-  containerEl.querySelectorAll('.detail-section').forEach(sectionEl => {
-    const valDiv = sectionEl.querySelector('.detail-section-val');
-    if (valDiv && valDiv.dataset.originalText) {
+  if (!containerEl) return;
+  const sections = containerEl.querySelectorAll ? containerEl.querySelectorAll('.detail-section, .bc-node-card, .bc-why-step, #bcEventContext') : [];
+  sections.forEach(sectionEl => {
+    const valDiv = sectionEl.querySelector ? (sectionEl.querySelector('.detail-section-val') || sectionEl) : sectionEl;
+    if (valDiv && valDiv.dataset && valDiv.dataset.originalText) {
       valDiv.textContent = valDiv.dataset.originalText;
       delete valDiv.dataset.originalText;
     }
@@ -4069,58 +4255,28 @@ function clearHighlights(containerEl) {
 function performSearch(word, containerEl) {
   if (!word || word.trim() === "") return;
 
-  clearHighlights(containerEl);
+  const targetContainer = containerEl || document.getElementById('bcActiveWorkspace') || document.body;
+  clearHighlights(targetContainer);
 
-  const sections = containerEl.querySelectorAll('.detail-section');
-  const targetKeywords = [
-    "bài mẫu", "sample", "transcript", "đoạn văn đọc", "passage",
-    "hội thoại", "dialogue", "đề bài", "problem", "mã nguồn",
-    "solution", "lý thuyết", "theory"
-  ];
+  const sections = targetContainer.querySelectorAll ? targetContainer.querySelectorAll('.detail-section, .bc-node-content, .bc-why-step, #bcEventContext, #bcVaultGoldenInsight') : [];
+  let found = false;
 
-  let targetSection = null;
-
-  for (const keyword of targetKeywords) {
-    for (const section of sections) {
-      const lblEl = section.querySelector('.detail-section-lbl');
-      if (lblEl) {
-        const label = lblEl.textContent.toLowerCase();
-        if (label.includes(keyword)) {
-          const valDiv = section.querySelector('.detail-section-val');
-          if (valDiv) {
-            const txt = valDiv.textContent;
-            const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const regex = new RegExp(escapedWord, 'i');
-            if (regex.test(txt)) {
-              targetSection = section;
-              break;
-            }
-          }
-        }
-      }
-    }
-    if (targetSection) break;
-  }
-
-  if (!targetSection) {
-    for (const section of sections) {
-      const valDiv = section.querySelector('.detail-section-val');
-      if (valDiv) {
-        const txt = valDiv.textContent;
-        const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const regex = new RegExp(escapedWord, 'i');
-        if (regex.test(txt)) {
-          targetSection = section;
-          break;
-        }
+  for (const sec of sections) {
+    const valDiv = sec.querySelector ? (sec.querySelector('.detail-section-val') || sec) : sec;
+    if (valDiv) {
+      const txt = valDiv.textContent || '';
+      const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(escapedWord, 'i');
+      if (regex.test(txt)) {
+        highlightWordInDetailSection(sec, word);
+        found = true;
+        break;
       }
     }
   }
 
-  if (targetSection) {
-    highlightWordInDetailSection(targetSection, word);
-  } else {
-    alert(`Không tìm thấy cụm từ "${word}" trong các phần tài liệu học ở trên.`);
+  if (!found) {
+    alert(`Không tìm thấy cụm từ "${word}" trong nội dung chi tiết.`);
   }
 }
 
@@ -4180,10 +4336,41 @@ async function addWordToVocabularyDirect(word, translation, type) {
   alert(`Đã thêm thành công "${word}" vào ${isReading ? 'bảng từ khóa' : 'danh sách từ vựng'}!`);
 }
 
+function isInsideSelectableArea(node) {
+  if (!node) return false;
+  let curr = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+  if (!curr || !curr.closest) return false;
+
+  // Ignore interactive controls & buttons
+  if (curr.closest('input, textarea, button, select, .selection-search-tooltip, .titlebar-controls, .modal-actions, .bc-nav-item, .nav-btn, .tab-btn')) {
+    return false;
+  }
+
+  // Allow inside selectable containers
+  if (curr.closest(
+    '.selectable-text, .detail-section-val, #studyDetailContent, #detailContentScroll, ' +
+    '#bcActiveWorkspace, #bcEventContext, #bcEventQuestionBox, #bcEventTitle, ' +
+    '.bc-node-content, .bc-why-step, .bc-tab-content, .bc-main, .bc-main-panel, ' +
+    '.bc-workspace, #bcVaultGoldenInsight, #bcVaultTakeawaysList, .comment-content, ' +
+    '.comment-card, .cm-card, .vocab-inline-hover, .ielts-detail, .general-detail, ' +
+    '#ieltsDetailScroll, #generalDetailScroll, .ielts-section'
+  )) {
+    return true;
+  }
+
+  return false;
+}
+
 let currentSelectionHandler = null;
 let currentMouseDownHandler = null;
 let currentDblClickHandler = null;
+let currentMouseUpHandler = null;
+let currentKeyDownHandler = null;
 let anchorWordRange = null;
+let ttsPronounceTimeout = null;
+let selectionTooltip = null;
+let activeSelectionContainer = null;
+let activeSelectionType = 'ielts';
 
 function findFirstTextNode(el) {
   if (!el) return null;
@@ -4305,6 +4492,9 @@ function mergeRanges(rangeA, rangeB) {
 }
 
 function setupTextSelectionSearch(containerEl, type) {
+  activeSelectionContainer = containerEl;
+  activeSelectionType = type || 'ielts';
+
   if (currentSelectionHandler) {
     document.removeEventListener('selectionchange', currentSelectionHandler);
   }
@@ -4314,57 +4504,108 @@ function setupTextSelectionSearch(containerEl, type) {
   if (currentDblClickHandler) {
     document.removeEventListener('dblclick', currentDblClickHandler);
   }
+  if (currentMouseUpHandler) {
+    document.removeEventListener('mouseup', currentMouseUpHandler);
+  }
+  if (currentKeyDownHandler) {
+    document.removeEventListener('keydown', currentKeyDownHandler);
+  }
 
   const handleSelection = () => {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) {
+      if (ttsPronounceTimeout) {
+        clearTimeout(ttsPronounceTimeout);
+        ttsPronounceTimeout = null;
+      }
       hideTooltip();
       return;
     }
     const selectedText = selection.toString().trim();
 
     if (!selectedText || selectedText.length < 1) {
-      hideTooltip();
-      return;
-    }
-
-    let node = selection.anchorNode;
-    let isInsideValue = false;
-    while (node) {
-      if (node.classList && node.classList.contains('detail-section-val')) {
-        isInsideValue = true;
-        break;
+      if (ttsPronounceTimeout) {
+        clearTimeout(ttsPronounceTimeout);
+        ttsPronounceTimeout = null;
       }
-      node = node.parentNode;
-    }
-
-    if (!isInsideValue) {
       hideTooltip();
       return;
+    }
+
+    if (!isInsideSelectableArea(selection.anchorNode) && !isInsideSelectableArea(selection.focusNode)) {
+      if (ttsPronounceTimeout) {
+        clearTimeout(ttsPronounceTimeout);
+        ttsPronounceTimeout = null;
+      }
+      hideTooltip();
+      return;
+    }
+
+    // Debounced pronunciation trigger
+    if (typeof speakPronunciation === 'function') {
+      if (ttsPronounceTimeout) {
+        clearTimeout(ttsPronounceTimeout);
+      }
+      ttsPronounceTimeout = setTimeout(() => {
+        speakPronunciation(selectedText);
+      }, 350);
     }
 
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
-      showTooltip(rect, selectedText, containerEl);
+      showTooltip(rect, selectedText, activeSelectionContainer || containerEl);
     }
   };
 
   let hideSelectionTimeout = null;
 
   const handleMouseDown = (e) => {
+    if (selectionTooltip && selectionTooltip.contains(e.target)) {
+      return;
+    }
     if (selectionTooltip && !selectionTooltip.contains(e.target)) {
       if (hideSelectionTimeout) clearTimeout(hideSelectionTimeout);
       hideSelectionTimeout = setTimeout(hideTooltip, 150);
     }
-    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
-      anchorWordRange = null;
+
+    const isModifierPressed = Boolean(e.ctrlKey || e.metaKey || e.shiftKey);
+    const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
+
+    if (isModifierPressed && isInsideSelectableArea(e.target) && clickedWordRange) {
+      const existingSel = window.getSelection();
+      const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
+        ? existingSel.getRangeAt(0) 
+        : null;
+      const activeAnchor = anchorWordRange || existingRange;
+
+      if (activeAnchor) {
+        e.preventDefault();
+        try {
+          const combinedRange = mergeRanges(activeAnchor, clickedWordRange);
+          anchorWordRange = activeAnchor;
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(combinedRange);
+          handleSelection();
+          return;
+        } catch (err) {
+          console.warn('Error expanding range on Ctrl+click:', err);
+        }
+      }
+    }
+
+    if (!isModifierPressed) {
+      if (clickedWordRange && isInsideSelectableArea(e.target)) {
+        anchorWordRange = clickedWordRange.cloneRange();
+      } else {
+        anchorWordRange = null;
+      }
     }
   };
 
   const handleDblClick = (e) => {
-    const targetVal = e.target.closest ? e.target.closest('.detail-section-val') : null;
-    if (!targetVal) return;
+    if (!isInsideSelectableArea(e.target)) return;
 
     const clickedWordRange = getWordRangeAtPoint(e.clientX, e.clientY);
     if (!clickedWordRange) return;
@@ -4401,13 +4642,35 @@ function setupTextSelectionSearch(containerEl, type) {
     e.preventDefault();
   };
 
+  const handleMouseUp = (e) => {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed && sel.toString().trim().length > 0) {
+      if (isInsideSelectableArea(sel.anchorNode) || isInsideSelectableArea(e.target)) {
+        if (sel.rangeCount > 0) {
+          anchorWordRange = sel.getRangeAt(0).cloneRange();
+        }
+        handleSelection();
+      }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      hideTooltip();
+    }
+  };
+
   currentSelectionHandler = handleSelection;
   currentMouseDownHandler = handleMouseDown;
   currentDblClickHandler = handleDblClick;
+  currentMouseUpHandler = handleMouseUp;
+  currentKeyDownHandler = handleKeyDown;
 
   document.addEventListener('selectionchange', handleSelection);
   document.addEventListener('mousedown', handleMouseDown);
   document.addEventListener('dblclick', handleDblClick);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('keydown', handleKeyDown);
 
   async function showTooltip(rect, text, containerEl) {
     if (hideSelectionTimeout) {
@@ -4418,56 +4681,54 @@ function setupTextSelectionSearch(containerEl, type) {
     if (!selectionTooltip) {
       selectionTooltip = document.createElement('div');
       selectionTooltip.className = 'selection-search-tooltip';
-      Object.assign(selectionTooltip.style, {
-        position: 'fixed',
-        zIndex: '10000',
-        background: 'rgba(15, 23, 42, 0.95)',
-        backdropFilter: 'blur(8px)',
-        color: '#fff',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '10px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-        cursor: 'default',
-        padding: '10px 14px',
-        display: 'none',
-        flexDirection: 'column',
-        gap: '6px',
-        maxWidth: '260px',
-        fontFamily: 'inherit'
-      });
       document.body.appendChild(selectionTooltip);
     }
 
-    const tooltipHeight = 85;
-    const tooltipWidth = 240;
+    const tooltipHeight = 110;
+    const tooltipWidth = 270;
 
-    let top = rect.top + window.scrollY - tooltipHeight - 10;
+    let top = rect.top + window.scrollY - tooltipHeight - 12;
     let left = rect.left + window.scrollX + (rect.width / 2) - (tooltipWidth / 2);
 
-    if (top < window.scrollY) top = rect.bottom + window.scrollY + 10;
-    if (left < 8) left = 8;
-    if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 8;
+    if (top < window.scrollY + 10) top = rect.bottom + window.scrollY + 12;
+    if (left < 10) left = 10;
+    if (left + tooltipWidth > window.innerWidth - 10) left = window.innerWidth - tooltipWidth - 10;
 
     selectionTooltip.style.top = `${top}px`;
     selectionTooltip.style.left = `${left}px`;
     selectionTooltip.style.display = 'flex';
 
     selectionTooltip.innerHTML = `
-      <div style="font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Dịch nghĩa</div>
-      <div class="translation-text" style="font-size: 13px; font-weight: 500; color: #f8fafc; line-height: 1.4;">⏳ Đang dịch...</div>
-      <div style="display: flex; gap: 6px; margin-top: 4px;">
-        <button class="tooltip-search-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; outline: none; transition: background 0.2s;">🔍 Tìm</button>
-        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; display: none; outline: none; transition: transform 0.2s;">➕ Thêm từ</button>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="tooltip-header" style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">DỊCH NGHĨA</span>
+        <button class="tooltip-speak-btn" style="background: none; border: none; color: #38bdf8; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: 700; display: flex; align-items: center; gap: 3px;" title="Phát âm từ/đoạn này">🔊 Nghe</button>
+      </div>
+      <div class="translation-text" style="font-size: 16px; font-weight: 700; color: #ffffff; line-height: 1.35; margin: 4px 0 10px 0;">⏳ Đang dịch...</div>
+      <div class="tooltip-btn-row" style="display: flex; gap: 6px; align-items: center;">
+        <button class="tooltip-search-btn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">🔍 Tìm</button>
+        <button class="tooltip-add-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1.1; outline: none; display: none; align-items: center; justify-content: center; gap: 4px;">➕ Thêm từ</button>
+        <button class="tooltip-tk-btn" style="background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1.2; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">🎵 Flashcard</button>
       </div>
     `;
 
+    const speakBtn = selectionTooltip.querySelector('.tooltip-speak-btn');
+    if (speakBtn) {
+      speakBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        speakPronunciation(text);
+      };
+    }
+
     const searchBtn = selectionTooltip.querySelector('.tooltip-search-btn');
-    searchBtn.onclick = (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      performSearch(text, containerEl);
-      hideTooltip();
-    };
+    if (searchBtn) {
+      searchBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        performSearch(text, activeSelectionContainer || containerEl);
+        hideTooltip();
+      };
+    }
 
     try {
       let resJson;
@@ -4488,7 +4749,6 @@ function setupTextSelectionSearch(containerEl, type) {
         }
 
         if (!success) {
-          // Fallback to MyMemory API (which supports CORS)
           try {
             const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|vi`;
             const res = await fetch(myMemoryUrl);
@@ -4509,19 +4769,36 @@ function setupTextSelectionSearch(containerEl, type) {
         }
       }
 
-      const translation = resJson && resJson[0] && resJson[0][0] && resJson[0][0][0];
+      let translation = '';
+      if (typeof resJson === 'string') {
+        translation = resJson;
+      } else if (Array.isArray(resJson) && Array.isArray(resJson[0])) {
+        translation = resJson[0].map(item => item && item[0] ? item[0] : '').filter(Boolean).join(' ');
+      }
+
       if (translation && translation.toLowerCase().trim() !== text.toLowerCase().trim()) {
         const transEl = selectionTooltip.querySelector('.translation-text');
         if (transEl) transEl.textContent = translation;
 
         const addBtn = selectionTooltip.querySelector('.tooltip-add-btn');
-        if (addBtn) {
+        if (addBtn && (activeSelectionType === 'ielts' || activeSelectionType === 'general')) {
           addBtn.style.display = 'block';
           addBtn.onclick = async (e) => {
             e.stopPropagation();
             e.preventDefault();
             hideTooltip();
-            await addWordToVocabularyDirect(text, translation, type);
+            await addWordToVocabularyDirect(text, translation, activeSelectionType);
+          };
+        }
+
+        const tkBtn = selectionTooltip.querySelector('.tooltip-tk-btn');
+        if (tkBtn) {
+          tkBtn.style.display = 'block';
+          tkBtn.onclick = async (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            hideTooltip();
+            await saveWordToTiktokFlashcardDirect(text, translation);
           };
         }
       } else {
@@ -10968,6 +11245,7 @@ function renderBcActiveEvent(ev) {
   }
 
   applyBcPracticeStep();
+  setupTextSelectionSearch(document.getElementById('bcActiveWorkspace'), 'bc');
 }
 
 function applyBcPracticeStep() {
@@ -11330,7 +11608,7 @@ function setupBcModals() {
     const titleInp = document.getElementById('bcInputEventTitle');
     const catInp = document.getElementById('bcInputEventCategory');
     const lvlInp = document.getElementById('bcInputEventLevel');
-    const ctxInp = document.getElementById('bcInputEventContext');
+    const jsonInp = document.getElementById('bcInputEventJson');
 
     const text = (titleInp?.value || '').trim();
 
@@ -11339,7 +11617,7 @@ function setupBcModals() {
       answer: text,
       category: catInp?.value || 'Tiếng Anh & Speaking',
       level: parseInt(lvlInp?.value || '3'),
-      context: (ctxInp?.value || '').trim(),
+      jsonCode: (jsonInp?.value || '').trim(),
       image: modalCurrentImg
     };
   };
@@ -11394,11 +11672,34 @@ function setupBcModals() {
     btnModalClaude.onclick = () => copyPromptFromModal('https://claude.ai/');
   }
 
-  const btnModalPasteJson = document.getElementById('btnBcModalPasteJson');
-  if (btnModalPasteJson) {
-    btnModalPasteJson.onclick = () => {
-      document.getElementById('bcEventModal')?.classList.remove('active');
-      openBcImportJsonModal(editingEventId);
+  const btnModalPasteJsonClipboard = document.getElementById('btnBcModalPasteJsonClipboard');
+  if (btnModalPasteJsonClipboard) {
+    btnModalPasteJsonClipboard.onclick = async () => {
+      let text = '';
+      if (window.taskAPI && window.taskAPI.readClipboardText) {
+        text = await window.taskAPI.readClipboardText();
+      } else {
+        text = await navigator.clipboard.readText();
+      }
+      if (text) {
+        const jsonInp = document.getElementById('bcInputEventJson');
+        if (jsonInp) {
+          jsonInp.value = text;
+          if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+        }
+      }
+    };
+  }
+
+  const btnModalPasteDemoJson = document.getElementById('btnBcModalPasteDemoJson');
+  if (btnModalPasteDemoJson) {
+    btnModalPasteDemoJson.onclick = () => {
+      const demo = DEFAULT_BRAIN_CHAIN_PRESETS[0];
+      const jsonInp = document.getElementById('bcInputEventJson');
+      if (jsonInp && demo) {
+        jsonInp.value = JSON.stringify(demo, null, 2);
+        if (typeof playTone === 'function') playTone(784, 0.08, 'sine', 0.15);
+      }
     };
   }
 
@@ -11450,14 +11751,21 @@ function setupBcModals() {
     const titleInp = document.getElementById('bcInputEventTitle');
     const catInp = document.getElementById('bcInputEventCategory');
     const lvlInp = document.getElementById('bcInputEventLevel');
-    const ctxInp = document.getElementById('bcInputEventContext');
+    const jsonInp = document.getElementById('bcInputEventJson');
 
     if (!modal) return;
     if (modalTitle) modalTitle.textContent = eventToEdit ? '✏️ Chỉnh Sửa Câu / Sự Kiện' : '💡 Thêm Câu / Sự Kiện / Tình Huống Mới';
     if (titleInp) titleInp.value = eventToEdit ? (eventToEdit.answer || eventToEdit.title || '') : '';
     if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Tiếng Anh & Speaking') : 'Tiếng Anh & Speaking';
     if (lvlInp) lvlInp.value = eventToEdit ? (eventToEdit.level || 3) : 3;
-    if (ctxInp) ctxInp.value = eventToEdit ? (eventToEdit.context || '') : '';
+
+    if (jsonInp) {
+      if (eventToEdit && eventToEdit.coreChain && eventToEdit.coreChain.insight) {
+        jsonInp.value = JSON.stringify(eventToEdit, null, 2);
+      } else {
+        jsonInp.value = '';
+      }
+    }
 
     updateModalImageDisplay();
 
@@ -11472,49 +11780,76 @@ function setupBcModals() {
   if (btnSaveEvent) {
     btnSaveEvent.onclick = async () => {
       const data = getEventModalData();
-      if (!data.title) {
-        alert('Vui lòng nhập câu hỏi & câu trả lời hoặc nội dung cần phân tích!');
+      const rawJson = (document.getElementById('bcInputEventJson')?.value || '').trim();
+
+      if (!data.title && !rawJson) {
+        alert('Vui lòng nhập câu hỏi & câu trả lời hoặc nạp mã JSON phân tích!');
         document.getElementById('bcInputEventTitle')?.focus();
         return;
+      }
+
+      let parsedFromJson = null;
+      if (rawJson) {
+        try {
+          parsedFromJson = extractValidJsonFromAi(rawJson);
+        } catch (err) {
+          alert('Mã JSON không hợp lệ: ' + err.message + '\nVui lòng kiểm tra lại hoặc để trống ô JSON.');
+          document.getElementById('bcInputEventJson')?.focus();
+          return;
+        }
       }
 
       if (editingEventId) {
         const ev = brainChainData.events.find(x => x.id === editingEventId);
         if (ev) {
-          ev.title = data.title;
-          ev.answer = data.answer;
-          ev.category = data.category;
-          ev.level = data.level;
-          ev.context = data.context;
+          if (parsedFromJson && typeof parsedFromJson === 'object') {
+            Object.assign(ev, parsedFromJson);
+            ev.id = editingEventId;
+          } else {
+            ev.title = data.title;
+            ev.answer = data.answer;
+            ev.category = data.category;
+            ev.level = data.level;
+          }
           if (data.image) {
             ev.image = data.image;
-          } else {
+          } else if (!parsedFromJson?.image) {
             delete ev.image;
           }
           ev.updatedAt = new Date().toISOString();
         }
       } else {
-        const newEv = {
-          id: 'bc_event_' + Date.now(),
-          title: data.title,
-          answer: data.answer,
-          category: data.category,
-          level: data.level,
-          context: data.context,
-          image: data.image || undefined,
-          createdAt: new Date().toISOString(),
-          coreChain: {
-            a: data.title,
-            b: "Bấm '⚡ Tạo Prompt AI' để sinh chuỗi tư duy đầy đủ...",
-            c: "Đang chờ phân tích...",
-            d: "Đang chờ phân tích...",
-            insight: "Chưa có insight đúc kết."
-          }
-        };
+        let newEv;
+        if (parsedFromJson && typeof parsedFromJson === 'object' && !Array.isArray(parsedFromJson)) {
+          newEv = Object.assign({}, parsedFromJson);
+          if (!newEv.id) newEv.id = 'bc_event_' + Date.now();
+          if (!newEv.title) newEv.title = data.title;
+          if (!newEv.answer) newEv.answer = data.answer || data.title;
+          if (data.image) newEv.image = data.image;
+          newEv.createdAt = new Date().toISOString();
+        } else {
+          newEv = {
+            id: 'bc_event_' + Date.now(),
+            title: data.title,
+            answer: data.answer,
+            category: data.category,
+            level: data.level,
+            image: data.image || undefined,
+            createdAt: new Date().toISOString(),
+            coreChain: {
+              a: data.title,
+              b: "Bấm '⚡ Tạo Prompt AI' để sinh chuỗi tư duy đầy đủ...",
+              c: "Đang chờ phân tích...",
+              d: "Đang chờ phân tích...",
+              insight: "Chưa có insight đúc kết."
+            }
+          };
+        }
         brainChainData.events.unshift(newEv);
         brainChainData.activeEventId = newEv.id;
       }
 
+      brainChainData.practiceStep = 5;
       await saveBrainChainData();
       document.getElementById('bcEventModal')?.classList.remove('active');
       renderBcEventList();

@@ -1335,11 +1335,152 @@ html, body {
   color: var(--purple);
 }
 
-.selection-search-tooltip {
-  transition: opacity 0.2s, transform 0.2s;
+/* ---- Selectable text areas across the app ---- */
+.selectable-text,
+.detail-section-val,
+.bc-node-content,
+.bc-why-step,
+.bc-tab-content,
+.bc-main,
+.bc-main-panel,
+.bc-workspace,
+#bcActiveWorkspace,
+#bcEventContext,
+#bcEventTitle,
+#bcEventQuestionBox,
+#bcVaultGoldenInsight,
+#bcVaultTakeawaysList,
+.comment-content,
+.comment-card,
+.cm-card,
+.vocab-inline-hover {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text;
 }
-.selection-search-tooltip:hover {
-  transform: scale(1.05);
+
+::selection {
+  background: rgba(56, 189, 248, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* ---- Unified Selection Search Tooltip (IELTS Vault Style) ---- */
+.selection-search-tooltip {
+  position: fixed;
+  z-index: 9999999 !important;
+  background: rgba(15, 23, 42, 0.96) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  cursor: default !important;
+  padding: 12px 14px !important;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 250px;
+  max-width: 320px;
+  font-family: inherit;
+  user-select: none !important;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.selection-search-tooltip .tooltip-header {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.selection-search-tooltip .translation-text {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  line-height: 1.35;
+  margin: 3px 0 8px 0;
+  word-break: break-word;
+}
+
+.selection-search-tooltip .tooltip-btn-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.selection-search-tooltip .tooltip-search-btn {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  flex: 1;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.selection-search-tooltip .tooltip-search-btn:hover {
+  background: rgba(56, 189, 248, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+.selection-search-tooltip .tooltip-add-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  flex: 1.1;
+  outline: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.selection-search-tooltip .tooltip-add-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.selection-search-tooltip .tooltip-tk-btn {
+  background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  flex: 1.2;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.selection-search-tooltip .tooltip-tk-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
 }
 
 /* ---- Vocabulary Inline Hover Tooltip ---- */
