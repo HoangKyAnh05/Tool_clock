@@ -1,6 +1,100 @@
 {
   "events": [
     {
+      "question": "The table below shows employment patterns for males and females in New Zealand in 1993 and 2003. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
+      "title": "Employment patterns for males and females in New Zealand in 1993 and 2003",
+      "answer": "The table compares the percentages of male and female workers across different sectors in New Zealand in 1993 and 2003. Overall, there were significant changes in employment patterns, with a more balanced gender distribution being seen in most sectors at the end of the decade. Additionally, agriculture and manufacturing generally declined in popularity, while business and service-related fields attracted more participation from the workforce. Regarding the largest sectors, services and transport employed the highest proportions of both genders' workforces for most of the period, with female participation falling from around a half to 36%, and that of men rising from 22% to 31%. The next most important sector was manufacturing, providing work for a quarter and a sixth of working men and women in 1993, and 12% and 17% in 2003, respectively. Meanwhile, the agricultural sector was much more male dominated in 1993, with 38% of the male workers in field compared to 8% of their female counterparts, and by 2003, the proportions were more balanced, falling to just around 7% for both sexes. As for the remaining fields, the business sector was insignificant in 1993, employing only 7% of men and almost no women in the labour force, but over the 10 years, it gained in popularity, rising to around 25% for both genders. Similarly, the building sector had no female representation in 1993, but then their participation increased to 6%, while the percentage of men working in this field decreased slightly from 12% to 10%. Finally, the social service sector had become more important, as the percentages increased from 13% and 5% of working males and females to 18% and 9% over the decade.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The table compares the percentages of male and female workers across different sectors in New Zealand in 1993 and 2003. - Mở đầu trực diện bằng cách giới thiệu mục đích của bảng dữ liệu, khẳng định đây là một báo cáo so sánh về tỷ lệ lao động nam và nữ trong các ngành khác nhau ở New Zealand qua hai mốc thời gian. Câu này đặt nền tảng cho toàn bộ phân tích.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, there were significant changes in employment patterns, with a more balanced gender distribution being seen in most sectors at the end of the decade. - Nhận định tổng quát về sự thay đổi đáng kể trong mô hình việc làm, nhấn mạnh xu hướng cân bằng giới tính ở hầu hết các ngành vào cuối thập kỷ, cho thấy sự tiến bộ trong phân bổ lao động.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): Additionally, agriculture and manufacturing generally declined in popularity, while business and service-related fields attracted more participation from the workforce. - Chuyển ý bằng cách chỉ ra hai xu hướng đối lập: sự suy giảm của nông nghiệp và sản xuất, đồng thời sự gia tăng của các lĩnh vực kinh doanh và dịch vụ, phản ánh sự chuyển dịch cơ cấu kinh tế.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Regarding the largest sectors, services and transport employed the highest proportions of both genders' workforces for most of the period, with female participation falling from around a half to 36%, and that of men rising from 22% to 31%. The next most important sector was manufacturing, providing work for a quarter and a sixth of working men and women in 1993, and 12% and 17% in 2003, respectively. Meanwhile, the agricultural sector was much more male dominated in 1993, with 38% of the male workers in field compared to 8% of their female counterparts, and by 2003, the proportions were more balanced, falling to just around 7% for both sexes. - Cung cấp chi tiết cụ thể về ba ngành lớn nhất (dịch vụ và vận tải, sản xuất, nông nghiệp), kèm theo số liệu phần trăm chính xác cho từng giới và từng năm, minh họa rõ ràng các xu hướng đã nêu, làm tăng tính thuyết phục cho phân tích.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): As for the remaining fields, the business sector was insignificant in 1993, employing only 7% of men and almost no women in the labour force, but over the 10 years, it gained in popularity, rising to around 25% for both genders. Similarly, the building sector had no female representation in 1993, but then their participation increased to 6%, while the percentage of men working in this field decreased slightly from 12% to 10%. Finally, the social service sector had become more important, as the percentages increased from 13% and 5% of working males and females to 18% and 9% over the decade. - Kết luận bằng cách đề cập các ngành còn lại (kinh doanh, xây dựng, dịch vụ xã hội), cho thấy sự tăng trưởng mạnh mẽ của kinh doanh và dịch vụ xã hội, đồng thời sự xuất hiện của phụ nữ trong các ngành trước đây chỉ có nam giới, khẳng định xu hướng cân bằng giới và chuyển dịch cơ cấu lao động."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức hiểu rằng đây là một bài báo cáo dữ liệu, với trọng tâm là so sánh giới tính và thời gian, tạo khung tham chiếu rõ ràng cho toàn bộ phân tích.",
+        "secondOrder": "Khi tổng quan được đưa ra, người đọc sẽ kỳ vọng các số liệu chi tiết để minh họa cho các xu hướng đã nêu, dẫn dắt họ vào phần phân tích cụ thể.",
+        "thirdOrder": "Sự bổ sung các ngành còn lại vào cuối bài tạo cảm giác trọn vẹn, giúp người đọc thấy được bức tranh tổng thể và sự chuyển đổi đa chiều của thị trường lao động.",
+        "unexpected": "Điểm bất ngờ là sự tăng trưởng ngoạn mục của ngành kinh doanh từ mức gần như không có đại diện nữ lên đến 25% cho cả hai giới, cho thấy một cuộc cách mạng trong cơ hội việc làm.",
+        "longTerm": "Giúp người học nắm vững cấu trúc phân tích dữ liệu: giới thiệu tổng quan → nêu xu hướng chính → chi tiết hóa các ngành lớn → bổ sung các ngành còn lại → kết luận tổng hợp, có thể áp dụng cho mọi dạng bài mô tả bảng biểu."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu bảng?",
+          "answer": "Mở đầu bằng câu giới thiệu mục đích của bảng giúp người đọc định hướng ngay lập tức về nội dung và phạm vi của bài báo cáo. Đây là cách mở bài chuẩn mực trong IELTS Writing Task 1, tạo ấn tượện chuyên nghiệp và rõ ràng."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn nhận định tổng quan về cân bằng giới tính làm ý chính?",
+          "answer": "Vì đây là điểm nổi bật và xuyên suốt nhất của dữ liệu: hầu hết các ngành đều tiến tới tỷ lệ nam nữ cân bằng hơn. Nhận định này vừa khái quát vừa có sức nặng, giúp người đọc thấy được ý nghĩa then chốt của số liệu."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần bổ sung thông tin về các ngành còn lại ở cuối bài?",
+          "answer": "Nhằm đảm bảo tính bao phủ toàn diện của báo cáo, tránh bỏ sót bất kỳ ngành nào. Đồng thời, việc đề cập đến cả ba ngành còn lại giúp làm nổi bật xu hướng chung về cân bằng giới và sự thay đổi cơ cấu, củng cố mạch logic từ tổng quát đến chi tiết."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ tổng quan (giới thiệu bảng, nêu xu hướng chính) đến phân tích chi tiết (các ngành lớn nhất, sau đó đến các ngành còn lại), sử dụng các từ nối và cấu trúc chuyển ý như 'Overall', 'Additionally', 'Regarding the largest sectors', 'As for the remaining fields' để đảm bảo sự mạch lạc và logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Bản chất cốt lõi là sự chuyển đổi cấu trúc kinh tế và xã hội ở New Zealand trong thập kỷ 1993-2003, với việc nền kinh tế chuyển dịch từ nông nghiệp và sản xuất sang dịch vụ và kinh doanh, đồng thời vai trò của phụ nữ trong lực lượng lao động được cải thiện đáng kể, phản ánh xu hướng bình đẳng giới toàn cầu."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự hoặc bỏ đi mệnh đề chuyển ý thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì các xu hướng không được kết nối logic.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, làm giảm điểm về tính mạch lạc.",
+          "Người đọc không thấy được bức tranh toàn diện, vì việc tổ chức thông tin không theo thứ tự ưu tiên hoặc nhóm ngành."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu bảng",
+          "cân bằng giới tính",
+          "chuyển dịch ngành",
+          "dịch vụ và vận tải",
+          "kinh doanh và xã hội"
+        ],
+        "directImpact": "Cấu trúc rõ ràng, tuần tự từ tổng quan đến chi tiết giúp báo cáo dễ hiểu và đáp ứng tiêu chí Coherence & Cohesion của IELTS.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'Additionally', 'Regarding', 'As for' và 'Finally' giúp não bộ ghi nhớ trình tự phân tích và dễ dàng tái tạo cho các chủ đề tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic liên kết từng ngành và xu hướng, người học càng nói hoặc viết trôi chảy, tự tin mở rộng sang các bảng dữ liệu khác mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Phân tích bảng biểu phải nhớ thuộc lòng từng số liệu và diễn đạt máy móc.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não con người nắm bắt dữ liệu tốt nhất thông qua các xu hướng và so sánh nổi bật, không phải qua các con số rời rạc. Giao tiếp hiệu quả là chọn lọc và tổ chức thông tin theo nhóm logic.",
+        "reconstructedLogic": "Thay vì học vẹt số liệu, xây dựng khung tư duy: Mở bài (mục đích) → Tổng quan (xu hướng chính) → Phân tích ngành lớn → Bổ sung ngành còn lại → Kết luận. Điều này giúp não tự động sắp xếp và diễn đạt dữ liệu một cách tự nhiên."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong một số ngữ cảnh cần báo cáo ngắn gọn hoặc thuyết trình trực tiếp, việc phân tích quá chi tiết từng ngành có thể làm mất thời gian và gây nhàm chán, cần lược bớt để tập trung vào các điểm chính.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu đầy đủ các xu hướng, so sánh giữa các năm và giới tính, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc thuyết trình trước công chúng, người viết có thể tóm gọn bằng cách chỉ đề cập 2-3 ngành có biến động mạnh nhất, bỏ qua các ngành ít thay đổi.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần D (minh họa) và phần Insight (kết luận) tùy theo độ dài yêu cầu và ngữ cảnh. Luôn nhấn mạnh các xu hướng chính và sự so sánh giới tính."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một bài báo cáo dữ liệu hoàn chỉnh với cấu trúc tương tự trong vòng 20 phút, tự tin sử dụng các cụm từ so sánh và mô tả xu hướng.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ bảng số liệu hoặc biểu đồ nào, từ kinh tế, xã hội đến giáo dục, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén, kết hợp với kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi trình bày số liệu bằng miệng, nhấn mạnh vào các cụm từ so sánh và các con số chính để tạo điểm nhấn, tránh đọc đều đều như danh sách dữ liệu."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính của câu: compares percentages → significant changes → balanced gender distribution → service and transport → business sector and social service. Xâu chuỗi thành dòng tư duy: 'Bảng so sánh → thay đổi lớn → cân bằng giới → ngành dịch vụ vận tải → ngành kinh doanh và xã hội'.",
+        "Luyện tập nói hoặc viết bài báo cáo theo nhịp thở của 5 mắt xích từ A đến Insight: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và tập trung.",
+        "Áp dụng cấu trúc logic này để tự tạo một bài báo cáo tương tự cho chủ đề khác, ví dụ: 'The graph shows the population trends in Vietnam from 2000 to 2020', duy trì đúng trình tự: giới thiệu → tổng quan → chi tiết các nhóm lớn → bổ sung nhóm nhỏ → kết luận tổng hợp."
+      ],
+      "id": "bc_event_1787155287161",
+      "createdAt": "2026-08-19T16:01:27.161Z",
+      "updatedAt": "2026-08-20T03:03:04.374Z"
+    },
+    {
       "question": "",
       "title": "Although I had always dreamed of earning a university degree, the demanding curriculum at my school required me to complete numerous assignments with strict deadlines, which was a far cry from the simple days of elementary school where learning felt more like play than pressure.",
       "answer": "Although I had always dreamed of earning a university degree, the demanding curriculum at my school required me to complete numerous assignments with strict deadlines, which was a far cry from the simple days of elementary school where learning felt more like play than pressure.",
@@ -1311,6 +1405,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787140374728",
+  "activeEventId": "bc_event_1787155287161",
   "practiceStep": 5
 }

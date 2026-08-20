@@ -10235,7 +10235,14 @@ function initBrainChainTab() {
   if (btnCopyPromptQuick) btnCopyPromptQuick.addEventListener('click', () => {
     const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
     if (!curEv) return;
-    openBcPromptModal(curEv);
+    const promptText = buildBrainChainPrompt(curEv);
+    if (curEv.image && window.taskAPI && window.taskAPI.copyPromptAndImage) {
+      window.taskAPI.copyPromptAndImage(promptText, curEv.image);
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+      alert('📋 ĐÃ SAO CHÉP PROMPT AI + HÌNH ẢNH VÀO CLIPBOARD!\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích cả đề bài và biểu đồ.');
+    } else {
+      openBcPromptModal(curEv);
+    }
   });
 
   const btnImportEventJson = document.getElementById('btnBcImportEventJson');
@@ -10341,7 +10348,8 @@ function initBrainChainTab() {
     });
   }
 
-  // Setup Modals
+  // Setup Modals & Image Handlers
+  setupBcImageHandlers();
   setupBcModals();
 
   // Initial render
@@ -10353,6 +10361,327 @@ function initBrainChainTab() {
   } else {
     renderBcActiveEvent(null);
   }
+}
+
+// ----------------------------------------------------
+// Brain Chain Image Helpers (Copy, Paste, View Lightbox)
+// ----------------------------------------------------
+let bcLightboxZoomed = false;
+
+function openBcImageLightbox(imageSrc, title) {
+  const modal = document.getElementById('bcImageLightboxModal');
+  const img = document.getElementById('bcLightboxImg');
+  const titleEl = document.getElementById('bcLightboxTitle');
+  const zoomBtn = document.getElementById('btnBcLightboxZoomToggle');
+  if (!modal || !img || !imageSrc) return;
+
+  img.src = imageSrc;
+  if (titleEl) titleEl.textContent = title || 'Xem Hình Ảnh Biểu Đồ / Đề Bài';
+  
+  bcLightboxZoomed = false;
+  img.style.maxWidth = '100%';
+  img.style.maxHeight = '100%';
+  img.style.transform = 'scale(1)';
+  img.style.cursor = 'zoom-in';
+  if (zoomBtn) zoomBtn.textContent = '🔍 Zoom 100%';
+
+  modal.classList.add('active');
+  modal.style.display = 'flex';
+  if (typeof playTone === 'function') playTone(750, 0.06, 'sine', 0.1);
+}
+
+function closeBcImageLightbox() {
+  const modal = document.getElementById('bcImageLightboxModal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+}
+
+async function copyBcImage(imageSrc) {
+  if (!imageSrc) {
+    alert('Không có ảnh để sao chép!');
+    return;
+  }
+  try {
+    if (window.taskAPI && window.taskAPI.copyImage) {
+      window.taskAPI.copyImage(imageSrc);
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+      alert('📋 ĐÃ SAO CHÉP ẢNH VÀO CLIPBOARD!');
+      return;
+    }
+    if (imageSrc.startsWith('data:image/')) {
+      const res = await fetch(imageSrc);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob })
+      ]);
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+      alert('📋 ĐÃ SAO CHÉP ẢNH VÀO CLIPBOARD!');
+    }
+  } catch (err) {
+    console.error('Failed to copy image:', err);
+    alert('Không thể sao chép ảnh: ' + err.message);
+  }
+}
+
+async function getClipboardImageData() {
+  // 1. Try Native Electron clipboard
+  if (window.taskAPI && window.taskAPI.readClipboardImage) {
+    try {
+      const dataUrl = await window.taskAPI.readClipboardImage();
+      if (dataUrl) return dataUrl;
+    } catch (e) {
+      console.warn('taskAPI.readClipboardImage error:', e);
+    }
+  }
+
+  // 2. Try Web Clipboard API
+  if (navigator.clipboard && navigator.clipboard.read) {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imgType = item.types.find(t => t.startsWith('image/'));
+        if (imgType) {
+          const blob = await item.getType(imgType);
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('navigator.clipboard.read error:', e);
+    }
+  }
+  return null;
+}
+
+async function pasteBcImageToActiveEvent() {
+  const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+  if (!curEv) {
+    alert('Vui lòng chọn hoặc tạo một câu hỏi / sự kiện trước khi dán ảnh!');
+    return;
+  }
+
+  const imageData = await getClipboardImageData();
+  if (imageData) {
+    curEv.image = imageData;
+    curEv.updatedAt = new Date().toISOString();
+    await saveBrainChainData();
+    renderBcActiveEvent(curEv);
+    renderBcEventList();
+    if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+    alert('🖼️ ĐÃ DÁN ẢNH TỪ CLIPBOARD VÀO CÂU HỎI THÀNH CÔNG!');
+  } else {
+    // If no image in clipboard, open file chooser
+    const fileInp = document.getElementById('bcImageFileInput');
+    if (fileInp) {
+      fileInp.setAttribute('data-target-mode', 'active-event');
+      fileInp.click();
+    }
+  }
+}
+
+function setupBcImageHandlers() {
+  const btnPasteImage = document.getElementById('btnBcPasteImage');
+  if (btnPasteImage) {
+    btnPasteImage.addEventListener('click', () => pasteBcImageToActiveEvent());
+  }
+
+  const btnViewImage = document.getElementById('btnBcViewImage');
+  if (btnViewImage) {
+    btnViewImage.addEventListener('click', () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && curEv.image) {
+        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      }
+    });
+  }
+
+  const imageBadge = document.getElementById('bcEventImageBadge');
+  if (imageBadge) {
+    imageBadge.addEventListener('click', () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && curEv.image) {
+        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      }
+    });
+  }
+
+  const previewZoom = document.getElementById('btnBcImagePreviewZoom');
+  if (previewZoom) {
+    previewZoom.addEventListener('click', () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && curEv.image) {
+        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      }
+    });
+  }
+
+  const clickArea = document.getElementById('bcEventImageClickArea');
+  if (clickArea) {
+    clickArea.addEventListener('click', () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && curEv.image) {
+        openBcImageLightbox(curEv.image, curEv.question || curEv.title);
+      }
+    });
+  }
+
+  const copyClipBtn = document.getElementById('btnBcImageCopyClipboard');
+  if (copyClipBtn) {
+    copyClipBtn.addEventListener('click', () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && curEv.image) {
+        copyBcImage(curEv.image);
+      }
+    });
+  }
+
+  const replaceBtn = document.getElementById('btnBcImageReplace');
+  if (replaceBtn) {
+    replaceBtn.addEventListener('click', () => {
+      const fileInp = document.getElementById('bcImageFileInput');
+      if (fileInp) {
+        fileInp.setAttribute('data-target-mode', 'active-event');
+        fileInp.click();
+      }
+    });
+  }
+
+  const removeBtn = document.getElementById('btnBcImageRemove');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', async () => {
+      const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+      if (curEv && confirm('Bạn có chắc chắn muốn gỡ hình ảnh này khỏi câu hỏi?')) {
+        delete curEv.image;
+        curEv.updatedAt = new Date().toISOString();
+        await saveBrainChainData();
+        renderBcActiveEvent(curEv);
+        renderBcEventList();
+        if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+      }
+    });
+  }
+
+  // File input change handler
+  const fileInp = document.getElementById('bcImageFileInput');
+  if (fileInp) {
+    fileInp.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64Data = ev.target.result;
+        const targetMode = fileInp.getAttribute('data-target-mode') || 'active-event';
+
+        if (targetMode === 'active-event') {
+          const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+          if (curEv) {
+            curEv.image = base64Data;
+            curEv.updatedAt = new Date().toISOString();
+            await saveBrainChainData();
+            renderBcActiveEvent(curEv);
+            renderBcEventList();
+            if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+            alert('🖼️ ĐÃ NẠP ẢNH TỪ FILE VÀO CÂU HỎI THÀNH CÔNG!');
+          }
+        } else if (targetMode === 'modal') {
+          if (typeof window.setBcModalImage === 'function') {
+            window.setBcModalImage(base64Data);
+          }
+          if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+        }
+        fileInp.value = '';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Lightbox modal controls
+  const lightboxModal = document.getElementById('bcImageLightboxModal');
+  const btnLightboxClose = document.getElementById('btnBcLightboxClose');
+  if (btnLightboxClose) btnLightboxClose.addEventListener('click', () => closeBcImageLightbox());
+  if (lightboxModal) {
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) closeBcImageLightbox();
+    });
+  }
+
+  const btnLightboxCopy = document.getElementById('btnBcLightboxCopy');
+  if (btnLightboxCopy) {
+    btnLightboxCopy.addEventListener('click', () => {
+      const img = document.getElementById('bcLightboxImg');
+      if (img && img.src) copyBcImage(img.src);
+    });
+  }
+
+  const btnLightboxZoom = document.getElementById('btnBcLightboxZoomToggle');
+  const lightboxImg = document.getElementById('bcLightboxImg');
+  if (btnLightboxZoom && lightboxImg) {
+    const toggleZoom = () => {
+      bcLightboxZoomed = !bcLightboxZoomed;
+      if (bcLightboxZoomed) {
+        lightboxImg.style.maxWidth = 'none';
+        lightboxImg.style.maxHeight = 'none';
+        lightboxImg.style.transform = 'scale(1.4)';
+        lightboxImg.style.cursor = 'zoom-out';
+        btnLightboxZoom.textContent = '🔍 Fit Màn Hình';
+      } else {
+        lightboxImg.style.maxWidth = '100%';
+        lightboxImg.style.maxHeight = '100%';
+        lightboxImg.style.transform = 'scale(1)';
+        lightboxImg.style.cursor = 'zoom-in';
+        btnLightboxZoom.textContent = '🔍 Zoom 100%';
+      }
+    };
+    btnLightboxZoom.addEventListener('click', toggleZoom);
+    lightboxImg.addEventListener('click', toggleZoom);
+  }
+
+  // Global Ctrl+V & Escape listeners
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeBcImageLightbox();
+  });
+
+  window.addEventListener('paste', async (e) => {
+    const bcWorkspace = document.getElementById('bcActiveWorkspace');
+    if (!bcWorkspace || bcWorkspace.style.display === 'none' || bcWorkspace.offsetParent === null) return;
+    
+    // Don't intercept if user is typing in input or textarea
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
+
+    const curEv = brainChainData.events.find(x => x.id === brainChainData.activeEventId);
+    if (!curEv) return;
+
+    const items = e.clipboardData ? e.clipboardData.items : null;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+              curEv.image = event.target.result;
+              curEv.updatedAt = new Date().toISOString();
+              await saveBrainChainData();
+              renderBcActiveEvent(curEv);
+              renderBcEventList();
+              if (typeof playTone === 'function') playTone(880, 0.09, 'sine', 0.2);
+              alert('🖼️ ĐÃ DÁN ẢNH TỪ CLIPBOARD VÀO CÂU HỎI!');
+            };
+            reader.readAsDataURL(file);
+            return;
+          }
+        }
+      }
+    }
+  });
 }
 
 function renderBcEventList() {
@@ -10398,12 +10727,19 @@ function renderBcEventList() {
       ? `<span class="bc-badge bc-badge-analyzed">✅ Đã phân tích</span>`
       : `<span class="bc-badge bc-badge-pending">⏳ Chờ JSON</span>`;
 
+    const imageBadgeHtml = item.image 
+      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">🖼️ Ảnh</span>` 
+      : '';
+
     const displayTitle = item.question || item.title || 'Sự kiện không tên';
     const displaySnippet = item.answer || item.context || item.coreChain?.insight || item.coreChain?.a || 'Chưa có chi tiết...';
 
     itemEl.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="bc-badge bc-badge-cat">${escapeHtml(item.category || 'Chung')}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+        <div style="display: flex; align-items: center; gap: 4px; overflow: hidden; flex-wrap: wrap;">
+          <span class="bc-badge bc-badge-cat">${escapeHtml(item.category || 'Chung')}</span>
+          ${imageBadgeHtml}
+        </div>
         ${statusBadge}
       </div>
       <div style="font-weight: 700; font-size: 13px; color: #fff; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
@@ -10443,6 +10779,10 @@ function renderBcActiveEvent(ev) {
   const titleEl = document.getElementById('bcEventTitle');
   const catBadge = document.getElementById('bcEventCatBadge');
   const statusBadge = document.getElementById('bcEventStatusBadge');
+  const imageBadge = document.getElementById('bcEventImageBadge');
+  const btnViewImage = document.getElementById('btnBcViewImage');
+  const imageBox = document.getElementById('bcEventImageBox');
+  const imageTag = document.getElementById('bcEventImageTag');
   const contextEl = document.getElementById('bcEventContext');
   const btnCopyFullAnswer = document.getElementById('btnBcCopyFullAnswer');
 
@@ -10456,6 +10796,34 @@ function renderBcActiveEvent(ev) {
   if (statusBadge) {
     statusBadge.className = `bc-badge ${hasAnalysis ? 'bc-badge-analyzed' : 'bc-badge-pending'}`;
     statusBadge.textContent = hasAnalysis ? '✅ Đã có phân tích' : '⏳ Chưa nạp JSON AI';
+  }
+
+  // Image status and preview
+  if (ev.image) {
+    if (imageBadge) imageBadge.style.display = 'inline-flex';
+    if (btnViewImage) btnViewImage.style.display = 'inline-flex';
+    if (imageBox) imageBox.style.display = 'flex';
+    if (imageTag) imageTag.src = ev.image;
+  } else {
+    if (imageBadge) imageBadge.style.display = 'none';
+    if (btnViewImage) btnViewImage.style.display = 'none';
+    if (imageBox) imageBox.style.display = 'none';
+    if (imageTag) imageTag.src = '';
+  }
+
+  if (contextEl) contextEl.textContent = fullAnswerText || 'Chưa có nội dung câu trả lời... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic!';
+
+  if (btnCopyFullAnswer) {
+    btnCopyFullAnswer.onclick = () => {
+      const textToCopy = fullAnswerText || '';
+      if (window.taskAPI && window.taskAPI.writeClipboardText) {
+        window.taskAPI.writeClipboardText(textToCopy);
+      } else {
+        navigator.clipboard.writeText(textToCopy);
+      }
+      if (typeof playTone === 'function') playTone(659, 0.08, 'sine', 0.15);
+      alert('📋 ĐÃ SAO CHÉP TOÀN BỘ CÂU TRẢ LỜI VÀO CLIPBOARD!');
+    };
   }
   if (contextEl) contextEl.textContent = fullAnswerText || 'Chưa có nội dung câu trả lời... Bấm "⚡ Tạo Prompt AI" để bắt đầu phân tích logic!';
 
@@ -10926,6 +11294,37 @@ function extractValidJsonFromAi(raw) {
 function setupBcModals() {
   // 1. Event Modal (Add/Edit)
   let editingEventId = null;
+  let modalCurrentImg = null;
+
+  const updateModalImageDisplay = () => {
+    const statusEl = document.getElementById('bcModalImageStatus');
+    const previewWrap = document.getElementById('bcModalImagePreviewWrap');
+    const previewImg = document.getElementById('bcModalImagePreview');
+    const removeBtn = document.getElementById('btnBcModalRemoveImage');
+
+    if (modalCurrentImg) {
+      if (statusEl) {
+        statusEl.textContent = '✅ Đã có ảnh đính kèm';
+        statusEl.style.color = '#34d399';
+      }
+      if (previewWrap) previewWrap.style.display = 'block';
+      if (previewImg) previewImg.src = modalCurrentImg;
+      if (removeBtn) removeBtn.style.display = 'inline-flex';
+    } else {
+      if (statusEl) {
+        statusEl.textContent = 'Chưa có ảnh';
+        statusEl.style.color = 'var(--muted)';
+      }
+      if (previewWrap) previewWrap.style.display = 'none';
+      if (previewImg) previewImg.src = '';
+      if (removeBtn) removeBtn.style.display = 'none';
+    }
+  };
+
+  window.setBcModalImage = (base64) => {
+    modalCurrentImg = base64;
+    updateModalImageDisplay();
+  };
 
   const getEventModalData = () => {
     const titleInp = document.getElementById('bcInputEventTitle');
@@ -10940,7 +11339,8 @@ function setupBcModals() {
       answer: text,
       category: catInp?.value || 'Tiếng Anh & Speaking',
       level: parseInt(lvlInp?.value || '3'),
-      context: (ctxInp?.value || '').trim()
+      context: (ctxInp?.value || '').trim(),
+      image: modalCurrentImg
     };
   };
 
@@ -10952,7 +11352,9 @@ function setupBcModals() {
       return false;
     }
     const promptText = buildBrainChainPrompt(data);
-    if (window.taskAPI && window.taskAPI.writeClipboardText) {
+    if (data.image && window.taskAPI && window.taskAPI.copyPromptAndImage) {
+      window.taskAPI.copyPromptAndImage(promptText, data.image);
+    } else if (window.taskAPI && window.taskAPI.writeClipboardText) {
       window.taskAPI.writeClipboardText(promptText);
     } else {
       navigator.clipboard.writeText(promptText);
@@ -10966,7 +11368,7 @@ function setupBcModals() {
         window.open(openUrl, '_blank');
       }
     } else {
-      alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích logic đa tầng, sau đó bấm "📥 Dán JSON Ngay" để xem kết quả trực quan.');
+      alert('📋 ĐÃ SAO CHÉP PROMPT BRAIN CHAIN THÀNH CÔNG!' + (data.image ? ' (ĐÃ KÈM HÌNH ẢNH)' : '') + '\n\nHãy dán (Ctrl+V) vào Gemini / ChatGPT / Claude để AI phân tích logic đa tầng, sau đó bấm "📥 Dán JSON Ngay" để xem kết quả trực quan.');
     }
     return true;
   };
@@ -11000,8 +11402,49 @@ function setupBcModals() {
     };
   }
 
+  // Modal Image Buttons
+  const btnModalPasteImage = document.getElementById('btnBcModalPasteImage');
+  if (btnModalPasteImage) {
+    btnModalPasteImage.onclick = async () => {
+      const imgData = await getClipboardImageData();
+      if (imgData) {
+        modalCurrentImg = imgData;
+        updateModalImageDisplay();
+        if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+      } else {
+        // If clipboard is empty, open file picker
+        const fileInp = document.getElementById('bcImageFileInput');
+        if (fileInp) {
+          fileInp.setAttribute('data-target-mode', 'modal');
+          fileInp.click();
+        }
+      }
+    };
+  }
+
+  const btnModalChooseImage = document.getElementById('btnBcModalChooseImage');
+  if (btnModalChooseImage) {
+    btnModalChooseImage.onclick = () => {
+      const fileInp = document.getElementById('bcImageFileInput');
+      if (fileInp) {
+        fileInp.setAttribute('data-target-mode', 'modal');
+        fileInp.click();
+      }
+    };
+  }
+
+  const btnModalRemoveImage = document.getElementById('btnBcModalRemoveImage');
+  if (btnModalRemoveImage) {
+    btnModalRemoveImage.onclick = () => {
+      modalCurrentImg = null;
+      updateModalImageDisplay();
+      if (typeof playTone === 'function') playTone(400, 0.08, 'sine', 0.1);
+    };
+  }
+
   window.openBcEventModal = (eventToEdit = null) => {
     editingEventId = eventToEdit ? eventToEdit.id : null;
+    modalCurrentImg = eventToEdit ? (eventToEdit.image || null) : null;
     const modal = document.getElementById('bcEventModal');
     const modalTitle = document.getElementById('bcEventModalTitle');
     const titleInp = document.getElementById('bcInputEventTitle');
@@ -11015,6 +11458,8 @@ function setupBcModals() {
     if (catInp) catInp.value = eventToEdit ? (eventToEdit.category || 'Tiếng Anh & Speaking') : 'Tiếng Anh & Speaking';
     if (lvlInp) lvlInp.value = eventToEdit ? (eventToEdit.level || 3) : 3;
     if (ctxInp) ctxInp.value = eventToEdit ? (eventToEdit.context || '') : '';
+
+    updateModalImageDisplay();
 
     modal.classList.add('active');
     if (titleInp) titleInp.focus();
@@ -11041,6 +11486,11 @@ function setupBcModals() {
           ev.category = data.category;
           ev.level = data.level;
           ev.context = data.context;
+          if (data.image) {
+            ev.image = data.image;
+          } else {
+            delete ev.image;
+          }
           ev.updatedAt = new Date().toISOString();
         }
       } else {
@@ -11051,6 +11501,7 @@ function setupBcModals() {
           category: data.category,
           level: data.level,
           context: data.context,
+          image: data.image || undefined,
           createdAt: new Date().toISOString(),
           coreChain: {
             a: data.title,

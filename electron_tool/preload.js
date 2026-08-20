@@ -36,4 +36,5 @@ contextBridge.exposeInMainWorld('taskAPI', {
   saveCommentsVault: (data) => ipcRenderer.invoke('save-comments-vault', data),
   loadBrainChain: () => ipcRenderer.invoke('load-brain-chain'),
   saveBrainChain: (data) => ipcRenderer.invoke('save-brain-chain', data),
+  readClipboardImage: () => ipcRenderer.invoke('read-clipboard-image'),
 });

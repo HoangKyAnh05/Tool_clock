@@ -589,6 +589,20 @@ ipcMain.on('write-clipboard-text', (event, text) => {
   }
 });
 
+ipcMain.handle('read-clipboard-image', async () => {
+  try {
+    const { clipboard } = require('electron');
+    const img = clipboard.readImage();
+    if (!img.isEmpty()) {
+      return img.toDataURL();
+    }
+    return null;
+  } catch (err) {
+    console.error('[MAIN] Failed to read clipboard image:', err);
+    return null;
+  }
+});
+
 // Helper to decode HTML entities for mobile scraper fallback
 function decodeHTMLEntities(str) {
   if (!str) return '';
@@ -1923,6 +1937,17 @@ ipcMain.handle('load-brain-chain', async () => {
     if (fs.existsSync(brainChainPath)) {
       const data = await fs.promises.readFile(brainChainPath, 'utf8');
       cachedBrainChain = JSON.parse(data);
+      if (cachedBrainChain && Array.isArray(cachedBrainChain.events)) {
+        const targetPrefix = urlHelper.pathToFileURL(imagesDir).href;
+        cachedBrainChain.events.forEach(ev => {
+          if (ev.image && typeof ev.image === 'string' && ev.image.startsWith('file:///')) {
+            const parts = ev.image.split('ielts_images/');
+            if (parts.length > 1) {
+              ev.image = targetPrefix + '/' + parts[parts.length - 1];
+            }
+          }
+        });
+      }
       const eventCount = Array.isArray(cachedBrainChain.events) ? cachedBrainChain.events.length : 0;
       console.log('[MAIN] Loaded brain chain from disk:', eventCount, 'events');
       return cachedBrainChain;
@@ -1937,6 +1962,13 @@ ipcMain.handle('load-brain-chain', async () => {
 ipcMain.handle('save-brain-chain', async (event, data) => {
   try {
     cachedBrainChain = data;
+    if (data && Array.isArray(data.events)) {
+      for (const ev of data.events) {
+        if (ev.image && typeof ev.image === 'string' && ev.image.startsWith('data:image/')) {
+          ev.image = await saveBase64ImageAsync(ev.image, `bc_img_${ev.id}`);
+        }
+      }
+    }
     await fs.promises.writeFile(brainChainPath, JSON.stringify(data, null, 2), 'utf8');
     const eventCount = Array.isArray(data.events) ? data.events.length : 0;
     console.log('[MAIN] Saved brain chain to disk:', eventCount, 'events');
