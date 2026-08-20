@@ -11566,11 +11566,11 @@ function renderBcActiveEvent(ev) {
   const nodeD = document.getElementById('bcNodeTextD');
   const nodeInsight = document.getElementById('bcNodeTextInsight');
 
-  if (nodeA) nodeA.innerHTML = formatChainText(ev.coreChain?.a || fullAnswerText || 'Bước A: Khởi nguồn...');
-  if (nodeB) nodeB.innerHTML = formatChainText(ev.coreChain?.b || 'Chưa có phân tích... Bấm "📥 Nạp JSON AI" để nạp kết quả.');
-  if (nodeC) nodeC.innerHTML = formatChainText(ev.coreChain?.c || 'Chưa có phân tích...');
-  if (nodeD) nodeD.innerHTML = formatChainText(ev.coreChain?.d || 'Chưa có phân tích...');
-  if (nodeInsight) nodeInsight.innerHTML = formatChainText(ev.coreChain?.insight || 'Chưa có đúc kết insight...');
+  if (nodeA) nodeA.innerHTML = renderChainNodeContent('a', ev, fullAnswerText);
+  if (nodeB) nodeB.innerHTML = renderChainNodeContent('b', ev, fullAnswerText);
+  if (nodeC) nodeC.innerHTML = renderChainNodeContent('c', ev, fullAnswerText);
+  if (nodeD) nodeD.innerHTML = renderChainNodeContent('d', ev, fullAnswerText);
+  if (nodeInsight) nodeInsight.innerHTML = renderChainNodeContent('insight', ev, fullAnswerText);
 
   // Multi-order Effects
   const effImm = document.getElementById('bcEffectImmediate');
@@ -11694,6 +11694,80 @@ function renderBcActiveEvent(ev) {
   setupTextSelectionSearch(document.getElementById('bcActiveWorkspace'), 'bc');
 }
 
+function renderChainNodeContent(nodeKey, ev, fullAnswerText) {
+  if (!ev) return '...';
+  const questions = parseQuestionsFromEvent(ev);
+  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') || 
+    /Question\s*\d|Questions\s*\d|LISTENING|READING|Transcript|Bài làm|Map Labelling/i.test(ev.title || ev.question || '') ||
+    questions.length > 0;
+
+  const rawText = ev.coreChain ? (ev.coreChain[nodeKey] || '') : (nodeKey === 'a' ? (fullAnswerText || '') : '');
+
+  // Check if rawText already has multiple items separated by newlines/bullets
+  const lines = rawText ? rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean) : [];
+  const hasMultipleItems = lines.length > 2 || 
+    (lines.length >= 2 && lines.some(l => /^[-•*]|\bQ\d+[\.:\)]|\d+[\.\)]/i.test(l))) ||
+    rawText.includes('\n- ') || 
+    rawText.includes('\n• ') || 
+    rawText.includes('\n\n- ') ||
+    (/\bQ\d+[:\.\)]/i.test(rawText) && (rawText.match(/\bQ\d+[:\.\)]/gi) || []).length > 1);
+
+  if (hasMultipleItems || !isExam || questions.length === 0) {
+    if (rawText) return formatChainText(rawText);
+    if (nodeKey === 'a') return formatChainText(fullAnswerText || 'Bước A: Khởi nguồn...');
+    return '<span style="color: var(--muted); font-style: italic;">Chưa có phân tích...</span>';
+  }
+
+  if (nodeKey === 'insight') {
+    return formatChainText(rawText || ev.coreChain?.insight || 'Chưa có đúc kết insight...');
+  }
+
+  const nodeHeaderTitles = {
+    a: 'BƯỚC 1 (ĐỊNH VỊ VÙNG THÔNG TIN - EVIDENCE IN SCRIPT & MAP):',
+    b: 'BƯỚC 2 (BẢNG TỪ KHÓA & PARAPHRASING MAPPING):',
+    c: 'BƯỚC 3 (GIẢI THÍCH TẠI SAO ĐÁP ÁN ĐÚNG):',
+    d: 'BƯỚC 4 (BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI):'
+  };
+
+  let html = `
+    <div style="background: rgba(15, 23, 42, 0.65); border-left: 3.5px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+      <div style="font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+        <span>📍</span> <span>${nodeHeaderTitles[nodeKey] || `BƯỚC (${nodeKey.toUpperCase()}):`}</span>
+      </div>
+    </div>
+  `;
+
+  html += questions.map((q, idx) => {
+    const qNo = q.questionNo || `${idx + 1}`;
+    const qTitle = q.questionTitle || `Câu ${qNo}`;
+    let bodyContent = '';
+
+    if (nodeKey === 'a') {
+      const evText = q.evidence ? (q.evidence.startsWith('Transcript:') ? q.evidence : `Transcript: "${q.evidence}"`) : '';
+      const ansText = q.correctAnswer ? ` ➔ xác định vị trí/đáp án ở ${q.correctAnswer}.` : '';
+      bodyContent = `${evText}${ansText}`;
+      if (!bodyContent) bodyContent = `Dẫn chứng câu hỏi ${qNo}`;
+    } else if (nodeKey === 'b') {
+      bodyContent = q.paraphrase ? q.paraphrase : (q.evidence ? `Đối chiếu từ khóa: ${q.evidence}` : 'Đối chiếu từ khóa trong bài.');
+    } else if (nodeKey === 'c') {
+      bodyContent = q.whyCorrect ? q.whyCorrect : (q.correctAnswer ? `Đáp án chính xác: ${q.correctAnswer}` : 'Phân tích logic đáp án đúng.');
+    } else if (nodeKey === 'd') {
+      bodyContent = q.whyIncorrect ? q.whyIncorrect : 'Loại trừ các phương án bẫy và đáp án sai.';
+    }
+
+    return `
+      <div style="background: rgba(15, 23, 42, 0.65); border-left: 3.5px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+        <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+          <span>📍</span> <span>${escapeHtml(qTitle)} (Q${escapeHtml(qNo)}):</span>
+        </div>
+        <div style="color: #f1f5f9; padding-left: 2px;">${escapeHtml(bodyContent)}</div>
+      </div>
+    `;
+  }).join('');
+
+  return html;
+}
+
 function formatChainText(rawText) {
   if (!rawText) return '...';
   const text = String(rawText).trim();
@@ -11705,23 +11779,36 @@ function formatChainText(rawText) {
     items = lines.map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
   } else if (text.includes(' - ') || text.includes(' • ')) {
     items = text.split(/\s+[-•*]\s+(?=[A-Za-z0-9\(\[])/).map(s => s.trim().replace(/^[-•*]\s*/, '')).filter(Boolean);
+  } else if (/\d+\.\s+[A-Za-z]/.test(text) && (text.match(/\d+\.\s+[A-Za-z]/g) || []).length > 1) {
+    items = text.split(/(?=\d+\.\s+[A-Za-z])/).map(s => s.trim().replace(/^[-•*]\s*/, '')).filter(Boolean);
   }
 
   if (items.length <= 1) {
+    const singleMatch = text.match(/^([^:\-–]+[:\-–])\s*(.*)$/s);
+    if (singleMatch && (singleMatch[1].includes('BƯỚC') || singleMatch[1].includes('STEP') || singleMatch[1].includes('📍') || singleMatch[1].includes('('))) {
+      return `
+        <div style="background: rgba(15, 23, 42, 0.65); border-left: 3.5px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+          <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+            <span>📍</span> <span>${escapeHtml(singleMatch[1].trim())}</span>
+          </div>
+          <div style="color: #f1f5f9; padding-left: 2px;">${escapeHtml(singleMatch[2].trim())}</div>
+        </div>
+      `;
+    }
     return escapeHtml(text);
   }
 
   return items.map((item) => {
-    const match = item.match(/^([^:\-–]+[:\-–])\s*(.*)$/s) || item.match(/^(\d+[\.\)]\s+[^:\-–]+[:\-–]?)\s*(.*)$/s);
+    const match = item.match(/^([^:\-–\n]+[:\-–])\s*(.*)$/s) || item.match(/^(\d+[\.\)]\s+[^:\-–\n]+[:\-–]?)\s*(.*)$/s) || item.match(/^([A-Za-z0-9\s\(\)'"-]+(?:→|->)\s*[A-Za-z0-9\s\(\)'"-]+)\s*(.*)$/s);
     if (match) {
       const headerPart = match[1].trim();
-      const bodyPart = match[2].trim();
+      const bodyPart = match[2] ? match[2].trim() : '';
       return `
         <div style="background: rgba(15, 23, 42, 0.65); border-left: 3.5px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
-          <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+          <div style="font-weight: 700; color: #38bdf8; margin-bottom: ${bodyPart ? '4px' : '0'}; display: flex; align-items: center; gap: 6px; font-size: 13px;">
             <span>📍</span> <span>${escapeHtml(headerPart)}</span>
           </div>
-          <div style="color: #f1f5f9; padding-left: 2px;">${escapeHtml(bodyPart)}</div>
+          ${bodyPart ? `<div style="color: #f1f5f9; padding-left: 2px;">${escapeHtml(bodyPart)}</div>` : ''}
         </div>
       `;
     }
@@ -12179,6 +12266,9 @@ Nhiệm vụ của bạn là nhận toàn bộ nội dung đề bài (Bao gồm 
 1. KHÔNG BAO GIỜ dùng dấu ba chấm "..." để rút gọn câu hay bỏ lửng ý trong BẤT KỲ trường nào của JSON.
 2. DẪN CHỨNG ĐẦY ĐỦ 100%: Khi trích dẫn Transcript / Bài đọc, PHẢI TRÍCH ĐẦY ĐỦ CÂU NGUYÊN VĂN KHÔNG THIẾU TỪ NÀO.
 3. BẢNG TỪ VỰNG & PARAPHRASE PHẢI ĐẦY ĐỦ: Liệt kê chi tiết toàn bộ các từ vựng mới và cặp paraphrase, không được viết tắt hay để trống.
+4. BẮT BUỘC TÁCH RIÊNG TỪNG CÂU TRONG CORE CHAIN: Trong "coreChain" (a, b, c, d), TUYỆT ĐỐI KHÔNG VIẾT GOM CHUNG THÀNH 1 ĐOẠN VĂN TÓM TẮT. Bắt buộc phải liệt kê chi tiết từng câu theo từng gạch đầu dòng riêng biệt:
+   "- [Tên câu / Khái niệm] (Q[Số câu]): [Nội dung phân tích/dẫn chứng]"
+   để giao diện ứng dụng tự động chia thành các thẻ Card riêng biệt cho từng câu.
 
 ⚠️ YÊU CẦU ĐẶC BIỆT VỀ ĐỊNH DẠNG:
 Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất kỳ lời dẫn giải hay markdown nào ngoài json) theo đúng cấu trúc schema sau:
@@ -12314,11 +12404,11 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
     }
   ],
   "coreChain": {
-    "a": "BƯỚC 1 (ĐỊNH VỊ VÙNG THÔNG TIN - EVIDENCE IN SCRIPT): [Trích dẫn chính xác 100% câu thoại trong Transcript hoặc đoạn văn trong Bài đọc chứa đáp án cho từng câu hỏi, kèm mốc vị trí/dấu hiệu nhận biết]",
-    "b": "BƯỚC 2 (BẢNG TỪ KHÓA & PARAPHRASING MAPPING): [Liệt kê chi tiết các cặp từ khóa đối chiếu giữa Đề bài vs Transcript/Bài đọc. Ví dụ: 'No payment' ➔ 'entrance is completely free'; 'supervised' ➔ 'do ask adults not to leave them on their own']",
-    "c": "BƯỚC 3 (GIẢI THÍCH TẠI SAO ĐÁP ÁN ĐÚNG): [Phân tích logic lập luận chi tiết vì sao đáp án này hoàn toàn khớp với dẫn chứng, hướng di chuyển trên bản đồ (nếu có map) hoặc mối quan hệ nhân quả]",
-    "d": "BƯỚC 4 (BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI): [Chỉ rõ vì sao các phương án nhiễu bị loại bỏ - ví dụ: Bẫy thì 'used to be' (trước đây) vs 'now' (hiện tại), bẫy phủ định ngầm, bẫy thông tin không được nhắc tới]",
-    "insight": "BƯỚC 5 (INSIGHT & QUY LUẬT LÀM ĐỀ ĐỈNH CAO): [Đúc kết quy luật ra đề của giám khảo, phản xạ nhận diện bẫy trong 3 giây và chiến thuật xử lý mọi đề tương tự]"
+    "a": "BƯỚC 1 (ĐỊNH VỊ VÙNG THÔNG TIN - EVIDENCE IN SCRIPT & MAP):\\n\\n- [Tên câu 1] (Q1): Transcript: \\\"[Trích dẫn chính xác 100% câu thoại trong Transcript chứa đáp án]\\\" ➔ [Xác định vị trí trên bản đồ hoặc dẫn chứng bài đọc]\\n\\n- [Tên câu 2] (Q2): Transcript: \\\"[Trích dẫn chính xác 100% câu thoại]\\\" ➔ [Dấu hiệu vị trí]\\n\\n(Bắt buộc liệt kê đầy đủ 100% tất cả các câu từ Q1 đến hết, mỗi câu 1 gạch đầu dòng riêng biệt)",
+    "b": "BƯỚC 2 (BẢNG TỪ KHÓA & PARAPHRASING MAPPING):\\n\\n- [Tên câu 1] (Q1): '[Từ khóa đề bài]' ↔ '[Cụm từ tương đương trong bài]' (Giải thích paraphrase chi tiết)\\n\\n- [Tên câu 2] (Q2): '[Từ khóa đề bài]' ↔ '[Cụm từ tương đương]'\\n\\n(Bắt buộc liệt kê đầy đủ 100% tất cả các câu từ Q1 đến hết, mỗi câu 1 gạch đầu dòng riêng biệt)",
+    "c": "BƯỚC 3 (GIẢI THÍCH TẠI SAO ĐÁP ÁN ĐÚNG):\\n\\n- [Tên câu 1] (Q1 - Đáp án X): [Phân tích logic lập luận chi tiết vì sao đáp án X hoàn toàn đúng khớp với dẫn chứng]\\n\\n- [Tên câu 2] (Q2 - Đáp án Y): [Phân tích logic tại sao đúng]\\n\\n(Bắt buộc liệt kê đầy đủ 100% tất cả các câu từ Q1 đến hết, mỗi câu 1 gạch đầu dòng riêng biệt)",
+    "d": "BƯỚC 4 (BẺ KHÓA BẪY & TẠI SAO CÁC PHƯƠNG ÁN KHÁC SAI):\\n\\n- [Tên câu 1] (Q1): [Chỉ rõ vì sao các phương án nhiễu bị loại bỏ - ví dụ: bẫy 'used to be' (trước đây) vs 'now' (hiện tại), bẫy phủ định ngầm]\\n\\n- [Tên câu 2] (Q2): [Phân tích bẫy và các phương án sai]\\n\\n(Bắt buộc liệt kê đầy đủ 100% tất cả các câu từ Q1 đến hết, mỗi câu 1 gạch đầu dòng riêng biệt)",
+    "insight": "BƯỚC 5 (INSIGHT & QUY LUẬT LÀM ĐỀ ĐỈNH CAO):\\n\\n- Quy luật ra đề của giám khảo: Luôn bắt ít nhất 2 mốc định vị không gian để khóa chặt vị trí.\\n- Bẫy kinh điển: Chú ý thì quá khứ 'used to be' và liên từ tương phản 'but/now/actually'.\\n- Chiến thuật 3 giây: Đọc quét từ khóa trước ➔ Bắt mốc định vị ➔ Nhận diện paraphrase ➔ Chốt đáp án."
   },
   "causeEffects": {
     "immediate": "Tín hiệu nghe / đọc đầu tiên (Signposting words / Keyword cue) xuất hiện báo hiệu người nói đang chuyển sang câu hỏi.",
