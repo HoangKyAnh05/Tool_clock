@@ -3336,6 +3336,9 @@ function resetIeltsForm() {
   const linkEl = document.getElementById('ieltsLink');
   if (linkEl) linkEl.value = '';
 
+  const testNoEl = document.getElementById('ieltsTestNo');
+  if (testNoEl) testNoEl.value = '';
+
   document.querySelectorAll('#ieltsForm textarea').forEach(textarea => {
     textarea.value = '';
   });
@@ -3369,6 +3372,7 @@ function handleSaveIelts() {
   const editIdEl = document.getElementById('editItemId');
   const folderEl = document.getElementById('ieltsFolder');
   const linkEl = document.getElementById('ieltsLink');
+  const testNoEl = document.getElementById('ieltsTestNo');
 
   if (!titleEl || !skillEl) return;
 
@@ -3379,6 +3383,7 @@ function handleSaveIelts() {
   const editId = editIdEl ? editIdEl.value : '';
   const folder = folderEl ? folderEl.value : 'Mặc định';
   const link = linkEl ? linkEl.value.trim() : '';
+  const testNo = testNoEl ? testNoEl.value.trim() : '';
 
   if (!title) {
     titleEl.focus();
@@ -3450,6 +3455,7 @@ function handleSaveIelts() {
   }
   fields.images = uploadedImages;
   fields.image = uploadedImages.length > 0 ? uploadedImages[0] : '';
+  fields.testNo = testNo;
   if (editId) {
     const idx = ieltsVaultData.items.findIndex(item => item.id === editId);
     if (idx !== -1) {
@@ -3461,6 +3467,7 @@ function handleSaveIelts() {
         mastery,
         folder,
         link,
+        testNo,
         fields
       };
       activeIeltsItemId = editId;
@@ -3475,6 +3482,7 @@ function handleSaveIelts() {
       mastery,
       folder,
       link,
+      testNo,
       fields
     };
     ieltsVaultData.items.push(newItem);
@@ -3508,6 +3516,11 @@ function handleEditIelts() {
   const folderEl = document.getElementById('ieltsFolder');
   if (folderEl) {
     folderEl.value = item.folder || 'Mặc định';
+  }
+
+  const testNoEl = document.getElementById('ieltsTestNo');
+  if (testNoEl) {
+    testNoEl.value = item.testNo || (item.fields ? item.fields.testNo : '') || '';
   }
 
   const skillSelect = document.getElementById('ieltsSkill');
@@ -3676,8 +3689,8 @@ function renderIeltsDetail(itemId) {
 
   const detailImages = f.images || (f.image ? [f.image] : []);
   if (detailImages && detailImages.length > 0) {
-    detailImages.forEach(imgBase64 => {
-      scroll.appendChild(createDetailSectionImage(imgBase64));
+    detailImages.forEach((imgBase64, idx) => {
+      scroll.appendChild(createDetailSectionImage(imgBase64, idx, detailImages.length));
     });
   }
 
@@ -4864,7 +4877,7 @@ function setupTextSelectionSearch(containerEl, type) {
   }
 }
 
-function createDetailSectionImage(base64) {
+function createDetailSectionImage(base64, index = 0, total = 1) {
   const div = document.createElement('div');
   div.className = 'detail-image-box';
   div.style.position = 'relative';
@@ -4883,15 +4896,88 @@ function createDetailSectionImage(base64) {
     }
   });
 
+  // Top header overlay container for image (Numbering Input + Copy Button)
+  const headerOverlay = document.createElement('div');
+  headerOverlay.className = 'image-header-overlay';
+  Object.assign(headerOverlay.style, {
+    position: 'absolute',
+    top: '8px',
+    left: '8px',
+    right: '8px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    pointerEvents: 'none',
+    zIndex: '101'
+  });
+
+  // Left side: Number Input container
+  const numContainer = document.createElement('div');
+  numContainer.className = 'img-number-container';
+  Object.assign(numContainer.style, {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: 'rgba(15, 23, 42, 0.85)',
+    backdropFilter: 'blur(4px)',
+    border: '1px solid rgba(245, 158, 11, 0.4)',
+    color: '#fbbf24',
+    padding: '4px 8px',
+    borderRadius: '6px',
+    fontSize: '11px',
+    fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+    pointerEvents: 'auto'
+  });
+
+  const numLabel = document.createElement('span');
+  numLabel.textContent = total > 1 ? `Số ảnh (${index + 1}/${total}):` : 'Số ảnh:';
+  numLabel.style.color = '#f59e0b';
+  numLabel.style.whiteSpace = 'nowrap';
+
+  const numInput = document.createElement('input');
+  numInput.type = 'text';
+  numInput.inputMode = 'numeric';
+  numInput.value = index + 1;
+  numInput.title = 'Điền / đánh số ảnh (Nhập số bất kỳ)';
+  Object.assign(numInput.style, {
+    width: '48px',
+    background: 'rgba(0, 0, 0, 0.65)',
+    border: '1px solid rgba(245, 158, 11, 0.6)',
+    color: '#ffffff',
+    borderRadius: '4px',
+    padding: '2px 4px',
+    fontSize: '12px',
+    fontWeight: '700',
+    textAlign: 'center',
+    outline: 'none',
+    boxSizing: 'border-box'
+  });
+
+  numInput.addEventListener('focus', () => {
+    numInput.style.borderColor = '#f59e0b';
+    numInput.style.boxShadow = '0 0 6px rgba(245, 158, 11, 0.6)';
+  });
+  numInput.addEventListener('blur', () => {
+    numInput.style.borderColor = 'rgba(245, 158, 11, 0.6)';
+    numInput.style.boxShadow = 'none';
+  });
+
+  const stopProp = (e) => e.stopPropagation();
+  numInput.addEventListener('keydown', stopProp);
+  numInput.addEventListener('keyup', stopProp);
+  numInput.addEventListener('click', stopProp);
+
+  numContainer.appendChild(numLabel);
+  numContainer.appendChild(numInput);
+
+  // Right side: Copy Button
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
   copyBtn.className = 'copy-img-btn';
   copyBtn.innerHTML = '📋 Sao chép ảnh';
   Object.assign(copyBtn.style, {
-    position: 'absolute',
-    top: '8px',
-    right: '8px',
-    background: 'rgba(15, 23, 42, 0.75)',
+    background: 'rgba(15, 23, 42, 0.85)',
     backdropFilter: 'blur(4px)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#f1f5f9',
@@ -4900,18 +4986,18 @@ function createDetailSectionImage(base64) {
     fontSize: '11px',
     fontWeight: '600',
     cursor: 'pointer',
-    zIndex: '101',
+    pointerEvents: 'auto',
     transition: 'all 0.2s ease',
     boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
     outline: 'none'
   });
 
   copyBtn.addEventListener('mouseenter', () => {
-    copyBtn.style.background = 'rgba(30, 41, 59, 0.9)';
-    copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    copyBtn.style.background = 'rgba(30, 41, 59, 0.95)';
+    copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
   });
   copyBtn.addEventListener('mouseleave', () => {
-    copyBtn.style.background = 'rgba(15, 23, 42, 0.75)';
+    copyBtn.style.background = 'rgba(15, 23, 42, 0.85)';
     copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
   });
 
@@ -4938,8 +5024,11 @@ function createDetailSectionImage(base64) {
     }
   });
 
+  headerOverlay.appendChild(numContainer);
+  headerOverlay.appendChild(copyBtn);
+
   div.appendChild(img);
-  div.appendChild(copyBtn);
+  div.appendChild(headerOverlay);
   return div;
 }
 
@@ -11130,6 +11219,10 @@ function renderBcEventList() {
       ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">🖼️ Ảnh</span>` 
       : '';
 
+    const testNoBadgeHtml = item.testNo 
+      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45);">🏷️ Đề #${escapeHtml(item.testNo)}</span>` 
+      : '';
+
     const displayTitle = item.question || item.title || 'Sự kiện không tên';
     const displaySnippet = item.answer || item.context || item.coreChain?.insight || item.coreChain?.a || 'Chưa có chi tiết...';
 
@@ -11137,6 +11230,7 @@ function renderBcEventList() {
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
         <div style="display: flex; align-items: center; gap: 4px; overflow: hidden; flex-wrap: wrap;">
           <span class="bc-badge bc-badge-cat">${escapeHtml(item.category || 'Chung')}</span>
+          ${testNoBadgeHtml}
           ${imageBadgeHtml}
         </div>
         ${statusBadge}
@@ -11184,12 +11278,26 @@ function renderBcActiveEvent(ev) {
   const imageTag = document.getElementById('bcEventImageTag');
   const contextEl = document.getElementById('bcEventContext');
   const btnCopyFullAnswer = document.getElementById('btnBcCopyFullAnswer');
+  const testNoInp = document.getElementById('bcEventTestNoInput');
 
   const questionText = ev.question || ev.title || 'Sự kiện không tên';
   const fullAnswerText = ev.answer || ev.context || ev.coreChain?.a || ev.title || '';
 
   if (titleEl) titleEl.textContent = questionText;
   if (catBadge) catBadge.textContent = ev.category || 'Tiếng Anh & Speaking';
+
+  if (testNoInp) {
+    testNoInp.value = ev.testNo || ev.testNum || ev.stt || '';
+    testNoInp.oninput = () => {
+      ev.testNo = testNoInp.value.trim();
+      saveBrainChainData();
+      renderBcEventList();
+    };
+    const stopP = (e) => e.stopPropagation();
+    testNoInp.onkeydown = stopP;
+    testNoInp.onkeyup = stopP;
+    testNoInp.onclick = stopP;
+  }
   
   const hasAnalysis = Boolean(ev.coreChain && ev.coreChain.insight);
   if (statusBadge) {

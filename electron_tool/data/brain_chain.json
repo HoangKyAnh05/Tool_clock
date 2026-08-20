@@ -1,6 +1,197 @@
 {
   "events": [
     {
+      "question": "The chart below shows the percentage of water in UK rivers that was classified as having good chemical quality between 1990 and 2002. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+      "title": "Water quality in UK rivers 1990-2002",
+      "answer": "The line chart illustrates the percentages of river water meeting good chemical quality standards, in four countries in the UK, from 1990 to 2002. Overall, rivers in Northern Ireland and Wales consistently had the cleanest water. Additionally, with the exception of Wales, all the regions showed improvements in their water quality over the period shown. With regards to the two leading nations, in 1990, roughly 96% of rivers in Wales were classified as having good chemical levels, noticeably higher than Northern Ireland's 83%. In the following years, Wales’s river cleanliness remained relatively stable until 1998, before declining sharply to around 80% by 2002. In contrast, Northern Ireland's river quality gradually improved, with its purity rising to nearly 100% in 2000, and then slightly falling to 96% by 2002, having surpassed Wales since 1999. Regarding the remaining countries, in 1990, Scotland's rivers were of the lowest quality in terms of chemical composition, with only 20% of river water there up to par, less than half of England's 45%. Subsequently, the latter's purity rose sharply to a peak of 70% by 1996, and then dramatically fell back to a low of 30% in 1998, followed by a significant recovery to 50% by 2002. Similarly, the percentage of clean water in Scotland rose steadily, reaching 60% in 2000 before declining to 40% over the final two years.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): The line chart illustrates the percentages of river water meeting good chemical quality standards, in four countries in the UK, from 1990 to 2002. - Mở đầu giới thiệu trực tiếp loại biểu đồ (đường), đối tượng (tỷ lệ nước sông đạt chất lượng hóa học tốt), phạm vi không gian (bốn quốc gia trong Vương quốc Anh) và thời gian (1990-2002). Câu này đặt khung tham chiếu rõ ràng cho toàn bộ phân tích.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): Overall, rivers in Northern Ireland and Wales consistently had the cleanest water. Additionally, with the exception of Wales, all the regions showed improvements in their water quality over the period shown. - Tổng quan nêu hai đặc điểm nổi bật: Northern Ireland và Wales luôn có nước sạch nhất, và hầu hết các vùng đều cải thiện trừ Wales. Đây là luận điểm chính giúp định hướng so sánh giữa các nhóm và xu hướng thay đổi.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): With regards to the two leading nations, in 1990, roughly 96% of rivers in Wales were classified as having good chemical levels, noticeably higher than Northern Ireland's 83%. In the following years, Wales’s river cleanliness remained relatively stable until 1998, before declining sharply to around 80% by 2002. In contrast, Northern Ireland's river quality gradually improved, with its purity rising to nearly 100% in 2000, and then slightly falling to 96% by 2002, having surpassed Wales since 1999. - Chi tiết hóa về hai quốc gia dẫn đầu, cung cấp số liệu cụ thể năm 1990 và diễn biến đến 2002, nhấn mạnh sự tương phản giữa sự suy giảm của Wales và sự cải thiện vượt trội của Northern Ireland. Điều này minh họa rõ xu hướng và sự thay đổi vị thế.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Regarding the remaining countries, in 1990, Scotland's rivers were of the lowest quality in terms of chemical composition, with only 20% of river water there up to par, less than half of England's 45%. Subsequently, the latter's purity rose sharply to a peak of 70% by 1996, and then dramatically fell back to a low of 30% in 1998, followed by a significant recovery to 50% by 2002. - Mở rộng phân tích sang hai nước còn lại, bắt đầu bằng số liệu năm 1990 cho thấy Scotland thấp nhất và England cao hơn, sau đó mô tả biến động phức tạp của England (tăng đột biến, giảm mạnh, phục hồi). Điều này hoàn thiện bức tranh tổng thể về chất lượng nước ở tất cả các vùng.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): Similarly, the percentage of clean water in Scotland rose steadily, reaching 60% in 2000 before declining to 40% over the final two years. - Kết luận về Scotland, cho thấy xu hướng tăng đều đặn cho đến 2000 rồi giảm trong hai năm cuối, từ đó nhấn mạnh rằng mặc dù Scotland khởi điểm thấp nhất nhưng đã có sự cải thiện tích cực, tuy nhiên vẫn chịu sự suy giảm cuối giai đoạn, phản ánh tính không ổn định của chất lượng nước ở một số khu vực."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức nhận biết được đối tượng và phạm vi của biểu đồ, từ đó dễ dàng theo dõi các số liệu và so sánh sau đó.",
+        "secondOrder": "Khi tổng quan được đưa ra, người đọc hình dung được hai nhóm chính (dẫn đầu và còn lại) và xu hướng chung, tạo nền tảng để hiểu các biến động cụ thể.",
+        "thirdOrder": "Chi tiết về hai nước dẫn đầu giúp cân bằng góc nhìn: sự suy giảm của Wales và sự vươn lên của Northern Ireland, cho thấy câu chuyện không đơn giản chỉ là tăng hay giảm.",
+        "unexpected": "Điểm bất ngờ là sự biến động mạnh của England: tăng vọt lên 70% rồi rơi xuống 30% và phục hồi, cho thấy chất lượng nước có thể thay đổi đột ngột, không theo xu hướng tuyến tính.",
+        "longTerm": "Giúp người học làm chủ cấu trúc phân tích biểu đồ đường theo nhóm đối tượng và thời gian, áp dụng cho các chủ đề môi trường, kinh tế hoặc xã hội."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng cấu trúc giới thiệu biểu đồ đường?",
+          "answer": "Mở đầu bằng việc xác định loại biểu đồ và đối tượng giúp người đọc định hình ngay lập tức và biết được thông tin sẽ được trình bày theo thời gian. Đây là cách mở bài chuẩn mực trong IELTS Writing Task 1, tạo sự chuyên nghiệp và rõ ràng."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn tổng quan về Northern Ireland và Wales là ý chính đầu tiên?",
+          "answer": "Vì đây là đặc điểm nổi bật và xuyên suốt nhất của dữ liệu: hai vùng này luôn có chất lượng nước tốt nhất. Việc nêu bật chúng trước giúp người đọc biết được đâu là chuẩn mực để so sánh với các vùng khác."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần tách biệt hai nhóm nước dẫn đầu và nước còn lại thành các đoạn riêng?",
+          "answer": "Để làm rõ sự khác biệt giữa các nhóm và dễ dàng so sánh trong từng nhóm. Việc phân nhóm giúp người đọc nắm bắt cấu trúc thông tin, tránh rối khi có nhiều đường xu hướng."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ giới thiệu biểu đồ → tổng quan xu hướng → chi tiết nhóm dẫn đầu → chi tiết nhóm còn lại → kết thúc bằng thông tin về một quốc gia cụ thể. Các từ nối 'Overall', 'Additionally', 'With regards to', 'Regarding' tạo sự mạch lạc và logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là chất lượng nước sông ở các vùng khác nhau của Vương quốc Anh có xu hướng được cải thiện trong giai đoạn 1990-2002, nhưng vẫn tồn tại sự khác biệt đáng kể và có những biến động không đồng đều, phản ánh hiệu quả của các chính sách môi trường và tác động của các yếu tố tự nhiên hoặc kinh tế."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: bắt đầu bằng Scotland và England rồi mới đến hai nước dẫn đầu, hoặc bỏ đi phần overall thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, gây khó khăn cho người đọc trong việc nắm bắt xu hướng chính.",
+          "Người đọc không thấy được sự tương phản rõ rệt giữa các nhóm, làm giảm hiệu quả so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "giới thiệu biểu đồ",
+          "hai nước dẫn đầu",
+          "cải thiện trừ Wales",
+          "chi tiết Wales và NI",
+          "chi tiết Scotland và England"
+        ],
+        "directImpact": "Cấu trúc rõ ràng, tuần tự từ tổng quan đến chi tiết giúp bài báo cáo dễ hiểu và mạch lạc, đáp ứng tiêu chí Coherence và Cohesion.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'With regards to', 'Regarding' giúp não bộ ghi nhớ trình tự phân tích và cách tổ chức thông tin theo nhóm, từ đó dễ dàng tái tạo cho các biểu đồ tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic phân nhóm và so sánh, người học càng nói hoặc viết trôi chảy, tự tin mở rộng phân tích cho các dạng biểu đồ khác mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Khi mô tả biểu đồ đường, phải đề cập tất cả các điểm dữ liệu theo thứ tự thời gian.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất thông qua các xu hướng nổi bật và sự so sánh giữa các nhóm, không phải qua các điểm dữ liệu rời rạc. Việc nhóm các quốc gia theo đặc điểm chung giúp người đọc dễ nắm bắt bức tranh tổng thể.",
+        "reconstructedLogic": "Thay vì liệt kê từng năm, xây dựng khung tư duy: Giới thiệu → Tổng quan → Nhóm dẫn đầu → Nhóm còn lại → Kết luận. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích cả bốn quốc gia và biến động của từng nước có thể làm mất thời gian; có thể cần rút gọn chỉ tập trung vào hai quốc gia có thay đổi lớn nhất.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các đối tượng và theo thời gian, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi biểu đồ chỉ có 2-3 đường, người viết có thể lược bớt phần chi tiết của nhóm ít biến động, chỉ giữ lại những con số nổi bật nhất.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần C và D tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh các xu hướng đối lập và sự thay đổi vị thế giữa các nhóm."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích biểu đồ đường hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ xu hướng và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ biểu đồ đường hoặc cột nào, từ kinh tế, xã hội đến môi trường, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'in contrast', 'while', và các số liệu quan trọng để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: line chart illustrates → Northern Ireland and Wales cleanest → improvements except Wales → Wales decline, NI rise → England volatile, Scotland steady rise then fall. Xâu chuỗi thành dòng tư duy: 'Biểu đồ đường → hai nước sạch nhất → cải thiện trừ Wales → Wales giảm, NI tăng → England biến động, Scotland tăng rồi giảm'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The graph shows the unemployment rates in four European countries from 1990 to 2000', duy trì đúng trình tự: giới thiệu → tổng quan → chi tiết nhóm 1 → chi tiết nhóm 2 → kết luận."
+      ],
+      "id": "bc_event_1787212047504_hwkkx",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787212047504_hwkkx_1787214744928_834.png",
+      "createdAt": "2026-08-20T07:47:27.504Z",
+      "updatedAt": "2026-08-20T08:32:24.923Z",
+      "testNo": "4"
+    },
+    {
+      "question": "The table shows the number of employees and factories producing silk in England and Wales between 1851 and 1901. Summarize the information by selecting and reporting the main features and make comparisons where relevant.",
+      "title": "Silk industry employment and factory numbers in England and Wales 1851-1901",
+      "answer": "Overall, despite the fact that the silk industry underwent a consistent reduction in the workforce across both genders, there was an initial boom in the number of factories, followed by a slight decline over time. In addition, the sector maintained higher female representation throughout the period, with women consistently outnumbering men. With regard to the labour force, in 1851, employment was at its highest level, at nearly 131,000 people, comprising roughly 54,000 males and 77,000 females. Over the surveyed period, the total workforce in this sector significantly declined, falling to just under 39,000 workers by 1901, roughly a third of the initial figure. The decline affected both genders, with female employment levels decreasing sharply to just over 25,000 in the final year, while males’ figures had fallen more dramatically to 13,000 by 1901, despite experiencing a slight recovery in 1891. In terms of factory numbers, there were only 272 silk-processing facilities at the start of the period. However, in the next decade, the number of production sites tripled, reaching a peak of 761 locations in 1861, before gradually declining over the following four decades to 623 by 1901.",
+      "category": "Tiếng Anh & Speaking",
+      "context": "Phân tích chuỗi logic nguyên nhân - hệ quả và rút ra insight đột phá để ghi nhớ và phản xạ tự nhiên.",
+      "coreChain": {
+        "a": "BƯỚC 1 (A - Khởi điểm & Ý định): Overall, despite the fact that the silk industry underwent a consistent reduction in the workforce across both genders, there was an initial boom in the number of factories, followed by a slight decline over time. - Mở đầu bằng nhận định tổng quan về hai xu hướng chính: lực lượng lao động giảm liên tục và số lượng nhà máy tăng mạnh ban đầu rồi giảm nhẹ. Câu này thiết lập toàn bộ khung phân tích, chỉ ra sự tương phản giữa lao động và cơ sở sản xuất.",
+        "b": "BƯỚC 2 (B - Lý do & Vấn đề hiện tại): In addition, the sector maintained higher female representation throughout the period, with women consistently outnumbering men. - Bổ sung điểm nổi bật về giới tính, nhấn mạnh rằng phụ nữ luôn chiếm ưu thế trong ngành này. Điều này cho thấy đặc điểm cơ cấu lao động và xu hướng xã hội thời đó, làm phong phú thêm phân tích.",
+        "c": "BƯỚC 3 (C - Nhu cầu tính năng): With regard to the labour force, in 1851, employment was at its highest level, at nearly 131,000 people, comprising roughly 54,000 males and 77,000 females. - Bắt đầu chi tiết hóa về lao động bằng cách đưa ra số liệu cụ thể của năm đầu tiên, cho thấy quy mô và phân bổ giới tính. Đây là điểm khởi đầu để so sánh với các năm sau.",
+        "d": "BƯỚC 4 (D - Tính năng tiện ích mở rộng): Over the surveyed period, the total workforce in this sector significantly declined, falling to just under 39,000 workers by 1901, roughly a third of the initial figure. The decline affected both genders, with female employment levels decreasing sharply to just over 25,000 in the final year, while males’ figures had fallen more dramatically to 13,000 by 1901, despite experiencing a slight recovery in 1891. - Mở rộng phân tích bằng cách mô tả sự suy giảm mạnh của tổng lao động và từng giới, kèm theo số liệu so sánh cụ thể. Điều này làm rõ xu hướng giảm và sự khác biệt giữa nam và nữ.",
+        "insight": "BƯỚC 5 (INSIGHT - Đúc kết giá trị): In terms of factory numbers, there were only 272 silk-processing facilities at the start of the period. However, in the next decade, the number of production sites tripled, reaching a peak of 761 locations in 1861, before gradually declining over the following four decades to 623 by 1901. - Kết luận về số lượng nhà máy, chỉ ra sự tăng đột biến ban đầu sau đó giảm dần. Điều này bổ sung một khía cạnh khác của ngành, cho thấy rằng trong khi lao động suy giảm liên tục, số nhà máy lại có giai đoạn bùng nổ rồi mới giảm, phản ánh sự thay đổi trong công nghệ và tổ chức sản xuất."
+      },
+      "causeEffects": {
+        "immediate": "Người nghe hoặc người đọc ngay lập tức nắm được hai xu hướng trái ngược: lao động giảm và số nhà máy tăng rồi giảm, tạo ấn tượng về sự chuyển đổi trong ngành công nghiệp tơ lụa.",
+        "secondOrder": "Khi biết thêm về tỷ lệ nữ giới cao hơn, người đọc hình dung được cơ cấu lao động đặc thù và có thể suy luận về vai trò của phụ nữ trong ngành này.",
+        "thirdOrder": "Các số liệu chi tiết về lao động và nhà máy giúp cân bằng góc nhìn: dù số nhà máy tăng nhưng lao động giảm, có thể do tự động hóa hoặc thay đổi quy trình, từ đó thấy được bức tranh phức tạp của sự phát triển công nghiệp.",
+        "unexpected": "Điểm bất ngờ là sự tăng vọt số nhà máy trong khi lao động lại giảm mạnh, cho thấy có thể năng suất lao động tăng lên hoặc ngành dịch chuyển sang quy mô sản xuất lớn hơn, sử dụng ít nhân công hơn.",
+        "longTerm": "Giúp người học phát triển tư duy phân tích dữ liệu đa chiều, biết cách kết nối các xu hướng khác nhau và diễn đạt chúng một cách mạch lạc, áp dụng cho các bài viết mô tả bảng biểu hoặc biểu đồ."
+      },
+      "whyChain": [
+        {
+          "level": "1. Triệu chứng bề mặt",
+          "question": "Tại sao câu văn mở đầu bằng 'Overall' và sử dụng cấu trúc đối lập 'despite'?",
+          "answer": "Việc mở đầu bằng 'Overall' giúp người đọc biết đây là nhận xét tổng quát. Cấu trúc 'despite' tạo sự tương phản ngay trong câu đầu, nhấn mạnh hai xu hướng trái ngược nhau, tạo ấn tượng mạnh và khơi gợi sự tò mò về chi tiết."
+        },
+        {
+          "level": "2. Nguyên nhân trực tiếp",
+          "question": "Tại sao lại chọn bổ sung thông tin về giới tính ngay sau nhận định tổng quan?",
+          "answer": "Vì đây là đặc điểm nổi bật và nhất quán xuyên suốt giai đoạn, giúp làm rõ cơ cấu lao động và cung cấp một khía cạnh so sánh quan trọng, tạo nền tảng cho các số liệu cụ thể về nam và nữ sau đó."
+        },
+        {
+          "level": "3. Nguyên nhân sâu xa",
+          "question": "Tại sao cần tách riêng phần lao động và nhà máy thành các đoạn riêng?",
+          "answer": "Để làm rõ hai khía cạnh khác nhau của ngành công nghiệp – yếu tố con người và cơ sở vật chất. Việc tách bạch giúp người đọc dễ theo dõi và so sánh các xu hướng riêng biệt, tránh nhầm lẫn."
+        },
+        {
+          "level": "4. Nguyên nhân hệ thống",
+          "question": "Cơ chế liên kết giữa các mệnh đề là gì?",
+          "answer": "Mạch tư duy đi từ tổng quan (lao động giảm, nhà máy tăng rồi giảm) → bổ sung (giới tính) → chi tiết lao động (số liệu năm 1851 và suy giảm) → chi tiết nhà máy (số liệu và biến động). Các từ nối 'In addition', 'With regard to', 'In terms of' tạo sự chuyển ý mạch lạc, logic."
+        },
+        {
+          "level": "5. Root Cause (Gốc rễ)",
+          "question": "Bản chất cốt lõi của thông điệp là gì?",
+          "answer": "Thông điệp sâu xa là ngành công nghiệp tơ lụa ở Anh và xứ Wales trải qua sự chuyển dịch cơ cấu lớn: mặc dù số nhà máy tăng vọt vào giữa thế kỷ, nhưng tổng số lao động lại giảm sâu, cho thấy sự thay đổi trong công nghệ và phương thức sản xuất, đồng thời vai trò của phụ nữ vẫn chiếm ưu thế, phản ánh đặc điểm xã hội và kinh tế thời kỳ Cách mạng Công nghiệp."
+        }
+      ],
+      "whatIf": {
+        "scenario": "Nếu đảo ngược thứ tự: trình bày nhà máy trước rồi lao động sau, hoặc bỏ đi phần giới tính thì mạch văn sẽ bị mất tự nhiên.",
+        "consequences": [
+          "Lập luận trở nên một chiều và thiếu tính thuyết phục vì không có sự dẫn dắt từ tổng quan đến chi tiết.",
+          "Mất đi nhịp điệu tự nhiên của một bài báo cáo dữ liệu, làm người đọc khó hình dung bức tranh tổng thể.",
+          "Người đọc không thấy được sự tương phản giữa hai xu hướng lao động và nhà máy, làm giảm hiệu quả so sánh."
+        ]
+      },
+      "systemDynamics": {
+        "nodes": [
+          "lao động giảm",
+          "nhà máy tăng rồi giảm",
+          "tỷ lệ nữ cao",
+          "số liệu 1851",
+          "suy giảm lao động",
+          "biến động nhà máy"
+        ],
+        "directImpact": "Cấu trúc rõ ràng, tuần tự từ tổng quan đến chi tiết giúp bài báo cáo mạch lạc, dễ hiểu, đáp ứng tiêu chí Coherence và Cohesion.",
+        "indirectImpact": "Các điểm neo ngữ nghĩa như 'Overall', 'In addition', 'With regard to', 'In terms of' giúp não bộ ghi nhớ trình tự phân tích và dễ dàng tái tạo cho các chủ đề tương tự.",
+        "feedbackLoop": "Càng hiểu rõ logic liên kết giữa các xu hướng và nhóm dữ liệu, người học càng nói hoặc viết trôi chảy, tự tin mở rộng sang các bảng số liệu khác mà không cần phụ thuộc vào mẫu câu cố định."
+      },
+      "firstPrinciples": {
+        "brokenAssumptions": "Giả định sai: Để mô tả bảng số liệu, phải liệt kê tất cả các năm và con số một cách máy móc.",
+        "fundamentalTruths": "Sự thật gốc: Bộ não ghi nhớ tốt nhất thông qua các xu hướng và so sánh nổi bật, không phải qua danh sách số liệu rời rạc. Việc nhóm thông tin theo chủ đề (lao động, nhà máy) và nhấn mạnh sự thay đổi giúp người đọc nắm bắt được ý nghĩa cốt lõi.",
+        "reconstructedLogic": "Thay vì học thuộc từng số liệu, xây dựng khung tư duy: Giới thiệu tổng quan → Bổ sung đặc điểm → Chi tiết nhóm 1 (lao động) → Chi tiết nhóm 2 (nhà máy) → Kết luận tổng hợp. Điều này tạo thành sợi dây nhân quả A→B→C→D→Insight, giúp não tự động sinh từ và cấu trúc câu."
+      },
+      "contrarianThinking": {
+        "argFor": "Cách lập luận này mạch lạc, đầy đủ và tuân thủ đúng cấu trúc của một bài báo cáo dữ liệu, đặc biệt phù hợp với yêu cầu của IELTS Writing Task 1, giúp đạt điểm cao về Task Achievement và Coherence.",
+        "argAgainst": "Trong bối cảnh thuyết trình ngắn hoặc cần báo cáo nhanh, việc phân tích cả hai khía cạnh có thể làm mất thời gian; có thể cần rút gọn chỉ tập trung vào xu hướng chính nhất.",
+        "conditions": "Áp dụng hiệu quả khi phải viết báo cáo có độ dài tối thiểu 150 từ và yêu cầu so sánh giữa các năm và giữa các nhóm dữ liệu, thích hợp trong môi trường học thuật hoặc thi cử.",
+        "exceptions": "Trong các bài thi yêu cầu tốc độ hoặc khi chỉ có một vài số liệu đơn giản, người viết có thể lược bỏ các chi tiết phụ, chỉ giữ lại những con số nổi bật nhất và so sánh trực tiếp.",
+        "synthesis": "Cách tùy biến linh hoạt: Giữ nguyên cấu trúc 5 bước, nhưng có thể điều chỉnh độ chi tiết của phần D và Insight tùy theo thời lượng và yêu cầu. Luôn ưu tiên nhấn mạnh các xu hướng đối lập và mối liên hệ giữa các nhóm."
+      },
+      "predictions": {
+        "oneMonth": "Người học có thể viết một báo cáo phân tích bảng số liệu hoàn chỉnh với cấu trúc tương tự trong vòng 15 phút, tự tin sử dụng các cụm từ chỉ xu hướng và so sánh.",
+        "oneYear": "Tự động áp dụng khung logic này để phân tích bất kỳ bảng số liệu hoặc biểu đồ nào, từ kinh tế, xã hội đến giáo dục, với sự linh hoạt trong diễn đạt.",
+        "fiveYears": "Hình thành tư duy phân tích dữ liệu nhạy bén và kỹ năng diễn đạt song ngữ tự nhiên, có thể thuyết trình hoặc viết báo cáo chuyên nghiệp một cách trôi chảy và thuyết phục.",
+        "blindSpots": "Cần lưu ý ngữ điệu khi nói: nhấn mạnh các từ chỉ sự tương phản như 'despite', 'while', và các số liệu chính để tạo điểm nhấn, tránh đọc đều đều như danh sách."
+      },
+      "actionTakeaways": [
+        "Khắc ghi các từ khóa trục chính: labour force reduction, factory boom then decline, higher female representation, 1851 peak, 1901 drop. Xâu chuỗi thành dòng tư duy: 'Lao động giảm → nhà máy tăng rồi giảm → nữ chiếm ưu thế → số liệu 1851 → suy giảm đến 1901'.",
+        "Luyện tập nói hoặc viết báo cáo theo nhịp thở của 5 mắt xích: hít vào ở mỗi bước chuyển ý, thở ra khi diễn đạt từng phần, tạo nhịp độ tự nhiên và giúp ghi nhớ trình tự.",
+        "Áp dụng cấu trúc logic này để tự tạo một báo cáo tương tự cho chủ đề khác, ví dụ: 'The graph shows the changes in the number of students and schools in a city between 2000 and 2010', duy trì đúng trình tự: giới thiệu → tổng quan → chi tiết nhóm 1 → chi tiết nhóm 2 → kết luận."
+      ],
+      "id": "bc_event_1787208147551_mp9ho",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787208147551_mp9ho_1787212047519_512.png",
+      "createdAt": "2026-08-20T06:42:27.551Z"
+    },
+    {
       "question": "Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
       "title": "Fuel types used for electricity generation in five Asian countries in 2005",
       "answer": "The given table illustrates how the proportions of four different types of fuel used for electricity generation differed in five countries across Asia in 2005. Overall, there were marked differences in energy preferences among these nations, with Japan and South Korea using cleaner options like nuclear and hydro power for over half their electricity, while Southeast Asian countries relied more heavily on fossil fuels. Regarding eco-friendly sources, nuclear power dominated in the two East Asian countries, contributing 49% and 33% of electricity production in Japan and South Korea respectively. While this source was moderately used in Malaysia at 19% and Singapore at 13%, it was unavailable in Thailand. In terms of hydro and wind power, South Korea led with 48% of its electricity coming from these renewable sources, and it was followed by Thailand at 19%, while remaining minimal at 5% or less in other nations. As for conventional fossil fuels, coal and lignite were predominant in Malaysia at 61%, and Singapore at 42%, while the remaining countries used considerably less of these sources, at no more than 6%. Petroleum products featured prominently only in Thailand at 36%, with negligible usage of 2%-3% elsewhere. Other unnamed energy sources were most prevalent in Thailand at 42%, slightly higher than the figure for Singapore and Japan, both at 39%, while Malaysia and South Korea used these kinds of energy for just over one-tenth of their total electrical power.",
@@ -92,8 +283,8 @@
       ],
       "id": "bc_event_1787202423967",
       "createdAt": "2026-08-20T05:07:03.967Z",
-      "updatedAt": "2026-08-20T05:56:34.181Z",
-      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787202423967_1787205394189_200.png"
+      "updatedAt": "2026-08-20T06:17:02.264Z",
+      "image": "file:///D:/code_tino_19_4/Code_Tool_Python/Tool_Clock/electron_tool/data/ielts_images/bc_img_bc_event_1787202423967_1787212047521_882.png"
     },
     {
       "question": "Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
@@ -1596,6 +1787,6 @@
       "userNotes": "Khắc cốt ghi tâm lời Naval Ravikant: 'Hãy làm việc như một con sư tử: Rình rập, suy nghĩ sâu, chạy nước rút hết tốc lực khi có cơ hội, rồi sau đó nghỉ ngơi và tái tạo năng lượng'."
     }
   ],
-  "activeEventId": "bc_event_1787202423967",
+  "activeEventId": "bc_event_1787212047504_hwkkx",
   "practiceStep": 5
 }

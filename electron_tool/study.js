@@ -378,6 +378,18 @@ function renderItem() {
     badge.className = `skill-badge ${currentItem.subject}`;
     badge.textContent = skillIcons[currentItem.subject] || currentItem.subject;
   }
+
+  const testNoInp = document.getElementById('detailTestNoInput');
+  if (testNoInp && currentItem) {
+    testNoInp.value = currentItem.testNo || (f ? f.testNo : '') || '';
+    testNoInp.oninput = () => {
+      saveItemTestNo(testNoInp.value.trim());
+    };
+    const stopP = (e) => e.stopPropagation();
+    testNoInp.onkeydown = stopP;
+    testNoInp.onkeyup = stopP;
+    testNoInp.onclick = stopP;
+  }
   
   // Render details based on category
   const scroll = document.getElementById('detailContentScroll');
@@ -385,8 +397,8 @@ function renderItem() {
   
   const detailImages = f.images || (f.image ? [f.image] : []);
   if (detailImages && detailImages.length > 0) {
-    detailImages.forEach(imgBase64 => {
-      scroll.appendChild(createDetailSectionImage(imgBase64));
+    detailImages.forEach((imgBase64, idx) => {
+      scroll.appendChild(createDetailSectionImage(imgBase64, idx, detailImages.length));
     });
     if (btnFloatingViewImage) btnFloatingViewImage.style.display = 'flex';
   } else {
@@ -1733,7 +1745,7 @@ function speakPronunciation(text) {
   window.speechSynthesis.speak(utterance);
 }
 
-function createDetailSectionImage(base64) {
+function createDetailSectionImage(base64, index = 0, total = 1) {
   const div = document.createElement('div');
   div.className = 'detail-image-box';
   div.style.position = 'relative';
@@ -1751,15 +1763,88 @@ function createDetailSectionImage(base64) {
     openImageModal();
   });
 
+  // Top header overlay container for image (Numbering Input + Copy Button)
+  const headerOverlay = document.createElement('div');
+  headerOverlay.className = 'image-header-overlay';
+  Object.assign(headerOverlay.style, {
+    position: 'absolute',
+    top: '8px',
+    left: '8px',
+    right: '8px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    pointerEvents: 'none',
+    zIndex: '101'
+  });
+
+  // Left side: Number Input container
+  const numContainer = document.createElement('div');
+  numContainer.className = 'img-number-container';
+  Object.assign(numContainer.style, {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: 'rgba(15, 23, 42, 0.85)',
+    backdropFilter: 'blur(4px)',
+    border: '1px solid rgba(245, 158, 11, 0.4)',
+    color: '#fbbf24',
+    padding: '4px 8px',
+    borderRadius: '6px',
+    fontSize: '11px',
+    fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+    pointerEvents: 'auto'
+  });
+
+  const numLabel = document.createElement('span');
+  numLabel.textContent = total > 1 ? `Số ảnh (${index + 1}/${total}):` : 'Số ảnh:';
+  numLabel.style.color = '#f59e0b';
+  numLabel.style.whiteSpace = 'nowrap';
+
+  const numInput = document.createElement('input');
+  numInput.type = 'text';
+  numInput.inputMode = 'numeric';
+  numInput.value = index + 1;
+  numInput.title = 'Điền / đánh số ảnh (Nhập số bất kỳ)';
+  Object.assign(numInput.style, {
+    width: '48px',
+    background: 'rgba(0, 0, 0, 0.65)',
+    border: '1px solid rgba(245, 158, 11, 0.6)',
+    color: '#ffffff',
+    borderRadius: '4px',
+    padding: '2px 4px',
+    fontSize: '12px',
+    fontWeight: '700',
+    textAlign: 'center',
+    outline: 'none',
+    boxSizing: 'border-box'
+  });
+
+  numInput.addEventListener('focus', () => {
+    numInput.style.borderColor = '#f59e0b';
+    numInput.style.boxShadow = '0 0 6px rgba(245, 158, 11, 0.6)';
+  });
+  numInput.addEventListener('blur', () => {
+    numInput.style.borderColor = 'rgba(245, 158, 11, 0.6)';
+    numInput.style.boxShadow = 'none';
+  });
+
+  const stopProp = (e) => e.stopPropagation();
+  numInput.addEventListener('keydown', stopProp);
+  numInput.addEventListener('keyup', stopProp);
+  numInput.addEventListener('click', stopProp);
+
+  numContainer.appendChild(numLabel);
+  numContainer.appendChild(numInput);
+
+  // Right side: Copy Button
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
   copyBtn.className = 'copy-img-btn';
   copyBtn.innerHTML = '📋 Sao chép ảnh';
   Object.assign(copyBtn.style, {
-    position: 'absolute',
-    top: '8px',
-    right: '8px',
-    background: 'rgba(15, 23, 42, 0.75)',
+    background: 'rgba(15, 23, 42, 0.85)',
     backdropFilter: 'blur(4px)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#f1f5f9',
@@ -1768,18 +1853,18 @@ function createDetailSectionImage(base64) {
     fontSize: '11px',
     fontWeight: '600',
     cursor: 'pointer',
-    zIndex: '101',
+    pointerEvents: 'auto',
     transition: 'all 0.2s ease',
     boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
     outline: 'none'
   });
 
   copyBtn.addEventListener('mouseenter', () => {
-    copyBtn.style.background = 'rgba(30, 41, 59, 0.9)';
-    copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    copyBtn.style.background = 'rgba(30, 41, 59, 0.95)';
+    copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
   });
   copyBtn.addEventListener('mouseleave', () => {
-    copyBtn.style.background = 'rgba(15, 23, 42, 0.75)';
+    copyBtn.style.background = 'rgba(15, 23, 42, 0.85)';
     copyBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
   });
 
@@ -1805,9 +1890,12 @@ function createDetailSectionImage(base64) {
       alert('Không thể sao chép ảnh: ' + err.message);
     }
   });
-  
+
+  headerOverlay.appendChild(numContainer);
+  headerOverlay.appendChild(copyBtn);
+
   div.appendChild(img);
-  div.appendChild(copyBtn);
+  div.appendChild(headerOverlay);
   return div;
 }
 
@@ -2200,6 +2288,38 @@ async function saveReadCount(count) {
     }
   } catch (err) {
     console.error('[STUDY] Error saving read count:', err);
+  }
+}
+
+async function saveItemTestNo(testNo) {
+  try {
+    if (!currentItem) return;
+    currentItem.testNo = testNo;
+    if (currentItem.fields) currentItem.fields.testNo = testNo;
+
+    if (vaultType === 'ielts') {
+      const data = await window.taskAPI.loadIeltsVault();
+      if (data && Array.isArray(data.items)) {
+        const idx = data.items.findIndex(i => i.id == currentItem.id);
+        if (idx !== -1) {
+          data.items[idx].testNo = testNo;
+          if (data.items[idx].fields) data.items[idx].fields.testNo = testNo;
+          await window.taskAPI.saveIeltsVault(data);
+        }
+      }
+    } else if (vaultType === 'general') {
+      const data = await window.taskAPI.loadGeneralVault();
+      if (data && Array.isArray(data.items)) {
+        const idx = data.items.findIndex(i => i.id == currentItem.id);
+        if (idx !== -1) {
+          data.items[idx].testNo = testNo;
+          if (data.items[idx].fields) data.items[idx].fields.testNo = testNo;
+          await window.taskAPI.saveGeneralVault(data);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[STUDY] Error saving testNo:', err);
   }
 }
 
