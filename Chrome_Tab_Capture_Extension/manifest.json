@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Quick Tab Screen Capture",
+  "version": "1.4",
+  "description": "Chụp ảnh màn hình tab nhanh chóng, tự động copy vào Clipboard và map nút chuột sườn Forward",
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "Chụp ảnh màn hình Tab này"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "commands": {
+    "capture-tab": {
+      "suggested_key": {
+        "default": "Alt+S",
+        "windows": "Alt+S"
+      },
+      "description": "Chụp ảnh tab hiện tại"
+    }
+  }
+}
