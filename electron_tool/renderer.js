@@ -4034,8 +4034,8 @@ function isInsideSelectableArea(node) {
   while (curr && curr !== document.body && curr !== document.documentElement) {
     if (curr.classList) {
       if (
-        curr.tagName === 'INPUT' || 
-        curr.tagName === 'TEXTAREA' || 
+        curr.tagName === 'INPUT' ||
+        curr.tagName === 'TEXTAREA' ||
         curr.classList.contains('selection-search-tooltip') ||
         curr.classList.contains('btn-modal') ||
         curr.classList.contains('btn-primary-glow') ||
@@ -4137,7 +4137,7 @@ async function saveWordToTiktokFlashcardDirect(word, translation) {
         } else if (Array.isArray(rawRes) && Array.isArray(rawRes[0])) {
           cleanTrans = rawRes[0].map(item => item && item[0] ? item[0] : '').filter(Boolean).join(' ');
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }
   if (!cleanTrans || cleanTrans.includes('Không tìm thấy')) cleanTrans = 'Đang cập nhật';
@@ -4155,7 +4155,7 @@ async function saveWordToTiktokFlashcardDirect(word, translation) {
     try {
       const loaded = await window.taskAPI.loadMemorizeVault();
       if (loaded && Array.isArray(loaded.items)) vaultData = loaded;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   let tiktokUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(cleanWord)}`;
@@ -4166,7 +4166,7 @@ async function saveWordToTiktokFlashcardDirect(word, translation) {
       if (musicData && musicData.lastChosenUrl) {
         chosenMusicUrl = musicData.lastChosenUrl;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
   if (!chosenMusicUrl) chosenMusicUrl = 'https://www.tiktok.com/music/Perfect-6655492047723563778';
   if (window.taskAPI && window.taskAPI.extractTiktokMusicVideos) {
@@ -4176,7 +4176,7 @@ async function saveWordToTiktokFlashcardDirect(word, translation) {
         const randomIndex = Math.floor(Math.random() * res.videos.length);
         tiktokUrl = res.videos[randomIndex];
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   let existing = vaultData.items.find(x => x.word && x.word.toLowerCase().trim() === cleanWord.toLowerCase());
@@ -4600,8 +4600,8 @@ function setupTextSelectionSearch(containerEl, type) {
 
     if (isModifierPressed && isInsideSelectableArea(e.target) && clickedWordRange) {
       const existingSel = window.getSelection();
-      const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
-        ? existingSel.getRangeAt(0) 
+      const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed)
+        ? existingSel.getRangeAt(0)
         : null;
       const activeAnchor = anchorWordRange || existingRange;
 
@@ -4638,8 +4638,8 @@ function setupTextSelectionSearch(containerEl, type) {
 
     const isModifierPressed = Boolean(e.ctrlKey || e.metaKey || e.shiftKey);
     const existingSel = window.getSelection();
-    const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed) 
-      ? existingSel.getRangeAt(0) 
+    const existingRange = (existingSel && existingSel.rangeCount > 0 && !existingSel.isCollapsed)
+      ? existingSel.getRangeAt(0)
       : null;
 
     const activeAnchor = anchorWordRange || existingRange;
@@ -6993,6 +6993,107 @@ function renderTkFlashcardList() {
   }
 }
 
+// State & Toggle for Language Order in Flashcard (English first vs Vietnamese first)
+let tkLangOrder = localStorage.getItem('task_countdown_tk_lang_order') || 'en_first';
+
+function getTkLangOrder() {
+  return tkLangOrder;
+}
+
+function setTkLangOrder(order, currentItem = null) {
+  tkLangOrder = (order === 'vi_first') ? 'vi_first' : 'en_first';
+  try {
+    localStorage.setItem('task_countdown_tk_lang_order', tkLangOrder);
+  } catch (e) {}
+  
+  const item = currentItem || (typeof activeTkCardId !== 'undefined' ? getTkFilteredItems().find(x => x.id === activeTkCardId) : null);
+  if (item) {
+    renderTkPlayer(item);
+  } else {
+    updateTkLangOrderUI(null);
+  }
+}
+
+function toggleTkLangOrder(currentItem = null) {
+  const newOrder = (tkLangOrder === 'en_first') ? 'vi_first' : 'en_first';
+  setTkLangOrder(newOrder, currentItem);
+  if (typeof playTone === 'function') playTone(650, 0.05, 'sine', 0.1);
+}
+
+function updateTkLangOrderUI(item = null) {
+  const isEnFirst = (tkLangOrder === 'en_first');
+  const btnLabel = isEnFirst ? '🔀 Anh ➔ Việt' : '🔀 Việt ➔ Anh';
+  const tooltip = isEnFirst ? 'Đang hiển thị Tiếng Anh trên Tiếng Việt (Bấm để đổi Tiếng Việt lên trước)' : 'Đang hiển thị Tiếng Việt trên Tiếng Anh (Bấm để đổi Tiếng Anh lên trước)';
+
+  // Update all swap button texts
+  ['lblTkGlobalSwapLangText', 'lblTkFrontSwapLangText', 'lblTkSwapLangText', 'lblTkModalSwapLangText'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = btnLabel;
+  });
+
+  ['btnTkGlobalSwapLang', 'btnTkFrontSwapLang', 'btnTkSwapLangOrder', 'btnTkModalSwapLangOrder'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.title = tooltip;
+  });
+
+  // Reorder sections in flashcard back face
+  const enSection = document.getElementById('tkBackEnSection');
+  const viSection = document.getElementById('tkBackViSection');
+  if (enSection && viSection) {
+    if (isEnFirst) {
+      enSection.style.order = '1';
+      viSection.style.order = '2';
+    } else {
+      viSection.style.order = '1';
+      enSection.style.order = '2';
+    }
+  }
+
+  // Update Modal Header & Content if modal is open
+  const modal = document.getElementById('tkExpandModal');
+  if (modal && (modal.classList.contains('active') || modal.classList.contains('visible'))) {
+    const curItem = item || (typeof activeTkCardId !== 'undefined' ? getTkFilteredItems().find(x => x.id === activeTkCardId) : null);
+    if (curItem) {
+      renderTkExpandModalHeader(curItem);
+      renderTkExpandModalExamples(curItem);
+    }
+  }
+}
+
+function renderTkExpandModalHeader(item) {
+  const wordEl = document.getElementById('tkExpandModalWord');
+  const transEl = document.getElementById('tkExpandModalTrans');
+  const isEnFirst = (tkLangOrder === 'en_first');
+
+  if (isEnFirst) {
+    // English on top, Vietnamese below
+    if (wordEl) {
+      wordEl.textContent = item.word || '---';
+      wordEl.style.color = '';
+      wordEl.style.background = 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)';
+      wordEl.style.webkitBackgroundClip = 'text';
+      wordEl.style.webkitTextFillColor = 'transparent';
+    }
+    if (transEl) {
+      transEl.textContent = item.translation || '(Chưa có bản dịch)';
+      transEl.style.color = '#34d399';
+    }
+  } else {
+    // Vietnamese on top, English below
+    if (wordEl) {
+      wordEl.textContent = item.translation || '(Chưa có bản dịch)';
+      wordEl.style.color = '#34d399';
+      wordEl.style.background = 'none';
+      wordEl.style.webkitBackgroundClip = 'unset';
+      wordEl.style.webkitTextFillColor = 'unset';
+    }
+    if (transEl) {
+      transEl.textContent = item.word || '---';
+      transEl.style.color = '#60a5fa';
+    }
+  }
+}
+
 function renderTkExpandModalExamples(item) {
   const contentEl = document.getElementById('tkExpandModalContent');
   if (!contentEl || !item) return;
@@ -7155,20 +7256,17 @@ function openTkExpandModal(item) {
   const modal = document.getElementById('tkExpandModal');
   if (!modal || !item) return;
 
-  const wordEl = document.getElementById('tkExpandModalWord');
-  const transEl = document.getElementById('tkExpandModalTrans');
   const badgeEl = document.getElementById('tkExpandModalBadge');
   const indexEl = document.getElementById('tkExpandModalIndex');
 
-  if (wordEl) wordEl.textContent = item.word || '---';
-  if (transEl) transEl.textContent = item.translation || '(Chưa có bản dịch)';
   if (badgeEl) badgeEl.textContent = `Lớp ${item.level || 1}`;
 
   const items = getTkFilteredItems();
   const curIdx = items.findIndex(x => x.id === item.id);
   if (indexEl) indexEl.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${items.length}`;
 
-  // Render example items with current language order
+  // Render header & example items with current language order
+  renderTkExpandModalHeader(item);
   renderTkExpandModalExamples(item);
   updateTkLangOrderUI(item);
 
@@ -7195,10 +7293,10 @@ function openTkExpandModal(item) {
     };
   }
 
-  // Open TikTok button
-  const btnTk = document.getElementById('btnTkExpandOpenTiktok');
-  if (btnTk) {
-    btnTk.onclick = () => {
+  // Open TikTok in Modal
+  const btnTikTok = document.getElementById('btnTkExpandOpenTiktok');
+  if (btnTikTok) {
+    btnTikTok.onclick = () => {
       let targetUrl = item.tiktokUrl;
       if (!targetUrl || !targetUrl.trim()) {
         targetUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(item.word)}`;
@@ -7212,7 +7310,7 @@ function openTkExpandModal(item) {
     };
   }
 
-  // Prev / Next inside modal
+  // Modal navigation (Previous / Next)
   const btnPrev = document.getElementById('btnTkExpandPrev');
   if (btnPrev) {
     btnPrev.onclick = () => {
@@ -7274,20 +7372,31 @@ function renderTkPlayer(item) {
   const srsBadge = document.getElementById('tkPlayerSrsBadge');
   if (srsBadge) srsBadge.textContent = `Lớp ${lvl}`;
 
+  const isEnFirst = (tkLangOrder === 'en_first');
+
+  // 1. MẶT TRƯỚC FLASHCARD
+  const frontTitle = document.getElementById('lblTkFrontFaceTitle');
+  if (frontTitle) {
+    frontTitle.textContent = isEnFirst ? 'MẶT TRƯỚC (TỪ VỰNG TIẾNG ANH)' : 'MẶT TRƯỚC (DỊCH NGHĨA TIẾNG VIỆT)';
+  }
+
   const wordEl = document.getElementById('lblTkWord');
   if (wordEl) {
-    const text = item.word || '---';
-    wordEl.textContent = text;
-    if (text.length > 180) {
+    // Nếu English first: hiển thị item.word ở mặt trước. Nếu Vietnamese first: hiển thị item.translation ở mặt trước
+    const frontText = isEnFirst ? (item.word || '---') : (item.translation || '(Chưa có bản dịch)');
+    wordEl.textContent = frontText;
+    wordEl.style.color = isEnFirst ? '#fff' : '#6ee7b7';
+
+    if (frontText.length > 180) {
       wordEl.style.fontSize = '14.5px';
       wordEl.style.lineHeight = '1.35';
-    } else if (text.length > 120) {
+    } else if (frontText.length > 120) {
       wordEl.style.fontSize = '16.5px';
       wordEl.style.lineHeight = '1.35';
-    } else if (text.length > 60) {
+    } else if (frontText.length > 60) {
       wordEl.style.fontSize = '19px';
       wordEl.style.lineHeight = '1.35';
-    } else if (text.length > 30) {
+    } else if (frontText.length > 30) {
       wordEl.style.fontSize = '23px';
       wordEl.style.lineHeight = '1.3';
     } else {
@@ -7296,8 +7405,12 @@ function renderTkPlayer(item) {
     }
   }
 
+  // 2. MẶT SAU FLASHCARD
   const backWordMini = document.getElementById('lblTkBackWordMini');
-  if (backWordMini) backWordMini.textContent = item.word || '---';
+  if (backWordMini) backWordMini.textContent = isEnFirst ? (item.word || '---') : (item.translation || '---');
+
+  const backWordMain = document.getElementById('lblTkBackWordMain');
+  if (backWordMain) backWordMain.textContent = item.word || '---';
 
   const transEl = document.getElementById('lblTkTrans');
   if (transEl) {
@@ -7316,7 +7429,7 @@ function renderTkPlayer(item) {
       transEl.style.fontSize = '19px';
       transEl.style.lineHeight = '1.3';
     } else {
-      transEl.style.fontSize = '22px';
+      transEl.style.fontSize = '21px';
       transEl.style.lineHeight = '1.25';
     }
   }
@@ -7324,16 +7437,29 @@ function renderTkPlayer(item) {
   const notesEl = document.getElementById('lblTkNotes');
   if (notesEl) notesEl.textContent = item.notes || 'Chưa có ghi chú ví dụ.';
 
-  const backWordMain = document.getElementById('lblTkBackWordMain');
-  if (backWordMain) backWordMain.textContent = item.word || '---';
-
   // Update layout & order based on saved preference
   updateTkLangOrderUI(item);
 
-  // Hook Flashcard Swap Lang Button
-  const btnSwapLang = document.getElementById('btnTkSwapLangOrder');
-  if (btnSwapLang) {
-    btnSwapLang.onclick = (e) => {
+  // Hook all Swap Lang Buttons (Toolbar, Front, Back)
+  const btnGlobalSwap = document.getElementById('btnTkGlobalSwapLang');
+  if (btnGlobalSwap) {
+    btnGlobalSwap.onclick = (e) => {
+      e.stopPropagation();
+      toggleTkLangOrder(item);
+    };
+  }
+
+  const btnFrontSwap = document.getElementById('btnTkFrontSwapLang');
+  if (btnFrontSwap) {
+    btnFrontSwap.onclick = (e) => {
+      e.stopPropagation();
+      toggleTkLangOrder(item);
+    };
+  }
+
+  const btnBackSwap = document.getElementById('btnTkSwapLangOrder');
+  if (btnBackSwap) {
+    btnBackSwap.onclick = (e) => {
       e.stopPropagation();
       toggleTkLangOrder(item);
     };
@@ -7858,7 +7984,7 @@ function initTiktokFlashcardTab() {
       const pool = (tkFlashcardData.items || [])
         .map(x => x.tiktokUrl)
         .filter(u => u && u.includes('/video/'));
-      
+
       if (pool.length > 0) {
         pickedVideoUrl = pool[Math.floor(Math.random() * pool.length)];
       }
@@ -9900,7 +10026,7 @@ Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), khô
         }
       } catch (e) {
         console.warn('Standard JSON.parse failed, trying Regex object extraction:', e.message);
-        
+
         // 3. Fallback: Extract individual JSON objects via Regex
         const objRegex = /\{[^{}]*"content"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"[^{}]*\}/g;
         let match;
@@ -10025,12 +10151,12 @@ Trả về CHÍNH XÁC dưới dạng chuỗi JSON hợp lệ (Valid JSON), khô
       closeTopicJsonModal();
       activeCmId = targetProj.items[0]?.id || null;
 
-      try { renderCmProjectSelect(); } catch (e) {}
-      try { updateCmDashboardStats(); } catch (e) {}
-      try { updateCmCategorySelects(); } catch (e) {}
-      try { renderCmCommentsList(); } catch (e) {}
+      try { renderCmProjectSelect(); } catch (e) { }
+      try { updateCmDashboardStats(); } catch (e) { }
+      try { updateCmCategorySelects(); } catch (e) { }
+      try { renderCmCommentsList(); } catch (e) { }
       if (cmCurrentViewMode === 'grid') {
-        try { renderCmFastGrid(); } catch (e) {}
+        try { renderCmFastGrid(); } catch (e) { }
       }
 
       if (typeof playTone === 'function') {
@@ -10621,7 +10747,7 @@ async function loadBrainChainData() {
       if (Array.isArray(brainChainData.events) && brainChainData.events.length > 0) {
         return brainChainData;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // Initialize with presets if empty
@@ -11364,7 +11490,7 @@ function setupBcImageHandlers() {
 
     const bcWorkspace = document.getElementById('bcActiveWorkspace');
     if (!bcWorkspace || bcWorkspace.style.display === 'none' || bcWorkspace.offsetParent === null) return;
-    
+
     // Don't intercept if user is typing in input or textarea
     const activeEl = document.activeElement;
     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
@@ -11437,7 +11563,7 @@ function renderBcEventList() {
   filtered.forEach(item => {
     const itemEl = document.createElement('div');
     itemEl.className = `bc-event-item ${item.id === brainChainData.activeEventId ? 'active' : ''}`;
-    
+
     const hasAnalysis = Boolean(item.coreChain && item.coreChain.insight);
     const statusBadge = hasAnalysis
       ? `<span class="bc-badge bc-badge-analyzed">✅ Đã phân tích</span>`
@@ -11445,11 +11571,11 @@ function renderBcEventList() {
 
     const itemImages = Array.isArray(item.images) && item.images.length > 0 ? item.images : (item.image ? [item.image] : []);
     const imageBadgeHtml = itemImages.length > 0
-      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">${itemImages.length > 1 ? `🖼️ ${itemImages.length} Ảnh` : '🖼️ Ảnh'}</span>` 
+      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">${itemImages.length > 1 ? `🖼️ ${itemImages.length} Ảnh` : '🖼️ Ảnh'}</span>`
       : '';
 
-    const testNoBadgeHtml = item.testNo 
-      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45);">🏷️ Đề #${escapeHtml(item.testNo)}</span>` 
+    const testNoBadgeHtml = item.testNo
+      ? `<span class="bc-badge" style="background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45);">🏷️ Đề #${escapeHtml(item.testNo)}</span>`
       : '';
 
     const displayTitle = item.question || item.title || 'Sự kiện không tên';
@@ -11530,7 +11656,7 @@ function renderBcActiveEvent(ev) {
     testNoInp.onkeyup = stopP;
     testNoInp.onclick = stopP;
   }
-  
+
   const hasAnalysis = Boolean(ev.coreChain && ev.coreChain.insight);
   if (statusBadge) {
     statusBadge.className = `bc-badge ${hasAnalysis ? 'bc-badge-analyzed' : 'bc-badge-pending'}`;
@@ -11549,7 +11675,7 @@ function renderBcActiveEvent(ev) {
     if (imageBox) imageBox.style.display = 'flex';
     if (imageTag) imageTag.src = imgs[bcActiveEventImageIndex] || imgs[0];
     if (imageHeaderLabel) {
-      imageHeaderLabel.textContent = imgs.length > 1 
+      imageHeaderLabel.textContent = imgs.length > 1
         ? `🖼️ HÌNH ẢNH / BIỂU ĐỒ ĐỀ BÀI (${imgs.length} ẢNH - #${bcActiveEventImageIndex + 1}):`
         : `🖼️ HÌNH ẢNH / BIỂU ĐỒ ĐỀ BÀI (IMAGE / CHART):`;
     }
@@ -11722,13 +11848,13 @@ function renderBcActiveEvent(ev) {
   const notesInput = document.getElementById('bcUserNotesInput');
 
   if (vaultInsight) vaultInsight.textContent = `"${ev.coreChain?.insight || 'Chưa có đúc kết insight...'}"`;
-  
+
   if (takeawaysList) {
     takeawaysList.innerHTML = '';
     const items = Array.isArray(ev.actionTakeaways) && ev.actionTakeaways.length > 0
       ? ev.actionTakeaways
       : ['Khắc ghi các từ khóa trục chính của câu.', 'Luyện tập nói theo nhịp 5 bước A -> B -> C -> D -> Insight.'];
-    
+
     items.forEach(t => {
       const li = document.createElement('li');
       li.textContent = t;
@@ -11751,7 +11877,7 @@ function renderBcActiveEvent(ev) {
 function renderChainNodeContent(nodeKey, ev, fullAnswerText) {
   if (!ev) return '...';
   const questions = parseQuestionsFromEvent(ev);
-  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') || 
+  const isExam = ev.category?.includes('đề thi') || ev.category?.includes('Exam') ||
     /Question\s*\d|Questions\s*\d|LISTENING|READING|Transcript|Bài làm|Map Labelling/i.test(ev.title || ev.question || '') ||
     questions.length > 0;
 
@@ -11759,10 +11885,10 @@ function renderChainNodeContent(nodeKey, ev, fullAnswerText) {
 
   // Check if rawText already has multiple items separated by newlines/bullets
   const lines = rawText ? rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean) : [];
-  const hasMultipleItems = lines.length > 2 || 
+  const hasMultipleItems = lines.length > 2 ||
     (lines.length >= 2 && lines.some(l => /^[-•*]|\bQ\d+[\.:\)]|\d+[\.\)]/i.test(l))) ||
-    rawText.includes('\n- ') || 
-    rawText.includes('\n• ') || 
+    rawText.includes('\n- ') ||
+    rawText.includes('\n• ') ||
     rawText.includes('\n\n- ') ||
     (/\bQ\d+[:\.\)]/i.test(rawText) && (rawText.match(/\bQ\d+[:\.\)]/gi) || []).length > 1);
 
@@ -11828,7 +11954,7 @@ function formatChainText(rawText) {
 
   let items = [];
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  
+
   if (lines.length > 1) {
     items = lines.map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
   } else if (text.includes(' - ') || text.includes(' • ')) {
@@ -12106,7 +12232,7 @@ function parseVocabAndParaphraseFromEvent(ev) {
     items.forEach(item => {
       const cleaned = item.replace(/^[-•*]\s*/, '').trim();
       const match = cleaned.match(/['"`]([^'"`]+)['"`]\s*(?:➔|↔|->|=|–)\s*['"`]([^'"`]+)['"`]\s*(?:\((.*)\)|:?\s*(.*))?/) ||
-                    cleaned.match(/^([^➔↔=–]+)\s*(?:➔|↔|->|=|–)\s*([^:\(]+)(?:\((.*)\)|:?\s*(.*))?/);
+        cleaned.match(/^([^➔↔=–]+)\s*(?:➔|↔|->|=|–)\s*([^:\(]+)(?:\((.*)\)|:?\s*(.*))?/);
       if (match) {
         paraphrase.push({
           questionKeyword: match[1].trim(),
@@ -12521,7 +12647,7 @@ Hãy trả về DUY NHẤT một khối mã JSON hợp lệ (Không thêm bất 
   }
 
   // Check if rawInput or category is English or sentence memorization
-  const isEnglishOrSentence = category.includes('Tiếng Anh') || category.includes('Speaking') || 
+  const isEnglishOrSentence = category.includes('Tiếng Anh') || category.includes('Speaking') ||
     /[a-zA-Z]{4,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{3,}/.test(rawInput) || rawInput.length > 50;
 
   if (isEnglishOrSentence) {
@@ -12740,7 +12866,7 @@ function extractValidJsonFromAi(raw) {
   // 2. Direct JSON.parse
   try {
     return JSON.parse(text);
-  } catch (e) {}
+  } catch (e) { }
 
   // 3. Find opening '{' or '[' and balance braces/brackets
   const startIdxObj = text.indexOf('{');
@@ -13549,7 +13675,7 @@ function updateTimerUI() {
 
   // Status & Button Text
   if (mainClock) mainClock.classList.remove('alert-active');
-  
+
   if (timerState.status === 'running') {
     if (startBtn) {
       startBtn.textContent = '⏸️ TẠM DỪNG';
