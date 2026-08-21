@@ -1,5 +1,5 @@
 // main.js - Electron main process
-const { app, BrowserWindow, shell, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, ipcMain, clipboard, nativeImage } = require('electron');
 const path = require('path');
 const fs   = require('fs');
 const syncWebGen = require('./sync_web_generator');
@@ -19,6 +19,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      webviewTag: true,
       spellcheck: false
     }
   });
@@ -65,6 +66,40 @@ ipcMain.on('open-external', (event, url) => { if (url) shell.openExternal(url); 
 ipcMain.on('relaunch-app', () => {
   app.relaunch();
   app.exit(0);
+});
+
+// Read clipboard image handler
+ipcMain.handle('read-clipboard-image', async () => {
+  try {
+    const image = clipboard.readImage();
+    if (!image.isEmpty()) {
+      return image.toDataURL();
+    }
+  } catch (err) {
+    console.error('Error reading clipboard image:', err);
+  }
+  return null;
+});
+
+// Open Gemini in standalone window
+ipcMain.on('open-gemini-window', (event, url) => {
+  const targetUrl = url || 'https://gemini.google.com/';
+  const geminiWin = new BrowserWindow({
+    width: 960,
+    height: 780,
+    show: false,
+    title: 'Gemini Flash AI Assistant',
+    backgroundColor: '#0f172a',
+    icon: path.join(__dirname, 'icon.ico'),
+    webPreferences: {
+      spellcheck: false
+    }
+  });
+  geminiWin.loadURL(targetUrl);
+  geminiWin.once('ready-to-show', () => {
+    geminiWin.show();
+    geminiWin.focus();
+  });
 });
 
 ipcMain.on('open-study-window', (event, id, type) => {
@@ -516,25 +551,40 @@ async function saveBase64ImageAsync(base64Str, prefix) {
   }
 }
 
-ipcMain.on('copy-image', (event, pathOrBase64) => {
+async function getNativeImageFromSource(pathOrBase64) {
+  if (!pathOrBase64) return null;
+  const { nativeImage } = require('electron');
   try {
-    const { clipboard, nativeImage } = require('electron');
     if (pathOrBase64.startsWith('data:image/')) {
-      const img = nativeImage.createFromDataURL(pathOrBase64);
-      clipboard.writeImage(img);
-      console.log('[MAIN] Copied image from base64 string to clipboard');
+      return nativeImage.createFromDataURL(pathOrBase64);
+    } else if (pathOrBase64.startsWith('http://') || pathOrBase64.startsWith('https://')) {
+      const response = await fetch(pathOrBase64);
+      if (response.ok) {
+        const arrayBuf = await response.arrayBuffer();
+        return nativeImage.createFromBuffer(Buffer.from(arrayBuf));
+      }
     } else {
       let cleanPath = pathOrBase64;
       if (pathOrBase64.startsWith('file:///')) {
         cleanPath = urlHelper.fileURLToPath(pathOrBase64);
       }
-      const img = nativeImage.createFromPath(cleanPath);
-      if (img.isEmpty()) {
-        console.error('[MAIN] Loaded nativeImage is empty for path:', cleanPath);
-      } else {
-        clipboard.writeImage(img);
-        console.log('[MAIN] Copied image from file to clipboard:', cleanPath);
-      }
+      return nativeImage.createFromPath(cleanPath);
+    }
+  } catch (err) {
+    console.error('[MAIN] Error creating nativeImage:', err);
+  }
+  return null;
+}
+
+ipcMain.on('copy-image', async (event, pathOrBase64) => {
+  try {
+    const { clipboard } = require('electron');
+    const img = await getNativeImageFromSource(pathOrBase64);
+    if (img && !img.isEmpty()) {
+      clipboard.writeImage(img);
+      console.log('[MAIN] Copied image to OS clipboard successfully');
+    } else {
+      console.error('[MAIN] Loaded nativeImage is empty');
     }
   } catch (e) {
     console.error('[MAIN] Failed to copy image:', e);
@@ -543,27 +593,16 @@ ipcMain.on('copy-image', (event, pathOrBase64) => {
 
 ipcMain.handle('copy-prompt-and-image', async (event, text, pathOrBase64) => {
   try {
-    const { clipboard, nativeImage } = require('electron');
-    let img = null;
-    if (pathOrBase64) {
-      if (pathOrBase64.startsWith('data:image/')) {
-        img = nativeImage.createFromDataURL(pathOrBase64);
-      } else {
-        let cleanPath = pathOrBase64;
-        if (pathOrBase64.startsWith('file:///')) {
-          cleanPath = urlHelper.fileURLToPath(pathOrBase64);
-        }
-        img = nativeImage.createFromPath(cleanPath);
-      }
-    }
+    const { clipboard } = require('electron');
+    const img = await getNativeImageFromSource(pathOrBase64);
     
     if (img && !img.isEmpty()) {
       clipboard.write({
-        text: text,
+        text: text || '',
         image: img
       });
       console.log('[MAIN] Copied prompt text and image to clipboard');
-    } else {
+    } else if (text) {
       clipboard.writeText(text);
       console.log('[MAIN] Copied prompt text only (no image) to clipboard');
     }
@@ -574,11 +613,6 @@ ipcMain.handle('copy-prompt-and-image', async (event, text, pathOrBase64) => {
   }
 });
 
-ipcMain.on('relaunch-app', () => {
-  app.relaunch();
-  app.exit(0);
-});
-
 ipcMain.on('write-clipboard-text', (event, text) => {
   try {
     const { clipboard } = require('electron');
@@ -586,20 +620,6 @@ ipcMain.on('write-clipboard-text', (event, text) => {
     console.log('[MAIN] Wrote text to clipboard:', text.substring(0, 50));
   } catch (err) {
     console.error('[MAIN] Failed to write text to clipboard:', err);
-  }
-});
-
-ipcMain.handle('read-clipboard-image', async () => {
-  try {
-    const { clipboard } = require('electron');
-    const img = clipboard.readImage();
-    if (!img.isEmpty()) {
-      return img.toDataURL();
-    }
-    return null;
-  } catch (err) {
-    console.error('[MAIN] Failed to read clipboard image:', err);
-    return null;
   }
 });
 

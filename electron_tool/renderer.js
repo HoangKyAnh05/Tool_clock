@@ -2848,6 +2848,7 @@ function initTabs() {
     { btn: document.getElementById('tabBtnSpeaking'), pane: document.getElementById('paneSpeaking'), onOpen: () => { renderSpeakingList(); } },
     { btn: document.getElementById('tabBtnVideoChallenge'), pane: document.getElementById('paneVideoChallenge'), onOpen: () => { renderVideoProjectsList(); } },
     { btn: document.getElementById('tabBtnTiktokFlashcard'), pane: document.getElementById('paneTiktokFlashcard'), onOpen: () => { if (typeof initTiktokFlashcardTab === 'function') initTiktokFlashcardTab(); } },
+    { btn: document.getElementById('tabBtnMiniGemini'), pane: document.getElementById('paneMiniGemini'), onOpen: () => { if (typeof initMiniGeminiTab === 'function') initMiniGeminiTab(); } },
     { btn: document.getElementById('tabBtnCommentsVault'), pane: document.getElementById('paneCommentsVault'), onOpen: () => { if (typeof initCommentsVaultTab === 'function') initCommentsVaultTab(); } },
     { btn: document.getElementById('tabBtnBrainChain'), pane: document.getElementById('paneBrainChain'), onOpen: () => { if (typeof initBrainChainTab === 'function') initBrainChainTab(); } }
   ];
@@ -6972,7 +6973,7 @@ function renderTkFlashcardList() {
       activeTkCardId = item.id;
       updateTkSelectionUI();
       renderTkFlashcardList();
-      renderTkPlayer(item);
+      renderTkCurrentCard(item);
     });
 
     listEl.appendChild(li);
@@ -6982,15 +6983,23 @@ function renderTkFlashcardList() {
 
   if (!activeTkCardId && items.length > 0) {
     activeTkCardId = items[0].id;
-    renderTkPlayer(items[0]);
+    renderTkCurrentCard(items[0]);
   } else if (activeTkCardId) {
     const current = items.find(x => x.id === activeTkCardId);
-    if (current) renderTkPlayer(current);
+    if (current) renderTkCurrentCard(current);
     else if (items.length > 0) {
       activeTkCardId = items[0].id;
-      renderTkPlayer(items[0]);
+      renderTkCurrentCard(items[0]);
     }
   }
+
+  // Smooth scroll active item in list
+  setTimeout(() => {
+    const activeLi = listEl.querySelector('li.active');
+    if (activeLi) {
+      activeLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 40);
 }
 
 // State & Toggle for Language Order in Flashcard (English first vs Vietnamese first)
@@ -7191,64 +7200,22 @@ function renderTkExpandModalExamples(item) {
   // Section 2: Writing Examples
   if (writingItems.length > 0) {
     const sec2 = document.createElement('div');
-    sec2.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT</h4>`;
+    sec2.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ WRITING</h4>`;
     const wrap2 = document.createElement('div');
     wrap2.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
 
     writingItems.forEach((c, idx) => {
       const cardDiv = document.createElement('div');
-      cardDiv.style.cssText = 'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
+      cardDiv.style.cssText = 'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;';
       if (isEnFirst) {
-        cardDiv.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-            <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
-            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
-          </div>
-          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
-        `;
+        cardDiv.innerHTML = `<div style="font-weight: 700; color: #fff;">${idx + 1}. "${escapeHtml(c.en)}"</div>${c.vi ? `<div style="font-size: 12.5px; color: #34d399; margin-top:4px;">👉 ${escapeHtml(c.vi)}</div>` : ''}`;
       } else {
-        cardDiv.innerHTML = `
-          ${c.vi ? `<div style="font-size: 13.5px; color: #34d399; font-weight: 700; line-height: 1.4;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 2px;">
-            <span style="font-weight: 600; font-size: 13px; color: #e2e8f0; font-style: italic; line-height: 1.4; padding-left: 14px;">"${escapeHtml(c.en)}"</span>
-            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
-          </div>
-        `;
+        cardDiv.innerHTML = `${c.vi ? `<div style="font-weight: 700; color: #34d399;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}<div style="font-size: 13px; color: #e2e8f0; margin-top:4px; font-style: italic;">"${escapeHtml(c.en)}"</div>`;
       }
       wrap2.appendChild(cardDiv);
     });
     sec2.appendChild(wrap2);
     contentEl.appendChild(sec2);
-  }
-
-  // Other notes
-  if (otherItems.length > 0 && speakingItems.length === 0 && writingItems.length === 0) {
-    const secOther = document.createElement('div');
-    otherItems.forEach((c, idx) => {
-      const cardDiv = document.createElement('div');
-      cardDiv.style.cssText = 'background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; font-size: 13px; color: #e2e8f0;';
-      cardDiv.textContent = c.en || c.vi;
-      secOther.appendChild(cardDiv);
-    });
-    contentEl.appendChild(secOther);
-  }
-
-  // Sentence speech synthesis
-  const modal = document.getElementById('tkExpandModal');
-  if (modal) {
-    modal.querySelectorAll('.speak-sentence-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const txt = btn.getAttribute('data-text');
-        if (txt && window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          const utt = new SpeechSynthesisUtterance(txt);
-          utt.lang = 'en-US';
-          utt.rate = 0.9;
-          window.speechSynthesis.speak(utt);
-        }
-      };
-    });
   }
 }
 
@@ -7256,84 +7223,15 @@ function openTkExpandModal(item) {
   const modal = document.getElementById('tkExpandModal');
   if (!modal || !item) return;
 
-  const badgeEl = document.getElementById('tkExpandModalBadge');
-  const indexEl = document.getElementById('tkExpandModalIndex');
-
-  if (badgeEl) badgeEl.textContent = `Lớp ${item.level || 1}`;
-
-  const items = getTkFilteredItems();
-  const curIdx = items.findIndex(x => x.id === item.id);
-  if (indexEl) indexEl.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${items.length}`;
-
-  // Render header & example items with current language order
   renderTkExpandModalHeader(item);
   renderTkExpandModalExamples(item);
   updateTkLangOrderUI(item);
 
-  // Hook Modal Swap button
   const modalSwapBtn = document.getElementById('btnTkModalSwapLangOrder');
   if (modalSwapBtn) {
     modalSwapBtn.onclick = (e) => {
       e.stopPropagation();
       toggleTkLangOrder(item);
-    };
-  }
-
-  // Word speech button
-  const btnSpeak = document.getElementById('btnTkExpandSpeak');
-  if (btnSpeak) {
-    btnSpeak.onclick = () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(item.word);
-        utt.lang = 'en-US';
-        utt.rate = 0.9;
-        window.speechSynthesis.speak(utt);
-      }
-    };
-  }
-
-  // Open TikTok in Modal
-  const btnTikTok = document.getElementById('btnTkExpandOpenTiktok');
-  if (btnTikTok) {
-    btnTikTok.onclick = () => {
-      let targetUrl = item.tiktokUrl;
-      if (!targetUrl || !targetUrl.trim()) {
-        targetUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(item.word)}`;
-      }
-      if (window.taskAPI && window.taskAPI.openExternal) {
-        window.taskAPI.openExternal(targetUrl);
-      } else {
-        window.open(targetUrl, '_blank');
-      }
-      if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
-    };
-  }
-
-  // Modal navigation (Previous / Next)
-  const btnPrev = document.getElementById('btnTkExpandPrev');
-  if (btnPrev) {
-    btnPrev.onclick = () => {
-      if (items.length <= 1) return;
-      const prevIdx = curIdx > 0 ? curIdx - 1 : items.length - 1;
-      activeTkCardId = items[prevIdx].id;
-      renderTkFlashcardList();
-      renderTkPlayer(items[prevIdx]);
-      openTkExpandModal(items[prevIdx]);
-      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
-    };
-  }
-
-  const btnNext = document.getElementById('btnTkExpandNext');
-  if (btnNext) {
-    btnNext.onclick = () => {
-      if (items.length <= 1) return;
-      const nextIdx = curIdx < items.length - 1 ? curIdx + 1 : 0;
-      activeTkCardId = items[nextIdx].id;
-      renderTkFlashcardList();
-      renderTkPlayer(items[nextIdx]);
-      openTkExpandModal(items[nextIdx]);
-      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
     };
   }
 
@@ -7353,12 +7251,473 @@ function openTkExpandModal(item) {
   if (typeof playTone === 'function') playTone(600, 0.06, 'sine', 0.1);
 }
 
+// State for TikTok Flashcard Views, Auto-scroll, Split Screen & Images
+let tkCurrentViewMode = localStorage.getItem('task_countdown_tk_view_mode') || 'feed'; // 'feed' | '3d'
+let tkIsAutoScroll5s = false;
+let tkAutoScrollTimer = null;
+let tkAutoScrollProgressTimer = null;
+let tkAutoScrollStartTime = 0;
+let tkIsSplitView = false;
+let tkLikedCards = new Set(JSON.parse(localStorage.getItem('task_countdown_tk_liked') || '[]'));
+
+function getActiveTkItem() {
+  const items = getTkFilteredItems();
+  if (items.length === 0) return null;
+  if (!activeTkCardId) {
+    activeTkCardId = items[0].id;
+    return items[0];
+  }
+  return items.find(x => x.id === activeTkCardId) || items[0];
+}
+
+function setTkViewMode(mode) {
+  tkCurrentViewMode = mode === '3d' ? '3d' : 'feed';
+  try {
+    localStorage.setItem('task_countdown_tk_view_mode', tkCurrentViewMode);
+  } catch (e) {}
+
+  const btnFeed = document.getElementById('btnTkViewModeFeed');
+  const btn3D = document.getElementById('btnTkViewMode3D');
+  if (btnFeed) btnFeed.classList.toggle('active', tkCurrentViewMode === 'feed');
+  if (btn3D) btn3D.classList.toggle('active', tkCurrentViewMode === '3d');
+
+  const curItem = getActiveTkItem();
+  if (curItem) {
+    renderTkCurrentCard(curItem);
+  }
+}
+
+function renderTkCurrentCard(item) {
+  if (!item) return;
+  if (tkCurrentViewMode === 'feed') {
+    renderTkFeed(item);
+  } else {
+    renderTkPlayer(item);
+  }
+}
+
+let tkCropModeActive = true;
+
+function openTkImageLightbox(src, caption = '') {
+  if (!src) return;
+  const modal = document.getElementById('tkImageLightboxModal');
+  const imgEl = document.getElementById('tkLightboxImg');
+  const capEl = document.getElementById('tkLightboxCaption');
+  const closeBtn = document.getElementById('btnTkCloseLightbox');
+  const backdrop = document.getElementById('tkLightboxBackdrop');
+  const canvas = document.getElementById('tkLightboxCropCanvas');
+  const btnCropMode = document.getElementById('btnTkLightboxCropMode');
+  const btnCopyFull = document.getElementById('btnTkLightboxCopyFull');
+  const hintEl = document.getElementById('tkLightboxCropHint');
+
+  if (!modal || !imgEl) return;
+
+  imgEl.src = src;
+  if (capEl) {
+    capEl.textContent = caption || '';
+    capEl.style.display = caption ? 'block' : 'none';
+  }
+  modal.style.display = 'flex';
+
+  if (closeBtn) closeBtn.onclick = closeTkImageLightbox;
+
+  // Click anywhere outside the image/content to immediately close lightbox
+  modal.onclick = (e) => {
+    if (e.target.closest('.tk-lightbox-toolbar') || e.target.closest('.tk-lightbox-img-wrap') || e.target.closest('.tk-lightbox-caption')) {
+      return;
+    }
+    closeTkImageLightbox();
+  };
+  if (backdrop) backdrop.onclick = closeTkImageLightbox;
+
+  // Toggle crop mode
+  if (btnCropMode) {
+    btnCropMode.onclick = () => {
+      tkCropModeActive = !tkCropModeActive;
+      btnCropMode.classList.toggle('active', tkCropModeActive);
+      if (canvas) canvas.style.display = tkCropModeActive ? 'block' : 'none';
+      if (hintEl) hintEl.textContent = tkCropModeActive 
+        ? '💡 Kéo thả chuột trực tiếp trên ảnh để chụp vùng bạn cần. Ảnh sẽ tự động lưu vào Clipboard!' 
+        : '🔍 Chế độ xem phóng to bình thường. Bấm "Chụp vùng ảnh" để bật lại công cụ cắt ảnh.';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    };
+  }
+
+  // Copy whole image
+  if (btnCopyFull) {
+    btnCopyFull.onclick = async () => {
+      if (window.taskAPI && window.taskAPI.copyImage) {
+        await window.taskAPI.copyImage(src);
+      }
+      showTkToast('📋 Đã copy toàn bộ ảnh vào Clipboard!');
+      if (typeof playTone === 'function') playTone(880, 0.08, 'sine', 0.15);
+    };
+  }
+
+  function setupCanvasSize() {
+    if (!canvas || !imgEl) return;
+    canvas.width = imgEl.clientWidth;
+    canvas.height = imgEl.clientHeight;
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  imgEl.onload = () => {
+    setTimeout(setupCanvasSize, 50);
+  };
+  setTimeout(setupCanvasSize, 100);
+
+  // Setup Drag-to-Crop Snipping Engine on Canvas
+  if (canvas) {
+    let isDrawing = false;
+    let startX = 0;
+    let startY = 0;
+
+    canvas.onmousedown = (e) => {
+      if (!tkCropModeActive) return;
+      isDrawing = true;
+      startX = e.offsetX;
+      startY = e.offsetY;
+    };
+
+    canvas.onmousemove = (e) => {
+      if (!isDrawing || !tkCropModeActive) return;
+      const curX = e.offsetX;
+      const curY = e.offsetY;
+      const x = Math.min(startX, curX);
+      const y = Math.min(startY, curY);
+      const w = Math.abs(curX - startX);
+      const h = Math.abs(curY - startY);
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Dark overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Clear selected box
+      ctx.clearRect(x, y, w, h);
+
+      // Glowing dashed border
+      ctx.strokeStyle = '#00f2fe';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.strokeRect(x, y, w, h);
+      ctx.setLineDash([]);
+
+      // Corner handles
+      ctx.fillStyle = '#ff0050';
+      const handleSize = 6;
+      ctx.fillRect(x - handleSize/2, y - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(x + w - handleSize/2, y - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(x - handleSize/2, y + h - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(x + w - handleSize/2, y + h - handleSize/2, handleSize, handleSize);
+
+      // Dimensions tag
+      if (w > 40 && h > 20) {
+        const scaleX = imgEl.naturalWidth / imgEl.clientWidth;
+        const scaleY = imgEl.naturalHeight / imgEl.clientHeight;
+        const natW = Math.round(w * scaleX);
+        const natH = Math.round(h * scaleY);
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(x, Math.max(0, y - 22), 90, 20);
+        ctx.fillStyle = '#00f2fe';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(`✂️ ${natW}×${natH}px`, x + 6, Math.max(14, y - 8));
+      }
+    };
+
+    canvas.onmouseup = async (e) => {
+      if (!isDrawing || !tkCropModeActive) return;
+      isDrawing = false;
+      const endX = e.offsetX;
+      const endY = e.offsetY;
+      const x = Math.min(startX, endX);
+      const y = Math.min(startY, endY);
+      const w = Math.abs(endX - startX);
+      const h = Math.abs(endY - startY);
+
+      const ctx = canvas.getContext('2d');
+
+      if (w < 12 || h < 12) {
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      // Flash feedback
+      if (ctx) {
+        ctx.fillStyle = 'rgba(0, 242, 254, 0.4)';
+        ctx.fillRect(x, y, w, h);
+      }
+
+      // Crop high-res image
+      try {
+        const scaleX = imgEl.naturalWidth / imgEl.clientWidth;
+        const scaleY = imgEl.naturalHeight / imgEl.clientHeight;
+        const natX = x * scaleX;
+        const natY = y * scaleY;
+        const natW = w * scaleX;
+        const natH = h * scaleY;
+
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = natW;
+        offCanvas.height = natH;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(imgEl, natX, natY, natW, natH, 0, 0, natW, natH);
+
+        const croppedDataUrl = offCanvas.toDataURL('image/png');
+
+        // Copy to clipboard via IPC
+        if (window.taskAPI && window.taskAPI.copyImage) {
+          await window.taskAPI.copyImage(croppedDataUrl);
+        }
+
+        // Camera shutter chime
+        if (typeof playTone === 'function') {
+          playTone(950, 0.04, 'sine', 0.2);
+          setTimeout(() => playTone(1200, 0.06, 'triangle', 0.2), 50);
+        }
+
+        showTkToast(`✂️ Đã chụp & copy vùng ảnh (${Math.round(natW)}×${Math.round(natH)}px) vào Clipboard! Nhấn Ctrl+V để dùng ngay.`);
+      } catch (err) {
+        console.error('Lỗi khi chụp vùng ảnh:', err);
+      } finally {
+        setTimeout(() => {
+          if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }, 300);
+      }
+    };
+  }
+
+  if (typeof playTone === 'function') playTone(800, 0.05, 'sine', 0.12);
+}
+
+function closeTkImageLightbox() {
+  const modal = document.getElementById('tkImageLightboxModal');
+  const canvas = document.getElementById('tkLightboxCropCanvas');
+  if (modal) modal.style.display = 'none';
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+// Global Esc to close lightbox
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeTkImageLightbox();
+    const exampleOverlay = document.getElementById('tkFeedExampleOverlay');
+    if (exampleOverlay) exampleOverlay.style.display = 'none';
+  }
+});
+
+function renderTkFeed(item) {
+  const feedState = document.getElementById('tkFeedState');
+  const playerState = document.getElementById('tkPlayerState');
+  const formState = document.getElementById('tkFormState');
+  if (!feedState || !item) return;
+
+  if (formState) formState.style.display = 'none';
+  if (playerState) playerState.style.display = 'none';
+  feedState.style.display = 'flex';
+
+  const items = getTkFilteredItems();
+  const curIdx = items.findIndex(x => x.id === item.id);
+  const totalCount = items.length;
+
+  const feedMedia = document.getElementById('tkFeedMedia');
+  const feedImg = document.getElementById('tkFeedImg');
+  const feedBgBlur = document.getElementById('tkFeedBgBlur');
+  const noImgPlaceholder = document.getElementById('tkFeedNoImgPlaceholder');
+  const pWord = document.getElementById('tkFeedPlaceholderWord');
+  const pTrans = document.getElementById('tkFeedPlaceholderTrans');
+
+  const mainWord = document.getElementById('tkFeedWord');
+  const mainTrans = document.getElementById('tkFeedTrans');
+  const indexTag = document.getElementById('tkFeedIndexTag');
+  const likeBtn = document.getElementById('btnTkFeedLike');
+  const likeCount = document.getElementById('tkFeedLikeCount');
+
+  if (item.imageUrl && item.imageUrl.trim()) {
+    if (feedImg) {
+      feedImg.src = item.imageUrl;
+      feedImg.style.display = 'block';
+    }
+    if (feedBgBlur) {
+      feedBgBlur.style.backgroundImage = `url("${item.imageUrl}")`;
+    }
+    if (noImgPlaceholder) noImgPlaceholder.style.display = 'none';
+
+    // Click on image to zoom in fullscreen
+    if (feedMedia) {
+      feedMedia.onclick = (e) => {
+        if (e.target.closest('.tk-feed-actions') || e.target.closest('.tk-feed-bottom') || e.target.closest('.tk-feed-example-overlay')) {
+          return;
+        }
+        openTkImageLightbox(item.imageUrl, `${item.word || ''} ${item.translation ? '— ' + item.translation : ''}`);
+      };
+      feedMedia.style.cursor = 'zoom-in';
+    }
+  } else {
+    if (feedImg) {
+      feedImg.src = '';
+      feedImg.style.display = 'none';
+    }
+    if (feedBgBlur) {
+      feedBgBlur.style.backgroundImage = 'none';
+    }
+    if (feedMedia) {
+      feedMedia.onclick = null;
+      feedMedia.style.cursor = 'default';
+    }
+    if (noImgPlaceholder) noImgPlaceholder.style.display = 'flex';
+    if (pWord) pWord.textContent = item.word || 'Word';
+    if (pTrans) pTrans.textContent = item.translation || 'Dịch nghĩa';
+  }
+
+  const isEnFirst = (tkLangOrder === 'en_first');
+  if (mainWord) mainWord.textContent = isEnFirst ? (item.word || '---') : (item.translation || '---');
+  if (mainTrans) mainTrans.textContent = isEnFirst ? (item.translation || '(Chưa có bản dịch)') : (item.word || '---');
+  if (indexTag) indexTag.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${totalCount}`;
+  
+  const isLiked = tkLikedCards.has(item.id);
+  if (likeBtn) {
+    likeBtn.classList.toggle('liked', isLiked);
+    likeBtn.textContent = isLiked ? '❤️' : '🤍';
+  }
+  if (likeCount) {
+    likeCount.textContent = isLiked ? '21.2K' : '21.1K';
+  }
+
+  if (likeBtn) {
+    likeBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (tkLikedCards.has(item.id)) {
+        tkLikedCards.delete(item.id);
+      } else {
+        tkLikedCards.add(item.id);
+        if (typeof playTone === 'function') playTone(800, 0.08, 'sine', 0.15);
+      }
+      try {
+        localStorage.setItem('task_countdown_tk_liked', JSON.stringify(Array.from(tkLikedCards)));
+      } catch (e) {}
+      renderTkFeed(item);
+    };
+  }
+
+  const commentBtn = document.getElementById('btnTkFeedComment');
+  if (commentBtn) {
+    commentBtn.onclick = (e) => {
+      e.stopPropagation();
+      openTkExpandModal(item);
+    };
+  }
+
+  const askGeminiBtn = document.getElementById('btnTkFeedAskGemini');
+  if (askGeminiBtn) {
+    askGeminiBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (!tkIsSplitView) {
+        toggleTkSplitView();
+      }
+      sendWordToMiniGemini(item);
+    };
+  }
+
+  const exampleOverlay = document.getElementById('tkFeedExampleOverlay');
+  const exampleContent = document.getElementById('tkFeedExampleContent');
+  const exampleTitle = document.getElementById('tkFeedExampleTitle');
+  const closeExampleBtn = document.getElementById('btnTkCloseFeedExample');
+  const exampleBtn = document.getElementById('btnTkFeedExamples');
+
+  if (exampleOverlay) exampleOverlay.style.display = 'none';
+
+  if (exampleBtn && exampleOverlay) {
+    exampleBtn.onclick = (e) => {
+      e.stopPropagation();
+      const isShowing = (exampleOverlay.style.display === 'flex');
+      if (isShowing) {
+        exampleOverlay.style.display = 'none';
+      } else {
+        if (exampleTitle) {
+          exampleTitle.textContent = `${item.word || 'Từ vựng'} ${item.translation ? '— ' + item.translation : ''}`;
+        }
+        if (exampleContent) {
+          if (item.notes && item.notes.trim()) {
+            exampleContent.innerHTML = formatGeminiResponse(item.notes);
+          } else {
+            exampleContent.innerHTML = `
+              <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-left: 3px solid #00f2fe; margin-bottom: 12px;">
+                <b style="color: #00f2fe;">📖 Từ vựng:</b> ${escapeHtml(item.word || '')}<br>
+                <b style="color: #6ee7b7;">🎯 Bản dịch:</b> ${escapeHtml(item.translation || '(Chưa có ghi chú)')}
+              </div>
+              <div style="font-size: 12.5px; line-height: 1.5; color: #94a3b8;">
+                💡 <i>Chưa có 10 ví dụ mẫu. Bạn có thể bấm nút <b>"✨ Sửa"</b> rồi chọn <b>"✨ Tải dữ liệu"</b> hoặc bấm <b>"✨ AI Hỏi"</b> để Gemini tạo ngay 10 câu ví dụ IELTS Speaking & Writing đỉnh cao nhé!</i>
+              </div>
+            `;
+          }
+        }
+        exampleOverlay.style.display = 'flex';
+        if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.1);
+      }
+    };
+  }
+
+  if (closeExampleBtn && exampleOverlay) {
+    closeExampleBtn.onclick = (e) => {
+      e.stopPropagation();
+      exampleOverlay.style.display = 'none';
+      if (typeof playTone === 'function') playTone(500, 0.04, 'sine', 0.1);
+    };
+  }
+
+  const feedSpeakBtn = document.getElementById('btnTkFeedSpeak');
+  if (feedSpeakBtn) {
+    feedSpeakBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(item.word);
+        utt.lang = 'en-US';
+        utt.rate = 0.9;
+        window.speechSynthesis.speak(utt);
+      }
+    };
+  }
+
+  const vinylBtn = document.getElementById('btnTkFeedOpenTikTok');
+  if (vinylBtn) {
+    vinylBtn.onclick = (e) => {
+      e.stopPropagation();
+      let targetUrl = item.tiktokUrl;
+      if (!targetUrl || !targetUrl.trim()) {
+        targetUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(item.word)}`;
+      }
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(targetUrl);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+      if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
+    };
+  }
+
+  if (tkIsAutoScroll5s) {
+    resetAutoScrollTimer();
+  }
+}
+
 function renderTkPlayer(item) {
   const playerState = document.getElementById('tkPlayerState');
+  const feedState = document.getElementById('tkFeedState');
   const formState = document.getElementById('tkFormState');
   if (!playerState || !item) return;
 
   if (formState) formState.style.display = 'none';
+  if (feedState) feedState.style.display = 'none';
   playerState.style.display = 'flex';
 
   const items = getTkFilteredItems();
@@ -7374,7 +7733,6 @@ function renderTkPlayer(item) {
 
   const isEnFirst = (tkLangOrder === 'en_first');
 
-  // 1. MẶT TRƯỚC FLASHCARD
   const frontTitle = document.getElementById('lblTkFrontFaceTitle');
   if (frontTitle) {
     frontTitle.textContent = isEnFirst ? 'MẶT TRƯỚC (TỪ VỰNG TIẾNG ANH)' : 'MẶT TRƯỚC (DỊCH NGHĨA TIẾNG VIỆT)';
@@ -7382,72 +7740,23 @@ function renderTkPlayer(item) {
 
   const wordEl = document.getElementById('lblTkWord');
   if (wordEl) {
-    // Nếu English first: hiển thị item.word ở mặt trước. Nếu Vietnamese first: hiển thị item.translation ở mặt trước
     const frontText = isEnFirst ? (item.word || '---') : (item.translation || '(Chưa có bản dịch)');
     wordEl.textContent = frontText;
     wordEl.style.color = isEnFirst ? '#fff' : '#6ee7b7';
-
-    if (frontText.length > 180) {
-      wordEl.style.fontSize = '14.5px';
-      wordEl.style.lineHeight = '1.35';
-    } else if (frontText.length > 120) {
-      wordEl.style.fontSize = '16.5px';
-      wordEl.style.lineHeight = '1.35';
-    } else if (frontText.length > 60) {
-      wordEl.style.fontSize = '19px';
-      wordEl.style.lineHeight = '1.35';
-    } else if (frontText.length > 30) {
-      wordEl.style.fontSize = '23px';
-      wordEl.style.lineHeight = '1.3';
-    } else {
-      wordEl.style.fontSize = '28px';
-      wordEl.style.lineHeight = '1.25';
-    }
   }
 
-  // 2. MẶT SAU FLASHCARD
   const backWordMini = document.getElementById('lblTkBackWordMini');
   if (backWordMini) backWordMini.textContent = isEnFirst ? (item.word || '---') : (item.translation || '---');
 
-  const backWordMain = document.getElementById('lblTkBackWordMain');
-  if (backWordMain) backWordMain.textContent = item.word || '---';
-
   const transEl = document.getElementById('lblTkTrans');
   if (transEl) {
-    const text = item.translation || '(Chưa có bản dịch)';
-    transEl.textContent = text;
-    if (text.length > 180) {
-      transEl.style.fontSize = '13.5px';
-      transEl.style.lineHeight = '1.35';
-    } else if (text.length > 120) {
-      transEl.style.fontSize = '15.5px';
-      transEl.style.lineHeight = '1.35';
-    } else if (text.length > 60) {
-      transEl.style.fontSize = '17.5px';
-      transEl.style.lineHeight = '1.35';
-    } else if (text.length > 30) {
-      transEl.style.fontSize = '19px';
-      transEl.style.lineHeight = '1.3';
-    } else {
-      transEl.style.fontSize = '21px';
-      transEl.style.lineHeight = '1.25';
-    }
+    transEl.textContent = item.translation || '(Chưa có bản dịch)';
   }
 
   const notesEl = document.getElementById('lblTkNotes');
   if (notesEl) notesEl.textContent = item.notes || 'Chưa có ghi chú ví dụ.';
 
-  // Update layout & order based on saved preference
   updateTkLangOrderUI(item);
-
-  // Hook all Swap Lang Buttons (Toolbar, Front, Back)
-  const btnGlobalSwap = document.getElementById('btnTkGlobalSwapLang');
-  if (btnGlobalSwap) {
-    btnGlobalSwap.onclick = (e) => {
-      e.stopPropagation();
-      toggleTkLangOrder(item);
-    };
-  }
 
   const btnFrontSwap = document.getElementById('btnTkFrontSwapLang');
   if (btnFrontSwap) {
@@ -7457,23 +7766,10 @@ function renderTkPlayer(item) {
     };
   }
 
-  const btnBackSwap = document.getElementById('btnTkSwapLangOrder');
-  if (btnBackSwap) {
-    btnBackSwap.onclick = (e) => {
-      e.stopPropagation();
-      toggleTkLangOrder(item);
-    };
-  }
-
-  // Reset 3D card rotation
   const cardInner = document.getElementById('tk3dCardInner');
   if (cardInner) {
     cardInner.style.transform = 'rotateY(0deg)';
   }
-
-  // Zoom / Expand Full Modal Button
-  const btnExpandTop = document.getElementById('btnTkPlayerExpand');
-  if (btnExpandTop) btnExpandTop.onclick = () => openTkExpandModal(item);
 
   const btnExpandBack = document.getElementById('btnTkExpandDetailCard');
   if (btnExpandBack) {
@@ -7483,7 +7779,6 @@ function renderTkPlayer(item) {
     };
   }
 
-  // Open TikTok Video / Search function
   const openTikTokHandler = () => {
     let targetUrl = item.tiktokUrl;
     if (!targetUrl || !targetUrl.trim()) {
@@ -7497,125 +7792,201 @@ function renderTkPlayer(item) {
     if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.1);
   };
 
-  const btnOpenFront = document.getElementById('btnTkOpenTiktokFront');
-  if (btnOpenFront) btnOpenFront.onclick = (e) => { e.stopPropagation(); openTikTokHandler(); };
-
-  const btnOpenBack = document.getElementById('btnTkOpenTiktokBack');
-  if (btnOpenBack) btnOpenBack.onclick = (e) => { e.stopPropagation(); openTikTokHandler(); };
-
-  // Audio Pronunciation
-  const speakHandler = () => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(item.word);
-      utt.lang = 'en-US';
-      utt.rate = 0.9;
-      window.speechSynthesis.speak(utt);
-    }
-  };
-
   const btnSpeak = document.getElementById('btnTkSpeakFront');
-  if (btnSpeak) btnSpeak.onclick = (e) => { e.stopPropagation(); speakHandler(); };
-
-  // Edit / Delete Buttons
-  const btnEdit = document.getElementById('btnTkPlayerEdit');
-  if (btnEdit) btnEdit.onclick = () => openTkForm(item);
-
-  const btnDel = document.getElementById('btnTkPlayerDelete');
-  if (btnDel) {
-    btnDel.onclick = async () => {
-      if (confirm(`Bạn có chắc muốn xóa thẻ "${item.word}"?`)) {
-        tkFlashcardData.items = (tkFlashcardData.items || []).filter(x => x.id !== item.id);
-        await saveTkFlashcardData();
-        activeTkCardId = null;
-        updateTkDashboardStats();
-        renderTkFlashcardList();
-      }
-    };
-  }
-
-  // Navigation Prev / Next
-  const btnPrev = document.getElementById('btnTkPrev');
-  if (btnPrev) {
-    btnPrev.onclick = () => {
-      if (items.length <= 1) return;
-      const prevIdx = curIdx > 0 ? curIdx - 1 : items.length - 1;
-      activeTkCardId = items[prevIdx].id;
-      renderTkFlashcardList();
-      renderTkPlayer(items[prevIdx]);
-      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
-    };
-  }
-
-  const btnNext = document.getElementById('btnTkNext');
-  if (btnNext) {
-    btnNext.onclick = () => {
-      if (items.length <= 1) return;
-      const nextIdx = curIdx < items.length - 1 ? curIdx + 1 : 0;
-      activeTkCardId = items[nextIdx].id;
-      renderTkFlashcardList();
-      renderTkPlayer(items[nextIdx]);
-      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
-    };
-  }
-
-  // Shuffle button
-  const btnShuffle = document.getElementById('btnTkPlayerShuffle');
-  if (btnShuffle) {
-    btnShuffle.onclick = () => {
-      if (tkFlashcardData.items && tkFlashcardData.items.length > 1) {
-        tkFlashcardData.items.sort(() => Math.random() - 0.5);
-        activeTkCardId = tkFlashcardData.items[0].id;
-        renderTkFlashcardList();
-        renderTkPlayer(tkFlashcardData.items[0]);
-        if (typeof playTone === 'function') playTone(650, 0.08, 'sine', 0.15);
-      }
-    };
-  }
-
-  // SRS Rating Buttons (1, 2, 5)
-  const rateButtons = document.querySelectorAll('.btn-tk-rate');
-  rateButtons.forEach(btn => {
-    btn.onclick = async () => {
-      const lvl = parseInt(btn.dataset.rate || '1');
-      let interval = 1;
-      if (lvl === 2) interval = 3;
-      if (lvl === 5) interval = 14;
-
-      const nextDate = new Date();
-      nextDate.setDate(nextDate.getDate() + interval);
-      item.level = lvl;
-      item.interval = interval;
-      item.nextReviewDate = nextDate.toISOString().split('T')[0];
-
-      await saveTkFlashcardData();
-      updateTkDashboardStats();
-      renderTkFlashcardList();
-      if (srsBadge) srsBadge.textContent = `Lớp ${lvl}`;
-      if (typeof playTone === 'function') playTone(784, 0.1, 'sine', 0.15);
-      alert(`Đã chấm điểm! Thẻ xếp vào Lớp ${lvl}. Lần ôn tiếp theo: ${item.nextReviewDate.split('-').reverse().join('/')}`);
-    };
-  });
+  if (btnSpeak) btnSpeak.onclick = (e) => { e.stopPropagation(); const utt = new SpeechSynthesisUtterance(item.word); utt.lang = 'en-US'; window.speechSynthesis.speak(utt); };
 }
 
-function toggleTkCardFlip() {
-  const cardInner = document.getElementById('tk3dCardInner');
-  if (!cardInner) return;
-  const isFlipped = cardInner.style.transform === 'rotateY(180deg)';
-  cardInner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
-  if (typeof playTone === 'function') playTone(550, 0.05, 'sine', 0.1);
+function toggleTkAutoScroll5s() {
+  tkIsAutoScroll5s = !tkIsAutoScroll5s;
+  updateAutoScrollUI();
+  if (tkIsAutoScroll5s) {
+    resetAutoScrollTimer();
+    if (typeof playTone === 'function') playTone(750, 0.08, 'sine', 0.15);
+  } else {
+    stopAutoScrollTimer();
+    if (typeof playTone === 'function') playTone(450, 0.08, 'sine', 0.15);
+  }
+}
+
+function updateAutoScrollUI() {
+  const badge = document.getElementById('tkAutoScrollBadge');
+  const label = document.getElementById('tkAutoScrollLabel');
+  const feedBtn = document.getElementById('btnTkFeedAuto5sToggle');
+
+  if (badge) badge.classList.toggle('active', tkIsAutoScroll5s);
+  if (label) {
+    label.innerHTML = `Tự động lướt: <b style="color: ${tkIsAutoScroll5s ? '#00f2fe' : '#fff'};">${tkIsAutoScroll5s ? 'BẬT (5s)' : 'TẮT'}</b>`;
+  }
+  if (feedBtn) {
+    feedBtn.style.background = tkIsAutoScroll5s ? 'linear-gradient(135deg, #ff0050 0%, #00f2fe 100%)' : 'rgba(19, 23, 34, 0.85)';
+    feedBtn.style.color = tkIsAutoScroll5s ? '#fff' : '#ff0050';
+  }
+}
+
+function resetAutoScrollTimer() {
+  stopAutoScrollTimer();
+  if (!tkIsAutoScroll5s) return;
+
+  const progressBar = document.getElementById('tkFeedProgressFill');
+  if (progressBar) progressBar.style.width = '0%';
+
+  const duration = 5000;
+  const step = 50;
+  tkAutoScrollStartTime = Date.now();
+
+  tkAutoScrollProgressTimer = setInterval(() => {
+    const elapsed = Date.now() - tkAutoScrollStartTime;
+    const pct = Math.min(100, (elapsed / duration) * 100);
+    if (progressBar) progressBar.style.width = pct + '%';
+
+    if (elapsed >= duration) {
+      clearInterval(tkAutoScrollProgressTimer);
+      advanceToNextCard();
+    }
+  }, step);
+}
+
+function stopAutoScrollTimer() {
+  if (tkAutoScrollProgressTimer) {
+    clearInterval(tkAutoScrollProgressTimer);
+    tkAutoScrollProgressTimer = null;
+  }
+  const progressBar = document.getElementById('tkFeedProgressFill');
+  if (progressBar) progressBar.style.width = '0%';
+}
+
+function advanceToNextCard() {
+  const items = getTkFilteredItems();
+  if (items.length <= 1) return;
+  const curIdx = items.findIndex(x => x.id === activeTkCardId);
+  const nextIdx = curIdx < items.length - 1 ? curIdx + 1 : 0;
+  activeTkCardId = items[nextIdx].id;
+  renderTkFlashcardList();
+  renderTkCurrentCard(items[nextIdx]);
+  if (typeof playTone === 'function') playTone(520, 0.04, 'sine', 0.08);
+}
+
+function advanceToPrevCard() {
+  const items = getTkFilteredItems();
+  if (items.length <= 1) return;
+  const curIdx = items.findIndex(x => x.id === activeTkCardId);
+  const prevIdx = curIdx > 0 ? curIdx - 1 : items.length - 1;
+  activeTkCardId = items[prevIdx].id;
+  renderTkFlashcardList();
+  renderTkCurrentCard(items[prevIdx]);
+  if (typeof playTone === 'function') playTone(520, 0.04, 'sine', 0.08);
+}
+
+function toggleTkSplitView() {
+  tkIsSplitView = !tkIsSplitView;
+  const rightPane = document.getElementById('tkSplitRightGemini');
+  const btnToggle = document.getElementById('btnTkToggleSplitView');
+
+  if (rightPane) {
+    rightPane.style.display = tkIsSplitView ? 'flex' : 'none';
+  }
+  if (btnToggle) {
+    btnToggle.style.background = tkIsSplitView
+      ? 'linear-gradient(135deg, #10b981 0%, #00f2fe 100%)'
+      : 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)';
+    btnToggle.textContent = tkIsSplitView ? '🌓 Tắt Chia Đôi Màn Hình' : '🌓 Chia Đôi Màn Hình Gemini';
+  }
+
+  if (tkIsSplitView) {
+    initMiniGeminiTab();
+    if (typeof playTone === 'function') playTone(700, 0.08, 'sine', 0.15);
+  }
+}
+
+async function handleImagePasteOrFile(dataUrl) {
+  if (!dataUrl) return;
+
+  const formState = document.getElementById('tkFormState');
+  const isFormOpen = formState && formState.style.display !== 'none';
+
+  if (isFormOpen) {
+    const formImgUrl = document.getElementById('tkFormImageUrl');
+    const previewWrap = document.getElementById('tkFormImagePreviewWrap');
+    const previewImg = document.getElementById('tkFormPreviewImg');
+    const dropzoneEmpty = document.getElementById('tkFormDropzoneEmpty');
+
+    if (formImgUrl) formImgUrl.value = dataUrl;
+    if (previewImg) previewImg.src = dataUrl;
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (dropzoneEmpty) dropzoneEmpty.style.display = 'none';
+    if (typeof playTone === 'function') playTone(650, 0.08, 'sine', 0.12);
+  } else {
+    const curItem = getActiveTkItem();
+    if (!curItem) {
+      alert('Chưa có thẻ nào để gắn ảnh!');
+      return;
+    }
+    curItem.imageUrl = dataUrl;
+    await saveTkFlashcardData();
+    renderTkCurrentCard(curItem);
+    if (typeof playTone === 'function') playTone(780, 0.1, 'sine', 0.15);
+  }
+}
+
+function setupImageDropAndPaste() {
+  window.addEventListener('paste', async (e) => {
+    const pane = document.getElementById('paneTiktokFlashcard');
+    if (!pane || !pane.classList.contains('active')) return;
+
+    if (e.clipboardData && e.clipboardData.items) {
+      for (const item of e.clipboardData.items) {
+        if (item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => handleImagePasteOrFile(event.target.result);
+            reader.readAsDataURL(file);
+            return;
+          }
+        }
+      }
+    }
+  });
+
+  const btnQuickPaste = document.getElementById('btnTkQuickPasteImg');
+  if (btnQuickPaste) {
+    btnQuickPaste.addEventListener('click', async () => {
+      try {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              const blob = await item.getType(type);
+              const reader = new FileReader();
+              reader.onload = (e) => handleImagePasteOrFile(e.target.result);
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+        }
+      } catch (err) { alert('Vui lòng copy 1 ảnh (Ctrl+C) rồi bấm nút này!'); }
+    });
+  }
 }
 
 function openTkForm(itemToEdit = null) {
   const playerState = document.getElementById('tkPlayerState');
+  const feedState = document.getElementById('tkFeedState');
   const formState = document.getElementById('tkFormState');
   if (!formState) return;
 
   if (playerState) playerState.style.display = 'none';
+  if (feedState) feedState.style.display = 'none';
   formState.style.display = 'flex';
 
   const formTitle = document.getElementById('tkFormTitle');
   const editId = document.getElementById('tkEditId');
+  const formImgUrl = document.getElementById('tkFormImageUrl');
+  const previewWrap = document.getElementById('tkFormImagePreviewWrap');
+  const previewImg = document.getElementById('tkFormPreviewImg');
+  const dropzoneEmpty = document.getElementById('tkFormDropzoneEmpty');
+
   const wordInp = document.getElementById('tkWordInput');
   const transInp = document.getElementById('tkTransInput');
   const notesInp = document.getElementById('tkNotesInput');
@@ -7623,56 +7994,63 @@ function openTkForm(itemToEdit = null) {
   const defaultMusicUrl = tkLastChosenMusicUrl || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : '');
 
   if (itemToEdit) {
-    if (formTitle) formTitle.textContent = '✏️ Chỉnh Sửa Thẻ Flashcard';
+    if (formTitle) formTitle.textContent = '✏️ Chỉnh Sửa Thẻ';
     if (editId) editId.value = itemToEdit.id;
     if (wordInp) wordInp.value = itemToEdit.word || '';
     if (transInp) transInp.value = itemToEdit.translation || '';
     if (notesInp) notesInp.value = itemToEdit.notes || '';
     if (urlInp) urlInp.value = itemToEdit.tiktokUrl || defaultMusicUrl;
+    if (formImgUrl) formImgUrl.value = itemToEdit.imageUrl || '';
+
+    if (itemToEdit.imageUrl) {
+      if (previewImg) previewImg.src = itemToEdit.imageUrl;
+      if (previewWrap) previewWrap.style.display = 'flex';
+      if (dropzoneEmpty) dropzoneEmpty.style.display = 'none';
+    } else {
+      if (previewWrap) previewWrap.style.display = 'none';
+      if (dropzoneEmpty) dropzoneEmpty.style.display = 'flex';
+    }
   } else {
-    if (formTitle) formTitle.textContent = '➕ Thêm Thẻ Flashcard Mới';
+    if (formTitle) formTitle.textContent = '➕ Thêm Thẻ Mới';
     if (editId) editId.value = '';
     if (wordInp) wordInp.value = '';
     if (transInp) transInp.value = '';
     if (notesInp) notesInp.value = '';
     if (urlInp) urlInp.value = defaultMusicUrl;
+    if (formImgUrl) formImgUrl.value = '';
+    if (previewWrap) previewWrap.style.display = 'none';
+    if (dropzoneEmpty) dropzoneEmpty.style.display = 'flex';
   }
-
-  renderTkMusicSelect();
-  const musicSelect = document.getElementById('tkMusicHistorySelect');
-  if (musicSelect && defaultMusicUrl) {
-    musicSelect.value = defaultMusicUrl;
-  }
-
-  setTimeout(() => {
-    if (wordInp) {
-      wordInp.focus();
-      wordInp.select();
-    }
-  }, 60);
 }
 
 function closeTkForm() {
   const formState = document.getElementById('tkFormState');
-  const playerState = document.getElementById('tkPlayerState');
   if (formState) formState.style.display = 'none';
-  if (playerState) playerState.style.display = 'flex';
+  const curItem = getActiveTkItem();
+  if (curItem) renderTkCurrentCard(curItem);
 }
 
 async function saveTkForm() {
   const editId = document.getElementById('tkEditId')?.value || '';
-  const word = (document.getElementById('tkWordInput')?.value || '').trim();
+  const imageUrl = (document.getElementById('tkFormImageUrl')?.value || '').trim();
+  let word = (document.getElementById('tkWordInput')?.value || '').trim();
   const trans = (document.getElementById('tkTransInput')?.value || '').trim();
   const notes = (document.getElementById('tkNotesInput')?.value || '').trim();
   let url = (document.getElementById('tkUrlInput')?.value || '').trim();
 
-  if (!word) {
-    alert('Vui lòng nhập từ vựng hoặc câu tiếng Anh!');
+  // If neither word nor image is present, alert user
+  if (!word && !imageUrl) {
+    alert('Vui lòng nhập từ vựng hoặc dán/tải ít nhất 1 hình ảnh!');
     return;
   }
 
+  // If user only provided image, give a nice default title
+  if (!word && imageUrl) {
+    word = '🖼️ Thẻ ảnh #' + (editId ? editId.slice(-4) : (tkFlashcardData.items?.length || 0) + 1);
+  }
+
   if (!url) {
-    url = `https://www.tiktok.com/search?q=${encodeURIComponent(word)}`;
+    url = word && !word.startsWith('🖼️') ? `https://www.tiktok.com/search?q=${encodeURIComponent(word)}` : 'https://www.tiktok.com';
   }
 
   if (editId) {
@@ -7682,17 +8060,15 @@ async function saveTkForm() {
       item.translation = trans;
       item.notes = notes;
       item.tiktokUrl = url;
+      item.imageUrl = imageUrl;
     }
   } else {
     const newItem = {
       id: 'tk_' + Date.now(),
-      word: word,
-      translation: trans,
-      notes: notes,
-      linkType: 'direct',
+      word, translation: trans, notes,
+      imageUrl: imageUrl || '',
       tiktokUrl: url,
-      level: 1,
-      interval: 1,
+      level: 1, interval: 1,
       nextReviewDate: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString()
     };
@@ -7705,7 +8081,495 @@ async function saveTkForm() {
   closeTkForm();
   updateTkDashboardStats();
   renderTkFlashcardList();
+  renderTkCurrentCard(getActiveTkItem());
   if (typeof playTone === 'function') playTone(600, 0.08, 'sine', 0.12);
+}
+
+function toggleTkCardFlip() {
+  if (tkCurrentViewMode === 'feed') {
+    toggleTkLangOrder(getActiveTkItem());
+  } else {
+    const cardInner = document.getElementById('tk3dCardInner');
+    if (!cardInner) return;
+    const isFlipped = cardInner.style.transform === 'rotateY(180deg)';
+    cardInner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
+    if (typeof playTone === 'function') playTone(550, 0.05, 'sine', 0.1);
+  }
+}
+
+let geminiChatHistory = [];
+let miniGeminiInitialized = false;
+let currentGeminiModel = 'gemini-1.5-flash';
+
+function initMiniGeminiTab() {
+  if (miniGeminiInitialized) return;
+  miniGeminiInitialized = true;
+
+  // 1. Model Selector Dropdown Logic (Split View)
+  const btnSplitModel = document.getElementById('btnTkSplitModelSelector');
+  const dropdownSplitModel = document.getElementById('tkSplitModelDropdown');
+  const lblSplitCurModel = document.getElementById('lblTkSplitCurModel');
+
+  if (btnSplitModel && dropdownSplitModel) {
+    btnSplitModel.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownSplitModel.classList.toggle('show');
+    });
+
+    dropdownSplitModel.querySelectorAll('.gemini-model-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownSplitModel.querySelectorAll('.gemini-model-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        currentGeminiModel = opt.dataset.model || 'gemini-1.5-flash';
+        const titleEl = opt.querySelector('.gemini-model-opt-title');
+        if (lblSplitCurModel && titleEl) {
+          lblSplitCurModel.textContent = titleEl.textContent.replace(/^[^\w\d]+/, '').trim();
+        }
+        dropdownSplitModel.classList.remove('show');
+        if (typeof playTone === 'function') playTone(750, 0.05, 'sine', 0.1);
+      });
+    });
+  }
+
+  // 2. Model Selector Dropdown Logic (Standalone Tab)
+  const btnStandModel = document.getElementById('btnGeminiStandaloneModelSelector');
+  const dropdownStandModel = document.getElementById('geminiStandaloneModelDropdown');
+  const lblStandCurModel = document.getElementById('lblGeminiStandaloneCurModel');
+
+  if (btnStandModel && dropdownStandModel) {
+    btnStandModel.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownStandModel.classList.toggle('show');
+    });
+
+    dropdownStandModel.querySelectorAll('.gemini-model-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownStandModel.querySelectorAll('.gemini-model-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        currentGeminiModel = opt.dataset.model || 'gemini-1.5-flash';
+        const titleEl = opt.querySelector('.gemini-model-opt-title');
+        if (lblStandCurModel && titleEl) {
+          lblStandCurModel.textContent = titleEl.textContent.replace(/^[^\w\d]+/, '').trim();
+        }
+        dropdownStandModel.classList.remove('show');
+        if (typeof playTone === 'function') playTone(750, 0.05, 'sine', 0.1);
+      });
+    });
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    if (dropdownSplitModel) dropdownSplitModel.classList.remove('show');
+    if (dropdownStandModel) dropdownStandModel.classList.remove('show');
+  });
+
+  // 3. Source Switcher (Split View: Webview vs App)
+  const btnSplitWeb = document.getElementById('btnTkSplitSrcWeb');
+  const btnSplitApp = document.getElementById('btnTkSplitSrcApp');
+  const wrapSplitWeb = document.getElementById('tkSplitWebviewWrap');
+  const wrapSplitApp = document.getElementById('tkSplitAppWrap');
+
+  if (btnSplitWeb && btnSplitApp) {
+    btnSplitWeb.addEventListener('click', () => {
+      btnSplitWeb.classList.add('active');
+      btnSplitApp.classList.remove('active');
+      if (wrapSplitWeb) wrapSplitWeb.style.display = 'flex';
+      if (wrapSplitApp) wrapSplitApp.style.display = 'none';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    });
+
+    btnSplitApp.addEventListener('click', () => {
+      btnSplitApp.classList.add('active');
+      btnSplitWeb.classList.remove('active');
+      if (wrapSplitApp) wrapSplitApp.style.display = 'flex';
+      if (wrapSplitWeb) wrapSplitWeb.style.display = 'none';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    });
+  }
+
+  // 4. Source Switcher (Standalone Tab: Webview vs App)
+  const btnStandWeb = document.getElementById('btnGeminiStandaloneSrcWeb');
+  const btnStandApp = document.getElementById('btnGeminiStandaloneSrcApp');
+  const wrapStandWeb = document.getElementById('geminiStandaloneWebviewWrap');
+  const wrapStandApp = document.getElementById('geminiStandaloneAppWrap');
+
+  if (btnStandWeb && btnStandApp) {
+    btnStandWeb.addEventListener('click', () => {
+      btnStandWeb.classList.add('active');
+      btnStandApp.classList.remove('active');
+      if (wrapStandWeb) wrapStandWeb.style.display = 'flex';
+      if (wrapStandApp) wrapStandApp.style.display = 'none';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    });
+
+    btnStandApp.addEventListener('click', () => {
+      btnStandApp.classList.add('active');
+      btnStandWeb.classList.remove('active');
+      if (wrapStandApp) wrapStandApp.style.display = 'flex';
+      if (wrapStandWeb) wrapStandWeb.style.display = 'none';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    });
+  }
+
+  // 5. Reload Buttons
+  const btnSplitReload = document.getElementById('btnTkSplitGeminiReload');
+  if (btnSplitReload) {
+    btnSplitReload.addEventListener('click', () => {
+      const wv = document.getElementById('tkSplitGeminiWebview');
+      if (wrapSplitWeb && wrapSplitWeb.style.display !== 'none' && wv) {
+        wv.reload();
+      } else {
+        const msgList = document.getElementById('tkSplitGeminiMsgList');
+        const welcome = document.getElementById('tkSplitGeminiWelcome');
+        if (msgList) msgList.innerHTML = '';
+        if (welcome) welcome.style.display = 'flex';
+      }
+      if (typeof playTone === 'function') playTone(650, 0.05, 'sine', 0.1);
+    });
+  }
+
+  const btnStandReload = document.getElementById('btnGeminiStandaloneReload');
+  if (btnStandReload) {
+    btnStandReload.addEventListener('click', () => {
+      const wv = document.getElementById('geminiStandaloneWebview');
+      if (wrapStandWeb && wrapStandWeb.style.display !== 'none' && wv) {
+        wv.reload();
+      } else {
+        const msgList = document.getElementById('geminiStandaloneMsgList');
+        const welcome = document.getElementById('geminiStandaloneWelcome');
+        if (msgList) msgList.innerHTML = '';
+        if (welcome) welcome.style.display = 'flex';
+      }
+      if (typeof playTone === 'function') playTone(650, 0.05, 'sine', 0.1);
+    });
+  }
+
+  // 6. Open Separate Window Buttons
+  const btnSplitOpenWin = document.getElementById('btnTkSplitGeminiOpenWin');
+  if (btnSplitOpenWin) {
+    btnSplitOpenWin.addEventListener('click', () => {
+      if (window.taskAPI && window.taskAPI.openGeminiWindow) {
+        window.taskAPI.openGeminiWindow('https://gemini.google.com/');
+      } else {
+        window.open('https://gemini.google.com/', '_blank');
+      }
+    });
+  }
+
+  const btnStandOpenWin = document.getElementById('btnGeminiStandaloneOpenWin');
+  if (btnStandOpenWin) {
+    btnStandOpenWin.addEventListener('click', () => {
+      if (window.taskAPI && window.taskAPI.openGeminiWindow) {
+        window.taskAPI.openGeminiWindow('https://gemini.google.com/');
+      } else {
+        window.open('https://gemini.google.com/', '_blank');
+      }
+    });
+  }
+
+  const btnStandOpenWeb = document.getElementById('btnGeminiStandaloneOpenWeb');
+  if (btnStandOpenWeb) {
+    btnStandOpenWeb.addEventListener('click', () => {
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal('https://gemini.google.com/');
+      } else {
+        window.open('https://gemini.google.com/', '_blank');
+      }
+    });
+  }
+
+  const btnSplitClose = document.getElementById('btnTkSplitGeminiClose');
+  if (btnSplitClose) btnSplitClose.addEventListener('click', toggleTkSplitView);
+
+  // 7. Input & Send Handlers (Split View)
+  const btnSplitSend = document.getElementById('btnTkSplitGeminiSend');
+  const inpSplit = document.getElementById('tkSplitGeminiInput');
+  const btnSplitAskWord = document.getElementById('btnTkSplitGeminiAskWord');
+
+  if (btnSplitSend && inpSplit) {
+    const doSend = () => {
+      const text = inpSplit.value.trim();
+      if (!text) return;
+      inpSplit.value = '';
+      sendGeminiQuestion(text, 'split');
+    };
+    btnSplitSend.addEventListener('click', doSend);
+    inpSplit.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); doSend(); }
+    });
+  }
+
+  if (btnSplitAskWord) {
+    btnSplitAskWord.addEventListener('click', () => {
+      const cur = getActiveTkItem();
+      if (cur) sendWordToMiniGemini(cur);
+    });
+  }
+
+  // 8. Input & Send Handlers (Standalone Tab)
+  const btnStandSend = document.getElementById('btnGeminiStandaloneSend');
+  const inpStand = document.getElementById('geminiStandaloneInput');
+
+  if (btnStandSend && inpStand) {
+    const doSendStand = () => {
+      const text = inpStand.value.trim();
+      if (!text) return;
+      inpStand.value = '';
+      sendGeminiQuestion(text, 'standalone');
+    };
+    btnStandSend.addEventListener('click', doSendStand);
+    inpStand.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); doSendStand(); }
+    });
+  }
+
+  // 9. Voice Recognition (Mic Buttons)
+  const setupVoice = (btnId, inpId) => {
+    const btn = document.getElementById(btnId);
+    const inp = document.getElementById(inpId);
+    if (!btn || !inp) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    const recognizer = new SpeechRecognition();
+    recognizer.lang = 'vi-VN';
+    recognizer.continuous = false;
+    recognizer.interimResults = false;
+
+    let isRecording = false;
+    btn.addEventListener('click', () => {
+      if (!isRecording) {
+        try {
+          recognizer.start();
+          isRecording = true;
+          btn.style.background = 'rgba(239, 68, 68, 0.3)';
+          btn.style.color = '#ef4444';
+          inp.placeholder = 'Đang lắng nghe... Nói đi bạn...';
+        } catch (e) {}
+      } else {
+        recognizer.stop();
+        isRecording = false;
+        btn.style.background = 'transparent';
+        btn.style.color = '#c4c7c5';
+        inp.placeholder = 'Hỏi Gemini...';
+      }
+    });
+
+    recognizer.onresult = (ev) => {
+      const transcript = ev.results[0][0].transcript;
+      inp.value = (inp.value ? inp.value + ' ' : '') + transcript;
+      btn.style.background = 'transparent';
+      btn.style.color = '#c4c7c5';
+      inp.placeholder = 'Hỏi Gemini...';
+      isRecording = false;
+      inp.focus();
+    };
+
+    recognizer.onerror = () => {
+      btn.style.background = 'transparent';
+      btn.style.color = '#c4c7c5';
+      inp.placeholder = 'Hỏi Gemini...';
+      isRecording = false;
+    };
+  };
+
+  setupVoice('btnTkSplitGeminiMic', 'tkSplitGeminiInput');
+  setupVoice('btnGeminiMic', 'geminiStandaloneInput');
+}
+
+function showTkToast(msg, duration = 3500) {
+  let toast = document.getElementById('tkFloatingToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'tkFloatingToast';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid #00f2fe;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.4);
+      z-index: 99999;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+  }, duration);
+}
+
+async function sendWordToMiniGemini(item) {
+  if (!item) return;
+  
+  // Ensure Split View is open
+  if (!tkIsSplitView) {
+    toggleTkSplitView();
+  }
+
+  const isImageOnly = Boolean(item.imageUrl && (!item.word || item.word.startsWith('🖼️') || item.word === 'Word' || item.word === '---'));
+  const wrapSplitWeb = document.getElementById('tkSplitWebviewWrap');
+  const isWebviewActive = wrapSplitWeb && wrapSplitWeb.style.display !== 'none';
+  const webview = document.getElementById('tkSplitGeminiWebview');
+
+  if (isImageOnly && item.imageUrl) {
+    // 1. Copy image binary directly to OS clipboard
+    if (window.taskAPI && window.taskAPI.copyImage) {
+      window.taskAPI.copyImage(item.imageUrl);
+    }
+
+    // 2. Automatically trigger paste into Gemini Web
+    if (isWebviewActive && webview) {
+      setTimeout(() => {
+        try {
+          webview.focus();
+          webview.paste();
+        } catch (e) {}
+      }, 350);
+      showTkToast('🖼️ Đã copy ảnh và dán vào Gemini Web! Nhấn Enter trên Gemini để phân tích ảnh.');
+    } else {
+      sendGeminiQuestion('Hãy phân tích chi tiết nội dung trong hình ảnh này và đưa ra từ vựng / ví dụ IELTS liên quan.', 'split');
+      showTkToast('🖼️ Đã gửi ảnh sang Gemini!');
+    }
+    if (typeof playTone === 'function') playTone(750, 0.06, 'sine', 0.15);
+    return;
+  }
+
+  // Card with word text:
+  const prompt = `Hãy phân tích chi tiết từ vựng: "${item.word}" (nghĩa: ${item.translation || ''}).\n1. Phiên âm IPA & Cách phát âm chuẩn\n2. 3 Collocation hay gặp trong IELTS Speaking\n3. 2 ví dụ thực tế band 8.0\n4. Ý tưởng kịch bản video TikTok 30 giây để nhớ từ này.`;
+  
+  if (item.imageUrl && window.taskAPI && window.taskAPI.copyPromptAndImage) {
+    window.taskAPI.copyPromptAndImage(prompt, item.imageUrl);
+  } else {
+    navigator.clipboard.writeText(prompt);
+  }
+
+  if (isWebviewActive && webview) {
+    setTimeout(() => {
+      try {
+        webview.focus();
+        webview.paste();
+      } catch (e) {}
+    }, 350);
+    showTkToast(`📋 Đã copy & dán câu hỏi từ "${item.word}" vào Gemini Web!`);
+  } else {
+    sendGeminiQuestion(prompt, 'split');
+  }
+  if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.12);
+}
+
+window.askGeminiPrompt = function(promptText) {
+  const item = getActiveTkItem();
+  const fullPrompt = item ? `${promptText} cho từ vựng: "${item.word}" (${item.translation})` : promptText;
+  sendGeminiQuestion(fullPrompt, 'split');
+};
+
+window.askStandaloneGeminiPrompt = function(promptText) {
+  sendGeminiQuestion(promptText, 'standalone');
+};
+
+async function sendGeminiQuestion(prompt, target = 'split') {
+  const isSplit = target === 'split';
+  const msgList = document.getElementById(isSplit ? 'tkSplitGeminiMsgList' : 'geminiStandaloneMsgList');
+  const welcome = document.getElementById(isSplit ? 'tkSplitGeminiWelcome' : 'geminiStandaloneWelcome');
+  const chatBody = document.getElementById(isSplit ? 'tkSplitGeminiChatBody' : 'geminiStandaloneChatBody');
+
+  if (welcome) welcome.style.display = 'none';
+
+  // 1. User Bubble
+  const userRow = document.createElement('div');
+  userRow.className = 'gemini-msg-row user';
+  userRow.innerHTML = `<div class="gemini-msg-bubble user">${escapeHtml(prompt).replace(/\n/g, '<br>')}</div>`;
+  if (msgList) msgList.appendChild(userRow);
+
+  // 2. AI Thinking Bubble
+  const aiRow = document.createElement('div');
+  aiRow.className = 'gemini-msg-row ai';
+  aiRow.innerHTML = `<div class="gemini-msg-bubble ai"><span class="gemini-brand-sparkle">✨</span> <i>Đang kết nối ${currentGeminiModel}...</i></div>`;
+  if (msgList) msgList.appendChild(aiRow);
+
+  if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+
+  try {
+    const apiKey = localStorage.getItem('ielts_gemini_api_key') || localStorage.getItem('gemini_api_key') || '';
+    let answerText = '';
+
+    if (apiKey) {
+      const modelEndpoint = currentGeminiModel === 'gemini-1.5-pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelEndpoint}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `Bạn là trợ lý AI Gemini (${currentGeminiModel}) chuyên gia IELTS & TikTok Creator. Hãy giải thích ngắn gọn, sinh động, chuẩn xác và dùng định dạng markdown:\n\n${prompt}` }]
+          }]
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        answerText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      }
+    }
+
+    if (!answerText) {
+      answerText = generateSmartGeminiFallback(prompt);
+    }
+
+    const formattedHtml = formatGeminiResponse(answerText);
+    aiRow.innerHTML = `
+      <div class="gemini-msg-bubble ai">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px;">
+          <span style="font-size: 11px; font-weight: 700; color: #93c5fd;">✨ ${currentGeminiModel.toUpperCase()}</span>
+          <button type="button" class="btn-modal" onclick="navigator.clipboard.writeText(\`${answerText.replace(/`/g, '\\`')}\`); alert('Đã sao chép câu trả lời!');" style="height: 20px; font-size: 10px; padding: 0 6px;">📋 Copy</button>
+        </div>
+        ${formattedHtml}
+      </div>
+    `;
+    if (typeof playTone === 'function') playTone(880, 0.05, 'sine', 0.1);
+  } catch (err) {
+    aiRow.innerHTML = `<div class="gemini-msg-bubble ai" style="color: #fca5a5;">⚠️ Không thể kết nối AI: ${err.message}.</div>`;
+  }
+
+  if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function formatGeminiResponse(text) {
+  let html = escapeHtml(text);
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #00f2fe;">$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 4px; color: #fde047;">$1</code>');
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+function generateSmartGeminiFallback(prompt) {
+  return `✨ **Phân Tích Cùng Gemini**\n\n` +
+    `💡 **Ý chính & Ngữ cảnh:**\n` +
+    `- Cấu trúc từ vựng được ứng dụng tự nhiên trong bài thi chuẩn quốc tế và giao tiếp hằng ngày.\n` +
+    `- Chú ý ngữ điệu (intonation) và nối âm khi luyện phát âm.\n\n` +
+    `🗣️ **Ví dụ IELTS Band 8.0:**\n` +
+    `> *"Using this expression accurately highlights proficiency and elevates lexical resource scores."*\n\n` +
+    `🎬 **Ý Tưởng TikTok Viral:**\n` +
+    `1. **Hook:** "Đừng dịch từ này theo kiểu 'Word-by-word' nữa..."\n` +
+    `2. **Body:** Minh họa sự khác biệt sắc thái nghĩa bằng tình huống vui nhộn.\n` +
+    `3. **CTA:** Nhấn like & lưu thẻ Flashcard để ôn lại mỗi ngày!`;
 }
 
 function initTiktokFlashcardTab() {
@@ -7713,18 +8577,282 @@ function initTiktokFlashcardTab() {
     updateTkDashboardStats();
     renderTkMusicSelect();
     renderTkFlashcardList();
+    renderTkCurrentCard(getActiveTkItem());
     return;
   }
   tkInitialized = true;
+
+  const btnFeedMode = document.getElementById('btnTkViewModeFeed');
+  if (btnFeedMode) btnFeedMode.addEventListener('click', () => setTkViewMode('feed'));
+
+  const btn3DMode = document.getElementById('btnTkViewMode3D');
+  if (btn3DMode) btn3DMode.addEventListener('click', () => setTkViewMode('3d'));
+
+  const btnToggleSplit = document.getElementById('btnTkToggleSplitView');
+  if (btnToggleSplit) btnToggleSplit.addEventListener('click', toggleTkSplitView);
+
+  const btnToggleSidebar = document.getElementById('btnTkToggleSidebar');
+  const sidebarEl = document.getElementById('tkFlashcardSidebar');
+  if (btnToggleSidebar && sidebarEl) {
+    btnToggleSidebar.addEventListener('click', () => {
+      sidebarEl.classList.toggle('tk-sidebar-collapsed');
+      const isCollapsed = sidebarEl.classList.contains('tk-sidebar-collapsed');
+      btnToggleSidebar.style.background = isCollapsed ? 'rgba(0, 242, 254, 0.2)' : 'rgba(255, 255, 255, 0.08)';
+      btnToggleSidebar.style.borderColor = isCollapsed ? '#00f2fe' : 'rgba(255, 255, 255, 0.2)';
+      btnToggleSidebar.innerHTML = isCollapsed ? '📂 Hiện Danh Sách' : '📂 Ẩn Danh Sách';
+      if (typeof playTone === 'function') playTone(600, 0.05, 'sine', 0.1);
+    });
+  }
+
+  const autoScrollBadge = document.getElementById('tkAutoScrollBadge');
+  if (autoScrollBadge) autoScrollBadge.addEventListener('click', toggleTkAutoScroll5s);
+
+  const feedAutoBtn = document.getElementById('btnTkFeedAuto5sToggle');
+  if (feedAutoBtn) feedAutoBtn.addEventListener('click', toggleTkAutoScroll5s);
+
+  // Floating Up/Down navigation buttons
+  const btnFeedUp = document.getElementById('btnTkFeedUp');
+  if (btnFeedUp) btnFeedUp.addEventListener('click', advanceToPrevCard);
+
+  const btnFeedDown = document.getElementById('btnTkFeedDown');
+  if (btnFeedDown) btnFeedDown.addEventListener('click', advanceToNextCard);
+
+  // Mouse wheel scroll & hover pause on TikTok Feed Card
+  const feedCardEl = document.getElementById('tkFeedCard');
+  if (feedCardEl) {
+    let lastWheelTime = 0;
+    feedCardEl.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastWheelTime < 300) return;
+      lastWheelTime = now;
+      if (e.deltaY > 0) {
+        advanceToNextCard();
+      } else {
+        advanceToPrevCard();
+      }
+    }, { passive: false });
+
+    feedCardEl.addEventListener('mouseenter', () => {
+      if (tkIsAutoScroll5s) stopAutoScrollTimer();
+    });
+    feedCardEl.addEventListener('mouseleave', () => {
+      if (tkIsAutoScroll5s) resetAutoScrollTimer();
+    });
+  }
+
+  let tkBlankPastedImageUrl = '';
+
+  function openTkBlankNewOverlay() {
+    const overlay = document.getElementById('tkFeedBlankNewOverlay');
+    const preview = document.getElementById('tkBlankPreviewImg');
+    const prompt = document.getElementById('tkBlankPrompt');
+    const saveBtn = document.getElementById('btnTkBlankSave');
+    const dropzone = document.getElementById('tkBlankDropzone');
+
+    if (!overlay) return;
+    tkBlankPastedImageUrl = '';
+    if (preview) { preview.src = ''; preview.style.display = 'none'; }
+    if (prompt) prompt.style.display = 'flex';
+    if (dropzone) dropzone.classList.remove('has-image');
+    if (saveBtn) saveBtn.disabled = true;
+
+    overlay.style.display = 'flex';
+    if (typeof playTone === 'function') playTone(700, 0.05, 'sine', 0.12);
+  }
+
+  function closeTkBlankNewOverlay() {
+    const overlay = document.getElementById('tkFeedBlankNewOverlay');
+    if (overlay) overlay.style.display = 'none';
+    tkBlankPastedImageUrl = '';
+  }
+
+  function setTkBlankImage(dataUrl) {
+    if (!dataUrl) return;
+    tkBlankPastedImageUrl = dataUrl;
+    const preview = document.getElementById('tkBlankPreviewImg');
+    const prompt = document.getElementById('tkBlankPrompt');
+    const saveBtn = document.getElementById('btnTkBlankSave');
+    const dropzone = document.getElementById('tkBlankDropzone');
+
+    if (preview) {
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+    }
+    if (prompt) prompt.style.display = 'none';
+    if (dropzone) dropzone.classList.add('has-image');
+    if (saveBtn) saveBtn.disabled = false;
+    if (typeof playTone === 'function') playTone(880, 0.06, 'sine', 0.15);
+  }
+
+  async function saveTkBlankNewCard() {
+    if (!tkBlankPastedImageUrl) {
+      alert('Vui lòng dán hoặc chọn 1 hình ảnh trước khi lưu!');
+      return;
+    }
+    const nextNum = (tkFlashcardData.items?.length || 0) + 1;
+    const newItem = {
+      id: 'tk_' + Date.now(),
+      word: '🖼️ Thẻ ảnh #' + nextNum,
+      translation: '',
+      notes: '',
+      imageUrl: tkBlankPastedImageUrl,
+      tiktokUrl: 'https://www.tiktok.com',
+      level: 1,
+      interval: 1,
+      nextReviewDate: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
+    };
+
+    if (!tkFlashcardData.items) tkFlashcardData.items = [];
+    tkFlashcardData.items.unshift(newItem);
+    activeTkCardId = newItem.id;
+
+    await saveTkFlashcardData();
+    closeTkBlankNewOverlay();
+    updateTkDashboardStats();
+    renderTkFlashcardList();
+    renderTkCurrentCard(newItem);
+    showTkToast('✅ Đã lưu thẻ ảnh mới thành công!');
+    if (typeof playTone === 'function') playTone(900, 0.08, 'sine', 0.15);
+  }
+
+  function setupImageDropAndPaste() {
+    const blankDropzone = document.getElementById('tkBlankDropzone');
+    const blankFileInput = document.getElementById('tkBlankFileInput');
+    const btnBlankPick = document.getElementById('btnTkBlankPickFile');
+    const btnBlankPaste = document.getElementById('btnTkBlankPasteClip');
+    const btnFloatingNew = document.getElementById('btnTkFloatingNewCard');
+    const btnBlankSave = document.getElementById('btnTkBlankSave');
+    const btnBlankCancel = document.getElementById('btnTkBlankCancel');
+
+    if (btnFloatingNew) btnFloatingNew.addEventListener('click', openTkBlankNewOverlay);
+    if (btnBlankCancel) btnBlankCancel.addEventListener('click', closeTkBlankNewOverlay);
+    if (btnBlankSave) btnBlankSave.addEventListener('click', saveTkBlankNewCard);
+
+    if (btnBlankPick && blankFileInput) {
+      btnBlankPick.addEventListener('click', () => blankFileInput.click());
+      if (blankDropzone) {
+        blankDropzone.addEventListener('click', (e) => {
+          if (e.target !== blankDropzone && !blankDropzone.contains(e.target)) return;
+          blankFileInput.click();
+        });
+      }
+      blankFileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (ev) => setTkBlankImage(ev.target.result);
+          reader.readAsDataURL(file);
+        }
+        blankFileInput.value = '';
+      });
+    }
+
+    if (btnBlankPaste) {
+      btnBlankPaste.addEventListener('click', async () => {
+        if (window.taskAPI && window.taskAPI.readClipboardImage) {
+          try {
+            const res = await window.taskAPI.readClipboardImage();
+            if (res && res.dataUrl) {
+              setTkBlankImage(res.dataUrl);
+              return;
+            }
+          } catch (err) {}
+        }
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            const imageType = item.types.find(type => type.startsWith('image/'));
+            if (imageType) {
+              const blob = await item.getType(imageType);
+              const reader = new FileReader();
+              reader.onload = (ev) => setTkBlankImage(ev.target.result);
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+        } catch (e) {
+          alert('Không tìm thấy ảnh trong Clipboard! Hãy sao chép ảnh trước (Ctrl+C hoặc Snipping Tool) rồi bấm lại.');
+        }
+      });
+    }
+
+    // Window Paste listener
+    window.addEventListener('paste', async (e) => {
+      const blankOverlay = document.getElementById('tkFeedBlankNewOverlay');
+      const isBlankOpen = blankOverlay && blankOverlay.style.display !== 'none';
+      const formState = document.getElementById('tkFormState');
+      const isFormOpen = formState && formState.style.display !== 'none';
+
+      if (e.clipboardData && e.clipboardData.items) {
+        for (const it of e.clipboardData.items) {
+          if (it.type.startsWith('image/')) {
+            e.preventDefault();
+            const file = it.getAsFile();
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
+                if (isBlankOpen) {
+                  setTkBlankImage(dataUrl);
+                } else if (isFormOpen) {
+                  const formImgUrl = document.getElementById('tkFormImageUrl');
+                  const previewImg = document.getElementById('tkFormPreviewImg');
+                  const previewWrap = document.getElementById('tkFormImagePreviewWrap');
+                  const dropzoneEmpty = document.getElementById('tkFormDropzoneEmpty');
+                  if (formImgUrl) formImgUrl.value = dataUrl;
+                  if (previewImg) previewImg.src = dataUrl;
+                  if (previewWrap) previewWrap.style.display = 'flex';
+                  if (dropzoneEmpty) dropzoneEmpty.style.display = 'none';
+                } else {
+                  // When in main feed, auto-open blank card and populate!
+                  openTkBlankNewOverlay();
+                  setTkBlankImage(dataUrl);
+                }
+              };
+              reader.readAsDataURL(file);
+            }
+            return;
+          }
+        }
+      }
+    });
+
+    // Drag and drop on blank dropzone
+    if (blankDropzone) {
+      ['dragenter', 'dragover'].forEach(name => {
+        blankDropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          blankDropzone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        blankDropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          blankDropzone.classList.remove('dragover');
+        });
+      });
+      blankDropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (ev) => setTkBlankImage(ev.target.result);
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  }
+
+  setupImageDropAndPaste();
 
   const btnNew = document.getElementById('btnTkNewWord');
   if (btnNew) btnNew.addEventListener('click', () => openTkForm(null));
 
   const btnCancelForm = document.getElementById('btnTkCancelForm');
   if (btnCancelForm) btnCancelForm.addEventListener('click', closeTkForm);
-
-  const btnCancelSave = document.getElementById('btnTkCancelSave');
-  if (btnCancelSave) btnCancelSave.addEventListener('click', closeTkForm);
 
   const btnSave = document.getElementById('btnTkSaveWord');
   if (btnSave) btnSave.addEventListener('click', (e) => { e.preventDefault(); saveTkForm(); });

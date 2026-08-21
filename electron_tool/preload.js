@@ -37,4 +37,5 @@ contextBridge.exposeInMainWorld('taskAPI', {
   loadBrainChain: () => ipcRenderer.invoke('load-brain-chain'),
   saveBrainChain: (data) => ipcRenderer.invoke('save-brain-chain', data),
   readClipboardImage: () => ipcRenderer.invoke('read-clipboard-image'),
+  openGeminiWindow: (url) => ipcRenderer.send('open-gemini-window', url),
 });
