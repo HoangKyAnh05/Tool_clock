@@ -45,18 +45,28 @@
   100% { transform: translateX(-50%) scale(1); }
 }
 
-/* Hiệu ứng chớp màn hình máy ảnh khi chụp */
+/* Ẩn hoàn toàn tất cả thành phần của extension khi đang trong quá trình chụp để ảnh giữ màu gốc 100% */
+html[data-tab-capturing="true"] #top-tab-capture-trigger,
+html[data-tab-capturing="true"] #tab-capture-flash-overlay,
+html[data-tab-capturing="true"] #capture-toast-notify {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Hiệu ứng chớp màn hình máy ảnh hiển thị SAU khi đã chụp xong */
 #tab-capture-flash-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.3);
   z-index: 2147483646;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.2s ease-out;
 }
 
 #tab-capture-flash-overlay.active {

@@ -24,19 +24,53 @@ chrome.runtime.onInstalled.addListener(() => {
 injectIntoAllTabs();
 
 // Hàm xử lý chụp tab hiện tại
-function captureAndCopy(targetTab) {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const tab = targetTab || tabs[0];
-    if (!tab || !tab.id) return;
+async function captureAndCopy(targetTab) {
+  let tab = targetTab;
+  if (!tab || !tab.id) {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    tab = tabs[0];
+  }
+  if (!tab || !tab.id) return;
 
-    // Chụp toàn bộ viewport của tab đang active
-    chrome.tabs.captureVisibleTab(tab.windowId || null, { format: "png" }, (dataUrl) => {
+  try {
+    // 1. Tạm ẩn tất cả nút bấm và overlay của extension để chụp ảnh gốc nguyên bản 100%
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        document.documentElement.setAttribute("data-tab-capturing", "true");
+      }
+    }).catch(() => {});
+
+    // Chờ 40ms để trình duyệt vẽ lại giao diện hoàn toàn không có lớp mờ hay nút bấm
+    await new Promise((resolve) => setTimeout(resolve, 40));
+
+    // 2. Chụp toàn bộ viewport tab đang active với màu gốc, độ phân giải gốc
+    chrome.tabs.captureVisibleTab(tab.windowId || null, { format: "png" }, async (dataUrl) => {
+      // 3. Khôi phục lại giao diện & tạo hiệu ứng flash báo hiệu SAU KHI chụp
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          document.documentElement.removeAttribute("data-tab-capturing");
+
+          let flash = document.getElementById("tab-capture-flash-overlay");
+          if (!flash) {
+            flash = document.createElement("div");
+            flash.id = "tab-capture-flash-overlay";
+            document.body.appendChild(flash);
+          }
+          flash.classList.remove("active");
+          void flash.offsetWidth; // Trigger reflow
+          flash.classList.add("active");
+          setTimeout(() => { flash.classList.remove("active"); }, 200);
+        }
+      }).catch(() => {});
+
       if (chrome.runtime.lastError || !dataUrl) {
         console.error("Lỗi khi chụp tab:", chrome.runtime.lastError);
         return;
       }
 
-      // 1. Tự động lưu file ảnh về máy
+      // 4. Tự động lưu file ảnh về máy
       const now = new Date();
       const timeStr = `${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
       const sanitizedTitle = (tab.title || "tab").replace(/[\\/:*?"<>|]/g, "_").substring(0, 30);
@@ -48,7 +82,7 @@ function captureAndCopy(targetTab) {
         saveAs: false
       });
 
-      // 2. Tự động ghi ảnh vào Clipboard của tab đó
+      // 5. Tự động ghi ảnh vào Clipboard của tab đó
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: (base64Image) => {
@@ -63,7 +97,7 @@ function captureAndCopy(targetTab) {
                   toast.id = "capture-toast-notify";
                   document.body.appendChild(toast);
                 }
-                toast.innerHTML = `✅ <b>ĐÃ CHỤP & COPY FULL TAB!</b><br><span style="font-size:11.5px;color:#cbd5e1">Bấm <b>Ctrl + V</b> để dán ảnh</span>`;
+                toast.innerHTML = `✅ <b>ĐÃ CHỤP & COPY FULL TAB!</b><br><span style="font-size:11.5px;color:#cbd5e1">Bấm <b>Ctrl + V</b> để dán ảnh gốc</span>`;
                 toast.className = "show";
                 setTimeout(() => { toast.className = ""; }, 3500);
               });
@@ -73,7 +107,9 @@ function captureAndCopy(targetTab) {
         args: [dataUrl]
       }).catch((e) => console.error("Lỗi inject script copy:", e));
     });
-  });
+  } catch (err) {
+    console.error("Lỗi trong captureAndCopy:", err);
+  }
 }
 
 // 1. Click icon extension trên thanh công cụ

@@ -72,16 +72,6 @@ function triggerCaptureNow() {
     setTimeout(() => btn.classList.remove("capturing"), 400);
   }
 
-  // Hiệu ứng chớp
-  let flash = document.getElementById("tab-capture-flash-overlay");
-  if (!flash) {
-    flash = document.createElement("div");
-    flash.id = "tab-capture-flash-overlay";
-    document.body.appendChild(flash);
-  }
-  flash.className = "active";
-  setTimeout(() => { flash.className = ""; }, 200);
-
   chrome.runtime.sendMessage({ action: "TRIGGER_CAPTURE" });
 }
 
