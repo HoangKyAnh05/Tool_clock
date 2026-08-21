@@ -6993,6 +6993,164 @@ function renderTkFlashcardList() {
   }
 }
 
+function renderTkExpandModalExamples(item) {
+  const contentEl = document.getElementById('tkExpandModalContent');
+  if (!contentEl || !item) return;
+
+  contentEl.innerHTML = '';
+  const rawNotes = (item.notes || '').trim();
+  const isEnFirst = (tkLangOrder === 'en_first');
+
+  if (!rawNotes) {
+    contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--muted);">Chưa có ví dụ nào được ghi lại cho từ này. Bấm Sửa để bổ sung thêm!</div>';
+    return;
+  }
+
+  const lines = rawNotes.split('\n').map(l => l.trim()).filter(Boolean);
+  const speakingItems = [];
+  const writingItems = [];
+  let otherItems = [];
+
+  let currentSection = 'speaking';
+  let currentCard = null;
+
+  lines.forEach(line => {
+    if (line.includes('Speaking') || line.startsWith('🗣️')) {
+      currentSection = 'speaking';
+      if (currentCard) {
+        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        else writingItems.push(currentCard);
+      }
+      currentCard = { section: 'speaking', en: line.replace(/^🗣️\s*Speaking\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+    } else if (line.includes('Writing') || line.startsWith('✍️')) {
+      currentSection = 'writing';
+      if (currentCard) {
+        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        else writingItems.push(currentCard);
+      }
+      currentCard = { section: 'writing', en: line.replace(/^✍️\s*Writing\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+    } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
+      if (currentCard) {
+        currentCard.vi = line.replace(/.*(?:👉\s*Dịch:|Dịch:)\s*/i, '').trim();
+      } else {
+        otherItems.push({ en: '', vi: line });
+      }
+    } else {
+      if (currentCard && !currentCard.vi) {
+        currentCard.en += ' ' + line;
+      } else {
+        if (currentCard) {
+          if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+          else writingItems.push(currentCard);
+          currentCard = null;
+        }
+        otherItems.push({ en: line, vi: '' });
+      }
+    }
+  });
+
+  if (currentCard) {
+    if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+    else writingItems.push(currentCard);
+  }
+
+  // Section 1: Speaking Examples
+  if (speakingItems.length > 0) {
+    const sec1 = document.createElement('div');
+    sec1.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #a78bfa; display: flex; align-items: center; gap: 6px;">🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ</h4>`;
+    const wrap1 = document.createElement('div');
+    wrap1.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
+
+    speakingItems.forEach((c, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.style.cssText = 'background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
+      if (isEnFirst) {
+        cardDiv.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
+            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+          </div>
+          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+        `;
+      } else {
+        cardDiv.innerHTML = `
+          ${c.vi ? `<div style="font-size: 13.5px; color: #34d399; font-weight: 700; line-height: 1.4;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 2px;">
+            <span style="font-weight: 600; font-size: 13px; color: #e2e8f0; font-style: italic; line-height: 1.4; padding-left: 14px;">"${escapeHtml(c.en)}"</span>
+            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+          </div>
+        `;
+      }
+      wrap1.appendChild(cardDiv);
+    });
+    sec1.appendChild(wrap1);
+    contentEl.appendChild(sec1);
+  }
+
+  // Section 2: Writing Examples
+  if (writingItems.length > 0) {
+    const sec2 = document.createElement('div');
+    sec2.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT</h4>`;
+    const wrap2 = document.createElement('div');
+    wrap2.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
+
+    writingItems.forEach((c, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.style.cssText = 'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
+      if (isEnFirst) {
+        cardDiv.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
+            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+          </div>
+          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+        `;
+      } else {
+        cardDiv.innerHTML = `
+          ${c.vi ? `<div style="font-size: 13.5px; color: #34d399; font-weight: 700; line-height: 1.4;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 2px;">
+            <span style="font-weight: 600; font-size: 13px; color: #e2e8f0; font-style: italic; line-height: 1.4; padding-left: 14px;">"${escapeHtml(c.en)}"</span>
+            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+          </div>
+        `;
+      }
+      wrap2.appendChild(cardDiv);
+    });
+    sec2.appendChild(wrap2);
+    contentEl.appendChild(sec2);
+  }
+
+  // Other notes
+  if (otherItems.length > 0 && speakingItems.length === 0 && writingItems.length === 0) {
+    const secOther = document.createElement('div');
+    otherItems.forEach((c, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.style.cssText = 'background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; font-size: 13px; color: #e2e8f0;';
+      cardDiv.textContent = c.en || c.vi;
+      secOther.appendChild(cardDiv);
+    });
+    contentEl.appendChild(secOther);
+  }
+
+  // Sentence speech synthesis
+  const modal = document.getElementById('tkExpandModal');
+  if (modal) {
+    modal.querySelectorAll('.speak-sentence-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const txt = btn.getAttribute('data-text');
+        if (txt && window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          const utt = new SpeechSynthesisUtterance(txt);
+          utt.lang = 'en-US';
+          utt.rate = 0.9;
+          window.speechSynthesis.speak(utt);
+        }
+      };
+    });
+  }
+}
+
 function openTkExpandModal(item) {
   const modal = document.getElementById('tkExpandModal');
   if (!modal || !item) return;
@@ -7001,7 +7159,6 @@ function openTkExpandModal(item) {
   const transEl = document.getElementById('tkExpandModalTrans');
   const badgeEl = document.getElementById('tkExpandModalBadge');
   const indexEl = document.getElementById('tkExpandModalIndex');
-  const contentEl = document.getElementById('tkExpandModalContent');
 
   if (wordEl) wordEl.textContent = item.word || '---';
   if (transEl) transEl.textContent = item.translation || '(Chưa có bản dịch)';
@@ -7011,136 +7168,18 @@ function openTkExpandModal(item) {
   const curIdx = items.findIndex(x => x.id === item.id);
   if (indexEl) indexEl.textContent = `Thẻ ${curIdx >= 0 ? curIdx + 1 : 1} / ${items.length}`;
 
-  // Parse notes into 10 clean example cards
-  if (contentEl) {
-    contentEl.innerHTML = '';
-    const rawNotes = (item.notes || '').trim();
+  // Render example items with current language order
+  renderTkExpandModalExamples(item);
+  updateTkLangOrderUI(item);
 
-    if (!rawNotes) {
-      contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--muted);">Chưa có ví dụ nào được ghi lại cho từ này. Bấm Sửa để bổ sung thêm!</div>';
-    } else {
-      const lines = rawNotes.split('\n').map(l => l.trim()).filter(Boolean);
-      const speakingItems = [];
-      const writingItems = [];
-      let otherItems = [];
-
-      let currentSection = 'speaking';
-      let currentCard = null;
-
-      lines.forEach(line => {
-        if (line.includes('Speaking') || line.startsWith('🗣️')) {
-          currentSection = 'speaking';
-          if (currentCard) {
-            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'speaking', en: line.replace(/^🗣️\s*Speaking\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('Writing') || line.startsWith('✍️')) {
-          currentSection = 'writing';
-          if (currentCard) {
-            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'writing', en: line.replace(/^✍️\s*Writing\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
-          if (currentCard) {
-            currentCard.vi = line.replace(/.*(?:👉s*Dịch:|Dịch:)s*/i, '').trim();
-          } else {
-            otherItems.push({ en: '', vi: line });
-          }
-        } else {
-          if (currentCard && !currentCard.vi) {
-            currentCard.en += ' ' + line;
-          } else {
-            if (currentCard) {
-              if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-              else writingItems.push(currentCard);
-              currentCard = null;
-            }
-            otherItems.push({ en: line, vi: '' });
-          }
-        }
-      });
-
-      if (currentCard) {
-        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-        else writingItems.push(currentCard);
-      }
-
-      // Section 1: Speaking Examples
-      if (speakingItems.length > 0) {
-        const sec1 = document.createElement('div');
-        sec1.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #a78bfa; display: flex; align-items: center; gap: 6px;">🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ</h4>`;
-        const wrap1 = document.createElement('div');
-        wrap1.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
-
-        speakingItems.forEach((c, idx) => {
-          const cardDiv = document.createElement('div');
-          cardDiv.style.cssText = 'background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
-          cardDiv.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-              <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
-              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
-            </div>
-            ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
-          `;
-          wrap1.appendChild(cardDiv);
-        });
-        sec1.appendChild(wrap1);
-        contentEl.appendChild(sec1);
-      }
-
-      // Section 2: Writing Examples
-      if (writingItems.length > 0) {
-        const sec2 = document.createElement('div');
-        sec2.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT</h4>`;
-        const wrap2 = document.createElement('div');
-        wrap2.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
-
-        writingItems.forEach((c, idx) => {
-          const cardDiv = document.createElement('div');
-          cardDiv.style.cssText = 'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
-          cardDiv.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-              <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
-              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
-            </div>
-            ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
-          `;
-          wrap2.appendChild(cardDiv);
-        });
-        sec2.appendChild(wrap2);
-        contentEl.appendChild(sec2);
-      }
-
-      // Other notes
-      if (otherItems.length > 0 && speakingItems.length === 0 && writingItems.length === 0) {
-        const secOther = document.createElement('div');
-        otherItems.forEach((c, idx) => {
-          const cardDiv = document.createElement('div');
-          cardDiv.style.cssText = 'background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; font-size: 13px; color: #e2e8f0;';
-          cardDiv.textContent = c.en || c.vi;
-          secOther.appendChild(cardDiv);
-        });
-        contentEl.appendChild(secOther);
-      }
-    }
-  }
-
-  // Sentence speech synthesis
-  modal.querySelectorAll('.speak-sentence-btn').forEach(btn => {
-    btn.onclick = (e) => {
+  // Hook Modal Swap button
+  const modalSwapBtn = document.getElementById('btnTkModalSwapLangOrder');
+  if (modalSwapBtn) {
+    modalSwapBtn.onclick = (e) => {
       e.stopPropagation();
-      const txt = btn.getAttribute('data-text');
-      if (txt && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(txt);
-        utt.lang = 'en-US';
-        utt.rate = 0.9;
-        window.speechSynthesis.speak(utt);
-      }
+      toggleTkLangOrder(item);
     };
-  });
+  }
 
   // Word speech button
   const btnSpeak = document.getElementById('btnTkExpandSpeak');
@@ -7284,6 +7323,21 @@ function renderTkPlayer(item) {
 
   const notesEl = document.getElementById('lblTkNotes');
   if (notesEl) notesEl.textContent = item.notes || 'Chưa có ghi chú ví dụ.';
+
+  const backWordMain = document.getElementById('lblTkBackWordMain');
+  if (backWordMain) backWordMain.textContent = item.word || '---';
+
+  // Update layout & order based on saved preference
+  updateTkLangOrderUI(item);
+
+  // Hook Flashcard Swap Lang Button
+  const btnSwapLang = document.getElementById('btnTkSwapLangOrder');
+  if (btnSwapLang) {
+    btnSwapLang.onclick = (e) => {
+      e.stopPropagation();
+      toggleTkLangOrder(item);
+    };
+  }
 
   // Reset 3D card rotation
   const cardInner = document.getElementById('tk3dCardInner');
