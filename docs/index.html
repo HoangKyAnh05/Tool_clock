@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>TikTok Flashcard - Lướt Từ Vựng IELTS</title>
-  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, sao lưu Cloud mã 1 số, phát âm to rõ.">
+  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, thêm thẻ ảnh mới, sao lưu Cloud mã 1 số, phát âm to rõ.">
   <meta name="theme-color" content="#0b0d14">
   
   <!-- PWA Meta Tags -->
@@ -153,6 +153,28 @@
       gap: 4px;
       cursor: pointer;
       box-shadow: 0 3px 12px rgba(255, 0, 80, 0.35);
+    }
+
+    .add-card-header-btn {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
+      border: none;
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(0, 242, 254, 0.35);
+      animation: pulseAddBtn 3s infinite;
+    }
+
+    @keyframes pulseAddBtn {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
     }
 
     /* Sub Toolbar (Filter Pills & Auto-Scroll) */
@@ -561,7 +583,7 @@
       border-radius: var(--radius);
       display: flex;
       flex-direction: column;
-      max-height: 85vh;
+      max-height: 88vh;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
       overflow: hidden;
     }
@@ -657,6 +679,63 @@
       box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
     }
 
+    /* Image Upload & Paste Dropzone in Add Card Modal */
+    .add-dropzone {
+      border: 2px dashed rgba(0, 242, 254, 0.4);
+      background: rgba(0, 242, 254, 0.04);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-dropzone:active {
+      background: rgba(0, 242, 254, 0.12);
+      border-color: #00f2fe;
+    }
+
+    .preview-img-box {
+      width: 100%;
+      max-height: 200px;
+      position: relative;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .preview-img-box img {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+    }
+
+    .remove-preview-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.85);
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* Fullscreen Image Zoom */
     .img-fullscreen-modal {
       position: fixed;
@@ -735,6 +814,9 @@
       </div>
     </div>
     <div class="header-actions">
+      <button type="button" id="btnOpenNewCardModal" class="add-card-header-btn" title="Thêm thẻ từ vựng hoặc thẻ ảnh mới">
+        <span>➕</span> Thêm Thẻ
+      </button>
       <button type="button" id="btnOpenCloudSync" class="icon-btn" title="Đồng bộ Cloud với Mã 1 chữ số (0 - 9)" style="background: rgba(16,185,129,0.2); border-color: #10b981; color: #6ee7b7;">☁️</button>
       <button type="button" id="btnPwaInstall" class="pwa-install-btn" title="Cài đặt App vào Màn hình chính">
         <span>📲</span> Cài App
@@ -782,6 +864,10 @@
 
       <!-- Floating Action Buttons on Right (Fixed to Viewport) -->
       <div class="tiktok-side-actions">
+        <div class="side-btn" id="btnSideAddCard" title="Thêm Thẻ Mới / Thẻ Ảnh" style="background: linear-gradient(135deg, rgba(255,0,80,0.6) 0%, rgba(0,242,254,0.6) 100%); border-color: #00f2fe;">
+          <span style="font-size: 20px;">➕</span>
+          <span class="side-btn-label">Thêm thẻ</span>
+        </div>
         <div class="side-btn" id="btnSideSpeak" title="Phát âm chuẩn tiếng Anh">
           <span style="font-size: 20px;">🔊</span>
           <span class="side-btn-label">Phát âm</span>
@@ -829,6 +915,68 @@
           <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh hoặc tiếng Việt..." />
         </div>
         <div id="searchResultsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Flashcard / Photo Card -->
+  <div class="modal-overlay" id="newCardModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" style="color: #00f2fe; display: flex; align-items: center; gap: 8px;">
+          ➕ THÊM THẺ FLASHCARD / THẺ ẢNH MỚI
+        </div>
+        <button type="button" class="icon-btn" id="btnCloseNewCardModal">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Image Upload & Preview Section -->
+        <input type="file" id="inpAddCardFile" accept="image/*" style="display: none;" />
+        <input type="hidden" id="newCardImgBase64" value="" />
+
+        <div class="preview-img-box" id="previewImgBox">
+          <img id="previewImgEl" src="" alt="Preview" />
+          <button type="button" class="remove-preview-btn" id="btnRemovePreview" title="Xóa ảnh">✕</button>
+        </div>
+
+        <div class="add-dropzone" id="addImgDropzone">
+          <span style="font-size: 30px;">🖼️</span>
+          <div style="font-size: 13px; font-weight: 800; color: #00f2fe;">Chạm để Tải ảnh / Chụp ảnh hoặc Dán ảnh (Ctrl+V)</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Hỗ trợ ảnh chụp màn hình, ảnh từ thư viện, camera hoặc clipboard</div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button type="button" class="pwa-install-btn" id="btnTriggerUpload" style="background: rgba(0,242,254,0.2); border: 1px solid #00f2fe; color: #00f2fe;">📁 Chọn ảnh</button>
+            <button type="button" class="pwa-install-btn" id="btnTriggerPaste" style="background: rgba(255,0,80,0.2); border: 1px solid #ff0050; color: #ff0050;">📋 Dán từ Clipboard</button>
+          </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Từ Tiếng Anh / Tên Thẻ *</label>
+          <input type="text" id="newCardWord" placeholder="Ví dụ: resilient, consequence (hoặc để trống nếu là ảnh)" style="width: 100%; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 0 12px; font-size: 14px; font-weight: 700; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Dịch Nghĩa Tiếng Việt</label>
+          <input type="text" id="newCardTrans" placeholder="Ví dụ: kiên cường, hậu quả..." style="width: 100%; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #6ee7b7; padding: 0 12px; font-size: 13.5px; font-weight: 600; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Ví Dụ & Ghi Chú (Speaking / Writing / Ngữ Cảnh)</label>
+          <textarea id="newCardNotes" placeholder="Nhập câu ví dụ hoặc phân tích..." rows="3" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #cbd5e1; padding: 10px 12px; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Link Video TikTok (Tùy chọn)</label>
+          <input type="url" id="newCardTiktokUrl" placeholder="https://www.tiktok.com/..." style="width: 100%; height: 38px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #94a3b8; padding: 0 12px; font-size: 12.5px; outline: none;" />
+        </div>
+
+        <!-- Submit Buttons -->
+        <div style="display: flex; gap: 10px;">
+          <button type="button" id="btnSaveNewCard" class="pwa-install-btn" style="flex: 1; height: 44px; font-size: 14px; font-weight: 800; justify-content: center; background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);">
+            💾 Lưu Thẻ Mới
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -987,6 +1135,7 @@
       localStorage.setItem('pwa_tk_due', JSON.stringify([...dueIds]));
       localStorage.setItem('pwa_tk_filter', activeFilter);
       localStorage.setItem('pwa_tk_index', currentIndex.toString());
+      localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
     }
 
     function getFilteredList() {
@@ -1016,7 +1165,7 @@
     // Slide HTML Builder
     function buildSlideContent(item, index, total) {
       if (!item) {
-        return '<div class="slide-body"><div style="color: #94a3b8; text-align: center;">Chưa có thẻ nào trong mục này.</div></div>';
+        return '<div class="slide-body"><div style="color: #94a3b8; text-align: center;">Chưa có thẻ nào trong mục này.<br><br><button type="button" class="add-card-header-btn" onclick="openAddCardModal()" style="margin: auto;">➕ Thêm thẻ đầu tiên</button></div></div>';
       }
 
       let inner = '';
@@ -1149,7 +1298,7 @@
 
       const deltaY = currentY - startY;
       const duration = Date.now() - startTime;
-      const threshold = Math.max(window.innerHeight * 0.12, 40); // 12% screen height
+      const threshold = Math.max(window.innerHeight * 0.12, 40);
       const velocity = Math.abs(deltaY) / (duration || 1);
 
       const list = getFilteredList();
@@ -1232,7 +1381,7 @@
     viewport.addEventListener('touchend', handleEnd);
     viewport.addEventListener('touchcancel', handleEnd);
 
-    // Mouse Wheel Scroll (for desktop mouse wheel flick)
+    // Mouse Wheel Scroll
     let wheelDebounce = false;
     viewport.addEventListener('wheel', (e) => {
       if (wheelDebounce || isAnimating) return;
@@ -1266,9 +1415,11 @@
       }
     }, { passive: true });
 
-    // Keyboard navigation (ArrowDown / ArrowUp / Space)
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
-      if (document.getElementById('searchModal').classList.contains('active') || document.getElementById('cloudSyncModal').classList.contains('active')) return;
+      if (document.getElementById('searchModal').classList.contains('active') ||
+          document.getElementById('cloudSyncModal').classList.contains('active') ||
+          document.getElementById('newCardModal').classList.contains('active')) return;
       const list = getFilteredList();
       if (list.length === 0) return;
       
@@ -1423,6 +1574,179 @@
     // Zoom Image Modal Close
     document.getElementById('btnCloseImgModal').addEventListener('click', () => {
       document.getElementById('imgFullscreenModal').classList.remove('active');
+    });
+
+    // =========================================================================
+    // ADD NEW FLASHCARD / PHOTO CARD MODAL LOGIC
+    // =========================================================================
+    const newCardModal = document.getElementById('newCardModal');
+    const inpAddCardFile = document.getElementById('inpAddCardFile');
+    const newCardImgBase64 = document.getElementById('newCardImgBase64');
+    const previewImgBox = document.getElementById('previewImgBox');
+    const previewImgEl = document.getElementById('previewImgEl');
+    const btnRemovePreview = document.getElementById('btnRemovePreview');
+    const newCardWord = document.getElementById('newCardWord');
+    const newCardTrans = document.getElementById('newCardTrans');
+    const newCardNotes = document.getElementById('newCardNotes');
+    const newCardTiktokUrl = document.getElementById('newCardTiktokUrl');
+    const btnSaveNewCard = document.getElementById('btnSaveNewCard');
+
+    function openAddCardModal(preloadedImg = null) {
+      newCardWord.value = '';
+      newCardTrans.value = '';
+      newCardNotes.value = '';
+      newCardTiktokUrl.value = '';
+      
+      if (preloadedImg) {
+        newCardImgBase64.value = preloadedImg;
+        previewImgEl.src = preloadedImg;
+        previewImgBox.style.display = 'flex';
+        newCardWord.placeholder = `🖼️ Thẻ ảnh #${RAW_ITEMS.length + 1}`;
+      } else {
+        newCardImgBase64.value = '';
+        previewImgBox.style.display = 'none';
+        newCardWord.placeholder = 'Ví dụ: resilient, consequence...';
+      }
+
+      newCardModal.classList.add('active');
+      setTimeout(() => newCardWord.focus(), 150);
+    }
+
+    window.openAddCardModal = openAddCardModal;
+
+    document.getElementById('btnOpenNewCardModal').addEventListener('click', () => openAddCardModal());
+    document.getElementById('btnSideAddCard').addEventListener('click', () => openAddCardModal());
+    document.getElementById('btnCloseNewCardModal').addEventListener('click', () => {
+      newCardModal.classList.remove('active');
+    });
+
+    // Trigger file upload
+    document.getElementById('btnTriggerUpload').addEventListener('click', (e) => {
+      e.stopPropagation();
+      inpAddCardFile.click();
+    });
+
+    document.getElementById('addImgDropzone').addEventListener('click', () => {
+      inpAddCardFile.click();
+    });
+
+    inpAddCardFile.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const base64 = ev.target.result;
+        newCardImgBase64.value = base64;
+        previewImgEl.src = base64;
+        previewImgBox.style.display = 'flex';
+        if (!newCardWord.value.trim()) {
+          newCardWord.value = `🖼️ Thẻ ảnh #${RAW_ITEMS.length + 1}`;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Trigger paste from clipboard
+    document.getElementById('btnTriggerPaste').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try {
+        if (navigator.clipboard && navigator.clipboard.read) {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            for (const type of item.types) {
+              if (type.startsWith('image/')) {
+                const blob = await item.getType(type);
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  const base64 = ev.target.result;
+                  newCardImgBase64.value = base64;
+                  previewImgEl.src = base64;
+                  previewImgBox.style.display = 'flex';
+                  if (!newCardWord.value.trim()) {
+                    newCardWord.value = `🖼️ Thẻ ảnh #${RAW_ITEMS.length + 1}`;
+                  }
+                  alert('✅ Đã dán ảnh từ Clipboard thành công!');
+                };
+                reader.readAsDataURL(blob);
+                return;
+              }
+            }
+          }
+          alert('Không tìm thấy hình ảnh nào trong Clipboard. Hãy thử Copy ảnh trước nhé!');
+        } else {
+          alert('Hãy nhấn Ctrl+V trên bàn phím để dán ảnh!');
+        }
+      } catch (err) {
+        alert('Không thể đọc Clipboard: ' + err.message + '. Bạn có thể nhấn Ctrl+V để dán trực tiếp.');
+      }
+    });
+
+    // Remove preview image
+    btnRemovePreview.addEventListener('click', (e) => {
+      e.stopPropagation();
+      newCardImgBase64.value = '';
+      previewImgBox.style.display = 'none';
+      previewImgEl.src = '';
+      inpAddCardFile.value = '';
+    });
+
+    // Global Paste (Ctrl+V) listener
+    window.addEventListener('paste', (e) => {
+      if (e.clipboardData && e.clipboardData.items) {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const base64 = ev.target.result;
+              openAddCardModal(base64);
+            };
+            reader.readAsDataURL(blob);
+            break;
+          }
+        }
+      }
+    });
+
+    // Save New Card Action
+    btnSaveNewCard.addEventListener('click', () => {
+      let wordVal = newCardWord.value.trim();
+      const transVal = newCardTrans.value.trim();
+      const notesVal = newCardNotes.value.trim();
+      const tiktokVal = newCardTiktokUrl.value.trim();
+      const imgVal = newCardImgBase64.value.trim();
+
+      if (!wordVal && !imgVal) {
+        alert('Vui lòng nhập từ tiếng Anh hoặc tải/dán một hình ảnh!');
+        return;
+      }
+
+      if (!wordVal && imgVal) {
+        wordVal = `🖼️ Thẻ ảnh #${RAW_ITEMS.length + 1}`;
+      }
+
+      const newId = 'tk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      const newCard = {
+        id: newId,
+        word: wordVal,
+        translation: transVal,
+        notes: notesVal,
+        tiktokUrl: tiktokVal || undefined,
+        imageUrl: imgVal || undefined,
+        level: 1,
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to beginning of items
+      RAW_ITEMS.unshift(newCard);
+      currentIndex = 0;
+      saveState();
+      updateBadges();
+      renderDeck();
+      newCardModal.classList.remove('active');
+      alert(`🎉 Đã thêm thành công thẻ "${wordVal}" vào bộ flashcard!`);
     });
 
     // =========================================================================
@@ -1586,6 +1910,10 @@
       if (e.target === cloudSyncModal) cloudSyncModal.classList.remove('active');
     });
 
+    newCardModal.addEventListener('click', (e) => {
+      if (e.target === newCardModal) newCardModal.classList.remove('active');
+    });
+
     const iosPwaModal = document.getElementById('iosPwaModal');
     iosPwaModal.addEventListener('click', (e) => {
       if (e.target === iosPwaModal) iosPwaModal.classList.remove('active');
@@ -1607,6 +1935,7 @@
       if (e.key === 'Escape') {
         searchModal.classList.remove('active');
         cloudSyncModal.classList.remove('active');
+        newCardModal.classList.remove('active');
         iosPwaModal.classList.remove('active');
         imgFullscreenModal.classList.remove('active');
         examplesDrawer.classList.remove('active');

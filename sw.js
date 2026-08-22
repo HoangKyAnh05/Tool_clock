@@ -1,5 +1,5 @@
 // sw.js - Service Worker for TikTok Flashcard PWA
-const CACHE_NAME = 'tiktok-flashcard-v6';
+const CACHE_NAME = 'tiktok-flashcard-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -31,7 +31,6 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  // Network first for data files
   if (event.request.url.includes('/data/')) {
     event.respondWith(fetch(event.request));
     return;
