@@ -1,16 +1,12 @@
 // sync_web_generator.js
-// Generates standalone, mobile-optimized Flashcard Web App for GitHub Pages / Vercel
+// Generates standalone, mobile-optimized TikTok Flashcard PWA for GitHub Pages
 const fs = require('fs');
 const path = require('path');
+const { generateIcons } = require('./generate_icons');
 
 function generateMobileHtml(data) {
   const items = (data && data.items) ? data.items : [];
   const totalCount = items.length;
-  
-  // Calculate 3-day partition
-  const day1Limit = Math.ceil(totalCount / 3);
-  const day2Limit = Math.ceil((totalCount * 2) / 3);
-  
   const jsonData = JSON.stringify(items);
 
   return `<!DOCTYPE html>
@@ -18,12 +14,21 @@ function generateMobileHtml(data) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>IELTS Flashcard 3-Day Mastery</title>
-  <meta name="description" content="Trang học 645 thẻ từ vựng & cấu trúc ngữ pháp IELTS chia lộ trình 3 ngày với phát âm, ví dụ Speaking & Writing thực tế.">
-  <meta name="theme-color" content="#0d0e15">
+  <title>TikTok Flashcard - Học Từ Vựng IELTS Mobile PWA</title>
+  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, feed ảnh to rõ, phát âm chuẩn, lướt vuốt cực mượt trên điện thoại.">
+  <meta name="theme-color" content="#0b0d14">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="IELTS Flashcard">
+  <meta name="apple-mobile-web-app-title" content="TikTok Flash">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Modern Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -32,21 +37,21 @@ function generateMobileHtml(data) {
     :root {
       --bg: #0b0d14;
       --bg-card: #131722;
-      --bg-card-back: #0e201b;
       --surface: #1a2030;
       --primary: #00f2fe;
-      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-      --accent-pink: #ff0050;
-      --accent-purple: #8b5cf6;
+      --primary-gradient: linear-gradient(135deg, #ff0050 0%, #7c3aed 50%, #00f2fe 100%);
+      --tk-pink: #ff0050;
+      --tk-cyan: #00f2fe;
+      --tk-purple: #8b5cf6;
       --accent-green: #10b981;
       --accent-red: #ef4444;
       --accent-gold: #f59e0b;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.12);
       --border-glow: rgba(0, 242, 254, 0.35);
-      --radius: 16px;
-      --radius-sm: 10px;
+      --radius: 20px;
+      --radius-sm: 12px;
     }
 
     * {
@@ -56,65 +61,72 @@ function generateMobileHtml(data) {
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    html, body {
+      width: 100%;
+      height: 100%;
       background-color: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    /* Header Nav */
+    body {
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Top Navigation Header */
     header {
-      position: sticky;
-      top: 0;
+      flex-shrink: 0;
       z-index: 50;
-      background: rgba(11, 13, 20, 0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(11, 13, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
     }
 
     .brand-logo {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
       background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 4px 12px rgba(255, 0, 80, 0.4);
+      font-size: 20px;
+      box-shadow: 0 4px 15px rgba(255, 0, 80, 0.4);
+      flex-shrink: 0;
     }
 
     .brand-text h1 {
       font-size: 15px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.2px;
-      background: linear-gradient(135deg, #fff 40%, #00f2fe 100%);
+      background: linear-gradient(135deg, #fff 30%, #00f2fe 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       line-height: 1.2;
     }
 
     .brand-text p {
-      font-size: 10.5px;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: #94a3b8;
       font-weight: 600;
     }
 
@@ -128,13 +140,13 @@ function generateMobileHtml(data) {
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border);
-      color: var(--text);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -144,102 +156,470 @@ function generateMobileHtml(data) {
       background: rgba(255, 255, 255, 0.15);
     }
 
-    /* Day Tabs Filter */
-    .filter-container {
-      padding: 10px 14px 6px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
+    .pwa-install-btn {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, #ff0050 0%, #8b5cf6 100%);
+      border: none;
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 800;
       display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(255, 0, 80, 0.35);
+      animation: pulseBtn 2.5s infinite;
+    }
+
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    /* Sub Toolbar (Mode Switcher & Auto-Scroll) */
+    .sub-bar {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      background: rgba(19, 23, 34, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       gap: 8px;
     }
 
-    .filter-container::-webkit-scrollbar {
+    .segmented-control {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+    }
+
+    .segmented-btn {
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .segmented-btn.active {
+      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 242, 254, 0.3);
+    }
+
+    .autoscroll-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .autoscroll-badge.active {
+      background: linear-gradient(135deg, rgba(255,0,80,0.2) 0%, rgba(0,242,254,0.2) 100%);
+      border-color: #ff0050;
+      color: #ff0050;
+    }
+
+    /* Filter Tabs Bar */
+    .filter-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: 6px;
+      padding: 8px 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-bar::-webkit-scrollbar {
       display: none;
     }
 
-    .day-tab {
-      padding: 8px 14px;
+    .filter-pill {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
       border-radius: 99px;
-      font-size: 12px;
-      font-weight: 700;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
       transition: all 0.2s;
-      outline: none;
     }
 
-    .day-tab.active {
-      background: linear-gradient(135deg, #ff0050 0%, #8b5cf6 100%);
+    .filter-pill.active {
+      background: rgba(0, 242, 254, 0.15);
+      border-color: #00f2fe;
       color: #fff;
-      border-color: transparent;
-      box-shadow: 0 4px 14px rgba(255, 0, 80, 0.35);
     }
 
-    .day-tab .tab-badge {
-      background: rgba(0, 0, 0, 0.25);
-      padding: 2px 6px;
-      border-radius: 12px;
+    .filter-badge {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1px 7px;
+      border-radius: 99px;
       font-size: 10px;
+      color: #00f2fe;
     }
 
     /* Main Container */
     main {
       flex: 1;
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding: 8px 14px 14px;
-      max-width: 680px;
-      width: 100%;
-      margin: 0 auto;
     }
 
-    /* Stats bar */
-    .stats-bar {
+    /* ==========================================================================
+       VIEW 1: TIKTOK FEED VIEW (FULLSCREEN VERTICAL SWIPE)
+       ========================================================================== */
+    .tiktok-feed-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .feed-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 14px 20px 14px;
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease;
+      touch-action: pan-y;
+    }
+
+    .feed-card-box {
+      width: 100%;
+      height: 100%;
+      max-width: 480px;
+      background: linear-gradient(165deg, #131722 0%, #0c0e17 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Image Display Area in Feed */
+    .feed-img-area {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .feed-img-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .img-zoom-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #fff;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    /* Text Vocabulary Area (for text cards) */
+    .feed-text-area {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .feed-word-title {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 40%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .feed-word-trans {
+      font-size: 20px;
+      font-weight: 700;
+      color: #6ee7b7;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .feed-quick-notes {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      max-height: 180px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      width: 100%;
+      white-space: pre-wrap;
+    }
+
+    /* Bottom Info Bar inside Feed Card */
+    .feed-bottom-info {
+      flex-shrink: 0;
+      padding: 12px 16px;
+      background: rgba(11, 13, 20, 0.92);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .feed-info-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 4px 10px;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
     }
 
-    .progress-pill {
-      background: rgba(0, 242, 254, 0.12);
-      border: 1px solid rgba(0, 242, 254, 0.3);
-      color: var(--primary);
-      padding: 3px 10px;
-      border-radius: 99px;
+    .feed-tag {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.25);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.4);
     }
 
-    /* 3D Flashcard Stage */
-    .card-stage {
-      position: relative;
+    .feed-index-pill {
+      font-size: 11px;
+      color: #00f2fe;
+      font-weight: 700;
+      background: rgba(0, 242, 254, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+
+    .feed-caption-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .feed-caption-trans {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6ee7b7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Right-side Floating Action Toolbar (TikTok style) */
+    .feed-side-actions {
+      position: absolute;
+      right: 14px;
+      bottom: 75px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      z-index: 25;
+    }
+
+    .side-action-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(11, 13, 20, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .side-action-btn:active {
+      transform: scale(0.85);
+      border-color: var(--primary);
+    }
+
+    .side-action-btn.active-like {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #10b981;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .side-action-btn.active-due {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-color: #ef4444;
+      color: #fff;
+    }
+
+    .side-action-label {
+      font-size: 9.5px;
+      font-weight: 800;
+      margin-top: 2px;
+      color: #e2e8f0;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Floating Heart on Double Tap */
+    .floating-heart {
+      position: absolute;
+      font-size: 70px;
+      color: #ff0050;
+      pointer-events: none;
+      animation: floatUpHeart 0.8s ease-out forwards;
+      z-index: 100;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes floatUpHeart {
+      0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+      50% { transform: translate(-50%, -80%) scale(1.3); opacity: 1; }
+      100% { transform: translate(-50%, -120%) scale(1.6); opacity: 0; }
+    }
+
+    /* Next / Prev Floating Navigation Arrows for Ease of Use */
+    .feed-nav-bar {
+      position: absolute;
+      bottom: 6px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .feed-nav-btn {
+      pointer-events: auto;
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: rgba(19, 23, 34, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s;
+    }
+
+    .feed-nav-btn:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .feed-nav-btn.primary {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      color: #0b0d14;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
+    }
+
+    /* ==========================================================================
+       VIEW 2: 3D FLIP CARD VIEW
+       ========================================================================== */
+    .view-3d-container {
       width: 100%;
-      min-height: 500px;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      padding: 10px 14px 20px 14px;
+      overflow-y: auto;
+      align-items: center;
+    }
+
+    .card-stage-3d {
+      width: 100%;
+      max-width: 480px;
+      flex: 1;
+      min-height: 420px;
       perspective: 1200px;
       margin-bottom: 12px;
     }
 
-    .card-3d {
+    .card-3d-inner {
       width: 100%;
       height: 100%;
-      min-height: 500px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
     }
 
-    .card-3d.flipped {
+    .card-3d-inner.flipped {
       transform: rotateY(180deg);
     }
 
@@ -252,447 +632,215 @@ function generateMobileHtml(data) {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       border-radius: var(--radius);
-      padding: 16px 18px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      border: 1.5px solid var(--border);
     }
 
-    /* Front Card Face */
-    .card-front {
+    .card-face-front {
       background: linear-gradient(160deg, #181c2b 0%, #0d0f1a 100%);
-      border: 2px solid rgba(0, 242, 254, 0.35);
+      border-color: rgba(0, 242, 254, 0.35);
     }
 
-    /* Back Card Face */
-    .card-back {
-      background: linear-gradient(160deg, #092019 0%, #091319 100%);
-      border: 2px solid rgba(16, 185, 129, 0.4);
+    .card-face-back {
+      background: linear-gradient(160deg, #0a1f18 0%, #091319 100%);
+      border-color: rgba(16, 185, 129, 0.4);
       transform: rotateY(180deg);
     }
 
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 2;
-    }
-
-    .tag-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .tag {
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 6px;
-    }
-
-    .tag-day {
-      background: rgba(139, 92, 246, 0.25);
-      color: #c4b5fd;
-      border: 1px solid rgba(139, 92, 246, 0.4);
-    }
-
-    .tag-level {
-      background: rgba(16, 185, 129, 0.2);
-      color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-
-    .speak-btn-bubble {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .speak-btn-bubble:active {
-      transform: scale(0.9);
-      background: rgba(0, 242, 254, 0.3);
-    }
-
-    /* Card Middle */
-    .card-middle {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 8px 2px;
-      z-index: 2;
-      overflow-y: auto;
-      max-height: 380px;
-    }
-
-    .word-title {
-      font-size: 26px;
-      font-weight: 900;
-      line-height: 1.3;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-      word-break: break-word;
-    }
-
-    .card-front .word-title {
-      background: linear-gradient(135deg, #ffffff 30%, #00f2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .card-back .word-title {
-      color: #34d399;
-      font-size: 17px;
-      font-weight: 800;
-      margin-bottom: 2px;
-      line-height: 1.2;
-    }
-
-    .word-trans-sub {
-      font-size: 12px;
-      font-weight: 700;
-      color: #6ee7b7;
-      margin-bottom: 6px;
-    }
-
-    .tap-hint {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 6px 14px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-    }
-
-    /* Examples Scroll Area in Back */
-    .examples-container {
-      width: 100%;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      overflow-y: auto;
-      padding-right: 4px;
-      margin-top: 2px;
-      scrollbar-width: thin;
-      scrollbar-color: #10b981 transparent;
-    }
-
-    .example-section-header {
-      font-size: 10px;
-      font-weight: 800;
-      color: #a7f3d0;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 0;
-    }
-
-    .example-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 6px 10px;
-      transition: background 0.2s;
-    }
-
-    .example-card:active {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .example-en-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .example-en {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #f1f5f9;
-      line-height: 1.35;
-    }
-
-    .example-vi {
-      font-size: 10.5px;
-      color: #94a3b8;
-      margin-top: 2px;
-      line-height: 1.3;
-      font-style: italic;
-    }
-
-    .example-speak {
-      font-size: 13px;
-      cursor: pointer;
-      color: #38bdf8;
-      padding: 1px 5px;
-      flex-shrink: 0;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .example-speak:active {
-      transform: scale(0.9);
-      background: rgba(0, 242, 254, 0.25);
-    }
-
-    /* Card Bottom */
-    .card-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      z-index: 2;
-    }
-
-    .tiktok-btn {
-      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(255, 0, 80, 0.4);
-      text-decoration: none;
-    }
-
-    .tiktok-btn:active {
-      transform: scale(0.95);
-    }
-
-    .flip-btn-sub {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      color: #cbd5e1;
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    /* Navigation Controls */
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .btn-nav {
-      flex: 1;
-      height: 48px;
-      border-radius: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-nav:active {
-      transform: scale(0.96);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .btn-nav.primary {
-      background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%);
-      color: #0b0d14;
-      border: none;
-      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-    }
-
-    .btn-action-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .btn-status {
-      flex: 1;
-      height: 42px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .btn-status.due {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.35);
-      color: #fca5a5;
-    }
-
-    .btn-status.mastered {
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(16, 185, 129, 0.35);
-      color: #6ee7b7;
-    }
-
-    .btn-status:active {
-      transform: scale(0.96);
-    }
-
-    /* Search & List Modal */
-    .modal {
+    /* Modal Styles */
+    .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(11, 13, 20, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 100;
       display: none;
       flex-direction: column;
-      padding: 16px;
-      padding-top: calc(16px + env(safe-area-inset-top, 0px));
-      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 16px) 16px;
     }
 
-    .modal.active {
+    .modal-overlay.active {
       display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      background: #131722;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
     }
 
     .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
     }
 
     .modal-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       color: #fff;
     }
 
+    .modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Search results list */
     .search-input-box {
-      width: 100%;
-      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 12px;
       margin-bottom: 12px;
     }
 
     .search-input-box input {
-      width: 100%;
-      height: 44px;
-      border-radius: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      flex: 1;
+      background: transparent;
+      border: none;
       color: #fff;
       font-size: 14px;
-      padding: 0 16px;
-      padding-left: 40px;
       outline: none;
     }
 
-    .search-input-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-    }
-
-    .list-results {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .list-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
+    .search-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin-bottom: 8px;
       cursor: pointer;
     }
 
-    .list-item:active {
-      background: var(--surface);
-      border-color: var(--primary);
+    .search-item:active {
+      background: rgba(0, 242, 254, 0.15);
+      border-color: #00f2fe;
     }
 
-    .list-item-word {
-      font-size: 14px;
-      font-weight: 700;
+    .search-item-word {
+      font-size: 15px;
+      font-weight: 800;
       color: #fff;
     }
 
-    .list-item-trans {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 3px;
+    .search-item-trans {
+      font-size: 12.5px;
+      color: #6ee7b7;
+      margin-top: 2px;
     }
 
-    .toast {
+    /* Examples Drawer Sheet */
+    .drawer-sheet {
       position: fixed;
-      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(16, 185, 129, 0.95);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
-      padding: 10px 20px;
-      border-radius: 99px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      z-index: 200;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 80vh;
+      background: #131722;
+      border-top: 2px solid var(--primary);
+      border-radius: 24px 24px 0 0;
+      z-index: 90;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+      padding-bottom: env(safe-area-inset-bottom, 16px);
     }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
+    .drawer-sheet.active {
+      transform: translateY(0);
+    }
+
+    /* PWA iOS Guide Modal */
+    .ios-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13.5px;
+      color: #cbd5e1;
+    }
+
+    .ios-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #0b0d14;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Image Fullscreen Zoom */
+    .img-fullscreen-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 150;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-fullscreen-modal.active {
+      display: flex;
+    }
+
+    .img-fullscreen-modal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .img-close-btn {
+      position: absolute;
+      top: calc(16px + env(safe-area-inset-top, 0px));
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -700,546 +848,766 @@ function generateMobileHtml(data) {
 
   <!-- Header -->
   <header>
-    <div class="brand">
-      <div class="brand-logo">⚡</div>
+    <div class="brand" id="btnLogoHome">
+      <div class="brand-logo">🎵</div>
       <div class="brand-text">
-        <h1>IELTS FLASHCARD</h1>
-        <p>Lộ trình 3 ngày (${totalCount} thẻ)</p>
+        <h1>TIKTOK FLASHCARD</h1>
+        <p id="headerProgressText">672 Thẻ Học IELTS</p>
       </div>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" id="btnSearchToggle" title="Tìm kiếm">🔍</button>
-      <button class="icon-btn" id="btnShuffle" title="Trộn ngẫu nhiên">🎲</button>
-      <button class="icon-btn" id="btnSoundSettings" title="Giọng đọc">🗣️</button>
+      <button type="button" id="btnPwaInstall" class="pwa-install-btn" title="Cài đặt App vào Màn hình chính">
+        <span>📲</span> Cài App
+      </button>
+      <button type="button" id="btnOpenSearch" class="icon-btn" title="Tìm kiếm">🔍</button>
+      <button type="button" id="btnShuffle" class="icon-btn" title="Trộn ngẫu nhiên thẻ">🎲</button>
     </div>
   </header>
 
-  <!-- Day Filter Tabs -->
-  <div class="filter-container">
-    <button class="day-tab active" data-day="day1">
-      <span>📅 Ngày 1</span>
-      <span class="tab-badge">1 - ${day1Limit}</span>
-    </button>
-    <button class="day-tab" data-day="day2">
-      <span>📅 Ngày 2</span>
-      <span class="tab-badge">${day1Limit + 1} - ${day2Limit}</span>
-    </button>
-    <button class="day-tab" data-day="day3">
-      <span>📅 Ngày 3</span>
-      <span class="tab-badge">${day2Limit + 1} - ${totalCount}</span>
-    </button>
-    <button class="day-tab" data-day="all">
+  <!-- Sub Bar: Mode Switcher & Auto Scroll -->
+  <div class="sub-bar">
+    <div class="segmented-control">
+      <button type="button" id="btnModeFeed" class="segmented-btn active">📱 TikTok Feed</button>
+      <button type="button" id="btnMode3D" class="segmented-btn">🔄 Thẻ Lật 3D</button>
+    </div>
+
+    <div id="btnAutoScroll" class="autoscroll-badge" title="Tự động phát âm và lướt thẻ">
+      <span>⏱️</span>
+      <span id="lblAutoScroll">Tự lướt: <b>TẮT</b></span>
+    </div>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-bar">
+    <button type="button" class="filter-pill active" data-filter="all">
       <span>📚 Tất cả</span>
-      <span class="tab-badge">${totalCount}</span>
+      <span class="filter-badge" id="badgeAll">0</span>
     </button>
-    <button class="day-tab" data-day="due">
+    <button type="button" class="filter-pill" data-filter="due">
       <span>🔴 Cần ôn</span>
-      <span class="tab-badge" id="dueCountBadge">0</span>
+      <span class="filter-badge" id="badgeDue">0</span>
     </button>
-    <button class="day-tab" data-day="mastered">
+    <button type="button" class="filter-pill" data-filter="mastered">
       <span>🟢 Đã thuộc</span>
-      <span class="tab-badge" id="masteredCountBadge">0</span>
+      <span class="filter-badge" id="badgeMastered">0</span>
+    </button>
+    <button type="button" class="filter-pill" data-filter="image">
+      <span>🖼️ Thẻ ảnh</span>
+      <span class="filter-badge" id="badgeImage">0</span>
     </button>
   </div>
 
-  <!-- Main Stage -->
-  <main>
-    <div class="stats-bar">
-      <span id="currentCardIndex">Thẻ 1 / ${totalCount}</span>
-      <span class="progress-pill" id="currentDayPill">Ngày 1</span>
-    </div>
+  <!-- Main Content Area -->
+  <main id="mainContainer">
+    
+    <!-- VIEW 1: TikTok Feed View (Default) -->
+    <div id="feedView" class="tiktok-feed-container">
+      
+      <!-- Feed Card Item -->
+      <div class="feed-card" id="activeFeedCard">
+        <div class="feed-card-box">
+          
+          <!-- Case A: Image Flashcard -->
+          <div class="feed-img-area" id="feedImgArea" style="display: none;">
+            <img id="feedImgEl" src="" alt="Flashcard" />
+            <div class="img-zoom-badge">🔍 Chạm phóng to</div>
+          </div>
 
-    <!-- 3D Card Stage with touch/swipe -->
-    <div class="card-stage">
-      <div class="card-3d" id="card3d">
-        <!-- FRONT -->
-        <div class="card-face card-front">
-          <div class="card-top">
-            <div class="tag-group">
-              <span class="tag tag-day" id="cardDayTag">Ngày 1</span>
-              <span class="tag tag-level" id="cardLevelTag">Lớp 1</span>
+          <!-- Case B: Text Vocabulary Card -->
+          <div class="feed-text-area" id="feedTextArea" style="display: none;">
+            <div class="feed-word-title" id="feedWordTitle">Loading...</div>
+            <div class="feed-word-trans" id="feedWordTrans">Dịch nghĩa</div>
+            <div class="feed-quick-notes" id="feedQuickNotes">Ví dụ & Ghi chú...</div>
+          </div>
+
+          <!-- Right Floating Action Buttons (TikTok style) -->
+          <div class="feed-side-actions">
+            <div class="side-action-btn" id="btnFeedSpeak" title="Phát âm tiếng Anh">
+              <span style="font-size: 20px;">🔊</span>
+              <span class="side-action-label">Đọc</span>
             </div>
-            <div class="speak-btn-bubble" id="btnSpeakFront" title="Phát âm">🔊</div>
-          </div>
-
-          <div class="card-middle">
-            <div class="word-title" id="cardWord">Đang tải...</div>
-            <div class="tap-hint">
-              <span>👆</span>
-              <span>Chạm thẻ để lật xem nghĩa & 10 ví dụ</span>
+            <div class="side-action-btn" id="btnFeedDrawer" title="Xem dịch & 10 ví dụ">
+              <span style="font-size: 20px;">📖</span>
+              <span class="side-action-label">Ví dụ</span>
             </div>
-          </div>
-
-          <div class="card-bottom">
-            <span style="font-size: 11px; color: var(--text-muted);">👈 Vuốt qua thẻ 👉</span>
-            <a href="#" target="_blank" class="tiktok-btn" id="btnTiktokFront">🎬 TikTok Video</a>
-          </div>
-        </div>
-
-        <!-- BACK -->
-        <div class="card-face card-back">
-          <div class="card-top">
-            <div class="tag-group">
-              <span class="tag tag-day" id="cardDayTagBack">Ngày 1</span>
-              <span class="tag tag-level" id="cardLevelTagBack">Lớp 1</span>
+            <div class="side-action-btn" id="btnFeedMarkMastered" title="Đánh dấu đã thuộc">
+              <span style="font-size: 20px;">💚</span>
+              <span class="side-action-label">Thuộc</span>
             </div>
-            <div class="speak-btn-bubble" id="btnSpeakBack" title="Phát âm từ">🔊</div>
-          </div>
-
-          <div class="card-middle" style="justify-content: flex-start;">
-            <div class="word-title" id="cardTrans">Dịch nghĩa</div>
-            <div class="word-trans-sub" id="cardWordSub">(Word)</div>
-            
-            <div class="examples-container" id="examplesContainer">
-              <!-- Dynamically populated examples -->
+            <a href="#" target="_blank" class="side-action-btn" id="btnFeedTiktokLink" title="Mở video TikTok">
+              <span style="font-size: 20px;">🎬</span>
+              <span class="side-action-label">TikTok</span>
+            </a>
+            <div class="side-action-btn" id="btnFeedCopyPrompt" title="Copy prompt cho AI">
+              <span style="font-size: 18px;">📋</span>
+              <span class="side-action-label">Prompt</span>
             </div>
           </div>
 
-          <div class="card-bottom">
-            <button type="button" class="flip-btn-sub" id="btnFlipBack">🔄 Lật lại</button>
-            <a href="#" target="_blank" class="tiktok-btn" id="btnTiktokBack">🎬 Mở TikTok</a>
+          <!-- Bottom Card Caption -->
+          <div class="feed-bottom-info">
+            <div class="feed-info-header">
+              <span class="feed-tag" id="feedTag">IELTS Mastery</span>
+              <span class="feed-index-pill" id="feedIndexPill">Thẻ 1 / 672</span>
+            </div>
+            <div class="feed-caption-title" id="feedCaptionTitle">Từ vựng</div>
+            <div class="feed-caption-trans" id="feedCaptionTrans">Bản dịch tiếng Việt</div>
           </div>
         </div>
       </div>
+
+      <!-- Feed Navigation Buttons -->
+      <div class="feed-nav-bar">
+        <button type="button" class="feed-nav-btn" id="btnFeedPrev">▲ Thẻ trước</button>
+        <button type="button" class="feed-nav-btn primary" id="btnFeedNext">Thẻ sau ▼</button>
+      </div>
     </div>
 
-    <!-- Navigation Controls -->
-    <div class="controls">
-      <button class="btn-nav" id="btnPrev">◀ Thẻ trước</button>
-      <button class="btn-nav primary" id="btnNext">Thẻ sau ▶</button>
-    </div>
+    <!-- VIEW 2: 3D Flip Card View -->
+    <div id="view3D" class="view-3d-container">
+      <div class="card-stage-3d">
+        <div class="card-3d-inner" id="card3dInner">
+          
+          <!-- Front Face -->
+          <div class="card-face card-face-front">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="feed-tag" id="card3dTag">Mặt trước</span>
+              <button type="button" class="icon-btn" id="btnCard3dSpeakFront">🔊</button>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+              <div id="card3dFrontImgBox" style="max-height: 240px; display: none; margin-bottom: 12px;">
+                <img id="card3dFrontImg" src="" style="max-height: 220px; max-width: 100%; object-fit: contain; border-radius: 12px;" />
+              </div>
+              <div class="feed-word-title" id="card3dFrontWord">Word</div>
+              <div style="font-size: 13px; color: var(--primary); margin-top: 8px;">👆 Chạm thẻ để lật xem nghĩa & ví dụ</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--text-muted);">👈 Vuốt chuyển thẻ 👉</span>
+              <a href="#" target="_blank" class="pwa-install-btn" id="btnCard3dTiktokFront" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border);">🎬 TikTok</a>
+            </div>
+          </div>
 
-    <!-- Mark Status -->
-    <div class="btn-action-row">
-      <button class="btn-status due" id="btnMarkDue">🔴 Chưa thuộc (Học lại)</button>
-      <button class="btn-status mastered" id="btnMarkMastered">🟢 Đã nhớ từ này</button>
+          <!-- Back Face -->
+          <div class="card-face card-face-back">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="feed-tag" style="background: rgba(16,185,129,0.25); color: #6ee7b7; border-color: #10b981;">Bản dịch & Ví dụ</span>
+              <button type="button" class="icon-btn" id="btnCard3dSpeakBack">🔊</button>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 10px 0;">
+              <div class="feed-word-trans" id="card3dBackTrans" style="font-size: 24px; text-align: center;">Nghĩa tiếng Việt</div>
+              <div id="card3dBackNotes" style="font-size: 13px; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">Ví dụ...</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <button type="button" class="feed-nav-btn" id="btnCard3dFlipBack" style="height: 36px; padding: 0 12px; font-size: 12px;">🔄 Lật lại</button>
+              <a href="#" target="_blank" class="pwa-install-btn" id="btnCard3dTiktokBack" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border);">🎬 TikTok</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3D Controls -->
+      <div style="width: 100%; max-width: 480px; display: flex; gap: 10px;">
+        <button type="button" class="feed-nav-btn" id="btn3DPrev">◀ Trước</button>
+        <button type="button" class="feed-nav-btn primary" id="btn3DNext">Sau ▶</button>
+      </div>
     </div>
   </main>
 
-  <!-- Search & List Modal -->
-  <div class="modal" id="searchModal">
+  <!-- Bottom Details Drawer (for Examples & Translation) -->
+  <div class="drawer-sheet" id="examplesDrawer">
     <div class="modal-header">
-      <div class="modal-title">Danh sách & Tìm kiếm</div>
-      <button class="icon-btn" id="btnCloseSearch">✕</button>
+      <div class="modal-title" id="drawerTitle">📖 Chi tiết từ vựng & Ví dụ</div>
+      <button type="button" class="icon-btn" id="btnCloseDrawer">✕</button>
     </div>
-    <div class="search-input-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh hoặc tiếng Việt..." />
-    </div>
-    <div class="list-results" id="listResults">
-      <!-- Search results -->
+    <div class="modal-body" id="drawerContent">
+      <!-- Populated dynamically -->
     </div>
   </div>
 
-  <!-- Toast message -->
-  <div class="toast" id="toast">Đã lưu tiến độ!</div>
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="searchModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">🔍 Tìm kiếm 672 Thẻ Flashcard</div>
+        <button type="button" class="icon-btn" id="btnCloseSearch">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-input-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh hoặc tiếng Việt..." />
+        </div>
+        <div id="searchResultsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image Viewer Modal -->
+  <div class="img-fullscreen-modal" id="imgFullscreenModal">
+    <button type="button" class="img-close-btn" id="btnCloseImgModal">✕</button>
+    <img id="fullscreenImg" src="" alt="Zoomed Flashcard" />
+  </div>
+
+  <!-- PWA iOS Add to Home Screen Instructions Modal -->
+  <div class="modal-overlay" id="iosPwaModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">📲 Thêm vào Màn hình chính (iOS)</div>
+        <button type="button" class="icon-btn" id="btnCloseIosModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13.5px; color: #94a3b8; margin-bottom: 14px;">Để dùng ứng dụng mượt mà không thanh địa chỉ như một App thật trên iPhone:</p>
+        <div class="ios-step">
+          <div class="ios-step-num">1</div>
+          <div>Chạm vào biểu tượng <b>Chia sẻ</b> (ô vuông có mũi tên trỏ lên <b>⎋</b>) ở thanh dưới Safari.</div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">2</div>
+          <div>Cuộn xuống và chọn <b>"Thêm vào MH chính"</b> (Add to Home Screen <b>⊞</b>).</div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">3</div>
+          <div>Chạm <b>"Thêm"</b> (Add) ở góc trên bên phải màn hình.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded Dataset -->
+  <script id="flashcard-data" type="application/json">
+${jsonData}
+  </script>
 
   <script>
-    // Embedded dataset
-    const RAW_ITEMS = ${jsonData};
-
-    // Partition ranges
-    const TOTAL = RAW_ITEMS.length;
-    const D1_LIMIT = Math.ceil(TOTAL / 3);
-    const D2_LIMIT = Math.ceil((TOTAL * 2) / 3);
-
-    // State
-    let currentFilter = 'day1';
-    let filteredList = [];
-    let currentIndex = 0;
-    let masteredIds = new Set(JSON.parse(localStorage.getItem('ielts_mastered_ids') || '[]'));
-    let dueIds = new Set(JSON.parse(localStorage.getItem('ielts_due_ids') || '[]'));
-
-    // DOM Elements
-    const card3d = document.getElementById('card3d');
-    const cardWord = document.getElementById('cardWord');
-    const cardTrans = document.getElementById('cardTrans');
-    const cardWordSub = document.getElementById('cardWordSub');
-    const cardDayTag = document.getElementById('cardDayTag');
-    const cardDayTagBack = document.getElementById('cardDayTagBack');
-    const cardLevelTag = document.getElementById('cardLevelTag');
-    const cardLevelTagBack = document.getElementById('cardLevelTagBack');
-    const currentCardIndex = document.getElementById('currentCardIndex');
-    const currentDayPill = document.getElementById('currentDayPill');
-    const examplesContainer = document.getElementById('examplesContainer');
-    const btnTiktokFront = document.getElementById('btnTiktokFront');
-    const btnTiktokBack = document.getElementById('btnTiktokBack');
-    const dueCountBadge = document.getElementById('dueCountBadge');
-    const masteredCountBadge = document.getElementById('masteredCountBadge');
-    const toast = document.getElementById('toast');
-
-    // Speech Synthesis
-    function speakText(text) {
-      if (!window.speechSynthesis || !text) return;
-      window.speechSynthesis.cancel();
-      const clean = text.replace(/🗣️|✍️|👉|"/g, '').trim();
-      const utter = new SpeechSynthesisUtterance(clean);
-      utter.lang = 'en-US';
-      utter.rate = 0.92;
-      window.speechSynthesis.speak(utter);
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+          .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
+      });
     }
 
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(function() { toast.classList.remove('show'); }, 1800);
+    // PWA Install prompt handling
+    let deferredPrompt = null;
+    const btnPwaInstall = document.getElementById('btnPwaInstall');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (btnPwaInstall) btnPwaInstall.style.display = 'flex';
+    });
+
+    if (btnPwaInstall) {
+      btnPwaInstall.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('[PWA] User response to install:', outcome);
+          deferredPrompt = null;
+        } else {
+          // Check iOS Safari
+          const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+          if (isIos) {
+            document.getElementById('iosPwaModal').classList.add('active');
+          } else {
+            alert('Để cài đặt App, hãy bấm vào menu 3 chấm trên trình duyệt và chọn "Cài đặt ứng dụng" hoặc "Thêm vào màn hình chính" nhé!');
+          }
+        }
+      });
+    }
+
+    // Load Flashcard Data
+    let RAW_ITEMS = [];
+    try {
+      const el = document.getElementById('flashcard-data');
+      RAW_ITEMS = el ? JSON.parse(el.textContent) : [];
+    } catch (e) {
+      console.error('Failed to parse items:', e);
+      RAW_ITEMS = [];
+    }
+
+    // Local Storage State
+    let masteredIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_mastered') || '[]'));
+    let dueIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_due') || '[]'));
+    let activeFilter = localStorage.getItem('pwa_tk_filter') || 'all';
+    let currentIndex = parseInt(localStorage.getItem('pwa_tk_index') || '0', 10);
+    let viewMode = localStorage.getItem('pwa_tk_view_mode') || 'feed'; // 'feed' | '3d'
+    let autoScrollInterval = null;
+    let autoScrollSeconds = 0; // 0 = off, 3, 5, 7
+
+    function saveState() {
+      localStorage.setItem('pwa_tk_mastered', JSON.stringify([...masteredIds]));
+      localStorage.setItem('pwa_tk_due', JSON.stringify([...dueIds]));
+      localStorage.setItem('pwa_tk_filter', activeFilter);
+      localStorage.setItem('pwa_tk_index', currentIndex.toString());
+      localStorage.setItem('pwa_tk_view_mode', viewMode);
+    }
+
+    function getFilteredList() {
+      return RAW_ITEMS.filter(item => {
+        if (activeFilter === 'due') return dueIds.has(item.id);
+        if (activeFilter === 'mastered') return masteredIds.has(item.id);
+        if (activeFilter === 'image') return !!item.imageUrl;
+        return true;
+      });
     }
 
     function updateBadges() {
-      dueCountBadge.textContent = dueIds.size;
-      masteredCountBadge.textContent = masteredIds.size;
-      localStorage.setItem('ielts_mastered_ids', JSON.stringify(Array.from(masteredIds)));
-      localStorage.setItem('ielts_due_ids', JSON.stringify(Array.from(dueIds)));
+      const allCount = RAW_ITEMS.length;
+      const dueCount = RAW_ITEMS.filter(x => dueIds.has(x.id)).length;
+      const masteredCount = RAW_ITEMS.filter(x => masteredIds.has(x.id)).length;
+      const imageCount = RAW_ITEMS.filter(x => !!x.imageUrl).length;
+
+      document.getElementById('badgeAll').textContent = allCount;
+      document.getElementById('badgeDue').textContent = dueCount;
+      document.getElementById('badgeMastered').textContent = masteredCount;
+      document.getElementById('badgeImage').textContent = imageCount;
+      
+      const pct = allCount > 0 ? Math.round((masteredCount / allCount) * 100) : 0;
+      document.getElementById('headerProgressText').textContent = \`\${allCount} thẻ • Đã thuộc \${pct}%\`;
     }
 
-    function getDayForItem(index) {
-      if (index < D1_LIMIT) return 'Ngày 1';
-      if (index < D2_LIMIT) return 'Ngày 2';
-      return 'Ngày 3';
-    }
-
-    function applyFilter(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('.day-tab').forEach(function(t) {
-        t.classList.toggle('active', t.getAttribute('data-day') === filter);
-      });
-
-      if (filter === 'day1') {
-        filteredList = RAW_ITEMS.slice(0, D1_LIMIT);
-        currentDayPill.textContent = 'Ngày 1 (Thẻ 1 - ' + D1_LIMIT + ')';
-      } else if (filter === 'day2') {
-        filteredList = RAW_ITEMS.slice(D1_LIMIT, D2_LIMIT);
-        currentDayPill.textContent = 'Ngày 2 (Thẻ ' + (D1_LIMIT + 1) + ' - ' + D2_LIMIT + ')';
-      } else if (filter === 'day3') {
-        filteredList = RAW_ITEMS.slice(D2_LIMIT);
-        currentDayPill.textContent = 'Ngày 3 (Thẻ ' + (D2_LIMIT + 1) + ' - ' + TOTAL + ')';
-      } else if (filter === 'due') {
-        filteredList = RAW_ITEMS.filter(function(x) { return dueIds.has(x.id); });
-        currentDayPill.textContent = 'Cần ôn (' + filteredList.length + ' từ)';
-      } else if (filter === 'mastered') {
-        filteredList = RAW_ITEMS.filter(function(x) { return masteredIds.has(x.id); });
-        currentDayPill.textContent = 'Đã thuộc (' + filteredList.length + ' từ)';
+    function renderCurrentCard() {
+      const list = getFilteredList();
+      if (list.length === 0) {
+        // Empty state
+        if (currentIndex !== 0) currentIndex = 0;
       } else {
-        filteredList = RAW_ITEMS.slice(0);
-        currentDayPill.textContent = 'Tất cả (' + TOTAL + ' từ)';
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= list.length) currentIndex = list.length - 1;
       }
 
-      currentIndex = 0;
-      renderCard();
+      const item = list[currentIndex] || { word: 'Không có thẻ', translation: 'Chưa có dữ liệu cho bộ lọc này' };
+      const currentNum = list.length > 0 ? currentIndex + 1 : 0;
+      const totalNum = list.length;
+
+      // 1. Render Feed View
+      const feedImgArea = document.getElementById('feedImgArea');
+      const feedImgEl = document.getElementById('feedImgEl');
+      const feedTextArea = document.getElementById('feedTextArea');
+      const feedWordTitle = document.getElementById('feedWordTitle');
+      const feedWordTrans = document.getElementById('feedWordTrans');
+      const feedQuickNotes = document.getElementById('feedQuickNotes');
+      const feedIndexPill = document.getElementById('feedIndexPill');
+      const feedCaptionTitle = document.getElementById('feedCaptionTitle');
+      const feedCaptionTrans = document.getElementById('feedCaptionTrans');
+      const feedTag = document.getElementById('feedTag');
+      const btnFeedMarkMastered = document.getElementById('btnFeedMarkMastered');
+      const btnFeedTiktokLink = document.getElementById('btnFeedTiktokLink');
+
+      feedIndexPill.textContent = \`Thẻ \${currentNum} / \${totalNum}\`;
+      feedCaptionTitle.textContent = item.word || 'Thẻ ảnh';
+      feedCaptionTrans.textContent = item.translation || (item.imageUrl ? 'Chạm để xem ảnh to' : '');
+      feedTag.textContent = item.level ? \`Level \${item.level}\` : 'IELTS Mastery';
+
+      if (item.imageUrl) {
+        feedImgArea.style.display = 'flex';
+        feedImgEl.src = item.imageUrl;
+        feedTextArea.style.display = 'none';
+      } else {
+        feedImgArea.style.display = 'none';
+        feedTextArea.style.display = 'flex';
+        feedWordTitle.textContent = item.word || '---';
+        feedWordTrans.textContent = item.translation || '';
+        feedQuickNotes.textContent = item.notes || 'Chưa có ví dụ ghi chú.';
+      }
+
+      // Mark status style
+      if (masteredIds.has(item.id)) {
+        btnFeedMarkMastered.classList.add('active-like');
+      } else {
+        btnFeedMarkMastered.classList.remove('active-like');
+      }
+
+      // TikTok link
+      const tkUrl = item.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(item.word || '')}\`);
+      btnFeedTiktokLink.href = tkUrl;
+
+      // 2. Render 3D View
+      const card3dFrontWord = document.getElementById('card3dFrontWord');
+      const card3dBackTrans = document.getElementById('card3dBackTrans');
+      const card3dBackNotes = document.getElementById('card3dBackNotes');
+      const card3dFrontImgBox = document.getElementById('card3dFrontImgBox');
+      const card3dFrontImg = document.getElementById('card3dFrontImg');
+      const card3dTag = document.getElementById('card3dTag');
+      const btnCard3dTiktokFront = document.getElementById('btnCard3dTiktokFront');
+      const btnCard3dTiktokBack = document.getElementById('btnCard3dTiktokBack');
+
+      card3dFrontWord.textContent = item.word || '';
+      card3dBackTrans.textContent = item.translation || '';
+      card3dBackNotes.textContent = item.notes || 'Chưa có ví dụ ghi chú.';
+      card3dTag.textContent = \`Thẻ \${currentNum} / \${totalNum}\`;
+      btnCard3dTiktokFront.href = tkUrl;
+      btnCard3dTiktokBack.href = tkUrl;
+
+      if (item.imageUrl) {
+        card3dFrontImgBox.style.display = 'block';
+        card3dFrontImg.src = item.imageUrl;
+      } else {
+        card3dFrontImgBox.style.display = 'none';
+      }
+
+      saveState();
     }
 
-    function renderCard() {
-      card3d.classList.remove('flipped');
-
-      if (filteredList.length === 0) {
-        cardWord.textContent = 'Không có từ nào';
-        cardTrans.textContent = 'Trống';
-        cardWordSub.textContent = '';
-        currentCardIndex.textContent = '0 / 0';
-        examplesContainer.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">Danh sách này hiện đang trống. Hãy chọn tab khác nhé!</div>';
-        return;
+    // Next / Prev Actions
+    function nextCard() {
+      const list = getFilteredList();
+      if (list.length === 0) return;
+      if (currentIndex < list.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0; // loop around
       }
-
-      if (currentIndex >= filteredList.length) currentIndex = 0;
-      if (currentIndex < 0) currentIndex = filteredList.length - 1;
-
-      const item = filteredList[currentIndex];
-      const rawIndex = RAW_ITEMS.findIndex(function(x) { return x.id === item.id; });
-      const dayLabel = getDayForItem(rawIndex >= 0 ? rawIndex : 0);
-
-      currentCardIndex.textContent = 'Thẻ ' + (currentIndex + 1) + ' / ' + filteredList.length + ' (Tổng #' + (rawIndex + 1) + ')';
-      cardWord.textContent = item.word || '---';
-      cardTrans.textContent = item.translation || '(Chưa có bản dịch)';
-      cardWordSub.textContent = item.word || '';
-
-      cardDayTag.textContent = dayLabel;
-      cardDayTagBack.textContent = dayLabel;
-      cardLevelTag.textContent = 'Lớp ' + (item.level || 1);
-      cardLevelTagBack.textContent = 'Lớp ' + (item.level || 1);
-
-      // TikTok links
-      const tkUrl = item.tiktokUrl || ('https://www.tiktok.com/search?q=' + encodeURIComponent(item.word || ''));
-      btnTiktokFront.href = tkUrl;
-      btnTiktokBack.href = tkUrl;
-
-      // Parse Examples from notes
-      parseAndRenderExamples(item.notes || '');
+      renderCurrentCard();
+      if (autoScrollSeconds > 0) speakCurrentWord();
     }
 
-    function parseAndRenderExamples(rawNotes) {
-      examplesContainer.innerHTML = '';
-      if (!rawNotes.trim()) {
-        examplesContainer.innerHTML = '<div style="color: #94a3b8; padding: 10px;">Chưa có ví dụ cho từ này.</div>';
-        return;
+    function prevCard() {
+      const list = getFilteredList();
+      if (list.length === 0) return;
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = list.length - 1;
       }
+      renderCurrentCard();
+    }
 
-      const lines = rawNotes.split('\\n').map(function(l) { return l.trim(); }).filter(Boolean);
-      const speakingItems = [];
-      const writingItems = [];
-      let currentCard = null;
+    // TTS Audio Pronunciation
+    function speakCurrentWord() {
+      const list = getFilteredList();
+      const item = list[currentIndex];
+      if (!item || !item.word) return;
 
-      lines.forEach(function(line) {
-        if (line.includes('Speaking') || line.startsWith('🗣️')) {
-          if (currentCard) {
-            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'speaking', en: line.replace(/^🗣️\\s*Speaking\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('Writing') || line.startsWith('✍️')) {
-          if (currentCard) {
-            if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'writing', en: line.replace(/^✍️\\s*Writing\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
-          if (currentCard) {
-            currentCard.vi = line.replace(/.*(?:👉\\s*Dịch:|Dịch:)\\s*/i, '').trim();
-          }
+      const cleanWord = item.word.replace(/\\(.*?\\)/g, '').replace(/[^a-zA-Z0-9\\s']/g, '').trim();
+      if (!cleanWord) return;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(cleanWord);
+        utter.lang = 'en-US';
+        utter.rate = 0.9;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    // Double Tap Like Animation
+    function triggerHeartAnim(x, y) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 800);
+    }
+
+    // Toggle Mastered
+    function toggleMastered(e) {
+      const list = getFilteredList();
+      const item = list[currentIndex];
+      if (!item || !item.id) return;
+
+      if (masteredIds.has(item.id)) {
+        masteredIds.delete(item.id);
+      } else {
+        masteredIds.add(item.id);
+        dueIds.delete(item.id);
+        if (e && e.clientX && e.clientY) {
+          triggerHeartAnim(e.clientX, e.clientY);
         } else {
-          if (currentCard && !currentCard.vi) {
-            currentCard.en += ' ' + line;
-          }
+          triggerHeartAnim(window.innerWidth / 2, window.innerHeight / 2);
         }
-      });
-      if (currentCard) {
-        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-        else writingItems.push(currentCard);
       }
-
-      let html = '';
-      if (speakingItems.length > 0) {
-        html += '<div class="example-section-header">🗣️ IELTS SPEAKING</div>';
-        speakingItems.forEach(function(sp) {
-          const encoded = encodeURIComponent(sp.en);
-          html += '<div class="example-card">' +
-            '<div class="example-en-row">' +
-              '<div class="example-en">' + escapeHtml(sp.en) + '</div>' +
-              '<div class="example-speak" data-speak="' + encoded + '">🔊</div>' +
-            '</div>' +
-            (sp.vi ? '<div class="example-vi">👉 ' + escapeHtml(sp.vi) + '</div>' : '') +
-          '</div>';
-        });
-      }
-
-      if (writingItems.length > 0) {
-        html += '<div class="example-section-header" style="color: #60a5fa; margin-top: 10px;">✍️ IELTS WRITING</div>';
-        writingItems.forEach(function(wr) {
-          const encoded = encodeURIComponent(wr.en);
-          html += '<div class="example-card">' +
-            '<div class="example-en-row">' +
-              '<div class="example-en">' + escapeHtml(wr.en) + '</div>' +
-              '<div class="example-speak" data-speak="' + encoded + '">🔊</div>' +
-            '</div>' +
-            (wr.vi ? '<div class="example-vi">👉 ' + escapeHtml(wr.vi) + '</div>' : '') +
-          '</div>';
-        });
-      }
-
-      if (!html) {
-        html = '<div class="example-card"><div class="example-en">' + escapeHtml(rawNotes).replace(/\\n/g, '<br>') + '</div></div>';
-      }
-
-      examplesContainer.innerHTML = html;
+      updateBadges();
+      renderCurrentCard();
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    // Mode Switcher
+    function setViewMode(mode) {
+      viewMode = mode;
+      const feedView = document.getElementById('feedView');
+      const view3D = document.getElementById('view3D');
+      const btnModeFeed = document.getElementById('btnModeFeed');
+      const btnMode3D = document.getElementById('btnMode3D');
+
+      if (mode === '3d') {
+        feedView.style.display = 'none';
+        view3D.style.display = 'flex';
+        btnModeFeed.classList.remove('active');
+        btnMode3D.classList.add('active');
+      } else {
+        feedView.style.display = 'flex';
+        view3D.style.display = 'none';
+        btnModeFeed.classList.add('active');
+        btnMode3D.classList.remove('active');
+      }
+      renderCurrentCard();
     }
 
-    // Event delegation for sentence speak buttons
-    examplesContainer.addEventListener('click', function(e) {
-      const speakBtn = e.target.closest('.example-speak');
-      if (speakBtn) {
-        e.stopPropagation();
-        const text = decodeURIComponent(speakBtn.getAttribute('data-speak') || '');
-        if (text) speakText(text);
-      }
-    });
+    // Auto-Scroll Feature
+    const autoScrollLevels = [0, 3, 5, 7];
+    let autoScrollIdx = 0;
 
-    // Touch Swipe Gestures
-    let touchStartX = 0;
+    function toggleAutoScroll() {
+      autoScrollIdx = (autoScrollIdx + 1) % autoScrollLevels.length;
+      autoScrollSeconds = autoScrollLevels[autoScrollIdx];
+      const lbl = document.getElementById('lblAutoScroll');
+      const badge = document.getElementById('btnAutoScroll');
+
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+
+      if (autoScrollSeconds === 0) {
+        lbl.innerHTML = 'Tự lướt: <b>TẮT</b>';
+        badge.classList.remove('active');
+      } else {
+        lbl.innerHTML = \`Tự lướt: <b>\${autoScrollSeconds}s</b>\`;
+        badge.classList.add('active');
+        speakCurrentWord();
+        autoScrollInterval = setInterval(() => {
+          nextCard();
+        }, autoScrollSeconds * 1000);
+      }
+    }
+
+    // Touch Swipe Gestures for TikTok Feed View
     let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
+    let touchStartX = 0;
+    let touchStartTime = 0;
+    let lastTapTime = 0;
 
-    card3d.addEventListener('touchstart', function(e) {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
+    const feedCardEl = document.getElementById('activeFeedCard');
+    feedCardEl.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+      touchStartTime = Date.now();
     }, { passive: true });
 
-    card3d.addEventListener('touchend', function(e) {
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
-      handleSwipe();
-    }, { passive: true });
+    feedCardEl.addEventListener('touchend', (e) => {
+      const deltaY = e.changedTouches[0].clientY - touchStartY;
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      const duration = Date.now() - touchStartTime;
 
-    function handleSwipe() {
-      const dx = touchEndX - touchStartX;
-      const dy = touchEndY - touchStartY;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) {
-          document.getElementById('btnNext').click();
-        } else {
-          document.getElementById('btnPrev').click();
+      // Check double tap
+      const now = Date.now();
+      if (now - lastTapTime < 300 && Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15) {
+        toggleMastered(e.changedTouches[0]);
+      }
+      lastTapTime = now;
+
+      if (duration < 600) {
+        if (deltaY < -40) {
+          // Swipe up -> Next
+          nextCard();
+        } else if (deltaY > 40) {
+          // Swipe down -> Prev
+          prevCard();
         }
+      }
+    });
+
+    // 3D Card Swipe
+    const card3dInner = document.getElementById('card3dInner');
+    card3dInner.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      card3dInner.classList.toggle('flipped');
+    });
+
+    // Open Examples Drawer
+    function openDrawer() {
+      const list = getFilteredList();
+      const item = list[currentIndex];
+      if (!item) return;
+
+      const drawer = document.getElementById('examplesDrawer');
+      const title = document.getElementById('drawerTitle');
+      const content = document.getElementById('drawerContent');
+
+      title.textContent = item.word ? \`📖 \${item.word}\` : '📖 Chi tiết từ vựng';
+      content.innerHTML = \`
+        <div style="font-size: 18px; font-weight: 800; color: #6ee7b7; margin-bottom: 12px;">\${item.translation || ''}</div>
+        <div style="font-size: 14px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">\${item.notes || 'Chưa có ghi chú ví dụ.'}</div>
+        <div style="margin-top: 16px; display: flex; gap: 10px;">
+          <button type="button" class="feed-nav-btn primary" id="btnDrawerSpeak" style="flex: 1;">🔊 Phát âm</button>
+        </div>
+      \`;
+      drawer.classList.add('active');
+
+      const btnDrawerSpeak = document.getElementById('btnDrawerSpeak');
+      if (btnDrawerSpeak) btnDrawerSpeak.addEventListener('click', speakCurrentWord);
+    }
+
+    document.getElementById('btnCloseDrawer').addEventListener('click', () => {
+      document.getElementById('examplesDrawer').classList.remove('active');
+    });
+
+    // Copy Prompt for AI
+    function copyPromptForAI() {
+      const list = getFilteredList();
+      const item = list[currentIndex];
+      if (!item) return;
+
+      const promptText = \`Hãy giúp tôi giải thích chi tiết từ/cụm từ "\${item.word || ''}" (Nghĩa: "\${item.translation || ''}"), đặt 3 câu ví dụ giao tiếp Speaking và 2 câu Writing học thuật chuẩn band 7.5+ kèm dịch nghĩa tiếng Việt.\`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(promptText).then(() => {
+          alert('✅ Đã copy prompt! Hãy dán vào Gemini / ChatGPT để học thêm nhé.');
+        });
       }
     }
 
-    // Flip Card on tap
-    card3d.addEventListener('click', function(e) {
-      if (e.target.closest('.speak-btn-bubble') || e.target.closest('.tiktok-btn') || e.target.closest('.example-speak') || e.target.closest('.flip-btn-sub')) {
-        return;
+    // Zoom Image Modal
+    document.getElementById('feedImgArea').addEventListener('click', () => {
+      const list = getFilteredList();
+      const item = list[currentIndex];
+      if (item && item.imageUrl) {
+        const modal = document.getElementById('imgFullscreenModal');
+        const img = document.getElementById('fullscreenImg');
+        img.src = item.imageUrl;
+        modal.classList.add('active');
       }
-      card3d.classList.toggle('flipped');
     });
 
-    document.getElementById('btnFlipBack').addEventListener('click', function(e) {
-      e.stopPropagation();
-      card3d.classList.remove('flipped');
+    document.getElementById('btnCloseImgModal').addEventListener('click', () => {
+      document.getElementById('imgFullscreenModal').classList.remove('active');
     });
 
-    // Navigation buttons
-    document.getElementById('btnNext').addEventListener('click', function() {
-      if (filteredList.length === 0) return;
-      currentIndex = (currentIndex + 1) % filteredList.length;
-      renderCard();
-    });
-
-    document.getElementById('btnPrev').addEventListener('click', function() {
-      if (filteredList.length === 0) return;
-      currentIndex = (currentIndex - 1 + filteredList.length) % filteredList.length;
-      renderCard();
-    });
-
-    // Speak buttons
-    document.getElementById('btnSpeakFront').addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
-    });
-    document.getElementById('btnSpeakBack').addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (filteredList[currentIndex]) speakText(filteredList[currentIndex].word);
-    });
-
-    // Mark Status
-    document.getElementById('btnMarkMastered').addEventListener('click', function() {
-      if (!filteredList[currentIndex]) return;
-      const id = filteredList[currentIndex].id;
-      masteredIds.add(id);
-      dueIds.delete(id);
-      updateBadges();
-      showToast('🟢 Đã đánh dấu: Đã thuộc!');
-      setTimeout(function() { document.getElementById('btnNext').click(); }, 300);
-    });
-
-    document.getElementById('btnMarkDue').addEventListener('click', function() {
-      if (!filteredList[currentIndex]) return;
-      const id = filteredList[currentIndex].id;
-      dueIds.add(id);
-      masteredIds.delete(id);
-      updateBadges();
-      showToast('🔴 Đã lưu vào mục Cần ôn!');
-      setTimeout(function() { document.getElementById('btnNext').click(); }, 300);
-    });
-
-    // Day Tabs Click
-    document.querySelectorAll('.day-tab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        applyFilter(tab.getAttribute('data-day'));
-      });
-    });
-
-    // Shuffle Button
-    document.getElementById('btnShuffle').addEventListener('click', function() {
-      for (let i = filteredList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = filteredList[i];
-        filteredList[i] = filteredList[j];
-        filteredList[j] = temp;
-      }
-      currentIndex = 0;
-      renderCard();
-      showToast('🎲 Đã trộn ngẫu nhiên danh sách!');
-    });
-
-    // Voice test
-    document.getElementById('btnSoundSettings').addEventListener('click', function() {
-      speakText("Welcome to IELTS Flashcard Mastery! Let us boost your vocabulary.");
-    });
-
-    // Search & List Modal
+    // Search Logic
     const searchModal = document.getElementById('searchModal');
     const searchInput = document.getElementById('searchInput');
-    const listResults = document.getElementById('listResults');
+    const searchResultsList = document.getElementById('searchResultsList');
 
-    document.getElementById('btnSearchToggle').addEventListener('click', function() {
+    document.getElementById('btnOpenSearch').addEventListener('click', () => {
       searchModal.classList.add('active');
       searchInput.value = '';
       renderSearchResults('');
-      setTimeout(function() { searchInput.focus(); }, 100);
+      setTimeout(() => searchInput.focus(), 150);
     });
 
-    document.getElementById('btnCloseSearch').addEventListener('click', function() {
+    document.getElementById('btnCloseSearch').addEventListener('click', () => {
       searchModal.classList.remove('active');
-    });
-
-    searchInput.addEventListener('input', function(e) {
-      renderSearchResults(e.target.value);
     });
 
     function renderSearchResults(query) {
       const q = (query || '').toLowerCase().trim();
-      const results = RAW_ITEMS.filter(function(x) {
-        return (x.word || '').toLowerCase().includes(q) || (x.translation || '').toLowerCase().includes(q);
-      }).slice(0, 50);
+      const results = RAW_ITEMS.filter(item => {
+        if (!q) return true;
+        return (item.word && item.word.toLowerCase().includes(q)) ||
+               (item.translation && item.translation.toLowerCase().includes(q)) ||
+               (item.notes && item.notes.toLowerCase().includes(q));
+      }).slice(0, 40);
 
-      listResults.innerHTML = '';
+      searchResultsList.innerHTML = '';
       if (results.length === 0) {
-        listResults.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">Không tìm thấy từ nào phù hợp.</div>';
+        searchResultsList.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Không tìm thấy thẻ nào phù hợp.</div>';
         return;
       }
 
-      results.forEach(function(item) {
+      results.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = '<div>' +
-          '<div class="list-item-word">' + escapeHtml(item.word || '---') + '</div>' +
-          '<div class="list-item-trans">' + escapeHtml(item.translation || '') + '</div>' +
-        '</div>' +
-        '<div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>';
-        
-        div.addEventListener('click', function() {
+        div.className = 'search-item';
+        div.innerHTML = \`
+          <div>
+            <div class="search-item-word">\${item.word || '🖼️ Thẻ ảnh'}</div>
+            <div class="search-item-trans">\${item.translation || (item.imageUrl ? 'Thẻ ảnh' : '')}</div>
+          </div>
+          <div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>
+        \`;
+        div.addEventListener('click', () => {
           searchModal.classList.remove('active');
-          applyFilter('all');
-          const idx = filteredList.findIndex(function(x) { return x.id === item.id; });
+          activeFilter = 'all';
+          document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === 'all'));
+          const idx = RAW_ITEMS.findIndex(x => x.id === item.id);
           if (idx >= 0) currentIndex = idx;
-          renderCard();
+          renderCurrentCard();
         });
-        listResults.appendChild(div);
+        searchResultsList.appendChild(div);
       });
     }
 
-    // Keyboard navigation (for desktop preview)
-    window.addEventListener('keydown', function(e) {
-      if (searchModal.classList.contains('active')) return;
-      if (e.key === 'ArrowRight') document.getElementById('btnNext').click();
-      if (e.key === 'ArrowLeft') document.getElementById('btnPrev').click();
-      if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        card3d.classList.toggle('flipped');
-      }
-      if (e.key === 's' || e.key === 'S') document.getElementById('btnSpeakFront').click();
+    searchInput.addEventListener('input', (e) => {
+      renderSearchResults(e.target.value);
     });
 
-    // Init
+    // Filter Buttons
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeFilter = pill.dataset.filter;
+        currentIndex = 0;
+        renderCurrentCard();
+      });
+    });
+
+    // Shuffle Button
+    document.getElementById('btnShuffle').addEventListener('click', () => {
+      for (let i = RAW_ITEMS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [RAW_ITEMS[i], RAW_ITEMS[j]] = [RAW_ITEMS[j], RAW_ITEMS[i]];
+      }
+      currentIndex = 0;
+      renderCurrentCard();
+      alert('🎲 Đã trộn ngẫu nhiên toàn bộ thẻ!');
+    });
+
+    // Close modal on backdrop click or Escape
+    searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) searchModal.classList.remove('active');
+    });
+
+    const iosPwaModal = document.getElementById('iosPwaModal');
+    iosPwaModal.addEventListener('click', (e) => {
+      if (e.target === iosPwaModal) iosPwaModal.classList.remove('active');
+    });
+
+    const imgFullscreenModal = document.getElementById('imgFullscreenModal');
+    imgFullscreenModal.addEventListener('click', (e) => {
+      if (e.target === imgFullscreenModal) imgFullscreenModal.classList.remove('active');
+    });
+
+    const examplesDrawer = document.getElementById('examplesDrawer');
+    window.addEventListener('click', (e) => {
+      if (examplesDrawer.classList.contains('active') && !examplesDrawer.contains(e.target) && !e.target.closest('#btnFeedDrawer')) {
+        examplesDrawer.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchModal.classList.remove('active');
+        iosPwaModal.classList.remove('active');
+        imgFullscreenModal.classList.remove('active');
+        examplesDrawer.classList.remove('active');
+      }
+    });
+
+    // Event Listeners
+    document.getElementById('btnFeedNext').addEventListener('click', nextCard);
+    document.getElementById('btnFeedPrev').addEventListener('click', prevCard);
+    document.getElementById('btn3DNext').addEventListener('click', nextCard);
+    document.getElementById('btn3DPrev').addEventListener('click', prevCard);
+    document.getElementById('btnFeedSpeak').addEventListener('click', speakCurrentWord);
+    document.getElementById('btnCard3dSpeakFront').addEventListener('click', speakCurrentWord);
+    document.getElementById('btnCard3dSpeakBack').addEventListener('click', speakCurrentWord);
+    document.getElementById('btnFeedDrawer').addEventListener('click', openDrawer);
+    document.getElementById('btnFeedCopyPrompt').addEventListener('click', copyPromptForAI);
+    document.getElementById('btnFeedMarkMastered').addEventListener('click', toggleMastered);
+    document.getElementById('btnModeFeed').addEventListener('click', () => setViewMode('feed'));
+    document.getElementById('btnMode3D').addEventListener('click', () => setViewMode('3d'));
+    document.getElementById('btnAutoScroll').addEventListener('click', toggleAutoScroll);
+    document.getElementById('btnCloseIosModal').addEventListener('click', () => {
+      document.getElementById('iosPwaModal').classList.remove('active');
+    });
+
+    // Initialize
     updateBadges();
-    applyFilter('day1');
+    setViewMode(viewMode);
+    renderCurrentCard();
   </script>
 </body>
 </html>`;
@@ -1248,19 +1616,113 @@ function generateMobileHtml(data) {
 function writeWebFiles(data, rootDir) {
   const html = generateMobileHtml(data);
   
-  // 1. Root index.html (for root GitHub Pages / local browser)
+  // 1. Generate PWA Icons
+  const rootIconsDir = path.join(rootDir, 'icons');
+  const docsIconsDir = path.join(rootDir, 'docs', 'icons');
+  generateIcons([rootIconsDir, docsIconsDir]);
+
+  // 2. Generate Manifest and SW in root
+  const manifestJson = JSON.stringify({
+    name: "TikTok Flashcard - Học Từ Vựng IELTS",
+    short_name: "TikTok Flash",
+    description: "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, phát âm, lướt vuốt cực mượt trên điện thoại",
+    start_url: "./index.html",
+    scope: "./",
+    display: "standalone",
+    background_color: "#0b0d14",
+    theme_color: "#0b0d14",
+    orientation: "portrait",
+    icons: [
+      {
+        src: "icons/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any maskable"
+      },
+      {
+        src: "icons/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any maskable"
+      },
+      {
+        src: "icons/icon.svg",
+        sizes: "512x512",
+        type: "image/svg+xml",
+        purpose: "any maskable"
+      },
+      {
+        src: "icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png"
+      }
+    ],
+    categories: ["education", "productivity"]
+  }, null, 2);
+
+  const swJs = `// sw.js - Service Worker for TikTok Flashcard PWA
+const CACHE_NAME = 'tiktok-flashcard-v2';
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon.svg',
+  './icons/apple-touch-icon.png'
+];
+
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    fetch(event.request)
+      .then((res) => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        }
+        return res;
+      })
+      .catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html')))
+  );
+});`;
+
+  // 3. Write Root files
   const rootIndex = path.join(rootDir, 'index.html');
   fs.writeFileSync(rootIndex, html, 'utf8');
+  fs.writeFileSync(path.join(rootDir, 'manifest.json'), manifestJson, 'utf8');
+  fs.writeFileSync(path.join(rootDir, 'sw.js'), swJs, 'utf8');
 
-  // 2. docs/index.html (for /docs GitHub Pages option)
+  // 4. Write Docs files
   const docsDir = path.join(rootDir, 'docs');
   if (!fs.existsSync(docsDir)) {
     fs.mkdirSync(docsDir, { recursive: true });
   }
   const docsIndex = path.join(docsDir, 'index.html');
   fs.writeFileSync(docsIndex, html, 'utf8');
+  fs.writeFileSync(path.join(docsDir, 'manifest.json'), manifestJson, 'utf8');
+  fs.writeFileSync(path.join(docsDir, 'sw.js'), swJs, 'utf8');
 
-  console.log('[SYNC] Successfully generated index.html and docs/index.html');
+  console.log('[SYNC] Successfully generated mobile PWA files at root and docs/');
   return { rootIndex, docsIndex };
 }
 

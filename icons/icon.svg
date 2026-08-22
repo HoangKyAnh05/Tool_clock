@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0d14"/>
+      <stop offset="100%" stop-color="#181c2b"/>
+    </linearGradient>
+    <linearGradient id="tkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0050"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="none" stroke="url(#tkGrad)" stroke-width="8" opacity="0.6"/>
+  
+  <!-- Outer glowing card -->
+  <rect x="80" y="80" width="352" height="352" rx="60" fill="url(#tkGrad)" filter="url(#glow)" opacity="0.25"/>
+  <rect x="96" y="96" width="320" height="320" rx="50" fill="#131722" stroke="url(#tkGrad)" stroke-width="4"/>
+  
+  <!-- TikTok note + Flashcard Symbol -->
+  <g transform="translate(256, 230) scale(1.4)">
+    <path d="M-10,-60 L15,-60 C25,-60 38,-45 42,-25 C45,-5 42,0 42,0 L42,15 C35,15 25,5 20,-5 L20,35 C20,60 -5,75 -30,65 C-50,55 -55,30 -45,10 C-35,-10 -10,-10 -10,15 L-10,-60 Z" fill="url(#tkGrad)"/>
+    <circle cx="-25" cy="40" r="16" fill="#00f2fe"/>
+  </g>
+  
+  <!-- Text Label -->
+  <text x="256" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">FLASHCARD</text>
+</svg>
