@@ -9556,25 +9556,47 @@ Yêu cầu gồm:
       btnTkCloudBackup.innerHTML = '⏳ Đang sao lưu lên Cloud...';
 
       try {
+        const today = new Date().toISOString().split('T')[0];
+        const allItems = tkFlashcardData.items || [];
+        const masteredIds = allItems.filter(x => (x.level || 1) >= 5).map(x => x.id);
+        const dueIds = allItems.filter(x => !x.nextReviewDate || x.nextReviewDate <= today).map(x => x.id);
+
+        const payload = {
+          items: allItems,
+          masteredIds: masteredIds,
+          dueIds: dueIds
+        };
+
+        let res = null;
         if (window.taskAPI && window.taskAPI.cloudBackupSlot) {
-          const payload = {
-            items: tkFlashcardData.items || [],
-            masteredIds: [...masteredTkCardIds || []],
-            dueIds: []
-          };
-          const res = await window.taskAPI.cloudBackupSlot(activeCloudSlot, payload);
-          if (res && res.success) {
-            alert(`✅ Đã sao lưu thành công ${res.totalCount} thẻ vào Mã Cloud [${res.slot}]!\n\n📱 Trên điện thoại, bạn chỉ cần mở PWA và bấm "☁️ Đồng bộ" rồi chọn số ${res.slot} để nạp dữ liệu.`);
-            if (typeof playTone === 'function') {
-              playTone(523, 0.08, 'sine', 0.15);
-              setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
-              setTimeout(() => playTone(784, 0.15, 'sine', 0.15), 160);
-            }
-          } else {
-            alert('Không thể sao lưu: ' + (res ? res.error : 'Lỗi không xác định'));
+          try {
+            res = await window.taskAPI.cloudBackupSlot(activeCloudSlot, payload);
+          } catch (ipcErr) {
+            console.warn('[CLOUD] IPC cloudBackupSlot error:', ipcErr);
+          }
+        }
+
+        // Fallback to syncFlashcardsToWeb if IPC not registered
+        if ((!res || !res.success) && window.taskAPI && window.taskAPI.syncFlashcardsToWeb) {
+          const syncRes = await window.taskAPI.syncFlashcardsToWeb({ items: allItems });
+          if (syncRes && syncRes.success) {
+            res = {
+              success: true,
+              slot: activeCloudSlot,
+              totalCount: allItems.length
+            };
+          }
+        }
+
+        if (res && res.success) {
+          alert(`✅ Đã sao lưu thành công ${res.totalCount || allItems.length} thẻ vào Mã Cloud [${res.slot || activeCloudSlot}]!\n\n📱 Trên điện thoại, bạn chỉ cần mở PWA và bấm "☁️ Đồng bộ" rồi chọn số ${res.slot || activeCloudSlot} để nạp dữ liệu.`);
+          if (typeof playTone === 'function') {
+            playTone(523, 0.08, 'sine', 0.15);
+            setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
+            setTimeout(() => playTone(784, 0.15, 'sine', 0.15), 160);
           }
         } else {
-          alert('API Cloud Backup chưa được cấu hình.');
+          alert('Không thể sao lưu: ' + (res ? res.error : 'Vui lòng kiểm tra lại kết nối mạng hoặc khởi động lại ứng dụng.'));
         }
       } catch (err) {
         console.error('Cloud backup error:', err);
@@ -9594,26 +9616,46 @@ Yêu cầu gồm:
       btnTkCloudRestore.innerHTML = '⏳ Đang tải từ Cloud...';
 
       try {
+        let slotData = null;
+
+        // 1. Try IPC
         if (window.taskAPI && window.taskAPI.cloudRestoreSlot) {
-          const res = await window.taskAPI.cloudRestoreSlot(activeCloudSlot);
-          if (res && res.success && res.data) {
-            const restoredItems = res.data.items || [];
-            if (restoredItems.length === 0) {
-              alert(`Mã Cloud [${activeCloudSlot}] chưa có dữ liệu nào.`);
-            } else {
-              if (confirm(`Tìm thấy ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]. Bạn có muốn nạp dữ liệu này vào ứng dụng không?`)) {
-                tkFlashcardData.items = restoredItems;
-                await saveTkFlashcards();
-                renderTkFlashcardList();
-                updateTkSelectionUI();
-                if (tkFlashcardData.items[0]) setActiveTkCard(tkFlashcardData.items[0].id);
-                alert(`✅ Đã đồng bộ thành công ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]!`);
-                if (tkCloudSyncModal) tkCloudSyncModal.classList.remove('active');
-              }
+          try {
+            const res = await window.taskAPI.cloudRestoreSlot(activeCloudSlot);
+            if (res && res.success && res.data) {
+              slotData = res.data;
             }
-          } else {
-            alert('Không thể khôi phục: ' + (res ? res.error : 'Chưa có bản sao lưu'));
+          } catch (ipcErr) {
+            console.warn('[CLOUD] IPC cloudRestoreSlot error, trying direct fetch...', ipcErr);
           }
+        }
+
+        // 2. Fallback: Fetch directly from GitHub Pages CDN
+        if (!slotData) {
+          try {
+            const cloudUrl = `https://hoangkyanh05.github.io/Tool_clock/data/slot_${activeCloudSlot}.json?t=${Date.now()}`;
+            const fetchRes = await fetch(cloudUrl);
+            if (fetchRes.ok) {
+              slotData = await fetchRes.json();
+            }
+          } catch (fetchErr) {
+            console.warn('[CLOUD] Direct fetch error:', fetchErr);
+          }
+        }
+
+        if (slotData && Array.isArray(slotData.items) && slotData.items.length > 0) {
+          const restoredItems = slotData.items;
+          if (confirm(`Tìm thấy ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]. Bạn có muốn nạp dữ liệu này vào ứng dụng không?`)) {
+            tkFlashcardData.items = restoredItems;
+            await saveTkFlashcards();
+            renderTkFlashcardList();
+            updateTkSelectionUI();
+            if (tkFlashcardData.items[0]) setActiveTkCard(tkFlashcardData.items[0].id);
+            alert(`✅ Đã đồng bộ thành công ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]!`);
+            if (tkCloudSyncModal) tkCloudSyncModal.classList.remove('active');
+          }
+        } else {
+          alert(`Mã Cloud [${activeCloudSlot}] chưa có dữ liệu nào hoặc không thể tải.`);
         }
       } catch (err) {
         console.error('Cloud restore error:', err);
@@ -9624,6 +9666,7 @@ Yêu cầu gồm:
       }
     });
   }
+
 
   // Selection toolbar buttons
   const btnTkCopyPrompt = document.getElementById('btnTkCopyPrompt');
