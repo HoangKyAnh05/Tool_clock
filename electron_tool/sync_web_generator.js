@@ -1,6 +1,6 @@
 // sync_web_generator.js
 // Generates standalone, mobile-optimized TikTok Flashcard PWA for GitHub Pages
-// Uses Seamless 2-Buffer Direct GPU Swapper: ZERO JITTER, ZERO DOM DESTRUCTION, 120FPS SILKY SMOOTH
+// Ultra-smooth 120FPS GPU swipe engine with zero-lag, no pointer/touch collision, and instant manual buttons.
 const fs = require('fs');
 const path = require('path');
 const { generateIcons } = require('./generate_icons');
@@ -15,7 +15,7 @@ function generateMobileHtml(data) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>TikTok Flashcard - Lướt Từ Vựng IELTS</title>
-  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống siêu mượt 120fps không giật, nút Thẻ trên/Thẻ dưới, sao lưu Cloud mã 1 số.">
+  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống siêu mượt 120fps chuẩn TikTok, nút Thẻ trên/Thẻ dưới, sao lưu Cloud mã 1 số.">
   <meta name="theme-color" content="#0b0d14">
   
   <!-- PWA Meta Tags -->
@@ -266,7 +266,7 @@ function generateMobileHtml(data) {
     }
 
     /* ==========================================================================
-       TIKTOK SEAMLESS VIEWPORT & SLIDES (GPU ACCELERATED 120FPS)
+       TIKTOK VERTICAL SWIPE DECK (GPU ACCELERATED 120FPS)
        ========================================================================== */
     .tiktok-viewport {
       width: 100%;
@@ -279,6 +279,18 @@ function generateMobileHtml(data) {
 
     .tiktok-viewport:active {
       cursor: grabbing;
+    }
+
+    .tiktok-slider-track {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .tiktok-slide {
@@ -879,7 +891,7 @@ function generateMobileHtml(data) {
     </div>
   </header>
 
-  <!-- Sub Toolbar -->
+  <!-- Sub Toolbar (Filter Pills & Auto-Scroll) -->
   <div class="sub-toolbar">
     <div class="filter-pills-group">
       <button type="button" class="filter-pill active" data-filter="all">📚 Tất cả (<span id="badgeAll">0</span>)</button>
@@ -894,7 +906,7 @@ function generateMobileHtml(data) {
     </div>
   </div>
 
-  <!-- Main Fullscreen Viewport (2 Seamless Buffers) -->
+  <!-- Main Fullscreen Swipe Viewport -->
   <main id="mainContainer">
     <div class="tiktok-viewport" id="tiktokViewport">
       
@@ -903,13 +915,19 @@ function generateMobileHtml(data) {
         <span>↕️ Vuốt lên / xuống hoặc bấm nút Thẻ trên / Thẻ dưới</span>
       </div>
 
-      <!-- Slide Buffer A (Active by default) -->
-      <div class="tiktok-slide" id="slideA" style="transform: translate3d(0, 0, 0); z-index: 10;"></div>
-      
-      <!-- Slide Buffer B (Incoming buffer) -->
-      <div class="tiktok-slide" id="slideB" style="transform: translate3d(0, 100%, 0); z-index: 10; display: none;"></div>
+      <!-- Sliding Deck Track (Contains 3 Slides: Prev, Current, Next) -->
+      <div class="tiktok-slider-track" id="sliderTrack">
+        <!-- Slide 0: Top (Previous) -->
+        <div class="tiktok-slide" id="slidePrev"></div>
+        
+        <!-- Slide 1: Center (Current Active) -->
+        <div class="tiktok-slide" id="slideCurrent"></div>
+        
+        <!-- Slide 2: Bottom (Next) -->
+        <div class="tiktok-slide" id="slideNext"></div>
+      </div>
 
-      <!-- Floating Action Buttons on Right -->
+      <!-- Floating Action Buttons on Right (Fixed to Viewport) -->
       <div class="tiktok-side-actions">
         <!-- Up Card Button -->
         <div class="side-btn" id="btnSideNavPrev" title="Thẻ Trên / Trước (Phím ↑)">
@@ -1242,7 +1260,7 @@ ${jsonData}
       if (item.imageUrl) {
         inner = \`
           <div class="slide-img-container" data-img="\${item.imageUrl}">
-            <img src="\${item.imageUrl}" alt="Flashcard" />
+            <img src="\${item.imageUrl}" alt="Flashcard" loading="lazy" />
           </div>
         \`;
       } else {
@@ -1272,17 +1290,61 @@ ${jsonData}
       \`;
     }
 
-    // =========================================================================
-    // SEAMLESS DOUBLE-BUFFER RENDERING SYSTEM (NO JITTER & NO DOM DESTROY)
-    // =========================================================================
-    let slideActive = document.getElementById('slideA');
-    let slideIncoming = document.getElementById('slideB');
+    // Render 3 Slides (Prev, Current, Next)
+    const slidePrev = document.getElementById('slidePrev');
+    const slideCurrent = document.getElementById('slideCurrent');
+    const slideNext = document.getElementById('slideNext');
+    const sliderTrack = document.getElementById('sliderTrack');
     const btnSideMastered = document.getElementById('btnSideMastered');
     const btnSideTiktok = document.getElementById('btnSideTiktok');
     const lblNavCounter = document.getElementById('lblNavCounter');
 
-    function bindImageZoom(container) {
-      container.querySelectorAll('.slide-img-container').forEach(el => {
+    function renderDeck() {
+      const list = getFilteredList();
+      const total = list.length;
+      if (total === 0) {
+        slideCurrent.innerHTML = buildSlideContent(null, 0, 0);
+        slidePrev.innerHTML = '';
+        slideNext.innerHTML = '';
+        if (lblNavCounter) lblNavCounter.textContent = 'Thẻ 0 / 0';
+        return;
+      }
+
+      if (currentIndex < 0) currentIndex = 0;
+      if (currentIndex >= total) currentIndex = total - 1;
+
+      const prevIdx = (currentIndex - 1 + total) % total;
+      const nextIdx = (currentIndex + 1) % total;
+
+      const currentItem = list[currentIndex];
+      const prevItem = list[prevIdx];
+      const nextItem = list[nextIdx];
+
+      slidePrev.innerHTML = buildSlideContent(prevItem, prevIdx, total);
+      slideCurrent.innerHTML = buildSlideContent(currentItem, currentIndex, total);
+      slideNext.innerHTML = buildSlideContent(nextItem, nextIdx, total);
+
+      // Positioning 3 slides vertically with 3D hardware acceleration
+      slidePrev.style.transform = 'translate3d(0, -100%, 0)';
+      slideCurrent.style.transform = 'translate3d(0, 0, 0)';
+      slideNext.style.transform = 'translate3d(0, 100%, 0)';
+      sliderTrack.style.transform = 'translate3d(0, 0, 0)';
+
+      // Update Nav counter pill
+      if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
+
+      // Side action buttons status
+      if (masteredIds.has(currentItem.id)) {
+        btnSideMastered.classList.add('active-like');
+      } else {
+        btnSideMastered.classList.remove('active-like');
+      }
+
+      const tkUrl = currentItem.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(currentItem.word || '')}\`);
+      btnSideTiktok.href = tkUrl;
+
+      // Bind image zoom click
+      slideCurrent.querySelectorAll('.slide-img-container').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           const src = el.getAttribute('data-img');
@@ -1292,129 +1354,64 @@ ${jsonData}
           }
         });
       });
-    }
 
-    function updateSideControls(item) {
-      if (!item) return;
-      if (masteredIds.has(item.id)) {
-        btnSideMastered.classList.add('active-like');
-      } else {
-        btnSideMastered.classList.remove('active-like');
-      }
-      const tkUrl = item.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(item.word || '')}\`);
-      btnSideTiktok.href = tkUrl;
-    }
-
-    function renderInitialDeck() {
-      const list = getFilteredList();
-      const total = list.length;
-      if (total === 0) {
-        slideActive.innerHTML = buildSlideContent(null, 0, 0);
-        if (lblNavCounter) lblNavCounter.textContent = 'Thẻ 0 / 0';
-        return;
-      }
-
-      if (currentIndex < 0) currentIndex = 0;
-      if (currentIndex >= total) currentIndex = total - 1;
-
-      const currentItem = list[currentIndex];
-      slideActive.innerHTML = buildSlideContent(currentItem, currentIndex, total);
-      slideActive.style.transform = 'translate3d(0, 0, 0)';
-      slideActive.style.display = 'flex';
-      slideActive.style.transition = 'none';
-
-      slideIncoming.style.display = 'none';
-      slideIncoming.style.transition = 'none';
-
-      if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
-      updateSideControls(currentItem);
-      bindImageZoom(slideActive);
       saveState();
     }
 
     // =========================================================================
-    // BUTTERY SMOOTH 120FPS SWIPE & TRANSITIONS (ABSOLUTE TRANSLATE WITHOUT SNAP)
+    // ROBUST TRANSITION & MANUAL NAVIGATION FUNCTIONS (120FPS GPU ACCELERATED)
     // =========================================================================
-    let isTransitioning = false;
-    let transitionTimeout = null;
+    let isAnimating = false;
+    let animSafetyTimer = null;
 
-    function executeSeamlessTransition(direction, targetIdx) {
+    function finishAnimation(newIdx) {
+      if (animSafetyTimer) clearTimeout(animSafetyTimer);
       const list = getFilteredList();
-      const total = list.length;
-      if (total <= 1 || isTransitioning) return;
-
-      isTransitioning = true;
-      if (transitionTimeout) clearTimeout(transitionTimeout);
-
-      const nextItem = list[targetIdx];
-      
-      // 1. Prepare Incoming Buffer at starting position
-      slideIncoming.innerHTML = buildSlideContent(nextItem, targetIdx, total);
-      bindImageZoom(slideIncoming);
-
-      const startOffset = direction === 'next' ? '100%' : '-100%';
-      const endActiveOffset = direction === 'next' ? '-100%' : '100%';
-
-      slideIncoming.style.transition = 'none';
-      slideIncoming.style.transform = \`translate3d(0, \${startOffset}, 0)\`;
-      slideIncoming.style.display = 'flex';
-      slideIncoming.style.zIndex = '15';
-      slideActive.style.zIndex = '10';
-
-      // Force layout reflow before animating
-      void slideIncoming.offsetWidth;
-
-      // 2. Animate BOTH buffers simultaneously with physics cubic-bezier
-      const easing = 'transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)';
-      slideActive.style.transition = easing;
-      slideIncoming.style.transition = easing;
-
-      slideActive.style.transform = \`translate3d(0, \${endActiveOffset}, 0)\`;
-      slideIncoming.style.transform = 'translate3d(0, 0, 0)';
-
-      // 3. Complete Transition Without Touching Incoming Buffer's Inner DOM
-      transitionTimeout = setTimeout(() => {
-        currentIndex = targetIdx;
-        
-        // Hide and reset old active slide offscreen
-        slideActive.style.display = 'none';
-        slideActive.style.transition = 'none';
-        slideActive.style.transform = 'translate3d(0, 100%, 0)';
-
-        // Swap references: Incoming slide is ALREADY resting perfectly at (0,0,0)!
-        const temp = slideActive;
-        slideActive = slideIncoming;
-        slideIncoming = temp;
-
-        slideActive.style.zIndex = '10';
-        slideIncoming.style.zIndex = '5';
-
-        // Update UI
-        if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
-        updateSideControls(nextItem);
-        saveState();
-
-        isTransitioning = false;
-        if (autoScrollSeconds > 0 && direction === 'next') speakCurrentWord();
-      }, 280);
+      if (list.length > 0) {
+        currentIndex = (newIdx + list.length) % list.length;
+        renderDeck();
+      }
+      sliderTrack.style.transition = 'none';
+      sliderTrack.style.transform = 'translate3d(0, 0, 0)';
+      isAnimating = false;
     }
 
     function goToNextCard() {
       const list = getFilteredList();
       if (list.length <= 1) return;
-      const target = (currentIndex + 1) % list.length;
-      executeSeamlessTransition('next', target);
+      if (isAnimating) {
+        // Fast skip if already in motion
+        finishAnimation(currentIndex + 1);
+        return;
+      }
+      isAnimating = true;
+      sliderTrack.style.transition = 'transform 0.26s cubic-bezier(0.25, 1, 0.5, 1)';
+      sliderTrack.style.transform = 'translate3d(0, -100%, 0)';
+
+      animSafetyTimer = setTimeout(() => {
+        finishAnimation(currentIndex + 1);
+        if (autoScrollSeconds > 0) speakCurrentWord();
+      }, 260);
     }
 
     function goToPrevCard() {
       const list = getFilteredList();
       if (list.length <= 1) return;
-      const target = (currentIndex - 1 + list.length) % list.length;
-      executeSeamlessTransition('prev', target);
+      if (isAnimating) {
+        finishAnimation(currentIndex - 1);
+        return;
+      }
+      isAnimating = true;
+      sliderTrack.style.transition = 'transform 0.26s cubic-bezier(0.25, 1, 0.5, 1)';
+      sliderTrack.style.transform = 'translate3d(0, 100%, 0)';
+
+      animSafetyTimer = setTimeout(() => {
+        finishAnimation(currentIndex - 1);
+      }, 260);
     }
 
     // =========================================================================
-    // UNIFIED GESTURE ENGINE (1:1 PHYSICAL DRAG & INSTANT FLICK)
+    // UNIFIED GESTURE ENGINE (NO COLLISION & INSTANT 1:1 TRACKING)
     // =========================================================================
     const viewport = document.getElementById('tiktokViewport');
     let isDragging = false;
@@ -1422,66 +1419,35 @@ ${jsonData}
     let currentY = 0;
     let startTime = 0;
     let lastTapTime = 0;
-    let dragDirection = null;
 
     function onDragStart(y) {
-      if (isTransitioning) return;
+      if (isAnimating) {
+        if (animSafetyTimer) clearTimeout(animSafetyTimer);
+        isAnimating = false;
+        sliderTrack.style.transition = 'none';
+        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
+      }
       isDragging = true;
       startY = y;
       currentY = y;
       startTime = Date.now();
-      dragDirection = null;
-
-      slideActive.style.transition = 'none';
-      slideIncoming.style.transition = 'none';
+      sliderTrack.style.transition = 'none';
     }
 
     function onDragMove(y) {
-      if (!isDragging || isTransitioning) return;
+      if (!isDragging) return;
       currentY = y;
       const deltaY = currentY - startY;
-
-      const list = getFilteredList();
-      const total = list.length;
-      if (total <= 1) {
-        slideActive.style.transform = \`translate3d(0, \${deltaY * 0.3}px, 0)\`;
-        return;
-      }
-
-      if (deltaY < 0) {
-        // Dragging UP -> Next Card coming from bottom
-        if (dragDirection !== 'next') {
-          dragDirection = 'next';
-          const nextIdx = (currentIndex + 1) % total;
-          slideIncoming.innerHTML = buildSlideContent(list[nextIdx], nextIdx, total);
-          bindImageZoom(slideIncoming);
-          slideIncoming.style.display = 'flex';
-          slideIncoming.style.zIndex = '15';
-        }
-        slideActive.style.transform = \`translate3d(0, \${deltaY}px, 0)\`;
-        slideIncoming.style.transform = \`translate3d(0, calc(100% + \${deltaY}px), 0)\`;
-      } else if (deltaY > 0) {
-        // Dragging DOWN -> Prev Card coming from top
-        if (dragDirection !== 'prev') {
-          dragDirection = 'prev';
-          const prevIdx = (currentIndex - 1 + total) % total;
-          slideIncoming.innerHTML = buildSlideContent(list[prevIdx], prevIdx, total);
-          bindImageZoom(slideIncoming);
-          slideIncoming.style.display = 'flex';
-          slideIncoming.style.zIndex = '15';
-        }
-        slideActive.style.transform = \`translate3d(0, \${deltaY}px, 0)\`;
-        slideIncoming.style.transform = \`translate3d(0, calc(-100% + \${deltaY}px), 0)\`;
-      }
+      sliderTrack.style.transform = \`translate3d(0, \${deltaY}px, 0)\`;
     }
 
     function onDragEnd() {
-      if (!isDragging || isTransitioning) return;
+      if (!isDragging) return;
       isDragging = false;
 
       const deltaY = currentY - startY;
       const duration = Date.now() - startTime;
-      const threshold = Math.min(window.innerHeight * 0.12, 50);
+      const threshold = Math.min(window.innerHeight * 0.12, 60);
       const velocity = Math.abs(deltaY) / (duration || 1);
 
       // Check double tap for like
@@ -1492,91 +1458,24 @@ ${jsonData}
       lastTapTime = now;
 
       const list = getFilteredList();
-      const total = list.length;
-      if (total <= 1) {
-        slideActive.style.transition = 'transform 0.22s ease-out';
-        slideActive.style.transform = 'translate3d(0, 0, 0)';
+      if (list.length <= 1) {
+        sliderTrack.style.transition = 'transform 0.22s ease-out';
+        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
         return;
       }
 
-      if (deltaY < -threshold || (deltaY < -20 && velocity > 0.28)) {
-        // Confirm NEXT
-        isTransitioning = true;
-        const targetIdx = (currentIndex + 1) % total;
-        const easing = 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)';
-        slideActive.style.transition = easing;
-        slideIncoming.style.transition = easing;
-
-        slideActive.style.transform = 'translate3d(0, -100%, 0)';
-        slideIncoming.style.transform = 'translate3d(0, 0, 0)';
-
-        transitionTimeout = setTimeout(() => {
-          currentIndex = targetIdx;
-          slideActive.style.display = 'none';
-          slideActive.style.transition = 'none';
-          slideActive.style.transform = 'translate3d(0, 100%, 0)';
-
-          const temp = slideActive;
-          slideActive = slideIncoming;
-          slideIncoming = temp;
-
-          slideActive.style.zIndex = '10';
-          slideIncoming.style.zIndex = '5';
-
-          if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
-          updateSideControls(list[currentIndex]);
-          saveState();
-          isTransitioning = false;
-          if (autoScrollSeconds > 0) speakCurrentWord();
-        }, 250);
-
-      } else if (deltaY > threshold || (deltaY > 20 && velocity > 0.28)) {
-        // Confirm PREV
-        isTransitioning = true;
-        const targetIdx = (currentIndex - 1 + total) % total;
-        const easing = 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)';
-        slideActive.style.transition = easing;
-        slideIncoming.style.transition = easing;
-
-        slideActive.style.transform = 'translate3d(0, 100%, 0)';
-        slideIncoming.style.transform = 'translate3d(0, 0, 0)';
-
-        transitionTimeout = setTimeout(() => {
-          currentIndex = targetIdx;
-          slideActive.style.display = 'none';
-          slideActive.style.transition = 'none';
-          slideActive.style.transform = 'translate3d(0, 100%, 0)';
-
-          const temp = slideActive;
-          slideActive = slideIncoming;
-          slideIncoming = temp;
-
-          slideActive.style.zIndex = '10';
-          slideIncoming.style.zIndex = '5';
-
-          if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
-          updateSideControls(list[currentIndex]);
-          saveState();
-          isTransitioning = false;
-        }, 250);
-
+      if (deltaY < -threshold || (deltaY < -20 && velocity > 0.3)) {
+        goToNextCard();
+      } else if (deltaY > threshold || (deltaY > 20 && velocity > 0.3)) {
+        goToPrevCard();
       } else {
-        // Cancel & Snap Back
-        const easing = 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)';
-        slideActive.style.transition = easing;
-        slideActive.style.transform = 'translate3d(0, 0, 0)';
-        if (slideIncoming.style.display !== 'none') {
-          slideIncoming.style.transition = easing;
-          const returnOffset = dragDirection === 'next' ? '100%' : '-100%';
-          slideIncoming.style.transform = \`translate3d(0, \${returnOffset}, 0)\`;
-          setTimeout(() => {
-            slideIncoming.style.display = 'none';
-          }, 200);
-        }
+        // Snap back instantly
+        sliderTrack.style.transition = 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1)';
+        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
       }
     }
 
-    // Unified Event Binding
+    // Unified Event Binding (Pointer Events if supported, Touch if not)
     if (window.PointerEvent) {
       viewport.addEventListener('pointerdown', (e) => {
         if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('textarea')) return;
@@ -1598,6 +1497,7 @@ ${jsonData}
         onDragEnd();
       }, { passive: true });
     } else {
+      // Touch fallback for older browsers
       viewport.addEventListener('touchstart', (e) => {
         if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
         if (e.touches && e.touches[0]) onDragStart(e.touches[0].clientY);
@@ -1611,10 +1511,10 @@ ${jsonData}
       viewport.addEventListener('touchcancel', onDragEnd, { passive: true });
     }
 
-    // Mouse Wheel Scroll
+    // Mouse Wheel Scroll (for desktop mouse wheel flick)
     let wheelDebounce = false;
     viewport.addEventListener('wheel', (e) => {
-      if (wheelDebounce || isTransitioning) return;
+      if (wheelDebounce) return;
       if (Math.abs(e.deltaY) > 15) {
         wheelDebounce = true;
         if (e.deltaY > 0) {
@@ -1622,7 +1522,7 @@ ${jsonData}
         } else {
           goToPrevCard();
         }
-        setTimeout(() => { wheelDebounce = false; }, 300);
+        setTimeout(() => { wheelDebounce = false; }, 280);
       }
     }, { passive: true });
 
@@ -1684,8 +1584,7 @@ ${jsonData}
         triggerHeartAnim(window.innerWidth / 2, window.innerHeight / 2);
       }
       updateBadges();
-      updateSideControls(item);
-      saveState();
+      renderDeck();
     }
 
     // Auto-Scroll Feature
@@ -1712,6 +1611,7 @@ ${jsonData}
         speakCurrentWord();
         autoScrollInterval = setInterval(() => {
           goToNextCard();
+          speakCurrentWord();
         }, autoScrollSeconds * 1000);
       }
     }
@@ -1926,11 +1826,12 @@ ${jsonData}
         createdAt: new Date().toISOString()
       };
 
+      // Add to beginning of items
       RAW_ITEMS.unshift(newCard);
       currentIndex = 0;
       saveState();
       updateBadges();
-      renderInitialDeck();
+      renderDeck();
       newCardModal.classList.remove('active');
       alert(\`🎉 Đã thêm thành công thẻ "\${wordVal}" vào bộ flashcard!\`);
     });
@@ -1995,7 +1896,7 @@ ${jsonData}
           }
           currentIndex = 0;
           updateBadges();
-          renderInitialDeck();
+          renderDeck();
           alert(\`✅ Đồng bộ thành công \${downloadedItems.length} thẻ từ Mã Cloud [\${mobileActiveSlot}]!\`);
           cloudSyncModal.classList.remove('active');
         }
@@ -2055,7 +1956,7 @@ ${jsonData}
           document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === 'all'));
           const idx = RAW_ITEMS.findIndex(x => x.id === item.id);
           if (idx >= 0) currentIndex = idx;
-          renderInitialDeck();
+          renderDeck();
         });
         searchResultsList.appendChild(div);
       });
@@ -2072,7 +1973,7 @@ ${jsonData}
         pill.classList.add('active');
         activeFilter = pill.dataset.filter;
         currentIndex = 0;
-        renderInitialDeck();
+        renderDeck();
       });
     });
 
@@ -2083,7 +1984,7 @@ ${jsonData}
         [RAW_ITEMS[i], RAW_ITEMS[j]] = [RAW_ITEMS[j], RAW_ITEMS[i]];
       }
       currentIndex = 0;
-      renderInitialDeck();
+      renderDeck();
       alert('🎲 Đã trộn ngẫu nhiên toàn bộ thẻ!');
     });
 
@@ -2156,7 +2057,7 @@ ${jsonData}
 
     // Initialize
     updateBadges();
-    renderInitialDeck();
+    renderDeck();
   </script>
 </body>
 </html>`;
@@ -2164,7 +2065,7 @@ ${jsonData}
 
 function writeWebFiles(data, rootDir) {
   const html = generateMobileHtml(data);
-  
+
   // 1. Generate PWA Icons
   const rootIconsDir = path.join(rootDir, 'icons');
   const docsIconsDir = path.join(rootDir, 'docs', 'icons');
@@ -2209,8 +2110,8 @@ function writeWebFiles(data, rootDir) {
     categories: ["education", "productivity"]
   }, null, 2);
 
-  const swJs = `// sw.js - Service Worker for TikTok Flashcard PWA (v10 - zero jitter)
-const CACHE_NAME = 'tiktok-flashcard-v10';
+  const swJs = `// sw.js - Service Worker for TikTok Flashcard PWA (v9 - zero lag cache)
+const CACHE_NAME = 'tiktok-flashcard-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
