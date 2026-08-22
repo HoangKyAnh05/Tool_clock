@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>TikTok Flashcard - Lướt Từ Vựng IELTS</title>
-  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, phát âm to rõ, mượt mà trên điện thoại.">
+  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, sao lưu Cloud mã 1 số, phát âm to rõ.">
   <meta name="theme-color" content="#0b0d14">
   
   <!-- PWA Meta Tags -->
@@ -243,7 +243,7 @@
       height: 100%;
       position: relative;
       overflow: hidden;
-      touch-action: none; /* Pointer Events unified drag */
+      touch-action: none;
       cursor: grab;
     }
 
@@ -623,6 +623,40 @@
       border-color: #00f2fe;
     }
 
+    /* Slot Keypad Buttons */
+    .slot-keypad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .slot-btn {
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .slot-btn:active {
+      transform: scale(0.92);
+    }
+
+    .slot-btn.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #10b981;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
     /* Fullscreen Image Zoom */
     .img-fullscreen-modal {
       position: fixed;
@@ -701,6 +735,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button type="button" id="btnOpenCloudSync" class="icon-btn" title="Đồng bộ Cloud với Mã 1 chữ số (0 - 9)" style="background: rgba(16,185,129,0.2); border-color: #10b981; color: #6ee7b7;">☁️</button>
       <button type="button" id="btnPwaInstall" class="pwa-install-btn" title="Cài đặt App vào Màn hình chính">
         <span>📲</span> Cài App
       </button>
@@ -798,6 +833,50 @@
     </div>
   </div>
 
+  <!-- Cloud Sync Modal (1-Digit Slot: 0 - 9) -->
+  <div class="modal-overlay" id="cloudSyncModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" style="color: #10b981; display: flex; align-items: center; gap: 8px;">
+          ☁️ ĐỒNG BỘ CLOUD (MÃ 1 SỐ)
+        </div>
+        <button type="button" class="icon-btn" id="btnCloseCloudModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">
+          Chọn <b>Mã 1 chữ số (0 - 9)</b> mà bạn đã sao lưu trên máy tính để nạp toàn bộ từ vựng và tiến độ vào điện thoại:
+        </p>
+
+        <!-- 10 Slots Selector Grid -->
+        <div class="slot-keypad" id="mobileSlotKeypad">
+          <button type="button" class="slot-btn" data-slot="0">0</button>
+          <button type="button" class="slot-btn active" data-slot="1">1</button>
+          <button type="button" class="slot-btn" data-slot="2">2</button>
+          <button type="button" class="slot-btn" data-slot="3">3</button>
+          <button type="button" class="slot-btn" data-slot="4">4</button>
+          <button type="button" class="slot-btn" data-slot="5">5</button>
+          <button type="button" class="slot-btn" data-slot="6">6</button>
+          <button type="button" class="slot-btn" data-slot="7">7</button>
+          <button type="button" class="slot-btn" data-slot="8">8</button>
+          <button type="button" class="slot-btn" data-slot="9">9</button>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px;">Mã đã chọn: <b id="lblMobileSelectedSlot" style="color: #10b981; font-size: 18px;">[ 1 ]</b></span>
+            <span id="lblMobileSlotInfo" style="font-size: 11.5px; color: #94a3b8;">Chạm nút bên dưới để tải</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button type="button" id="btnMobileDownloadSlot" class="pwa-install-btn" style="height: 44px; font-size: 13.5px; justify-content: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            ⬇️ Đồng bộ ngay từ Mã [<span class="mobile-slot-num">1</span>]
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Fullscreen Image Viewer Modal -->
   <div class="img-fullscreen-modal" id="imgFullscreenModal">
     <button type="button" class="img-close-btn" id="btnCloseImgModal">✕</button>
@@ -882,6 +961,17 @@
     } catch (e) {
       console.error('Failed to parse items:', e);
       RAW_ITEMS = [];
+    }
+
+    // Check if user has a custom synced dataset in localStorage
+    const savedCustomItems = localStorage.getItem('pwa_tk_custom_items');
+    if (savedCustomItems) {
+      try {
+        const parsed = JSON.parse(savedCustomItems);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          RAW_ITEMS = parsed;
+        }
+      } catch (err) {}
     }
 
     // Local Storage State
@@ -1108,7 +1198,7 @@
       }
     }
 
-    // Pointer Events (Unified Mouse + Touch + Stylus)
+    // Pointer Events
     viewport.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.side-btn') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
       handleStart(e.clientY);
@@ -1150,7 +1240,6 @@
         wheelDebounce = true;
         const list = getFilteredList();
         if (e.deltaY > 0) {
-          // Wheel down -> Next
           isAnimating = true;
           sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
           sliderTrack.style.transform = 'translateY(-100%)';
@@ -1162,7 +1251,6 @@
             isAnimating = false;
           }, 280);
         } else {
-          // Wheel up -> Prev
           isAnimating = true;
           sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
           sliderTrack.style.transform = 'translateY(100%)';
@@ -1180,7 +1268,7 @@
 
     // Keyboard navigation (ArrowDown / ArrowUp / Space)
     window.addEventListener('keydown', (e) => {
-      if (document.getElementById('searchModal').classList.contains('active')) return;
+      if (document.getElementById('searchModal').classList.contains('active') || document.getElementById('cloudSyncModal').classList.contains('active')) return;
       const list = getFilteredList();
       if (list.length === 0) return;
       
@@ -1337,6 +1425,79 @@
       document.getElementById('imgFullscreenModal').classList.remove('active');
     });
 
+    // =========================================================================
+    // 1-DIGIT CLOUD SYNC LOGIC (0 - 9)
+    // =========================================================================
+    let mobileActiveSlot = '1';
+    const cloudSyncModal = document.getElementById('cloudSyncModal');
+    const lblMobileSelectedSlot = document.getElementById('lblMobileSelectedSlot');
+    const lblMobileSlotInfo = document.getElementById('lblMobileSlotInfo');
+    const btnMobileDownloadSlot = document.getElementById('btnMobileDownloadSlot');
+
+    function updateMobileSlotUI() {
+      if (lblMobileSelectedSlot) lblMobileSelectedSlot.textContent = `[ ${mobileActiveSlot} ]`;
+      document.querySelectorAll('#mobileSlotKeypad .slot-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.slot === mobileActiveSlot);
+      });
+      document.querySelectorAll('.mobile-slot-num').forEach(el => el.textContent = mobileActiveSlot);
+    }
+
+    document.getElementById('btnOpenCloudSync').addEventListener('click', () => {
+      updateMobileSlotUI();
+      cloudSyncModal.classList.add('active');
+    });
+
+    document.getElementById('btnCloseCloudModal').addEventListener('click', () => {
+      cloudSyncModal.classList.remove('active');
+    });
+
+    document.querySelectorAll('#mobileSlotKeypad .slot-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        mobileActiveSlot = btn.dataset.slot || '1';
+        updateMobileSlotUI();
+      });
+    });
+
+    // Download / Restore from Cloud Slot on Mobile
+    btnMobileDownloadSlot.addEventListener('click', async () => {
+      const origHtml = btnMobileDownloadSlot.innerHTML;
+      btnMobileDownloadSlot.disabled = true;
+      btnMobileDownloadSlot.innerHTML = '⏳ Đang tải dữ liệu từ Cloud...';
+
+      try {
+        const slotUrl = `./data/slot_${mobileActiveSlot}.json?t=${Date.now()}`;
+        const res = await fetch(slotUrl);
+        if (!res.ok) {
+          throw new Error(`Mã [${mobileActiveSlot}] chưa có bản sao lưu trên Cloud (Mã lỗi ${res.status}). Hãy sao lưu từ máy tính trước nhé!`);
+        }
+        const data = await res.json();
+        const downloadedItems = data.items || [];
+        if (downloadedItems.length === 0) {
+          alert(`Mã Cloud [${mobileActiveSlot}] rỗng (chưa có thẻ nào).`);
+        } else {
+          RAW_ITEMS = downloadedItems;
+          localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
+          if (Array.isArray(data.masteredIds)) {
+            data.masteredIds.forEach(id => masteredIds.add(id));
+          }
+          if (Array.isArray(data.dueIds)) {
+            data.dueIds.forEach(id => dueIds.add(id));
+          }
+          currentIndex = 0;
+          updateBadges();
+          renderDeck();
+          alert(`✅ Đồng bộ thành công ${downloadedItems.length} thẻ từ Mã Cloud [${mobileActiveSlot}]!`);
+          cloudSyncModal.classList.remove('active');
+        }
+      } catch (err) {
+        console.error('Download slot error:', err);
+        alert(err.message || 'Không thể kết nối đến máy chủ Cloud.');
+      } finally {
+        btnMobileDownloadSlot.disabled = false;
+        btnMobileDownloadSlot.innerHTML = origHtml;
+      }
+    });
+
     // Search Logic
     const searchModal = document.getElementById('searchModal');
     const searchInput = document.getElementById('searchInput');
@@ -1421,6 +1582,10 @@
       if (e.target === searchModal) searchModal.classList.remove('active');
     });
 
+    cloudSyncModal.addEventListener('click', (e) => {
+      if (e.target === cloudSyncModal) cloudSyncModal.classList.remove('active');
+    });
+
     const iosPwaModal = document.getElementById('iosPwaModal');
     iosPwaModal.addEventListener('click', (e) => {
       if (e.target === iosPwaModal) iosPwaModal.classList.remove('active');
@@ -1441,6 +1606,7 @@
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         searchModal.classList.remove('active');
+        cloudSyncModal.classList.remove('active');
         iosPwaModal.classList.remove('active');
         imgFullscreenModal.classList.remove('active');
         examplesDrawer.classList.remove('active');

@@ -1183,6 +1183,11 @@
             style="background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); color: #0b0d14; font-weight: 800; font-size: 12px; height: 36px; padding: 0 14px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,242,254,0.4); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;"
             title="Tạo trang Web và đẩy lên GitHub Pages để xem trên điện thoại">🌐 Đẩy Web Mobile</button>
           
+          <button type="button" id="btnTkCloudSync" class="btn-primary-glow"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; font-weight: 800; font-size: 12px; height: 36px; padding: 0 14px; border-radius: 8px; box-shadow: 0 4px 15px rgba(16,185,129,0.4); border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;"
+            title="Sao lưu & Đồng bộ dữ liệu lên Cloud bằng Mã 1 chữ số (0 - 9)">☁️ Sao Lưu Cloud (Mã 1 số)</button>
+
+          
           <div class="stat-bubble"
             style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 4px 12px; text-align: center; min-width: 75px;">
             <div style="font-size: 10.5px; color: #e2e8f0; font-weight: 600;">Tổng số từ</div>
@@ -3404,7 +3409,55 @@
     </div>
   </div>
 
+  <!-- Modal: Cloud Backup & Restore for 1-Digit Code (0 - 9) -->
+  <div id="tkCloudSyncModal" class="modal-overlay">
+    <div class="modal-box"
+      style="max-width: 480px; width: 95%; text-align: left; padding: 24px; border: 1.5px solid rgba(16, 185, 129, 0.5); box-shadow: 0 10px 40px rgba(16, 185, 129, 0.25); background: #131722;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #10b981; display: flex; align-items: center; gap: 8px;">☁️ SAO LƯU CLOUD (MÃ 1 CHỮ SỐ)</h3>
+        <button type="button" id="btnTkCloudClose" class="btn-modal btn-cancel" style="height: 28px; width: 28px; padding: 0; font-size: 14px; border-radius: 50%;">✕</button>
+      </div>
+      
+      <p style="font-size: 12.5px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.5;">
+        Chọn một <b>Mã 1 chữ số (0 - 9)</b> để lưu trữ lên Cloud. Trên điện thoại bạn chỉ cần bấm <b>"☁️ Đồng bộ"</b> và chọn đúng mã số này:
+      </p>
+
+      <!-- 10 Slots Selector Grid -->
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px;" id="tkCloudSlotGrid">
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="0" style="height: 38px; font-size: 14px; font-weight: 800;">0</button>
+        <button type="button" class="btn-modal tk-slot-btn active" data-slot="1" style="height: 38px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">1</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="2" style="height: 38px; font-size: 14px; font-weight: 800;">2</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="3" style="height: 38px; font-size: 14px; font-weight: 800;">3</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="4" style="height: 38px; font-size: 14px; font-weight: 800;">4</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="5" style="height: 38px; font-size: 14px; font-weight: 800;">5</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="6" style="height: 38px; font-size: 14px; font-weight: 800;">6</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="7" style="height: 38px; font-size: 14px; font-weight: 800;">7</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="8" style="height: 38px; font-size: 14px; font-weight: 800;">8</button>
+        <button type="button" class="btn-modal tk-slot-btn" data-slot="9" style="height: 38px; font-size: 14px; font-weight: 800;">9</button>
+      </div>
+
+      <!-- Active Slot Info Box -->
+      <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+          <span>Mã Cloud: <b id="lblTkSelectedSlot" style="color: #10b981; font-size: 16px;">[ 1 ]</b></span>
+          <span id="lblTkSlotStatus" style="color: #94a3b8; font-size: 11.5px;">Sẵn sàng sao lưu</span>
+        </div>
+      </div>
+
+      <!-- 2 Action Buttons -->
+      <div style="display: flex; gap: 10px;">
+        <button type="button" id="btnTkCloudBackup" class="btn-primary-glow" style="flex: 1; height: 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          ⬆️ Sao lưu lên Cloud
+        </button>
+        <button type="button" id="btnTkCloudRestore" class="btn-primary-glow" style="flex: 1; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #fff; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          ⬇️ Tải về từ Cloud
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Range Selector (Từ Thẻ A đến Thẻ B) -->
+
   <div id="tkRangeSelectModal" class="modal-overlay">
     <div class="modal-box"
       style="max-width: 440px; width: 95%; text-align: left; padding: 22px; border: 1px solid rgba(139, 92, 246, 0.4); box-shadow: 0 10px 40px rgba(139, 92, 246, 0.25);">

@@ -1882,6 +1882,93 @@ ipcMain.handle('sync-flashcards-to-web', async (event, data) => {
   }
 });
 
+// Cloud Backup & Restore for 1-Digit Slot (0 - 9)
+ipcMain.handle('cloud-backup-slot', async (event, slot, data) => {
+  try {
+    const digit = (slot || '1').toString();
+    const rootDir = path.join(__dirname, '..');
+    const docsDataDir = path.join(rootDir, 'docs', 'data');
+    const rootDataDir = path.join(rootDir, 'data');
+
+    if (!fs.existsSync(docsDataDir)) fs.mkdirSync(docsDataDir, { recursive: true });
+    if (!fs.existsSync(rootDataDir)) fs.mkdirSync(rootDataDir, { recursive: true });
+
+    let items = (data && data.items) ? data.items : [];
+    if (items.length === 0 && fs.existsSync(memorizePath)) {
+      const fileData = await fs.promises.readFile(memorizePath, 'utf8');
+      const parsed = JSON.parse(fileData);
+      items = parsed.items || [];
+    }
+
+    const slotPayload = {
+      slot: digit,
+      updatedAt: new Date().toISOString(),
+      count: items.length,
+      items: items,
+      masteredIds: data.masteredIds || [],
+      dueIds: data.dueIds || []
+    };
+
+    const jsonStr = JSON.stringify(slotPayload, null, 2);
+    const fileName = `slot_${digit}.json`;
+    await fs.promises.writeFile(path.join(docsDataDir, fileName), jsonStr, 'utf8');
+    await fs.promises.writeFile(path.join(rootDataDir, fileName), jsonStr, 'utf8');
+
+    // Also update main web generator
+    syncWebGen.writeWebFiles({ items: items }, rootDir);
+
+    // Git push to GitHub Pages
+    const { exec } = require('child_process');
+    const runGitCmd = (cmd) => {
+      return new Promise((resolve) => {
+        exec(cmd, { cwd: rootDir }, (err, stdout, stderr) => {
+          if (err) resolve({ success: false, error: stderr || err.message });
+          else resolve({ success: true, stdout });
+        });
+      });
+    };
+
+    await runGitCmd('git add .');
+    await runGitCmd(`git commit -m "Cloud Backup Slot ${digit}"`);
+    const pushResult = await runGitCmd('git push origin main');
+
+    const slotUrl = `https://hoangkyanh05.github.io/Tool_clock/data/${fileName}`;
+    return {
+      success: true,
+      slot: digit,
+      totalCount: items.length,
+      url: slotUrl,
+      gitPushed: pushResult.success,
+      updatedAt: slotPayload.updatedAt
+    };
+  } catch (err) {
+    console.error('[MAIN] Cloud backup failed:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('cloud-restore-slot', async (event, slot) => {
+  try {
+    const digit = (slot || '1').toString();
+    const rootDir = path.join(__dirname, '..');
+    const docsFile = path.join(rootDir, 'docs', 'data', `slot_${digit}.json`);
+    const rootFile = path.join(rootDir, 'data', `slot_${digit}.json`);
+
+    let targetFile = fs.existsSync(docsFile) ? docsFile : (fs.existsSync(rootFile) ? rootFile : null);
+    if (!targetFile) {
+      return { success: false, error: `Chưa có bản sao lưu nào ở Mã [${digit}].` };
+    }
+
+    const content = await fs.promises.readFile(targetFile, 'utf8');
+    const parsed = JSON.parse(content);
+    return { success: true, slot: digit, data: parsed };
+  } catch (err) {
+    console.error('[MAIN] Cloud restore failed:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+
 ipcMain.handle('load-tiktok-music', async () => {
   try {
     if (fs.existsSync(tiktokMusicPath)) {

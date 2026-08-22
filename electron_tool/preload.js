@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld('taskAPI', {
   saveCommentsVault: (data) => ipcRenderer.invoke('save-comments-vault', data),
   loadBrainChain: () => ipcRenderer.invoke('load-brain-chain'),
   saveBrainChain: (data) => ipcRenderer.invoke('save-brain-chain', data),
-  readClipboardImage: () => ipcRenderer.invoke('read-clipboard-image'),
-  openGeminiWindow: (url) => ipcRenderer.send('open-gemini-window', url),
+  cloudBackupSlot: (slot, data) => ipcRenderer.invoke('cloud-backup-slot', slot, data),
+  cloudRestoreSlot: (slot) => ipcRenderer.invoke('cloud-restore-slot', slot),
 });
+

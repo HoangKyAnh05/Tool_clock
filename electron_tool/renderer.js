@@ -9505,6 +9505,126 @@ Yêu cầu gồm:
   const btnPlayerSyncWeb = document.getElementById('btnTkPlayerSyncWeb');
   if (btnPlayerSyncWeb) btnPlayerSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
 
+  // Cloud Backup & Restore with 1-Digit Code (0 - 9)
+  let activeCloudSlot = '1';
+  const btnTkCloudSync = document.getElementById('btnTkCloudSync');
+  const tkCloudSyncModal = document.getElementById('tkCloudSyncModal');
+  const btnTkCloudClose = document.getElementById('btnTkCloudClose');
+  const lblTkSelectedSlot = document.getElementById('lblTkSelectedSlot');
+  const lblTkSlotStatus = document.getElementById('lblTkSlotStatus');
+  const btnTkCloudBackup = document.getElementById('btnTkCloudBackup');
+  const btnTkCloudRestore = document.getElementById('btnTkCloudRestore');
+
+  function updateCloudSlotUI() {
+    if (lblTkSelectedSlot) lblTkSelectedSlot.textContent = `[ ${activeCloudSlot} ]`;
+    document.querySelectorAll('#tkCloudSlotGrid .tk-slot-btn').forEach(btn => {
+      const isAct = btn.dataset.slot === activeCloudSlot;
+      btn.classList.toggle('active', isAct);
+      btn.style.background = isAct ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(255,255,255,0.06)';
+      btn.style.color = isAct ? '#fff' : 'var(--text-muted)';
+      btn.style.border = isAct ? '1px solid #10b981' : '1px solid var(--border)';
+    });
+    document.querySelectorAll('.tk-slot-num').forEach(el => el.textContent = activeCloudSlot);
+    if (lblTkSlotStatus) lblTkSlotStatus.textContent = `Mã [${activeCloudSlot}] sẵn sàng đồng bộ`;
+  }
+
+  if (btnTkCloudSync && tkCloudSyncModal) {
+    btnTkCloudSync.addEventListener('click', () => {
+      updateCloudSlotUI();
+      tkCloudSyncModal.classList.add('active');
+    });
+  }
+
+  if (btnTkCloudClose && tkCloudSyncModal) {
+    btnTkCloudClose.addEventListener('click', () => {
+      tkCloudSyncModal.classList.remove('active');
+    });
+  }
+
+  document.querySelectorAll('#tkCloudSlotGrid .tk-slot-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCloudSlot = btn.dataset.slot || '1';
+      updateCloudSlotUI();
+    });
+  });
+
+  // Backup to Cloud Slot
+  if (btnTkCloudBackup) {
+    btnTkCloudBackup.addEventListener('click', async () => {
+      const origHtml = btnTkCloudBackup.innerHTML;
+      btnTkCloudBackup.disabled = true;
+      btnTkCloudBackup.innerHTML = '⏳ Đang sao lưu lên Cloud...';
+
+      try {
+        if (window.taskAPI && window.taskAPI.cloudBackupSlot) {
+          const payload = {
+            items: tkFlashcardData.items || [],
+            masteredIds: [...masteredTkCardIds || []],
+            dueIds: []
+          };
+          const res = await window.taskAPI.cloudBackupSlot(activeCloudSlot, payload);
+          if (res && res.success) {
+            alert(`✅ Đã sao lưu thành công ${res.totalCount} thẻ vào Mã Cloud [${res.slot}]!\n\n📱 Trên điện thoại, bạn chỉ cần mở PWA và bấm "☁️ Đồng bộ" rồi chọn số ${res.slot} để nạp dữ liệu.`);
+            if (typeof playTone === 'function') {
+              playTone(523, 0.08, 'sine', 0.15);
+              setTimeout(() => playTone(659, 0.08, 'sine', 0.15), 80);
+              setTimeout(() => playTone(784, 0.15, 'sine', 0.15), 160);
+            }
+          } else {
+            alert('Không thể sao lưu: ' + (res ? res.error : 'Lỗi không xác định'));
+          }
+        } else {
+          alert('API Cloud Backup chưa được cấu hình.');
+        }
+      } catch (err) {
+        console.error('Cloud backup error:', err);
+        alert('Lỗi sao lưu: ' + err.message);
+      } finally {
+        btnTkCloudBackup.disabled = false;
+        btnTkCloudBackup.innerHTML = origHtml;
+      }
+    });
+  }
+
+  // Restore from Cloud Slot
+  if (btnTkCloudRestore) {
+    btnTkCloudRestore.addEventListener('click', async () => {
+      const origHtml = btnTkCloudRestore.innerHTML;
+      btnTkCloudRestore.disabled = true;
+      btnTkCloudRestore.innerHTML = '⏳ Đang tải từ Cloud...';
+
+      try {
+        if (window.taskAPI && window.taskAPI.cloudRestoreSlot) {
+          const res = await window.taskAPI.cloudRestoreSlot(activeCloudSlot);
+          if (res && res.success && res.data) {
+            const restoredItems = res.data.items || [];
+            if (restoredItems.length === 0) {
+              alert(`Mã Cloud [${activeCloudSlot}] chưa có dữ liệu nào.`);
+            } else {
+              if (confirm(`Tìm thấy ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]. Bạn có muốn nạp dữ liệu này vào ứng dụng không?`)) {
+                tkFlashcardData.items = restoredItems;
+                await saveTkFlashcards();
+                renderTkFlashcardList();
+                updateTkSelectionUI();
+                if (tkFlashcardData.items[0]) setActiveTkCard(tkFlashcardData.items[0].id);
+                alert(`✅ Đã đồng bộ thành công ${restoredItems.length} thẻ từ Mã Cloud [${activeCloudSlot}]!`);
+                if (tkCloudSyncModal) tkCloudSyncModal.classList.remove('active');
+              }
+            }
+          } else {
+            alert('Không thể khôi phục: ' + (res ? res.error : 'Chưa có bản sao lưu'));
+          }
+        }
+      } catch (err) {
+        console.error('Cloud restore error:', err);
+        alert('Lỗi khôi phục: ' + err.message);
+      } finally {
+        btnTkCloudRestore.disabled = false;
+        btnTkCloudRestore.innerHTML = origHtml;
+      }
+    });
+  }
+
   // Selection toolbar buttons
   const btnTkCopyPrompt = document.getElementById('btnTkCopyPrompt');
   if (btnTkCopyPrompt) {
