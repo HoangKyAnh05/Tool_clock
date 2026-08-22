@@ -1,5 +1,5 @@
 // sw.js - Service Worker for TikTok Flashcard PWA
-const CACHE_NAME = 'tiktok-flashcard-v7';
+const CACHE_NAME = 'tiktok-flashcard-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

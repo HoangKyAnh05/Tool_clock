@@ -1,5 +1,5 @@
 // sync_web_generator.js
-// Generates standalone, mobile-optimized TikTok Flashcard PWA for GitHub Pages with 1-Digit Cloud Sync & Add New Card
+// Generates standalone, mobile-optimized TikTok Flashcard PWA for GitHub Pages with 1-Digit Cloud Sync, Add New Card, and Manual Up/Down Buttons
 const fs = require('fs');
 const path = require('path');
 const { generateIcons } = require('./generate_icons');
@@ -14,7 +14,7 @@ function generateMobileHtml(data) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>TikTok Flashcard - Lướt Từ Vựng IELTS</title>
-  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, thêm thẻ ảnh mới, sao lưu Cloud mã 1 số, phát âm to rõ.">
+  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống chuẩn TikTok, có nút Thẻ trên / Thẻ dưới, thêm thẻ ảnh mới, sao lưu Cloud mã 1 số, phát âm to rõ.">
   <meta name="theme-color" content="#0b0d14">
   
   <!-- PWA Meta Tags -->
@@ -179,12 +179,6 @@ function generateMobileHtml(data) {
       gap: 4px;
       cursor: pointer;
       box-shadow: 0 3px 12px rgba(0, 242, 254, 0.35);
-      animation: pulseAddBtn 3s infinite;
-    }
-
-    @keyframes pulseAddBtn {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
     }
 
     /* Sub Toolbar (Filter Pills & Auto-Scroll) */
@@ -392,17 +386,17 @@ function generateMobileHtml(data) {
     .tiktok-side-actions {
       position: absolute;
       right: 12px;
-      bottom: 85px;
+      bottom: 75px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
       z-index: 30;
     }
 
     .side-btn {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: rgba(19, 23, 34, 0.85);
       backdrop-filter: blur(16px);
@@ -432,25 +426,75 @@ function generateMobileHtml(data) {
     }
 
     .side-btn-label {
-      font-size: 9.5px;
+      font-size: 9px;
       font-weight: 800;
-      margin-top: 2px;
+      margin-top: 1px;
       color: #e2e8f0;
+    }
+
+    /* Floating Bottom Navigation Bar (Thẻ Trên & Thẻ Dưới) */
+    .bottom-nav-bar {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(19, 23, 34, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(0, 242, 254, 0.35);
+      border-radius: 99px;
+      padding: 4px 6px;
+      z-index: 40;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .nav-arrow-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .nav-arrow-btn:active {
+      transform: scale(0.92);
+      background: linear-gradient(135deg, rgba(0,242,254,0.3) 0%, rgba(59,130,246,0.3) 100%);
+      border-color: #00f2fe;
+      color: #00f2fe;
+    }
+
+    .nav-counter-pill {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #00f2fe;
+      padding: 0 8px;
+      white-space: nowrap;
     }
 
     /* Bottom Info Caption Overlay */
     .slide-bottom-overlay {
       position: absolute;
       left: 0;
-      bottom: 0;
+      bottom: 58px;
       width: 100%;
-      padding: 40px 80px 14px 16px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+      padding: 30px 75px 8px 16px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
       pointer-events: none;
       z-index: 20;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .slide-tag-row {
@@ -857,7 +901,7 @@ function generateMobileHtml(data) {
       
       <!-- Swipe Hint Bubble -->
       <div class="swipe-hint-pill" id="swipeHint">
-        <span>↕️ Vuốt lên / xuống để lướt thẻ</span>
+        <span>↕️ Vuốt lên / xuống hoặc bấm nút Thẻ trên / Thẻ dưới</span>
       </div>
 
       <!-- Sliding Deck Track (Contains 3 Slides: Prev, Current, Next) -->
@@ -874,6 +918,16 @@ function generateMobileHtml(data) {
 
       <!-- Floating Action Buttons on Right (Fixed to Viewport) -->
       <div class="tiktok-side-actions">
+        <!-- Up Card Button -->
+        <div class="side-btn" id="btnSideNavPrev" title="Thẻ Trên / Trước (Phím ↑)">
+          <span style="font-size: 20px;">▲</span>
+          <span class="side-btn-label">Thẻ trên</span>
+        </div>
+        <!-- Down Card Button -->
+        <div class="side-btn" id="btnSideNavNext" title="Thẻ Dưới / Sau (Phím ↓)">
+          <span style="font-size: 20px;">▼</span>
+          <span class="side-btn-label">Thẻ dưới</span>
+        </div>
         <div class="side-btn" id="btnSideAddCard" title="Thêm Thẻ Mới / Thẻ Ảnh" style="background: linear-gradient(135deg, rgba(255,0,80,0.6) 0%, rgba(0,242,254,0.6) 100%); border-color: #00f2fe;">
           <span style="font-size: 20px;">➕</span>
           <span class="side-btn-label">Thêm thẻ</span>
@@ -898,6 +952,19 @@ function generateMobileHtml(data) {
           <span style="font-size: 18px;">📋</span>
           <span class="side-btn-label">Prompt</span>
         </div>
+      </div>
+
+      <!-- Floating Bottom Quick Navigation Controls (Thẻ Trên & Thẻ Dưới) -->
+      <div class="bottom-nav-bar" id="bottomNavBar">
+        <button type="button" class="nav-arrow-btn" id="btnNavPrev" title="Xem thẻ trước (hoặc phím mũi tên Lên ↑)">
+          <span style="font-size: 15px;">▲</span>
+          <span>Thẻ trên</span>
+        </button>
+        <div class="nav-counter-pill" id="lblNavCounter">Thẻ 1 / 672</div>
+        <button type="button" class="nav-arrow-btn" id="btnNavNext" title="Xem thẻ sau (hoặc phím mũi tên Xuống ↓)">
+          <span>Thẻ dưới</span>
+          <span style="font-size: 15px;">▼</span>
+        </button>
       </div>
 
     </div>
@@ -1219,6 +1286,7 @@ ${jsonData}
     const sliderTrack = document.getElementById('sliderTrack');
     const btnSideMastered = document.getElementById('btnSideMastered');
     const btnSideTiktok = document.getElementById('btnSideTiktok');
+    const lblNavCounter = document.getElementById('lblNavCounter');
 
     function renderDeck() {
       const list = getFilteredList();
@@ -1227,6 +1295,7 @@ ${jsonData}
         slideCurrent.innerHTML = buildSlideContent(null, 0, 0);
         slidePrev.innerHTML = '';
         slideNext.innerHTML = '';
+        if (lblNavCounter) lblNavCounter.textContent = 'Thẻ 0 / 0';
         return;
       }
 
@@ -1249,6 +1318,9 @@ ${jsonData}
       slideCurrent.style.transform = 'translateY(0%)';
       slideNext.style.transform = 'translateY(100%)';
       sliderTrack.style.transform = 'translateY(0px)';
+
+      // Update Nav counter pill
+      if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
 
       // Side action buttons status
       if (masteredIds.has(currentItem.id)) {
@@ -1273,6 +1345,40 @@ ${jsonData}
       });
 
       saveState();
+    }
+
+    // =========================================================================
+    // MANUAL NAVIGATION FUNCTIONS (THẺ TRÊN & THẺ DƯỚI)
+    // =========================================================================
+    function goToNextCard() {
+      const list = getFilteredList();
+      if (list.length <= 1 || isAnimating) return;
+      isAnimating = true;
+      sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      sliderTrack.style.transform = 'translateY(-100%)';
+      setTimeout(() => {
+        currentIndex = (currentIndex + 1) % list.length;
+        renderDeck();
+        sliderTrack.style.transition = 'none';
+        sliderTrack.style.transform = 'translateY(0px)';
+        isAnimating = false;
+        if (autoScrollSeconds > 0) speakCurrentWord();
+      }, 280);
+    }
+
+    function goToPrevCard() {
+      const list = getFilteredList();
+      if (list.length <= 1 || isAnimating) return;
+      isAnimating = true;
+      sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      sliderTrack.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        currentIndex = (currentIndex - 1 + list.length) % list.length;
+        renderDeck();
+        sliderTrack.style.transition = 'none';
+        sliderTrack.style.transform = 'translateY(0px)';
+        isAnimating = false;
+      }, 280);
     }
 
     // =========================================================================
@@ -1326,30 +1432,9 @@ ${jsonData}
       lastTapTime = now;
 
       if (deltaY < -threshold || (deltaY < -25 && velocity > 0.35)) {
-        // Swipe UP -> Next Card
-        isAnimating = true;
-        sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        sliderTrack.style.transform = 'translateY(-100%)';
-        setTimeout(() => {
-          currentIndex = (currentIndex + 1) % list.length;
-          renderDeck();
-          sliderTrack.style.transition = 'none';
-          sliderTrack.style.transform = 'translateY(0px)';
-          isAnimating = false;
-          if (autoScrollSeconds > 0) speakCurrentWord();
-        }, 280);
+        goToNextCard();
       } else if (deltaY > threshold || (deltaY > 25 && velocity > 0.35)) {
-        // Swipe DOWN -> Prev Card
-        isAnimating = true;
-        sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        sliderTrack.style.transform = 'translateY(100%)';
-        setTimeout(() => {
-          currentIndex = (currentIndex - 1 + list.length) % list.length;
-          renderDeck();
-          sliderTrack.style.transition = 'none';
-          sliderTrack.style.transform = 'translateY(0px)';
-          isAnimating = false;
-        }, 280);
+        goToPrevCard();
       } else {
         // Bounce back
         sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
@@ -1359,7 +1444,7 @@ ${jsonData}
 
     // Pointer Events
     viewport.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.side-btn') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
+      if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
       handleStart(e.clientY);
       try { viewport.setPointerCapture(e.pointerId); } catch(err) {}
     });
@@ -1380,7 +1465,7 @@ ${jsonData}
 
     // Touch Event Fallbacks
     viewport.addEventListener('touchstart', (e) => {
-      if (e.target.closest('.side-btn') || e.target.closest('button') || e.target.closest('a')) return;
+      if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
       handleStart(e.touches[0].clientY);
     }, { passive: true });
 
@@ -1397,29 +1482,10 @@ ${jsonData}
       if (wheelDebounce || isAnimating) return;
       if (Math.abs(e.deltaY) > 20) {
         wheelDebounce = true;
-        const list = getFilteredList();
         if (e.deltaY > 0) {
-          isAnimating = true;
-          sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-          sliderTrack.style.transform = 'translateY(-100%)';
-          setTimeout(() => {
-            currentIndex = (currentIndex + 1) % list.length;
-            renderDeck();
-            sliderTrack.style.transition = 'none';
-            sliderTrack.style.transform = 'translateY(0px)';
-            isAnimating = false;
-          }, 280);
+          goToNextCard();
         } else {
-          isAnimating = true;
-          sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-          sliderTrack.style.transform = 'translateY(100%)';
-          setTimeout(() => {
-            currentIndex = (currentIndex - 1 + list.length) % list.length;
-            renderDeck();
-            sliderTrack.style.transition = 'none';
-            sliderTrack.style.transform = 'translateY(0px)';
-            isAnimating = false;
-          }, 280);
+          goToPrevCard();
         }
         setTimeout(() => { wheelDebounce = false; }, 350);
       }
@@ -1430,31 +1496,11 @@ ${jsonData}
       if (document.getElementById('searchModal').classList.contains('active') ||
           document.getElementById('cloudSyncModal').classList.contains('active') ||
           document.getElementById('newCardModal').classList.contains('active')) return;
-      const list = getFilteredList();
-      if (list.length === 0) return;
       
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'j') {
-        isAnimating = true;
-        sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        sliderTrack.style.transform = 'translateY(-100%)';
-        setTimeout(() => {
-          currentIndex = (currentIndex + 1) % list.length;
-          renderDeck();
-          sliderTrack.style.transition = 'none';
-          sliderTrack.style.transform = 'translateY(0px)';
-          isAnimating = false;
-        }, 280);
+        goToNextCard();
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'k') {
-        isAnimating = true;
-        sliderTrack.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        sliderTrack.style.transform = 'translateY(100%)';
-        setTimeout(() => {
-          currentIndex = (currentIndex - 1 + list.length) % list.length;
-          renderDeck();
-          sliderTrack.style.transition = 'none';
-          sliderTrack.style.transform = 'translateY(0px)';
-          isAnimating = false;
-        }, 280);
+        goToPrevCard();
       } else if (e.key === 's' || e.key === 'S') {
         speakCurrentWord();
       }
@@ -1529,12 +1575,8 @@ ${jsonData}
         badge.classList.add('active');
         speakCurrentWord();
         autoScrollInterval = setInterval(() => {
-          const list = getFilteredList();
-          if (list.length > 0) {
-            currentIndex = (currentIndex + 1) % list.length;
-            renderDeck();
-            speakCurrentWord();
-          }
+          goToNextCard();
+          speakCurrentWord();
         }, autoScrollSeconds * 1000);
       }
     }
@@ -1952,7 +1994,13 @@ ${jsonData}
       }
     });
 
-    // Event Listeners
+    // Navigation Buttons Event Listeners
+    document.getElementById('btnNavPrev').addEventListener('click', goToPrevCard);
+    document.getElementById('btnNavNext').addEventListener('click', goToNextCard);
+    document.getElementById('btnSideNavPrev').addEventListener('click', goToPrevCard);
+    document.getElementById('btnSideNavNext').addEventListener('click', goToNextCard);
+
+    // Other Actions
     document.getElementById('btnSideSpeak').addEventListener('click', speakCurrentWord);
     document.getElementById('btnSideDrawer').addEventListener('click', openDrawer);
     document.getElementById('btnSidePrompt').addEventListener('click', copyPromptForAI);
@@ -1992,7 +2040,7 @@ function writeWebFiles(data, rootDir) {
   const manifestJson = JSON.stringify({
     name: "TikTok Flashcard - Học Từ Vựng IELTS",
     short_name: "TikTok Flash",
-    description: "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, thêm thẻ mới, phát âm, lướt vuốt cực mượt trên điện thoại",
+    description: "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, nút Thẻ trên/Thẻ dưới, thêm thẻ mới, phát âm, lướt vuốt cực mượt trên điện thoại",
     start_url: "./index.html",
     scope: "./",
     display: "standalone",
@@ -2028,7 +2076,7 @@ function writeWebFiles(data, rootDir) {
   }, null, 2);
 
   const swJs = `// sw.js - Service Worker for TikTok Flashcard PWA
-const CACHE_NAME = 'tiktok-flashcard-v7';
+const CACHE_NAME = 'tiktok-flashcard-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

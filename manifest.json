@@ -1,7 +1,7 @@
 {
   "name": "TikTok Flashcard - Học Từ Vựng IELTS",
   "short_name": "TikTok Flash",
-  "description": "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, thêm thẻ mới, phát âm, lướt vuốt cực mượt trên điện thoại",
+  "description": "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, nút Thẻ trên/Thẻ dưới, thêm thẻ mới, phát âm, lướt vuốt cực mượt trên điện thoại",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
