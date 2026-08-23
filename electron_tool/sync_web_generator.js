@@ -1742,10 +1742,10 @@ ${jsonData}
 
         const escaped = escapeHtml(enText);
         const root = word.replace(/(?:ing|ed|es|s|ies|e)$/i, '');
-        const cleanSafe = (s) => s.split('').map(c => '\\^$.*+?()[]{}|'.indexOf(c) !== -1 ? ('\\' + c) : c).join('');
+        const cleanSafe = (s) => (s || '').replace(/[-\\/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&');
         const escapedRoot = cleanSafe(root);
         const escapedWord = cleanSafe(word);
-        const pattern = new RegExp('\\b(' + escapedWord + '|' + escapedRoot + '[a-zA-Z]*)\\b', 'gi');
+        const pattern = new RegExp('\\\\b(' + escapedWord + '|' + escapedRoot + '[a-zA-Z]*)\\\\b', 'gi');
 
         return escaped.replace(pattern, (match) => {
           return '<span style="background: rgba(253, 224, 71, 0.25); color: #fde047; padding: 1px 6px; border-radius: 5px; font-weight: 900; border-bottom: 2px solid #eab308; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);">' + match + '</span>';
@@ -1834,12 +1834,15 @@ ${jsonData}
       if (!item) return;
 
       const cleanWord = (item.word || '').replace(/\s*\([^)]*\)/g, '').trim();
-      const promptText = 'Hãy tạo thông tin học từ vựng IELTS toàn diện cho từ/cụm từ: "' + cleanWord + '" (Nghĩa: "' + (item.translation || '') + '").\n' +
-        'Yêu cầu đặc biệt quan trọng:\n' +
-        '1. 5 KHUNG CÂU DẪN MỞ ĐẦU (Sentence Starters): BẮT BUỘC là các câu ví dụ THỰC TẾ, CỰC KỲ TỰ NHIÊN trong đời sống / giao tiếp gắn liền với từ "' + cleanWord + '", chứa chỗ trống "..." để điền từ vào (giúp người nói/viết mở đầu câu tự nhiên band 8.0). Tuyệt đối không dùng mẫu rập khuôn chung chung.\n' +
-        '2. 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.\n' +
-        '3. 5 câu Writing học thuật chuẩn band 8.0.\n' +
-        '4. Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt chi tiết kèm ngay bên dưới.';
+      const promptLines = [
+        'Hãy tạo thông tin học từ vựng IELTS toàn diện cho từ/cụm từ: "' + cleanWord + '" (Nghĩa: "' + (item.translation || '') + '").',
+        'Yêu cầu đặc biệt quan trọng:',
+        '1. 5 KHUNG CÂU DẪN MỞ ĐẦU (Sentence Starters): BẮT BUỘC là các câu ví dụ THỰC TẾ, CỰC KỲ TỰ NHIÊN trong đời sống / giao tiếp gắn liền với từ "' + cleanWord + '", chứa chỗ trống "..." để điền từ vào (giúp người nói/viết mở đầu câu tự nhiên band 8.0). Tuyệt đối không dùng mẫu rập khuôn chung chung.',
+        '2. 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.',
+        '3. 5 câu Writing học thuật chuẩn band 8.0.',
+        '4. Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt chi tiết kèm ngay bên dưới.'
+      ];
+      const promptText = promptLines.join('\\n');
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(promptText).then(() => {
