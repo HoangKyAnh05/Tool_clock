@@ -402,7 +402,9 @@ function generateMobileHtml(data) {
       flex-direction: column;
       gap: 10px;
       align-items: center;
-      z-index: 30;
+      z-index: 60;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
 
     .side-btn {
@@ -422,6 +424,10 @@ function generateMobileHtml(data) {
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
       transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
       text-decoration: none;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      pointer-events: auto;
     }
 
     .side-btn:active {
@@ -1196,6 +1202,17 @@ ${jsonData}
       });
     }
 
+    // Global HTML Escape Utility
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     // Load Flashcard Data (Direct Embedded JS Array)
     const DEFAULT_EMBEDDED_ITEMS = ${jsonData};
     let RAW_ITEMS = (Array.isArray(DEFAULT_EMBEDDED_ITEMS) && DEFAULT_EMBEDDED_ITEMS.length > 0) ? DEFAULT_EMBEDDED_ITEMS : [];
@@ -1486,7 +1503,7 @@ ${jsonData}
     // Unified Event Binding (Pointer Events if supported, Touch if not)
     if (window.PointerEvent) {
       viewport.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('textarea')) return;
+        if (e.target.closest('.side-btn') || e.target.closest('.tiktok-side-actions') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('textarea')) return;
         onDragStart(e.clientY);
         try { viewport.setPointerCapture(e.pointerId); } catch(err) {}
       }, { passive: true });
@@ -1507,7 +1524,7 @@ ${jsonData}
     } else {
       // Touch fallback for older browsers
       viewport.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.side-btn') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
+        if (e.target.closest('.side-btn') || e.target.closest('.tiktok-side-actions') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
         if (e.touches && e.touches[0]) onDragStart(e.touches[0].clientY);
       }, { passive: true });
 
@@ -1538,7 +1555,8 @@ ${jsonData}
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('searchModal').classList.contains('active') ||
           document.getElementById('cloudSyncModal').classList.contains('active') ||
-          document.getElementById('newCardModal').classList.contains('active')) return;
+          document.getElementById('newCardModal').classList.contains('active') ||
+          document.getElementById('examplesDrawer').classList.contains('active')) return;
       
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'j') {
         goToNextCard();
@@ -1549,6 +1567,21 @@ ${jsonData}
       }
     });
 
+    // Toast Notification Utility
+    function showToast(msg) {
+      const existing = document.getElementById('pwaToast');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.id = 'pwaToast';
+      toast.style.cssText = 'position: fixed; top: 110px; left: 50%; transform: translateX(-50%); background: rgba(19, 23, 34, 0.95); backdrop-filter: blur(12px); border: 1.5px solid #00f2fe; color: #fff; padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 800; z-index: 200; box-shadow: 0 8px 30px rgba(0,0,0,0.8); pointer-events: none; transition: opacity 0.3s;';
+      toast.innerHTML = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 1500);
+    }
+
     // TTS Audio Pronunciation
     function speakCurrentWord() {
       const list = getFilteredList();
@@ -1558,12 +1591,28 @@ ${jsonData}
       const cleanWord = item.word.replace(/\\(.*?\\)/g, '').replace(/[^a-zA-Z0-9\\s']/g, '').trim();
       if (!cleanWord) return;
 
+      const btn = document.getElementById('btnSideSpeak');
+      if (btn) {
+        btn.style.transform = 'scale(1.25)';
+        btn.style.borderColor = '#00f2fe';
+        setTimeout(() => {
+          btn.style.transform = '';
+          btn.style.borderColor = '';
+        }, 250);
+      }
+
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(cleanWord);
-        utter.lang = 'en-US';
-        utter.rate = 0.9;
-        window.speechSynthesis.speak(utter);
+        try {
+          window.speechSynthesis.cancel();
+          setTimeout(() => {
+            const utter = new SpeechSynthesisUtterance(cleanWord);
+            utter.lang = 'en-US';
+            utter.rate = 0.92;
+            window.speechSynthesis.speak(utter);
+          }, 30);
+        } catch(err) {
+          console.warn('Speech synthesis error:', err);
+        }
       }
     }
 
@@ -1586,10 +1635,12 @@ ${jsonData}
 
       if (masteredIds.has(item.id)) {
         masteredIds.delete(item.id);
+        showToast('🔄 Đã bỏ đánh dấu Đã thuộc');
       } else {
         masteredIds.add(item.id);
         dueIds.delete(item.id);
         triggerHeartAnim(window.innerWidth / 2, window.innerHeight / 2);
+        showToast('💚 Đã chuyển thẻ vào mục Đã thuộc!');
       }
       updateBadges();
       renderDeck();
@@ -2274,7 +2325,7 @@ ${jsonData}
 
     const examplesDrawer = document.getElementById('examplesDrawer');
     window.addEventListener('click', (e) => {
-      if (examplesDrawer.classList.contains('active') && !examplesDrawer.contains(e.target) && !e.target.closest('#btnSideDrawer')) {
+      if (examplesDrawer.classList.contains('active') && !examplesDrawer.contains(e.target) && !e.target.closest('.side-btn') && !e.target.closest('#examplesDrawer')) {
         examplesDrawer.classList.remove('active');
       }
     });
@@ -2291,18 +2342,48 @@ ${jsonData}
     });
 
     // Navigation Buttons Event Listeners
-    document.getElementById('btnNavPrev').addEventListener('click', goToPrevCard);
-    document.getElementById('btnNavNext').addEventListener('click', goToNextCard);
-    document.getElementById('btnSideNavPrev').addEventListener('click', goToPrevCard);
-    document.getElementById('btnSideNavNext').addEventListener('click', goToNextCard);
+    document.getElementById('btnNavPrev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToPrevCard();
+    });
+    document.getElementById('btnNavNext').addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToNextCard();
+    });
+    document.getElementById('btnSideNavPrev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToPrevCard();
+    });
+    document.getElementById('btnSideNavNext').addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToNextCard();
+    });
 
-    // Other Actions
-    document.getElementById('btnSideSpeak').addEventListener('click', speakCurrentWord);
-    document.getElementById('btnSideContext').addEventListener('click', () => openDrawer('context'));
-    document.getElementById('btnSideDrawer').addEventListener('click', () => openDrawer('all'));
-    document.getElementById('btnSidePrompt').addEventListener('click', copyPromptForAI);
-    document.getElementById('btnSideMastered').addEventListener('click', toggleMastered);
-    document.getElementById('btnAutoScroll').addEventListener('click', toggleAutoScroll);
+    // Side Action Toolbar Listeners (Robust Click & Touch)
+    document.getElementById('btnSideSpeak').addEventListener('click', (e) => {
+      e.stopPropagation();
+      speakCurrentWord();
+    });
+    document.getElementById('btnSideContext').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDrawer('context');
+    });
+    document.getElementById('btnSideDrawer').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDrawer('all');
+    });
+    document.getElementById('btnSidePrompt').addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyPromptForAI();
+    });
+    document.getElementById('btnSideMastered').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMastered();
+    });
+    document.getElementById('btnAutoScroll').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAutoScroll();
+    });
     document.getElementById('btnCloseIosModal').addEventListener('click', () => {
       document.getElementById('iosPwaModal').classList.remove('active');
     });
