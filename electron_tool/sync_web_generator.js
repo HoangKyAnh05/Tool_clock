@@ -947,6 +947,10 @@ function generateMobileHtml(data) {
           <span style="font-size: 20px;">🔊</span>
           <span class="side-btn-label">Phát âm</span>
         </div>
+        <div class="side-btn" id="btnSideContext" title="Ngữ cảnh sử dụng & Khung câu dẫn mở đầu (...)">
+          <span style="font-size: 20px;">🧩</span>
+          <span class="side-btn-label" style="color: #38bdf8; font-weight: 800;">Ngữ cảnh</span>
+        </div>
         <div class="side-btn" id="btnSideDrawer" title="Xem nghĩa & 10 ví dụ">
           <span style="font-size: 20px;">📖</span>
           <span class="side-btn-label">Ví dụ</span>
@@ -1040,7 +1044,10 @@ function generateMobileHtml(data) {
         <!-- Input Fields -->
         <div style="margin-bottom: 10px;">
           <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Từ Tiếng Anh / Tên Thẻ *</label>
-          <input type="text" id="newCardWord" placeholder="Ví dụ: resilient, consequence (hoặc để trống nếu là ảnh)" style="width: 100%; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 0 12px; font-size: 14px; font-weight: 700; outline: none;" />
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="newCardWord" placeholder="Ví dụ: disease, resilience..." style="flex: 1; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 0 12px; font-size: 14px; font-weight: 700; outline: none;" />
+            <button type="button" id="btnMobileAutoFetch" class="pwa-install-btn" style="height: 42px; font-size: 11.5px; font-weight: 800; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); color: #000; white-space: nowrap; border-radius: 10px;">✨ Dịch & Tạo</button>
+          </div>
         </div>
 
         <div style="margin-bottom: 10px;">
@@ -1606,7 +1613,7 @@ ${jsonData}
         lbl.innerHTML = 'Tự lướt: <b>TẮT</b>';
         badge.classList.remove('active');
       } else {
-        lbl.innerHTML = \`Tự lướt: <b>\${autoScrollSeconds}s</b>\`;
+        lbl.innerHTML = 'Tự lướt: <b>' + autoScrollSeconds + 's</b>';
         badge.classList.add('active');
         speakCurrentWord();
         autoScrollInterval = setInterval(() => {
@@ -1616,8 +1623,8 @@ ${jsonData}
       }
     }
 
-    // Open Examples Drawer
-    function openDrawer() {
+    // Open Examples / Context Drawer
+    function openDrawer(targetTab = 'context') {
       const list = getFilteredList();
       const item = list[currentIndex];
       if (!item) return;
@@ -1626,18 +1633,193 @@ ${jsonData}
       const title = document.getElementById('drawerTitle');
       const content = document.getElementById('drawerContent');
 
-      title.textContent = item.word ? \`📖 \${item.word}\` : '📖 Chi tiết từ vựng';
-      content.innerHTML = \`
-        <div style="font-size: 20px; font-weight: 800; color: #6ee7b7; margin-bottom: 12px;">\${item.translation || ''}</div>
-        <div style="font-size: 14.5px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">\${item.notes || 'Chưa có ghi chú ví dụ.'}</div>
-        <div style="margin-top: 16px; display: flex; gap: 10px;">
-          <button type="button" class="pwa-install-btn" id="btnDrawerSpeak" style="flex: 1; height: 42px; font-size: 13px; justify-content: center;">🔊 Phát âm từ này</button>
-        </div>
-      \`;
+      const cleanWord = (item.word || '').replace(/\\s*\\([^)]*\\)/g, '').trim();
+      title.textContent = cleanWord ? ('📖 ' + cleanWord) : '📖 Chi tiết từ vựng';
+
+      const rawNotes = (item.notes || '').trim();
+      const lines = rawNotes.split('\\n').map(l => l.trim()).filter(Boolean);
+
+      const contextItems = [];
+      const speakingItems = [];
+      const writingItems = [];
+      let otherItems = [];
+
+      let currentSection = 'context';
+      let currentCard = null;
+
+      lines.forEach(line => {
+        if (line.includes('Câu dẫn') || line.startsWith('🧩') || line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
+          if (line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
+            currentSection = 'context';
+            return;
+          }
+          currentSection = 'context';
+          if (currentCard) {
+            if (currentCard.section === 'context') contextItems.push(currentCard);
+            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+            else writingItems.push(currentCard);
+          }
+          currentCard = { section: 'context', en: line.replace(/^🧩\\s*(?:Câu dẫn|Khung câu)\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+        } else if (line.includes('Speaking') || line.startsWith('🗣️')) {
+          currentSection = 'speaking';
+          if (currentCard) {
+            if (currentCard.section === 'context') contextItems.push(currentCard);
+            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+            else writingItems.push(currentCard);
+          }
+          currentCard = { section: 'speaking', en: line.replace(/^🗣️\\s*Speaking\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+        } else if (line.includes('Writing') || line.startsWith('✍️')) {
+          currentSection = 'writing';
+          if (currentCard) {
+            if (currentCard.section === 'context') contextItems.push(currentCard);
+            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+            else writingItems.push(currentCard);
+          }
+          currentCard = { section: 'writing', en: line.replace(/^✍️\\s*Writing\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+        } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
+          if (currentCard) {
+            currentCard.vi = line.replace(/.*(?:👉\\s*Dịch:|Dịch:)\\s*/i, '').trim();
+          } else {
+            otherItems.push({ en: '', vi: line });
+          }
+        } else {
+          if (currentCard && !currentCard.vi) {
+            currentCard.en += ' ' + line;
+          } else {
+            if (currentCard) {
+              if (currentCard.section === 'context') contextItems.push(currentCard);
+              else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+              else writingItems.push(currentCard);
+              currentCard = null;
+            }
+            otherItems.push({ en: line, vi: '' });
+          }
+        }
+      });
+
+      if (currentCard) {
+        if (currentCard.section === 'context') contextItems.push(currentCard);
+        else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        else writingItems.push(currentCard);
+      }
+
+      let html = '<div style="background: rgba(255,255,255,0.05); padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">' +
+        '<div style="font-size: 22px; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">' + escapeHtml(item.word || '') + '</div>' +
+        '<div style="font-size: 16px; font-weight: 700; color: #34d399; margin-top: 4px;">' + escapeHtml(item.translation || '(Chưa có bản dịch)') + '</div>' +
+        '</div>';
+
+      // 1. Context Starters Section
+      if (contextItems.length > 0) {
+        html += '<div style="margin-bottom: 18px;">' +
+          '<div style="font-size: 13.5px; font-weight: 900; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
+          '🧩 5 KHUNG CÂU DẪN MỞ ĐẦU (SENTENCE STARTERS)' +
+          '</div>' +
+          '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+        contextItems.forEach((c, idx) => {
+          let formattedEn = escapeHtml(c.en);
+          const slotHtml = '<span style="background: rgba(0, 242, 254, 0.22); color: #00f2fe; padding: 2px 7px; border-radius: 6px; font-weight: 800; border: 1px dashed #00f2fe;">... (' + escapeHtml(cleanWord) + ')</span>';
+          formattedEn = formattedEn.replace(/\\.\\.\\./g, slotHtml);
+          const speakText = c.en.replace(/\\.\\.\\./g, cleanWord || '');
+
+          html += '<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
+            '<div style="font-weight: 700; font-size: 13.5px; color: #f8fafc; line-height: 1.4;">' + (idx + 1) + '. "' + formattedEn + '"</div>' +
+            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(speakText) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(0,242,254,0.15); border-color: #00f2fe; color: #00f2fe;" title="Phát âm câu này">🔊</button>' +
+            '</div>' +
+            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px; font-weight: 600;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
+            '</div>';
+        });
+        html += '</div></div>';
+      }
+
+      // Helper to highlight target word in sentences
+      const highlightWord = (enText) => {
+        if (!enText) return '';
+        const word = cleanWord || '';
+        if (!word) return escapeHtml(enText);
+
+        const escaped = escapeHtml(enText);
+        const root = word.replace(/(?:ing|ed|es|s|ies|e)$/i, '');
+        const cleanSafe = (s) => s.split('').map(c => '\\^$.*+?()[]{}|'.indexOf(c) !== -1 ? ('\\' + c) : c).join('');
+        const escapedRoot = cleanSafe(root);
+        const escapedWord = cleanSafe(word);
+        const pattern = new RegExp('\\b(' + escapedWord + '|' + escapedRoot + '[a-zA-Z]*)\\b', 'gi');
+
+        return escaped.replace(pattern, (match) => {
+          return '<span style="background: rgba(253, 224, 71, 0.25); color: #fde047; padding: 1px 6px; border-radius: 5px; font-weight: 900; border-bottom: 2px solid #eab308; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);">' + match + '</span>';
+        });
+      };
+
+      // 2. Speaking Section
+      if (speakingItems.length > 0) {
+        html += '<div style="margin-bottom: 18px;">' +
+          '<div style="font-size: 13.5px; font-weight: 900; color: #a78bfa; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
+          '🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ' +
+          '</div>' +
+          '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+        speakingItems.forEach((c, idx) => {
+          const highlightedEn = highlightWord(c.en);
+          html += '<div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 12px 14px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
+            '<div style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">' + (idx + 1) + '. "' + highlightedEn + '"</div>' +
+            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(c.en) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(255,255,255,0.1); color: #fff;" title="Phát âm câu này">🔊</button>' +
+            '</div>' +
+            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px; font-style: italic;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
+            '</div>';
+        });
+        html += '</div></div>';
+      }
+
+      // 3. Writing Section
+      if (writingItems.length > 0) {
+        html += '<div style="margin-bottom: 18px;">' +
+          '<div style="font-size: 13.5px; font-weight: 900; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
+          '✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT' +
+          '</div>' +
+          '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+        writingItems.forEach((c, idx) => {
+          const highlightedEn = highlightWord(c.en);
+          html += '<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
+            '<div style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">' + (idx + 1) + '. "' + highlightedEn + '"</div>' +
+            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(c.en) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(255,255,255,0.1); color: #fff;" title="Phát âm câu này">🔊</button>' +
+            '</div>' +
+            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
+            '</div>';
+        });
+        html += '</div></div>';
+      }
+
+      html += '<div style="margin-top: 16px; display: flex; gap: 10px;">' +
+        '<button type="button" class="pwa-install-btn" id="btnDrawerSpeak" style="flex: 1; height: 42px; font-size: 13px; justify-content: center;">🔊 Phát âm từ này</button>' +
+        '<button type="button" class="pwa-install-btn" id="btnDrawerCopyPrompt" style="flex: 1; height: 42px; font-size: 13px; justify-content: center; background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #38bdf8;">📋 Copy Prompt AI</button>' +
+        '</div>';
+
+      content.innerHTML = html;
       drawer.classList.add('active');
 
       const btnDrawerSpeak = document.getElementById('btnDrawerSpeak');
       if (btnDrawerSpeak) btnDrawerSpeak.addEventListener('click', speakCurrentWord);
+
+      const btnDrawerCopyPrompt = document.getElementById('btnDrawerCopyPrompt');
+      if (btnDrawerCopyPrompt) btnDrawerCopyPrompt.addEventListener('click', copyPromptForAI);
+
+      content.querySelectorAll('.btn-drawer-speak-row').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const t = btn.getAttribute('data-speak');
+          if (t && 'speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = 'en-US';
+            u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+          }
+        });
+      });
     }
 
     document.getElementById('btnCloseDrawer').addEventListener('click', () => {
@@ -1650,7 +1832,14 @@ ${jsonData}
       const item = list[currentIndex];
       if (!item) return;
 
-      const promptText = \`Hãy giúp tôi giải thích chi tiết từ/cụm từ "\${item.word || ''}" (Nghĩa: "\${item.translation || ''}"), đặt 3 câu ví dụ giao tiếp Speaking và 2 câu Writing học thuật chuẩn band 7.5+ kèm dịch nghĩa tiếng Việt.\`;
+      const cleanWord = (item.word || '').replace(/\s*\([^)]*\)/g, '').trim();
+      const promptText = 'Hãy tạo thông tin học từ vựng IELTS toàn diện cho từ/cụm từ: "' + cleanWord + '" (Nghĩa: "' + (item.translation || '') + '").\n' +
+        'Yêu cầu đặc biệt quan trọng:\n' +
+        '1. 5 KHUNG CÂU DẪN MỞ ĐẦU (Sentence Starters): BẮT BUỘC là các câu ví dụ THỰC TẾ, CỰC KỲ TỰ NHIÊN trong đời sống / giao tiếp gắn liền với từ "' + cleanWord + '", chứa chỗ trống "..." để điền từ vào (giúp người nói/viết mở đầu câu tự nhiên band 8.0). Tuyệt đối không dùng mẫu rập khuôn chung chung.\n' +
+        '2. 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.\n' +
+        '3. 5 câu Writing học thuật chuẩn band 8.0.\n' +
+        '4. Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt chi tiết kèm ngay bên dưới.';
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(promptText).then(() => {
           alert('✅ Đã copy prompt! Hãy dán vào Gemini / ChatGPT để học thêm nhé.');
@@ -1795,6 +1984,74 @@ ${jsonData}
           }
         }
       }
+    });
+
+    // Mobile Auto Fetch & Translate
+    document.getElementById('btnMobileAutoFetch').addEventListener('click', async () => {
+      const word = (newCardWord.value || '').trim();
+      if (!word) {
+        alert('Vui lòng nhập từ tiếng Anh trước khi bấm Dịch & Tạo!');
+        newCardWord.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btnMobileAutoFetch');
+      btn.textContent = '⏳ Đang dịch...';
+      btn.disabled = true;
+
+      let viTrans = '';
+      try {
+        const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=' + encodeURIComponent(word);
+        const tr = await fetch(transUrl, { signal: AbortSignal.timeout(3500) });
+        if (tr.ok) {
+          const td = await tr.json();
+          if (td && td[0]) {
+            viTrans = td[0].map(s => s[0]).join('').trim();
+            if (viTrans) newCardTrans.value = viTrans;
+          }
+        }
+      } catch (e) {}
+
+      if (!viTrans) {
+        try {
+          const myMemUrl = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(word) + '&langpair=en|vi';
+          const mr = await fetch(myMemUrl, { signal: AbortSignal.timeout(3000) });
+          if (mr.ok) {
+            const md = await mr.json();
+            if (md && md.responseData && md.responseData.translatedText) {
+              const mt = md.responseData.translatedText.trim();
+              if (mt && !mt.toLowerCase().includes('mymemory')) {
+                viTrans = mt;
+                newCardTrans.value = viTrans;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      // Generate context starters template
+      const template = '🧩 KHUNG CÂU DẪN & NGỮ CẢNH SỬ DỤNG (SENTENCE STARTERS):\\n' +
+        '🧩 Câu dẫn 1: "When it comes to ..., there are several key factors we should carefully evaluate."\\n' +
+        '   👉 Dịch: Khi đề cập đến ..., có một số yếu tố then chốt mà chúng ta nên đánh giá một cách cẩn trọng.\\n' +
+        '🧩 Câu dẫn 2: "In real-life communication, many people encounter confusion regarding ... because of different cultural contexts."\\n' +
+        '   👉 Dịch: Trong giao tiếp thực tế, nhiều người gặp phải sự nhầm lẫn liên quan đến ... do các bối cảnh văn hóa khác nhau.\\n' +
+        '🧩 Câu dẫn 3: "One important dimension of ... that concerns me the most is how it influences personal decision-making."\\n' +
+        '   👉 Dịch: Một khía cạnh quan trọng của ... khiến tôi suy ngẫm nhiều nhất là cách nó tác động đến việc ra quyết định của cá nhân.\\n' +
+        '🧩 Câu dẫn 4: "In academic discussions, effectively utilizing ... demonstrates a high level of language proficiency."\\n' +
+        '   👉 Dịch: Trong các cuộc thảo luận học thuật, việc sử dụng hiệu quả ... thể hiện trình độ ngôn ngữ ở band điểm cao.\\n' +
+        '🧩 Câu dẫn 5: "From my perspective, developing a comprehensive grasp of ... enables clearer and more persuasive expression."\\n' +
+        '   👉 Dịch: Theo quan điểm của tôi, việc nắm vững toàn diện ... giúp diễn đạt ý tưởng mạch lạc và thuyết phục hơn nhiều.\\n\\n' +
+        '🗣️ Speaking 1: "In daily conversations, understanding ' + word + ' is remarkably helpful."\\n' +
+        '   👉 Dịch: Trong giao tiếp hàng ngày, việc hiểu ' + (viTrans || word) + ' là vô cùng hữu ích.\\n' +
+        '✍️ Writing 1: "Academic studies consistently emphasize the profound impact of ' + word + '."\\n' +
+        '   👉 Dịch: Các nghiên cứu học thuật luôn nhấn mạnh tác động sâu sắc của ' + (viTrans || word) + '.';
+
+      if (!newCardNotes.value.trim()) {
+        newCardNotes.value = template;
+      }
+
+      btn.textContent = '✨ Dịch & Tạo';
+      btn.disabled = false;
     });
 
     // Save New Card Action
@@ -2037,7 +2294,8 @@ ${jsonData}
 
     // Other Actions
     document.getElementById('btnSideSpeak').addEventListener('click', speakCurrentWord);
-    document.getElementById('btnSideDrawer').addEventListener('click', openDrawer);
+    document.getElementById('btnSideContext').addEventListener('click', () => openDrawer('context'));
+    document.getElementById('btnSideDrawer').addEventListener('click', () => openDrawer('all'));
     document.getElementById('btnSidePrompt').addEventListener('click', copyPromptForAI);
     document.getElementById('btnSideMastered').addEventListener('click', toggleMastered);
     document.getElementById('btnAutoScroll').addEventListener('click', toggleAutoScroll);

@@ -1,5 +1,5 @@
-// sw.js - Service Worker for TikTok Flashcard PWA (v11 - auto compress storage)
-const CACHE_NAME = 'tiktok-flashcard-v11';
+// sw.js - Service Worker for TikTok Flashcard PWA (v9 - zero lag cache)
+const CACHE_NAME = 'tiktok-flashcard-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

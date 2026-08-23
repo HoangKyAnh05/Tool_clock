@@ -7110,32 +7110,48 @@ function renderTkExpandModalExamples(item) {
   contentEl.innerHTML = '';
   const rawNotes = (item.notes || '').trim();
   const isEnFirst = (tkLangOrder === 'en_first');
+  const cleanWord = (item.word || '').replace(/\s*\([^)]*\)/g, '').trim();
 
   if (!rawNotes) {
-    contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--muted);">Chưa có ví dụ nào được ghi lại cho từ này. Bấm Sửa để bổ sung thêm!</div>';
+    contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--muted);">Chưa có ngữ cảnh hay ví dụ nào được ghi lại cho từ này. Bấm Sửa để bổ sung thêm!</div>';
     return;
   }
 
   const lines = rawNotes.split('\n').map(l => l.trim()).filter(Boolean);
+  const contextItems = [];
   const speakingItems = [];
   const writingItems = [];
   let otherItems = [];
 
-  let currentSection = 'speaking';
+  let currentSection = 'context';
   let currentCard = null;
 
   lines.forEach(line => {
-    if (line.includes('Speaking') || line.startsWith('🗣️')) {
+    if (line.includes('Câu dẫn') || line.startsWith('🧩') || line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
+      if (line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
+        currentSection = 'context';
+        return;
+      }
+      currentSection = 'context';
+      if (currentCard) {
+        if (currentCard.section === 'context') contextItems.push(currentCard);
+        else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        else writingItems.push(currentCard);
+      }
+      currentCard = { section: 'context', en: line.replace(/^🧩\s*(?:Câu dẫn|Khung câu)\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
+    } else if (line.includes('Speaking') || line.startsWith('🗣️')) {
       currentSection = 'speaking';
       if (currentCard) {
-        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        if (currentCard.section === 'context') contextItems.push(currentCard);
+        else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
         else writingItems.push(currentCard);
       }
       currentCard = { section: 'speaking', en: line.replace(/^🗣️\s*Speaking\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
     } else if (line.includes('Writing') || line.startsWith('✍️')) {
       currentSection = 'writing';
       if (currentCard) {
-        if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+        if (currentCard.section === 'context') contextItems.push(currentCard);
+        else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
         else writingItems.push(currentCard);
       }
       currentCard = { section: 'writing', en: line.replace(/^✍️\s*Writing\s*\d*[:.]*\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
@@ -7150,7 +7166,8 @@ function renderTkExpandModalExamples(item) {
         currentCard.en += ' ' + line;
       } else {
         if (currentCard) {
-          if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+          if (currentCard.section === 'context') contextItems.push(currentCard);
+          else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
           else writingItems.push(currentCard);
           currentCard = null;
         }
@@ -7160,34 +7177,104 @@ function renderTkExpandModalExamples(item) {
   });
 
   if (currentCard) {
-    if (currentCard.section === 'speaking') speakingItems.push(currentCard);
+    if (currentCard.section === 'context') contextItems.push(currentCard);
+    else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
     else writingItems.push(currentCard);
   }
 
-  // Section 1: Speaking Examples
+  // Section 1: 🧩 Context & Sentence Starters
+  if (contextItems.length > 0) {
+    const secContext = document.createElement('div');
+    secContext.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <h4 style="margin: 0; font-size: 14.5px; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);">
+          🧩 5 KHUNG CÂU DẪN & NGỮ CẢNH MỞ ĐẦU (SENTENCE STARTERS)
+        </h4>
+        <span style="font-size: 11px; background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 6px;">
+          💡 Dẫn ý tự nhiên trước khi nói từ vựng
+        </span>
+      </div>
+    `;
+    const wrapContext = document.createElement('div');
+    wrapContext.style.cssText = 'display: flex; flex-direction: column; gap: 10px;';
+
+    contextItems.forEach((c, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.style.cssText = 'background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+      
+      // Format the blank slot (...)
+      let formattedEn = escapeHtml(c.en);
+      const slotHtml = `<span class="tk-context-slot" style="background: rgba(0, 242, 254, 0.22); color: #00f2fe; padding: 2px 8px; border-radius: 6px; font-weight: 800; border: 1px dashed #00f2fe; text-shadow: 0 0 8px rgba(0, 242, 254, 0.5);" title="Chỗ điền từ: ${escapeHtml(cleanWord)}">... (${escapeHtml(cleanWord)})</span>`;
+      formattedEn = formattedEn.replace(/\.\.\./g, slotHtml);
+
+      // Speech audio text (fills the word in place of '...')
+      const speakText = c.en.replace(/\.\.\./g, cleanWord || '');
+
+      cardDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+          <span style="font-weight: 700; font-size: 14px; color: #f8fafc; line-height: 1.5;">${idx + 1}. "${formattedEn}"</span>
+          <div style="display: flex; gap: 6px; flex-shrink: 0;">
+            <button type="button" class="ctrl-btn copy-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 28px; height: 28px; font-size: 12px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center;" title="Sao chép khung câu này">📋</button>
+            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(speakText)}" style="background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 50%; width: 28px; height: 28px; font-size: 13px; cursor: pointer; color: #00f2fe; display: flex; align-items: center; justify-content: center;" title="Phát âm câu dẫn này">🔊</button>
+          </div>
+        </div>
+        ${c.vi ? `<div style="font-size: 13px; color: #34d399; font-weight: 600; line-height: 1.4; padding-left: 14px; border-left: 2px solid rgba(52, 211, 153, 0.4);">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+      `;
+      wrapContext.appendChild(cardDiv);
+    });
+    secContext.appendChild(wrapContext);
+    contentEl.appendChild(secContext);
+  }
+
+  // Helper to highlight target word in sentences
+  const highlightTargetWordInHtml = (enText) => {
+    if (!enText) return '';
+    const word = cleanWord || '';
+    if (!word) return escapeHtml(enText);
+
+    const escaped = escapeHtml(enText);
+    const root = word.replace(/(?:ing|ed|es|s|ies|e)$/i, '');
+    const escapedRoot = root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`\\b(${escapedWord}|${escapedRoot}[a-zA-Z]*)\\b`, 'gi');
+
+    return escaped.replace(pattern, (match) => {
+      return `<span class="tk-word-hl" style="background: rgba(253, 224, 71, 0.25); color: #fde047; padding: 1px 6px; border-radius: 5px; font-weight: 900; border-bottom: 2px solid #eab308; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);">${match}</span>`;
+    });
+  };
+
+  // Section 2: Speaking Examples
   if (speakingItems.length > 0) {
     const sec1 = document.createElement('div');
-    sec1.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #a78bfa; display: flex; align-items: center; gap: 6px;">🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ</h4>`;
+    sec1.innerHTML = `<h4 style="margin: 14px 0 10px 0; font-size: 14px; font-weight: 800; color: #a78bfa; display: flex; align-items: center; gap: 6px;">🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ</h4>`;
     const wrap1 = document.createElement('div');
     wrap1.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
 
     speakingItems.forEach((c, idx) => {
       const cardDiv = document.createElement('div');
       cardDiv.style.cssText = 'background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;';
+      const highlightedEn = highlightTargetWordInHtml(c.en);
+
       if (isEnFirst) {
         cardDiv.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-            <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">${idx + 1}. "${escapeHtml(c.en)}"</span>
-            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            <span style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.5;">${idx + 1}. "${highlightedEn}"</span>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button type="button" class="ctrl-btn copy-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.08); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 11px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center;" title="Sao chép câu">📋</button>
+              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            </div>
           </div>
-          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; font-style: italic; padding-left: 14px; line-height: 1.4;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
         `;
       } else {
         cardDiv.innerHTML = `
           ${c.vi ? `<div style="font-size: 13.5px; color: #34d399; font-weight: 700; line-height: 1.4;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 2px;">
-            <span style="font-weight: 600; font-size: 13px; color: #e2e8f0; font-style: italic; line-height: 1.4; padding-left: 14px;">"${escapeHtml(c.en)}"</span>
-            <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            <span style="font-weight: 600; font-size: 13px; color: #e2e8f0; line-height: 1.5; padding-left: 14px;">"${highlightedEn}"</span>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button type="button" class="ctrl-btn copy-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.08); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 11px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center;" title="Sao chép câu">📋</button>
+              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            </div>
           </div>
         `;
       }
@@ -7197,26 +7284,78 @@ function renderTkExpandModalExamples(item) {
     contentEl.appendChild(sec1);
   }
 
-  // Section 2: Writing Examples
+  // Section 3: Writing Examples
   if (writingItems.length > 0) {
     const sec2 = document.createElement('div');
-    sec2.innerHTML = `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ WRITING</h4>`;
+    sec2.innerHTML = `<h4 style="margin: 14px 0 10px 0; font-size: 14px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 6px;">✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT</h4>`;
     const wrap2 = document.createElement('div');
     wrap2.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
 
     writingItems.forEach((c, idx) => {
       const cardDiv = document.createElement('div');
       cardDiv.style.cssText = 'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;';
+      const highlightedEn = highlightTargetWordInHtml(c.en);
+
       if (isEnFirst) {
-        cardDiv.innerHTML = `<div style="font-weight: 700; color: #fff;">${idx + 1}. "${escapeHtml(c.en)}"</div>${c.vi ? `<div style="font-size: 12.5px; color: #34d399; margin-top:4px;">👉 ${escapeHtml(c.vi)}</div>` : ''}`;
+        cardDiv.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <div style="font-weight: 700; color: #fff; font-size: 13.5px; line-height: 1.5;">${idx + 1}. "${highlightedEn}"</div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button type="button" class="ctrl-btn copy-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.08); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 11px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center;" title="Sao chép câu">📋</button>
+              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            </div>
+          </div>
+          ${c.vi ? `<div style="font-size: 12.5px; color: #34d399; margin-top:4px; padding-left: 14px; line-height: 1.4;">👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+        `;
       } else {
-        cardDiv.innerHTML = `${c.vi ? `<div style="font-weight: 700; color: #34d399;">${idx + 1}. 👉 ${escapeHtml(c.vi)}</div>` : ''}<div style="font-size: 13px; color: #e2e8f0; margin-top:4px; font-style: italic;">"${escapeHtml(c.en)}"</div>`;
+        cardDiv.innerHTML = `
+          ${c.vi ? `<div style="font-weight: 700; color: #34d399; font-size: 13.5px;">${idx + 1}. 👉 Dịch: ${escapeHtml(c.vi)}</div>` : ''}
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-top: 4px;">
+            <div style="font-size: 13px; color: #e2e8f0; line-height: 1.5; padding-left: 14px;">"${highlightedEn}"</div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button type="button" class="ctrl-btn copy-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.08); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 11px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center;" title="Sao chép câu">📋</button>
+              <button type="button" class="ctrl-btn speak-sentence-btn" data-text="${escapeHtml(c.en)}" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 12px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center;" title="Phát âm câu này">🔊</button>
+            </div>
+          </div>
+        `;
       }
       wrap2.appendChild(cardDiv);
     });
     sec2.appendChild(wrap2);
     contentEl.appendChild(sec2);
   }
+
+  // Bind Speak & Copy Buttons in Modal
+  contentEl.querySelectorAll('.speak-sentence-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const text = btn.getAttribute('data-text');
+      if (text) {
+        if (typeof playPronunciation === 'function') {
+          playPronunciation(text);
+        } else if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'en-US';
+          u.rate = 0.95;
+          window.speechSynthesis.speak(u);
+        }
+      }
+    };
+  });
+
+  contentEl.querySelectorAll('.copy-sentence-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const text = btn.getAttribute('data-text');
+      if (text) {
+        navigator.clipboard.writeText(text);
+        if (typeof showTkToast === 'function') {
+          showTkToast('📋 Đã sao chép câu vào Clipboard!');
+        }
+      }
+    };
+  });
 }
 
 function openTkExpandModal(item) {
@@ -8452,7 +8591,7 @@ async function sendWordToMiniGemini(item) {
   }
 
   // Card with word text:
-  const prompt = `Hãy phân tích chi tiết từ vựng: "${item.word}" (nghĩa: ${item.translation || ''}).\n1. Phiên âm IPA & Cách phát âm chuẩn\n2. 3 Collocation hay gặp trong IELTS Speaking\n3. 2 ví dụ thực tế band 8.0\n4. Ý tưởng kịch bản video TikTok 30 giây để nhớ từ này.`;
+  const prompt = `Hãy phân tích chi tiết từ vựng: "${item.word}" (nghĩa: ${item.translation || ''}).\n1. Phiên âm IPA & Cách phát âm chuẩn\n2. 5 Khung câu dẫn mở đầu (Sentence Starters với chỗ điền "..." hoặc điền từ vào) để dẫn dắt trước khi dùng từ này\n3. 3 Collocation hay gặp trong IELTS Speaking\n4. 2 ví dụ thực tế band 8.0 kèm dịch nghĩa tiếng Việt\n5. Ý tưởng kịch bản video TikTok 30 giây để nhớ từ này.`;
   
   if (item.imageUrl && window.taskAPI && window.taskAPI.copyPromptAndImage) {
     window.taskAPI.copyPromptAndImage(prompt, item.imageUrl);
@@ -9210,68 +9349,133 @@ function initTiktokFlashcardTab() {
         return;
       }
 
-      btnAutoFetch.textContent = '⏳ Đang tải 10 ví dụ...';
+      btnAutoFetch.textContent = '⏳ Đang tải dữ liệu & dịch...';
       btnAutoFetch.disabled = true;
 
-      let vietnameseMeaning = '';
+      let vietnameseMeaning = (transInp?.value || '').trim();
       let formattedOutput = [];
 
-      // 1. Google Translate for Vietnamese meaning
-      try {
-        const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(word)}`;
-        const tr = await fetch(transUrl, { signal: AbortSignal.timeout(2500) });
-        if (tr.ok) {
-          const td = await tr.json();
-          if (td && td[0]) {
-            vietnameseMeaning = td[0].map(s => s[0]).join('');
-            if (transInp) transInp.value = vietnameseMeaning;
-          }
+      // Helper to update translation field safely
+      const setTranslation = (text) => {
+        if (text && transInp) {
+          transInp.value = text;
+          vietnameseMeaning = text;
+          try {
+            transInp.dispatchEvent(new Event('input', { bubbles: true }));
+            transInp.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (e) {}
         }
-      } catch (e) { }
+      };
 
-      // 2. Try Gemini AI for 10 IELTS examples (5 Speaking + 5 Writing with Vietnamese translations)
-      const geminiApiKey = localStorage.getItem(GEMINI_KEY_STORAGE) || '';
+      // 1. Google Translate for Vietnamese meaning
+      if (!vietnameseMeaning) {
+        try {
+          const transUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(word)}`;
+          const tr = await fetch(transUrl, { signal: AbortSignal.timeout(3500) });
+          if (tr.ok) {
+            const td = await tr.json();
+            if (td && td[0]) {
+              const resText = td[0].map(s => s[0]).join('').trim();
+              if (resText) {
+                setTranslation(resText);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Google Translate API error:', e);
+        }
+      }
+
+      // 2. Fallback: MyMemory API if Google Translate returned empty
+      if (!vietnameseMeaning) {
+        try {
+          const myMemUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`;
+          const mr = await fetch(myMemUrl, { signal: AbortSignal.timeout(3000) });
+          if (mr.ok) {
+            const md = await mr.json();
+            if (md && md.responseData && md.responseData.translatedText) {
+              const mt = md.responseData.translatedText.trim();
+              if (mt && !mt.toLowerCase().includes('mymemory')) {
+                setTranslation(mt);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('MyMemory Translate API error:', e);
+        }
+      }
+
+      // 3. Try Gemini AI for complete IELTS pack
+      const geminiApiKey = localStorage.getItem(GEMINI_KEY_STORAGE) || localStorage.getItem('ielts_gemini_api_key') || localStorage.getItem('gemini_api_key') || '';
       if (geminiApiKey) {
         try {
-          const prompt = `Hãy tạo ĐỦ CHÍNH XÁC 10 CÂU VÍ DỤ THỰC TẾ chuẩn IELTS cho từ/cụm từ: "${word}" (Nghĩa: "${vietnameseMeaning || ''}").
-Yêu cầu gồm:
-- 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.
-- 5 câu Writing học thuật trích từ bài viết/báo chí/nghiên cứu.
-- Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt kèm ngay bên dưới.
-Định dạng đầu ra đúng 10 mục:
-🗣️ Speaking 1: "[Câu tiếng Anh 1]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-🗣️ Speaking 2: "[Câu tiếng Anh 2]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-🗣️ Speaking 3: "[Câu tiếng Anh 3]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-🗣️ Speaking 4: "[Câu tiếng Anh 4]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-🗣️ Speaking 5: "[Câu tiếng Anh 5]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-✍️ Writing 1: "[Câu tiếng Anh 1]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-✍️ Writing 2: "[Câu tiếng Anh 2]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-✍️ Writing 3: "[Câu tiếng Anh 3]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-✍️ Writing 4: "[Câu tiếng Anh 4]"
-   👉 Dịch: [Bản dịch tiếng Việt]
-✍️ Writing 5: "[Câu tiếng Anh 5]"
-   👉 Dịch: [Bản dịch tiếng Việt]`;
+          const prompt = `Hãy tạo ĐỦ CHÍNH XÁC thông tin học từ vựng IELTS toàn diện cho từ/cụm từ: "${word}".
+YÊU CẦU ĐẶC BIỆT QUAN TRỌNG:
+1. Dòng đầu tiên BẮT BUỘC ghi bản dịch tiếng Việt chính xác, ngắn gọn nhất của từ "${word}".
+2. 5 KHUNG CÂU DẪN MỞ ĐẦU (Sentence Starters): BẮT BUỘC phải là các câu ví dụ THỰC TẾ, CỰC KỲ TỰ NHIÊN trong đời sống / giao tiếp / công việc / học thuật gắn liền TRỰC TIẾP với ngữ nghĩa của từ "${word}". TUYỆT ĐỐI KHÔNG dùng câu mẫu rập khuôn chung chung.
+   - Trong mỗi câu dẫn, vị trí đặt từ "${word}" phải được thay bằng dấu "..." để người học điền vào.
+   - Bản dịch tiếng Việt tương ứng bên dưới cũng phải có dấu "...".
+3. 5 câu Speaking tự nhiên trong giao tiếp đời thường hoặc phỏng vấn IELTS Speaking.
+4. 5 câu Writing học thuật chuẩn band 8.0 trong IELTS Writing Task 2 hoặc bài báo quốc tế.
+5. Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt chi tiết kèm ngay bên dưới.
+
+Định dạng đầu ra chuẩn theo mẫu:
+👉 DỊCH NGHĨA: [Bản dịch tiếng Việt ngắn gọn của từ "${word}"]
+
+🧩 KHUNG CÂU DẪN & NGỮ CẢNH SỬ DỤNG (SENTENCE STARTERS):
+🧩 Câu dẫn 1: "[Câu dẫn thực tế 1 chứa '...']"
+   👉 Dịch: [Bản dịch tiếng Việt 1 chứa '...']
+🧩 Câu dẫn 2: "[Câu dẫn thực tế 2 chứa '...']"
+   👉 Dịch: [Bản dịch tiếng Việt 2 chứa '...']
+🧩 Câu dẫn 3: "[Câu dẫn thực tế 3 chứa '...']"
+   👉 Dịch: [Bản dịch tiếng Việt 3 chứa '...']
+🧩 Câu dẫn 4: "[Câu dẫn thực tế 4 chứa '...']"
+   👉 Dịch: [Bản dịch tiếng Việt 4 chứa '...']
+🧩 Câu dẫn 5: "[Câu dẫn thực tế 5 chứa '...']"
+   👉 Dịch: [Bản dịch tiếng Việt 5 chứa '...']
+
+🗣️ Speaking 1: "[Câu Speaking thực tế 1]"
+   👉 Dịch: [Bản dịch tiếng Việt 1]
+🗣️ Speaking 2: "[Câu Speaking thực tế 2]"
+   👉 Dịch: [Bản dịch tiếng Việt 2]
+🗣️ Speaking 3: "[Câu Speaking thực tế 3]"
+   👉 Dịch: [Bản dịch tiếng Việt 3]
+🗣️ Speaking 4: "[Câu Speaking thực tế 4]"
+   👉 Dịch: [Bản dịch tiếng Việt 4]
+🗣️ Speaking 5: "[Câu Speaking thực tế 5]"
+   👉 Dịch: [Bản dịch tiếng Việt 5]
+
+✍️ Writing 1: "[Câu Writing học thuật 1]"
+   👉 Dịch: [Bản dịch tiếng Việt 1]
+✍️ Writing 2: "[Câu Writing học thuật 2]"
+   👉 Dịch: [Bản dịch tiếng Việt 2]
+✍️ Writing 3: "[Câu Writing học thuật 3]"
+   👉 Dịch: [Bản dịch tiếng Việt 3]
+✍️ Writing 4: "[Câu Writing học thuật 4]"
+   👉 Dịch: [Bản dịch tiếng Việt 4]
+✍️ Writing 5: "[Câu Writing học thuật 5]"
+   👉 Dịch: [Bản dịch tiếng Việt 5]`;
 
           const aiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
           const res = await fetch(aiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-            signal: AbortSignal.timeout(4000)
+            signal: AbortSignal.timeout(5000)
           });
           if (res.ok) {
             const aiData = await res.json();
             const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-            if (text && text.includes('Speaking') && text.includes('Writing')) {
-              formattedOutput = text.split('\n').map(l => l.trim()).filter(Boolean);
+            if (text) {
+              // Extract Vietnamese translation if transInp is still empty
+              const transMatch = text.match(/(?:👉\s*DỊCH NGHĨA|Dịch nghĩa|Nghĩa tiếng Việt)[:：]\s*([^\n\r]+)/i);
+              if (transMatch && transMatch[1]) {
+                const extractedTrans = transMatch[1].replace(/^[\["]+|[\]"]+$/g, '').trim();
+                if (extractedTrans && (!transInp.value || !transInp.value.trim())) {
+                  setTranslation(extractedTrans);
+                }
+              }
+              formattedOutput = text.split('\n').map(l => l.trim()).filter(l => Boolean(l) && !l.startsWith('👉 DỊCH NGHĨA'));
             }
           }
         } catch (err) {
@@ -9279,7 +9483,7 @@ Yêu cầu gồm:
         }
       }
 
-      // 3. If no Gemini output, fetch real sentences from Dictionary API + Tatoeba + Wiktionary
+      // 4. If no Gemini output, fetch real sentences from Dictionary API + Tatoeba + Wiktionary
       if (formattedOutput.length === 0) {
         let rawSentences = [];
 
@@ -9368,39 +9572,78 @@ Yêu cầu gồm:
           top10.push(`In practical usage, the term '${word}' illustrates a key concept in contemporary studies.`);
         }
 
-        // Batch translate all 10 sentences to Vietnamese
-        let translatedLines = [];
-        try {
-          const batchTransUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(top10.join('\n'))}`;
-          const trRes = await fetch(batchTransUrl, { signal: AbortSignal.timeout(2500) });
-          if (trRes.ok) {
-            const trData = await trRes.json();
-            if (trData && trData[0]) {
-              const fullTranslated = trData[0].map(s => s[0]).join('');
-              translatedLines = fullTranslated.split('\n').map(l => l.trim()).filter(Boolean);
+        // Individual sentence translation via MyMemory API
+        btnAutoFetch.textContent = '⏳ Đang dịch 10 câu ví dụ...';
+        const translatedLines = await Promise.all(top10.map(async (sent) => {
+          // 1. Try MyMemory API
+          try {
+            const mu = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(sent)}&langpair=en|vi`;
+            const mr = await fetch(mu, { signal: AbortSignal.timeout(3500) });
+            if (mr.ok) {
+              const md = await mr.json();
+              if (md && md.responseData && md.responseData.translatedText) {
+                const mt = md.responseData.translatedText.trim();
+                if (mt && !mt.toLowerCase().includes('mymemory')) return mt;
+              }
             }
-          }
-        } catch (e) { }
+          } catch (e) {}
+
+          // 2. Try Google Translate API fallback
+          try {
+            const u = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(sent)}`;
+            const r = await fetch(u, { signal: AbortSignal.timeout(3000) });
+            if (r.ok) {
+              const d = await r.json();
+              if (d && d[0]) {
+                const t = d[0].map(x => x[0]).join('').trim();
+                if (t) return t;
+              }
+            }
+          } catch (e) {}
+
+          return '';
+        }));
+
+        // Context Sentence Starters
+        const contextLines = [
+          `🧩 KHUNG CÂU DẪN & NGỮ CẢNH SỬ DỤNG (SENTENCE STARTERS):`,
+          `🧩 Câu dẫn 1: "Whenever people discuss the practical significance of ..., they often highlight how it influences daily decisions."`,
+          `   👉 Dịch: Bất cứ khi nào mọi người thảo luận về tầm quan trọng thực tế của ..., họ thường nhấn mạnh cách nó ảnh hưởng đến các quyết định hàng ngày.`,
+          `🧩 Câu dẫn 2: "Gaining a thorough practical understanding of ... allows individuals to communicate with greater clarity and impact."`,
+          `   👉 Dịch: Nắm bắt được hiểu biết thực tế thấu đáo về ... cho phép các cá nhân giao tiếp với sự rõ ràng và sức thuyết phục lớn hơn.`,
+          `🧩 Câu dẫn 3: "One particularly intriguing aspect of ... that fascinates experts is its rapid evolution in recent years."`,
+          `   👉 Dịch: Một khía cạnh đặc biệt hấp dẫn của ... khiến các chuyên gia say mê là sự phát triển nhanh chóng của nó trong những năm gần đây.`,
+          `🧩 Câu dẫn 4: "In real-life everyday situations, dealing with unexpected ... requires adaptability and sharp problem-solving skills."`,
+          `   👉 Dịch: Trong các tình huống thực tế đời thường, việc xử lý ... bất ngờ đòi hỏi khả năng thích ứng và kỹ năng xử lý tình huống nhạy bén.`,
+          `🧩 Câu dẫn 5: "Investing sufficient time to master ... thoroughly will undeniably yield remarkable long-term benefits."`,
+          `   👉 Dịch: Đầu tư đủ thời gian để thành thạo cặn kẽ ... chắc chắn sẽ mang lại những lợi ích lâu dài vượt bậc.`
+        ];
 
         // Assemble 5 Speaking + 5 Writing with Vietnamese translations
+        const speakingWritingLines = [];
         for (let i = 0; i < 10; i++) {
           const en = top10[i];
-          const vi = translatedLines[i] || vietnameseMeaning || 'Dịch nghĩa';
+          const vi = translatedLines[i] || `Câu ví dụ thực tế liên quan đến ${word}`;
           if (i < 5) {
-            formattedOutput.push(`🗣️ Speaking ${i + 1}: "${en}"`);
-            formattedOutput.push(`   👉 Dịch: ${vi}`);
+            speakingWritingLines.push(`🗣️ Speaking ${i + 1}: "${en}"`);
+            speakingWritingLines.push(`   👉 Dịch: ${vi}`);
           } else {
-            formattedOutput.push(`✍️ Writing ${i - 4}: "${en}"`);
-            formattedOutput.push(`   👉 Dịch: ${vi}`);
+            speakingWritingLines.push(`✍️ Writing ${i - 4}: "${en}"`);
+            speakingWritingLines.push(`   👉 Dịch: ${vi}`);
           }
         }
+
+        formattedOutput = [...contextLines, '', ...speakingWritingLines];
       }
 
       if (formattedOutput.length > 0 && notesInp) {
         notesInp.value = formattedOutput.join('\n');
+        try {
+          notesInp.dispatchEvent(new Event('input', { bubbles: true }));
+        } catch (e) {}
       }
 
-      // 4. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
+      // 5. AUTOMATICALLY EXTRACT & ATTACH VIDEO URL SILENTLY
       try {
         await extractAndAttachVideoFromMusic(true);
       } catch (err) {
