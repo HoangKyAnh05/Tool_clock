@@ -1196,25 +1196,21 @@ ${jsonData}
       });
     }
 
-    // Load Flashcard Data
-    let RAW_ITEMS = [];
-    try {
-      const el = document.getElementById('flashcard-data');
-      RAW_ITEMS = el ? JSON.parse(el.textContent) : [];
-    } catch (e) {
-      console.error('Failed to parse items:', e);
-      RAW_ITEMS = [];
-    }
+    // Load Flashcard Data (Direct Embedded JS Array)
+    const DEFAULT_EMBEDDED_ITEMS = ${jsonData};
+    let RAW_ITEMS = (Array.isArray(DEFAULT_EMBEDDED_ITEMS) && DEFAULT_EMBEDDED_ITEMS.length > 0) ? DEFAULT_EMBEDDED_ITEMS : [];
 
     // Check if user has a custom synced dataset in localStorage
-    const savedCustomItems = localStorage.getItem('pwa_tk_custom_items');
-    if (savedCustomItems) {
-      try {
+    try {
+      const savedCustomItems = localStorage.getItem('pwa_tk_custom_items');
+      if (savedCustomItems) {
         const parsed = JSON.parse(savedCustomItems);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= RAW_ITEMS.length) {
           RAW_ITEMS = parsed;
         }
-      } catch (err) {}
+      }
+    } catch (err) {
+      console.warn('LocalStorage items read error:', err);
     }
 
     // Local Storage State
@@ -1224,6 +1220,11 @@ ${jsonData}
     let currentIndex = parseInt(localStorage.getItem('pwa_tk_index') || '0', 10);
     let autoScrollInterval = null;
     let autoScrollSeconds = 0; // 0 = off, 3, 5, 7
+
+    // Auto-fallback if active filter has no items so screen is never blank
+    if (activeFilter === 'due' && dueIds.size === 0) activeFilter = 'all';
+    if (activeFilter === 'mastered' && masteredIds.size === 0) activeFilter = 'all';
+    if (activeFilter === 'image' && RAW_ITEMS.filter(x => !!x.imageUrl).length === 0) activeFilter = 'all';
 
     function saveState() {
       localStorage.setItem('pwa_tk_mastered', JSON.stringify([...masteredIds]));
