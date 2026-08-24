@@ -1,34 +1,27 @@
 // sync_web_generator.js
-// Generates standalone, mobile-optimized TikTok Flashcard PWA for GitHub Pages
-// Ultra-smooth 120FPS GPU swipe engine with zero-lag, no pointer/touch collision, and instant manual buttons.
+// Ultra-fast, clean, lightweight Flashcard PWA Generator for GitHub Pages
 const fs = require('fs');
 const path = require('path');
 const { generateIcons } = require('./generate_icons');
 
-function generateMobileHtml(data) {
-  const items = (data && data.items) ? data.items : [];
-  const jsonData = JSON.stringify(items);
-
+function generateMobileHtml() {
   return `<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>TikTok Flashcard - Lướt Từ Vựng IELTS</title>
-  <meta name="description" content="Ứng dụng Flashcard TikTok học từ vựng IELTS, lướt lên xuống siêu mượt 120fps chuẩn TikTok, nút Thẻ trên/Thẻ dưới, sao lưu Cloud mã 1 số.">
-  <meta name="theme-color" content="#0b0d14">
+  <title>Flashcard Học Từ Vựng</title>
+  <meta name="description" content="Ứng dụng Flashcard học từ vựng nhanh, nhẹ, mượt mà và tự động đồng bộ.">
+  <meta name="theme-color" content="#0f172a">
   
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="TikTok Flash">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 
-  <!-- Modern Google Fonts -->
+  <!-- Fonts & Libraries -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -37,16 +30,15 @@ function generateMobileHtml(data) {
   <style>
     :root {
       --bg: #0b0d14;
-      --surface: #131722;
+      --card-bg: #131722;
       --primary: #00f2fe;
-      --tk-pink: #ff0050;
-      --tk-cyan: #00f2fe;
-      --tk-purple: #8b5cf6;
-      --accent-green: #10b981;
+      --accent: #ff0050;
+      --green: #10b981;
+      --purple: #8b5cf6;
       --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --muted: #94a3b8;
       --border: rgba(255, 255, 255, 0.12);
-      --radius: 16px;
+      --radius: 14px;
     }
 
     * {
@@ -54,2492 +46,759 @@ function generateMobileHtml(data) {
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     html, body {
       width: 100%;
       height: 100%;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none !important;
-      overscroll-behavior: none !important;
     }
 
-    body {
+    .app-wrap {
       display: flex;
       flex-direction: column;
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 0px);
+      height: 100%;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
     }
 
-    /* Top Floating Translucent Header */
-    header {
-      flex-shrink: 0;
-      z-index: 60;
-      background: rgba(11, 13, 20, 0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 12px;
+    /* Top Bar */
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 14px;
+      background: rgba(19, 23, 34, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
       gap: 8px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 4px 12px rgba(255, 0, 80, 0.4);
-      flex-shrink: 0;
-    }
-
-    .brand-text h1 {
+    .brand-title {
       font-size: 14px;
-      font-weight: 900;
-      letter-spacing: -0.2px;
-      background: linear-gradient(135deg, #fff 30%, #00f2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-    }
-
-    .brand-text p {
-      font-size: 10.5px;
-      color: #94a3b8;
-      font-weight: 600;
-    }
-
-    .header-actions {
+      font-weight: 800;
+      color: #fff;
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
-    .icon-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 99px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      color: #fff;
+    .filter-tabs {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .icon-btn:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .pwa-install-btn {
-      height: 32px;
-      padding: 0 10px;
-      border-radius: 99px;
-      background: linear-gradient(135deg, #ff0050 0%, #8b5cf6 100%);
-      border: none;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
       gap: 4px;
-      cursor: pointer;
-      box-shadow: 0 3px 12px rgba(255, 0, 80, 0.35);
-    }
-
-    .add-card-header-btn {
-      height: 32px;
-      padding: 0 12px;
-      border-radius: 99px;
-      background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);
-      border: none;
-      color: #fff;
-      font-size: 11.5px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      box-shadow: 0 3px 12px rgba(0, 242, 254, 0.35);
-    }
-
-    /* Sub Toolbar */
-    .sub-toolbar {
-      flex-shrink: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 12px;
-      background: rgba(19, 23, 34, 0.92);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
     }
+    .filter-tabs::-webkit-scrollbar { display: none; }
 
-    .sub-toolbar::-webkit-scrollbar {
-      display: none;
+    .tab-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      border: 1px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-pill.active {
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--primary);
+      border-color: rgba(0, 242, 254, 0.35);
     }
 
-    .filter-pills-group {
+    .action-btns {
       display: flex;
       gap: 6px;
-      align-items: center;
     }
 
-    .filter-pill {
-      flex-shrink: 0;
-      padding: 4px 10px;
-      border-radius: 99px;
-      background: rgba(255, 255, 255, 0.06);
+    .btn-action {
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .filter-pill.active {
-      background: rgba(0, 242, 254, 0.15);
-      border-color: #00f2fe;
+      background: rgba(255, 255, 255, 0.08);
       color: #fff;
+      transition: all 0.2s;
+    }
+    .btn-zip {
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      border: none;
     }
 
-    .autoscroll-pill {
-      flex-shrink: 0;
-      padding: 4px 10px;
-      border-radius: 99px;
-      background: rgba(0, 242, 254, 0.08);
-      border: 1px solid rgba(0, 242, 254, 0.3);
-      color: var(--primary);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
+    /* Main Flashcard Container */
+    .card-viewport {
+      flex: 1;
       display: flex;
       align-items: center;
-      gap: 4px;
-    }
-
-    .autoscroll-pill.active {
-      background: linear-gradient(135deg, rgba(255,0,80,0.2) 0%, rgba(0,242,254,0.2) 100%);
-      border-color: #ff0050;
-      color: #ff0050;
-    }
-
-    /* Main Container (Full Viewport) */
-    main {
-      flex: 1;
-      width: 100%;
-      height: 100%;
+      justify-content: center;
+      padding: 12px;
       position: relative;
       overflow: hidden;
+    }
+
+    .card-box {
+      width: 100%;
+      height: 100%;
+      max-height: 720px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .card-img-wrap {
+      flex: 1;
+      min-height: 200px;
       background: #000;
-      touch-action: none !important;
-    }
-
-    /* ==========================================================================
-       TIKTOK VERTICAL SWIPE DECK (GPU ACCELERATED 120FPS)
-       ========================================================================== */
-    .tiktok-viewport {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      touch-action: none !important;
-      cursor: grab;
-    }
-
-    .tiktok-viewport:active {
-      cursor: grabbing;
-    }
-
-    .tiktok-slider-track {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-
-    .tiktok-slide {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-      background: #0b0d14;
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-
-    /* Slide Card Content */
-    .slide-body {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-      overflow: hidden;
-    }
-
-    /* Image Flashcard */
-    .slide-img-container {
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      cursor: zoom-in;
+      overflow: hidden;
+      cursor: pointer;
     }
 
-    .slide-img-container img {
+    .card-img-wrap img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      border-radius: var(--radius);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-      pointer-events: none;
     }
 
-    /* Text Flashcard */
-    .slide-text-container {
-      width: 100%;
-      max-width: 540px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      pointer-events: none;
-    }
-
-    .slide-word-title {
-      font-size: 38px;
-      font-weight: 900;
-      line-height: 1.2;
-      background: linear-gradient(135deg, #ffffff 40%, #00f2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-      word-break: break-word;
-      text-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
-    }
-
-    .slide-word-trans {
-      font-size: 22px;
-      font-weight: 800;
-      color: #6ee7b7;
-      margin-bottom: 16px;
-      line-height: 1.4;
-    }
-
-    .slide-notes-card {
-      width: 100%;
-      font-size: 14.5px;
-      color: #cbd5e1;
-      line-height: 1.6;
-      max-height: 240px;
-      overflow-y: auto;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
+    .card-info {
       padding: 14px 16px;
-      text-align: left;
-      white-space: pre-wrap;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    }
-
-    /* Right-side Floating Action Toolbar (TikTok Style) */
-    .tiktok-side-actions {
-      position: absolute;
-      right: 12px;
-      bottom: 70px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      align-items: center;
-      z-index: 60;
-      pointer-events: auto;
-      touch-action: manipulation;
-    }
-
-    .side-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: rgba(19, 23, 34, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-      text-decoration: none;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      pointer-events: auto;
-    }
-
-    .side-btn:active {
-      transform: scale(0.86);
-      border-color: var(--primary);
-    }
-
-    .side-btn.active-like {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border-color: #10b981;
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5);
-    }
-
-    .side-btn-label {
-      font-size: 9px;
-      font-weight: 800;
-      margin-top: 1px;
-      color: #e2e8f0;
-    }
-
-    /* Bottom Quick Navigation Controls (Thẻ Trên & Thẻ Dưới) */
-    .bottom-nav-bar {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(19, 23, 34, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1.5px solid rgba(0, 242, 254, 0.4);
-      border-radius: 99px;
-      padding: 4px 6px;
-      z-index: 40;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
-    }
-
-    .nav-arrow-btn {
-      height: 36px;
-      padding: 0 14px;
-      border-radius: 99px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      font-size: 12.5px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
       gap: 6px;
-      cursor: pointer;
-      transition: transform 0.1s, background 0.15s;
+      max-height: 45%;
+      overflow-y: auto;
     }
 
-    .nav-arrow-btn:active {
-      transform: scale(0.92);
-      background: linear-gradient(135deg, rgba(0,242,254,0.3) 0%, rgba(59,130,246,0.3) 100%);
-      border-color: #00f2fe;
-      color: #00f2fe;
-    }
-
-    .nav-counter-pill {
-      font-size: 11.5px;
-      font-weight: 800;
-      color: #00f2fe;
-      padding: 0 8px;
-      white-space: nowrap;
-    }
-
-    /* Bottom Info Caption Overlay */
-    .slide-bottom-overlay {
-      position: absolute;
-      left: 0;
-      bottom: 58px;
-      width: 100%;
-      padding: 30px 75px 8px 16px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
-      pointer-events: none;
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .slide-tag-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .slide-tag {
-      font-size: 11px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: rgba(139, 92, 246, 0.35);
-      color: #c4b5fd;
-      border: 1px solid rgba(139, 92, 246, 0.5);
-    }
-
-    .slide-index-tag {
-      font-size: 11px;
-      color: #00f2fe;
-      font-weight: 800;
-      background: rgba(0, 242, 254, 0.15);
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(0, 242, 254, 0.35);
-    }
-
-    .slide-caption-title {
-      font-size: 16px;
+    .card-word {
+      font-size: 20px;
       font-weight: 900;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: var(--primary);
+      line-height: 1.3;
+      user-select: text;
     }
 
-    .slide-caption-trans {
-      font-size: 13.5px;
+    .card-trans {
+      font-size: 15px;
       font-weight: 700;
-      color: #6ee7b7;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: #34d399;
+      line-height: 1.4;
+      user-select: text;
     }
 
-    /* Floating Heart on Double Tap */
-    .floating-heart {
-      position: absolute;
-      font-size: 76px;
-      color: #ff0050;
-      pointer-events: none;
-      animation: floatUpHeart 0.8s ease-out forwards;
-      z-index: 100;
-      transform: translate(-50%, -50%);
+    .card-notes {
+      font-size: 12.5px;
+      color: #cbd5e1;
+      line-height: 1.5;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-top: 4px;
+      user-select: text;
+      white-space: pre-wrap;
     }
 
-    @keyframes floatUpHeart {
-      0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.95; }
-      50% { transform: translate(-50%, -80%) scale(1.3); opacity: 1; }
-      100% { transform: translate(-50%, -130%) scale(1.6); opacity: 0; }
-    }
-
-    /* Subtle On-screen Swipe Hint Indicator */
-    .swipe-hint-pill {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #e2e8f0;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 99px;
-      pointer-events: none;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      opacity: 0.85;
-      animation: bounceHint 2s infinite ease-in-out;
-    }
-
-    @keyframes bounceHint {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, 4px); }
-    }
-
-    /* Modals & Drawers */
-    .drawer-sheet {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      max-height: 82vh;
-      background: #131722;
-      border-top: 2px solid var(--primary);
-      border-radius: 24px 24px 0 0;
-      z-index: 100;
-      transform: translate3d(0, 100%, 0);
-      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.9);
-      padding-bottom: env(safe-area-inset-bottom, 16px);
-    }
-
-    .drawer-sheet.active {
-      transform: translate3d(0, 0, 0);
-    }
-
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      z-index: 120;
-      display: none;
-      flex-direction: column;
-      padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 16px) 16px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-sheet {
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      background: #131722;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      max-height: 88vh;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-      overflow: hidden;
-    }
-
-    .modal-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
+    /* Bottom Nav Bar */
+    .bottom-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 14px;
+      background: rgba(19, 23, 34, 0.9);
+      border-top: 1px solid var(--border);
+      z-index: 20;
+      gap: 8px;
     }
 
-    .modal-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .modal-body {
-      padding: 16px 18px;
-      overflow-y: auto;
+    .nav-btn {
       flex: 1;
-    }
-
-    .search-input-box {
+      height: 42px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.08);
+      justify-content: center;
+      gap: 6px;
       border: 1px solid var(--border);
-      padding: 10px 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      transition: all 0.15s;
+    }
+    .nav-btn:active {
+      transform: scale(0.96);
+    }
+    .btn-next {
+      background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%);
+      color: #0b0d14;
+      border: none;
     }
 
-    .search-input-box input {
-      flex: 1;
-      background: transparent;
-      border: none;
+    .counter-badge {
+      font-size: 12px;
+      font-weight: 800;
       color: #fff;
-      font-size: 14px;
+      padding: 0 10px;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .btn-like {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-like.liked {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .modal.active { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 440px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .inp {
+      width: 100%;
+      height: 38px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 0 10px;
+      font-size: 13px;
       outline: none;
     }
 
-    .search-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-
-    .search-item:active {
-      background: rgba(0, 242, 254, 0.15);
-      border-color: #00f2fe;
-    }
-
-    /* Slot Keypad Buttons */
-    .slot-keypad {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin: 14px 0;
-    }
-
-    .slot-btn {
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .slot-btn:active {
-      transform: scale(0.92);
-    }
-
-    .slot-btn.active {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border-color: #10b981;
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-    }
-
-    /* Image Upload & Paste Dropzone in Add Card Modal */
-    .add-dropzone {
-      border: 2px dashed rgba(0, 242, 254, 0.4);
-      background: rgba(0, 242, 254, 0.04);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .add-dropzone:active {
-      background: rgba(0, 242, 254, 0.12);
-      border-color: #00f2fe;
-    }
-
-    .preview-img-box {
-      width: 100%;
-      max-height: 200px;
-      position: relative;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #000;
-    }
-
-    .preview-img-box img {
-      max-width: 100%;
-      max-height: 200px;
-      object-fit: contain;
-    }
-
-    .remove-preview-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(239, 68, 68, 0.85);
-      border: none;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Fullscreen Image Zoom */
-    .img-fullscreen-modal {
+    /* Toast */
+    #toast {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      z-index: 150;
-      display: none;
-      align-items: center;
-      justify-content: center;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: #1e293b;
+      color: #00f2fe;
+      border: 1px solid #00f2fe;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 12.5px;
+      font-weight: 700;
+      z-index: 100000;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
-
-    .img-fullscreen-modal.active {
-      display: flex;
-    }
-
-    .img-fullscreen-modal img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .img-close-btn {
-      position: absolute;
-      top: calc(16px + env(safe-area-inset-top, 0px));
-      right: 16px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: #fff;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    /* iOS Step Guide */
-    .ios-step {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 13.5px;
-      color: #cbd5e1;
-    }
-
-    .ios-step-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #0b0d14;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-
-  <!-- Top Header -->
-  <header>
-    <div class="brand" id="btnLogoHome">
-      <div class="brand-logo">🎵</div>
-      <div class="brand-text">
-        <h1>TIKTOK FLASHCARD</h1>
-        <p id="headerProgressText">672 Thẻ Học IELTS</p>
+  <div class="app-wrap">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="brand-title">🎵 Flashcard</div>
+      <div class="filter-tabs">
+        <button type="button" class="tab-pill active" id="tabAll" onclick="setFilter('all')">Tất cả (<span id="cntAll">0</span>)</button>
+        <button type="button" class="tab-pill" id="tabDue" onclick="setFilter('due')">🔴 Ôn (<span id="cntDue">0</span>)</button>
+        <button type="button" class="tab-pill" id="tabMastered" onclick="setFilter('mastered')">🟢 Thuộc (<span id="cntMastered">0</span>)</button>
+        <button type="button" class="tab-pill" id="tabImage" onclick="setFilter('image')">🖼️ Ảnh (<span id="cntImage">0</span>)</button>
+      </div>
+      <div class="action-btns">
+        <button type="button" class="btn-action btn-zip" id="btnZip" onclick="triggerZipUpload()">📦 ZIP</button>
+        <button type="button" class="btn-action" id="btnAdd" onclick="openAddModal()">➕ Thêm</button>
       </div>
     </div>
-    <div class="header-actions">
-      <button type="button" id="btnOpenNewCardModal" class="add-card-header-btn" title="Thêm thẻ từ vựng hoặc thẻ ảnh mới">
-        <span>➕</span> Thêm Thẻ
-      </button>
-      <button type="button" id="btnOpenCloudSync" class="icon-btn" title="Đồng bộ Cloud với Mã 1 chữ số (0 - 9)" style="background: rgba(16,185,129,0.2); border-color: #10b981; color: #6ee7b7;">☁️</button>
-      <button type="button" id="btnPwaInstall" class="pwa-install-btn" title="Cài đặt App vào Màn hình chính">
-        <span>📲</span> Cài App
-      </button>
-      <button type="button" id="btnOpenSearch" class="icon-btn" title="Tìm kiếm">🔍</button>
-      <button type="button" id="btnShuffle" class="icon-btn" title="Trộn ngẫu nhiên">🎲</button>
-    </div>
-  </header>
 
-  <!-- Sub Toolbar (Filter Pills & Auto-Scroll) -->
-  <div class="sub-toolbar">
-    <div class="filter-pills-group">
-      <button type="button" class="filter-pill active" data-filter="all">📚 Tất cả (<span id="badgeAll">0</span>)</button>
-      <button type="button" class="filter-pill" data-filter="due">🔴 Cần ôn (<span id="badgeDue">0</span>)</button>
-      <button type="button" class="filter-pill" data-filter="mastered">🟢 Đã thuộc (<span id="badgeMastered">0</span>)</button>
-      <button type="button" class="filter-pill" data-filter="image">🖼️ Thẻ ảnh (<span id="badgeImage">0</span>)</button>
-    </div>
-
-    <div id="btnAutoScroll" class="autoscroll-pill" title="Tự động phát âm và lướt thẻ">
-      <span>⏱️</span>
-      <span id="lblAutoScroll">Tự lướt: <b>TẮT</b></span>
-    </div>
-  </div>
-
-  <!-- Main Fullscreen Swipe Viewport -->
-  <main id="mainContainer">
-    <div class="tiktok-viewport" id="tiktokViewport">
-      
-      <!-- Swipe Hint Bubble -->
-      <div class="swipe-hint-pill" id="swipeHint">
-        <span>↕️ Vuốt lên / xuống hoặc bấm nút Thẻ trên / Thẻ dưới</span>
-      </div>
-
-      <!-- Sliding Deck Track (Contains 3 Slides: Prev, Current, Next) -->
-      <div class="tiktok-slider-track" id="sliderTrack">
-        <!-- Slide 0: Top (Previous) -->
-        <div class="tiktok-slide" id="slidePrev"></div>
-        
-        <!-- Slide 1: Center (Current Active) -->
-        <div class="tiktok-slide" id="slideCurrent"></div>
-        
-        <!-- Slide 2: Bottom (Next) -->
-        <div class="tiktok-slide" id="slideNext"></div>
-      </div>
-
-      <!-- Floating Action Buttons on Right (Fixed to Viewport) -->
-      <div class="tiktok-side-actions">
-        <!-- Up Card Button -->
-        <div class="side-btn" id="btnSideNavPrev" title="Thẻ Trên / Trước (Phím ↑)">
-          <span style="font-size: 18px;">▲</span>
-          <span class="side-btn-label">Thẻ trên</span>
-        </div>
-        <!-- Down Card Button -->
-        <div class="side-btn" id="btnSideNavNext" title="Thẻ Dưới / Sau (Phím ↓)">
-          <span style="font-size: 18px;">▼</span>
-          <span class="side-btn-label">Thẻ dưới</span>
-        </div>
-        <div class="side-btn" id="btnSideAddCard" title="Thêm Thẻ Mới / Thẻ Ảnh" style="background: linear-gradient(135deg, rgba(255,0,80,0.6) 0%, rgba(0,242,254,0.6) 100%); border-color: #00f2fe;">
-          <span style="font-size: 20px;">➕</span>
-          <span class="side-btn-label">Thêm thẻ</span>
-        </div>
-        <div class="side-btn" id="btnSideSpeak" title="Phát âm chuẩn tiếng Anh">
-          <span style="font-size: 20px;">🔊</span>
-          <span class="side-btn-label">Phát âm</span>
-        </div>
-        <div class="side-btn" id="btnSideContext" title="Ngữ cảnh sử dụng & Khung câu dẫn mở đầu (...)">
-          <span style="font-size: 20px;">🧩</span>
-          <span class="side-btn-label" style="color: #38bdf8; font-weight: 800;">Ngữ cảnh</span>
-        </div>
-        <div class="side-btn" id="btnSideDrawer" title="Xem nghĩa & 10 ví dụ">
-          <span style="font-size: 20px;">📖</span>
-          <span class="side-btn-label">Ví dụ</span>
-        </div>
-        <div class="side-btn" id="btnSideMastered" title="Đánh dấu đã nhớ">
-          <span style="font-size: 20px;">💚</span>
-          <span class="side-btn-label">Đã thuộc</span>
-        </div>
-        <a href="#" target="_blank" class="side-btn" id="btnSideTiktok" title="Mở video TikTok">
-          <span style="font-size: 20px;">🎬</span>
-          <span class="side-btn-label">TikTok</span>
-        </a>
-        <div class="side-btn" id="btnSidePrompt" title="Copy prompt cho AI">
-          <span style="font-size: 18px;">📋</span>
-          <span class="side-btn-label">Prompt</span>
-        </div>
-      </div>
-
-      <!-- Floating Bottom Quick Navigation Controls (Thẻ Trên & Thẻ Dưới) -->
-      <div class="bottom-nav-bar" id="bottomNavBar">
-        <button type="button" class="nav-arrow-btn" id="btnNavPrev" title="Xem thẻ trước (hoặc phím mũi tên Lên ↑)">
-          <span style="font-size: 15px;">▲</span>
-          <span>Thẻ trên</span>
-        </button>
-        <div class="nav-counter-pill" id="lblNavCounter">Thẻ 1 / 672</div>
-        <button type="button" class="nav-arrow-btn" id="btnNavNext" title="Xem thẻ sau (hoặc phím mũi tên Xuống ↓)">
-          <span>Thẻ dưới</span>
-          <span style="font-size: 15px;">▼</span>
-        </button>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Examples Drawer -->
-  <div class="drawer-sheet" id="examplesDrawer">
-    <div class="modal-header">
-      <div class="modal-title" id="drawerTitle">📖 Chi tiết từ vựng & Ví dụ</div>
-      <button type="button" class="icon-btn" id="btnCloseDrawer">✕</button>
-    </div>
-    <div class="modal-body" id="drawerContent"></div>
-  </div>
-
-  <!-- Search Modal -->
-  <div class="modal-overlay" id="searchModal">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">🔍 Tìm kiếm 672 Thẻ Flashcard</div>
-        <button type="button" class="icon-btn" id="btnCloseSearch">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="search-input-box">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="Nhập từ tiếng Anh hoặc tiếng Việt..." />
-        </div>
-        <div id="searchResultsList"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Add New Flashcard / Photo Card -->
-  <div class="modal-overlay" id="newCardModal">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title" style="color: #00f2fe; display: flex; align-items: center; gap: 8px;">
-          ➕ THÊM THẺ FLASHCARD / THẺ ẢNH MỚI
-        </div>
-        <button type="button" class="icon-btn" id="btnCloseNewCardModal">✕</button>
-      </div>
-      <div class="modal-body">
-        
-        <!-- Image Upload & Preview Section -->
-        <input type="file" id="inpAddCardFile" accept="image/*" style="display: none;" />
-        <input type="hidden" id="newCardImgBase64" value="" />
-
-        <div class="preview-img-box" id="previewImgBox">
-          <img id="previewImgEl" src="" alt="Preview" />
-          <button type="button" class="remove-preview-btn" id="btnRemovePreview" title="Xóa ảnh">✕</button>
-        </div>
-
-        <div class="add-dropzone" id="addImgDropzone">
-          <span style="font-size: 30px;">🖼️</span>
-          <div style="font-size: 13px; font-weight: 800; color: #00f2fe;">Chạm để Tải ảnh / Chụp ảnh hoặc Dán ảnh (Ctrl+V)</div>
-          <div style="font-size: 11px; color: var(--text-muted);">Hỗ trợ ảnh chụp màn hình, ảnh từ thư viện, camera hoặc clipboard</div>
-          <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; justify-content: center;">
-            <button type="button" class="pwa-install-btn" id="btnTriggerUpload" style="background: rgba(0,242,254,0.2); border: 1px solid #00f2fe; color: #00f2fe;">📁 Chọn ảnh</button>
-            <button type="button" class="pwa-install-btn" id="btnTriggerZip" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: none; color: #fff; font-weight: 700;">📦 Nạp Zip Ảnh</button>
-            <button type="button" class="pwa-install-btn" id="btnTriggerPaste" style="background: rgba(255,0,80,0.2); border: 1px solid #ff0050; color: #ff0050;">📋 Dán từ Clipboard</button>
-          </div>
-          <input type="file" id="inpAddZipFile" accept=".zip,application/zip,application/x-zip-compressed" style="display: none;" />
-        </div>
-
-        <!-- Input Fields -->
-        <div style="margin-bottom: 10px;">
-          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Từ Tiếng Anh / Tên Thẻ *</label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="newCardWord" placeholder="Ví dụ: disease, resilience..." style="flex: 1; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 0 12px; font-size: 14px; font-weight: 700; outline: none;" />
-            <button type="button" id="btnMobileAutoFetch" class="pwa-install-btn" style="height: 42px; font-size: 11.5px; font-weight: 800; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); color: #000; white-space: nowrap; border-radius: 10px;">✨ Dịch & Tạo</button>
+    <!-- Main Card Viewport -->
+    <div class="card-viewport" id="viewport">
+      <div class="card-box" id="cardBox">
+        <div class="card-img-wrap" id="cardImgWrap">
+          <img id="cardImg" src="" alt="Flashcard" style="display: none;" />
+          <div id="imgPlaceholder" style="color: #64748b; font-size: 13px; font-weight: 700; text-align: center; padding: 20px;">
+            ⏳ Đang tải dữ liệu Flashcard...
           </div>
         </div>
-
-        <div style="margin-bottom: 10px;">
-          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Dịch Nghĩa Tiếng Việt</label>
-          <input type="text" id="newCardTrans" placeholder="Ví dụ: kiên cường, hậu quả..." style="width: 100%; height: 42px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #6ee7b7; padding: 0 12px; font-size: 13.5px; font-weight: 600; outline: none;" />
+        <div class="card-info" id="cardInfo">
+          <div class="card-word" id="cardWord">Đang tải...</div>
+          <div class="card-trans" id="cardTrans"></div>
+          <div class="card-notes" id="cardNotes" style="display: none;"></div>
         </div>
+      </div>
+    </div>
 
-        <div style="margin-bottom: 10px;">
-          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Ví Dụ & Ghi Chú (Speaking / Writing / Ngữ Cảnh)</label>
-          <textarea id="newCardNotes" placeholder="Nhập câu ví dụ hoặc phân tích..." rows="3" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #cbd5e1; padding: 10px 12px; font-size: 13px; outline: none; resize: vertical;"></textarea>
-        </div>
+    <!-- Bottom Controls -->
+    <div class="bottom-bar">
+      <button type="button" class="btn-like" id="btnLike" title="Đánh dấu đã thuộc" onclick="toggleMastered()">❤️</button>
+      <button type="button" class="nav-btn" onclick="prevCard()">⬆️ Thẻ trước</button>
+      <div class="counter-badge" id="counterBadge">0 / 0</div>
+      <button type="button" class="nav-btn btn-next" onclick="nextCard()">Thẻ tiếp ⬇️</button>
+    </div>
+  </div>
 
-        <div style="margin-bottom: 16px;">
-          <label style="font-size: 11.5px; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Link Video TikTok (Tùy chọn)</label>
-          <input type="url" id="newCardTiktokUrl" placeholder="https://www.tiktok.com/..." style="width: 100%; height: 38px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; color: #94a3b8; padding: 0 12px; font-size: 12.5px; outline: none;" />
-        </div>
+  <!-- Hidden File Input for ZIP -->
+  <input type="file" id="zipInput" accept=".zip,application/zip" style="display: none;" />
 
-        <!-- Submit Buttons -->
-        <div style="display: flex; gap: 10px;">
-          <button type="button" id="btnSaveNewCard" class="pwa-install-btn" style="flex: 1; height: 44px; font-size: 14px; font-weight: 800; justify-content: center; background: linear-gradient(135deg, #ff0050 0%, #00f2fe 100%);">
-            💾 Lưu Thẻ Mới
-          </button>
-        </div>
+  <!-- Fullscreen Image Modal -->
+  <div class="modal" id="fullImgModal" onclick="this.classList.remove('active')">
+    <img id="fullImg" src="" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px;" />
+  </div>
 
+  <!-- Add Card Modal -->
+  <div class="modal" id="addCardModal">
+    <div class="modal-box">
+      <h3 style="font-size: 15px; color: #fff;">➕ Thêm Thẻ Mới</h3>
+      <input type="text" id="addWord" class="inp" placeholder="Từ vựng / Tiêu đề *" />
+      <input type="text" id="addTrans" class="inp" placeholder="Dịch nghĩa tiếng Việt" />
+      <textarea id="addNotes" class="inp" style="height: 60px; padding: 6px 10px; font-family: inherit;" placeholder="Ghi chú / Ví dụ"></textarea>
+      <input type="file" id="addImgFile" accept="image/*" class="inp" style="padding: 6px;" />
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
+        <button type="button" class="btn-action" onclick="document.getElementById('addCardModal').classList.remove('active')">Hủy</button>
+        <button type="button" class="btn-action btn-zip" onclick="saveNewCard()">Lưu thẻ</button>
       </div>
     </div>
   </div>
 
-  <!-- Cloud Sync Modal (1-Digit Slot: 0 - 9) -->
-  <div class="modal-overlay" id="cloudSyncModal">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title" style="color: #10b981; display: flex; align-items: center; gap: 8px;">
-          ☁️ ĐỒNG BỘ CLOUD (MÃ 1 SỐ)
-        </div>
-        <button type="button" class="icon-btn" id="btnCloseCloudModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">
-          Chọn <b>Mã 1 chữ số (0 - 9)</b> mà bạn đã sao lưu trên máy tính để nạp toàn bộ từ vựng và tiến độ vào điện thoại:
-        </p>
-
-        <!-- 10 Slots Selector Grid -->
-        <div class="slot-keypad" id="mobileSlotKeypad">
-          <button type="button" class="slot-btn" data-slot="0">0</button>
-          <button type="button" class="slot-btn active" data-slot="1">1</button>
-          <button type="button" class="slot-btn" data-slot="2">2</button>
-          <button type="button" class="slot-btn" data-slot="3">3</button>
-          <button type="button" class="slot-btn" data-slot="4">4</button>
-          <button type="button" class="slot-btn" data-slot="5">5</button>
-          <button type="button" class="slot-btn" data-slot="6">6</button>
-          <button type="button" class="slot-btn" data-slot="7">7</button>
-          <button type="button" class="slot-btn" data-slot="8">8</button>
-          <button type="button" class="slot-btn" data-slot="9">9</button>
-        </div>
-
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px;">Mã đã chọn: <b id="lblMobileSelectedSlot" style="color: #10b981; font-size: 18px;">[ 1 ]</b></span>
-            <span id="lblMobileSlotInfo" style="font-size: 11.5px; color: #94a3b8;">Chạm nút bên dưới để tải</span>
-          </div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <button type="button" id="btnMobileDownloadSlot" class="pwa-install-btn" style="height: 44px; font-size: 13.5px; justify-content: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            ⬇️ Đồng bộ ngay từ Mã [<span class="mobile-slot-num">1</span>]
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Fullscreen Image Viewer Modal -->
-  <div class="img-fullscreen-modal" id="imgFullscreenModal">
-    <button type="button" class="img-close-btn" id="btnCloseImgModal">✕</button>
-    <img id="fullscreenImg" src="" alt="Zoomed Flashcard" />
-  </div>
-
-  <!-- PWA iOS Guide Modal -->
-  <div class="modal-overlay" id="iosPwaModal">
-    <div class="modal-sheet">
-      <div class="modal-header">
-        <div class="modal-title">📲 Thêm vào Màn hình chính (iOS)</div>
-        <button type="button" class="icon-btn" id="btnCloseIosModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 13.5px; color: #94a3b8; margin-bottom: 14px;">Để dùng ứng dụng mượt mà toàn màn hình không thanh địa chỉ:</p>
-        <div class="ios-step">
-          <div class="ios-step-num">1</div>
-          <div>Chạm vào biểu tượng <b>Chia sẻ</b> (ô vuông có mũi tên trỏ lên <b>⎋</b>) ở thanh dưới Safari.</div>
-        </div>
-        <div class="ios-step">
-          <div class="ios-step-num">2</div>
-          <div>Cuộn xuống và chọn <b>"Thêm vào MH chính"</b> (Add to Home Screen <b>⊞</b>).</div>
-        </div>
-        <div class="ios-step">
-          <div class="ios-step-num">3</div>
-          <div>Chạm <b>"Thêm"</b> (Add) ở góc trên bên phải màn hình.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Embedded Dataset -->
-  <script id="flashcard-data" type="application/json">
-${jsonData}
-  </script>
+  <!-- Toast Message -->
+  <div id="toast"></div>
 
   <script>
-    // Register PWA Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => {
-            console.log('[PWA] Service Worker registered:', reg.scope);
-            reg.update();
-          })
-          .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
-      });
+    // State
+    let ALL_ITEMS = [];
+    let curIndex = 0;
+    let curFilter = 'all';
+    let masteredSet = new Set();
+    let dueSet = new Set();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._tm);
+      t._tm = setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    // PWA Install prompt handling
-    let deferredPrompt = null;
-    const btnPwaInstall = document.getElementById('btnPwaInstall');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (btnPwaInstall) btnPwaInstall.style.display = 'flex';
-    });
-
-    if (btnPwaInstall) {
-      btnPwaInstall.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          deferredPrompt = null;
-        } else {
-          const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-          if (isIos) {
-            document.getElementById('iosPwaModal').classList.add('active');
-          } else {
-            alert('Hãy bấm menu 3 chấm trên trình duyệt và chọn "Cài đặt ứng dụng" hoặc "Thêm vào màn hình chính" nhé!');
-          }
-        }
-      });
+    // Escape HTML
+    function esc(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Global HTML Escape Utility
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    // Load Flashcard Data (Direct Embedded JS Array)
-    const DEFAULT_EMBEDDED_ITEMS = ${jsonData};
-    let RAW_ITEMS = (Array.isArray(DEFAULT_EMBEDDED_ITEMS) && DEFAULT_EMBEDDED_ITEMS.length > 0) ? DEFAULT_EMBEDDED_ITEMS : [];
-
-    // Check if user has a custom synced dataset in localStorage
+    // Load Local Storage Sets
     try {
-      const savedCustomItems = localStorage.getItem('pwa_tk_custom_items');
-      if (savedCustomItems) {
-        const parsed = JSON.parse(savedCustomItems);
-        if (Array.isArray(parsed) && parsed.length >= RAW_ITEMS.length) {
-          RAW_ITEMS = parsed;
-        }
-      }
-    } catch (err) {
-      console.warn('LocalStorage items read error:', err);
-    }
-
-    // Local Storage State
-    let masteredIds = new Set();
-    let dueIds = new Set();
-    let activeFilter = 'all';
-    let currentIndex = 0;
-    try {
-      masteredIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_mastered') || '[]'));
-      dueIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_due') || '[]'));
-      activeFilter = localStorage.getItem('pwa_tk_filter') || 'all';
-      currentIndex = parseInt(localStorage.getItem('pwa_tk_index') || '0', 10);
-    } catch (e) {}
-    let autoScrollInterval = null;
-    let autoScrollSeconds = 0; // 0 = off, 3, 5, 7
-
-    // Auto-fallback if active filter has no items so screen is never blank
-    if (activeFilter === 'due' && dueIds.size === 0) activeFilter = 'all';
-    if (activeFilter === 'mastered' && masteredIds.size === 0) activeFilter = 'all';
-    if (activeFilter === 'image' && RAW_ITEMS.filter(x => !!x.imageUrl).length === 0) activeFilter = 'all';
+      masteredSet = new Set(JSON.parse(localStorage.getItem('fc_mastered') || '[]'));
+      dueSet = new Set(JSON.parse(localStorage.getItem('fc_due') || '[]'));
+      curFilter = localStorage.getItem('fc_filter') || 'all';
+      curIndex = parseInt(localStorage.getItem('fc_idx') || '0', 10);
+    } catch(e) {}
 
     function saveState() {
       try {
-        localStorage.setItem('pwa_tk_mastered', JSON.stringify([...masteredIds]));
-        localStorage.setItem('pwa_tk_due', JSON.stringify([...dueIds]));
-        localStorage.setItem('pwa_tk_filter', activeFilter);
-        localStorage.setItem('pwa_tk_index', currentIndex.toString());
-      } catch (e) {}
+        localStorage.setItem('fc_mastered', JSON.stringify([...masteredSet]));
+        localStorage.setItem('fc_due', JSON.stringify([...dueSet]));
+        localStorage.setItem('fc_filter', curFilter);
+        localStorage.setItem('fc_idx', curIndex.toString());
+      } catch(e) {}
     }
 
-    function saveUserCardsToStorage() {
+    // Fetch Flashcard Data Dynamically
+    async function loadData() {
       try {
-        localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
-      } catch (e) {
-        console.warn('LocalStorage quota limit reached for images:', e);
+        const res = await fetch('./data/flashcards.json?t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.items) && data.items.length > 0) {
+            ALL_ITEMS = data.items;
+          }
+        }
+      } catch(err) {
+        console.warn('Dynamic fetch failed, falling back to local storage:', err);
       }
-      saveState();
+
+      if (ALL_ITEMS.length === 0) {
+        try {
+          const saved = localStorage.getItem('fc_items_cache');
+          if (saved) ALL_ITEMS = JSON.parse(saved);
+        } catch(e) {}
+      }
+
+      updateUI();
     }
 
-    function getFilteredList() {
-      return RAW_ITEMS.filter(item => {
-        if (activeFilter === 'due') return dueIds.has(item.id);
-        if (activeFilter === 'mastered') return masteredIds.has(item.id);
-        if (activeFilter === 'image') return !!item.imageUrl;
+    function getFiltered() {
+      return ALL_ITEMS.filter(it => {
+        if (curFilter === 'due') return dueSet.has(it.id);
+        if (curFilter === 'mastered') return masteredSet.has(it.id);
+        if (curFilter === 'image') return !!it.imageUrl;
         return true;
       });
     }
 
-    function updateBadges() {
-      const allCount = RAW_ITEMS.length;
-      const dueCount = RAW_ITEMS.filter(x => dueIds.has(x.id)).length;
-      const masteredCount = RAW_ITEMS.filter(x => masteredIds.has(x.id)).length;
-      const imageCount = RAW_ITEMS.filter(x => !!x.imageUrl).length;
-
-      const badgeAll = document.getElementById('badgeAll');
-      const badgeDue = document.getElementById('badgeDue');
-      const badgeMastered = document.getElementById('badgeMastered');
-      const badgeImage = document.getElementById('badgeImage');
-      const progressText = document.getElementById('headerProgressText');
-
-      if (badgeAll) badgeAll.textContent = allCount;
-      if (badgeDue) badgeDue.textContent = dueCount;
-      if (badgeMastered) badgeMastered.textContent = masteredCount;
-      if (badgeImage) badgeImage.textContent = imageCount;
-      
-      const pct = allCount > 0 ? Math.round((masteredCount / allCount) * 100) : 0;
-      if (progressText) progressText.textContent = \`\${allCount} thẻ • Đã thuộc \${pct}%\`;
+    function setFilter(f) {
+      curFilter = f;
+      curIndex = 0;
+      document.querySelectorAll('.tab-pill').forEach(el => el.classList.remove('active'));
+      const activeTab = document.getElementById(f === 'all' ? 'tabAll' : (f === 'due' ? 'tabDue' : (f === 'mastered' ? 'tabMastered' : 'tabImage')));
+      if (activeTab) activeTab.classList.add('active');
+      updateCard();
+      saveState();
     }
 
-    // Slide HTML Builder
-    function buildSlideContent(item, index, total) {
-      if (!item) {
-        return '<div class="slide-body"><div style="color: #94a3b8; text-align: center; padding: 20px;">Chưa có thẻ nào trong mục này.<br><br><button type="button" class="add-card-header-btn" onclick="openAddCardModal()" style="margin: auto;">➕ Thêm thẻ đầu tiên</button></div></div>';
-      }
+    function updateCounts() {
+      const allCount = ALL_ITEMS.length;
+      const dueCount = ALL_ITEMS.filter(x => dueSet.has(x.id)).length;
+      const mastCount = ALL_ITEMS.filter(x => masteredSet.has(x.id)).length;
+      const imgCount = ALL_ITEMS.filter(x => !!x.imageUrl).length;
 
-      let inner = '';
-      if (item.imageUrl) {
-        inner = \`
-          <div class="slide-img-container">
-            <img src="\${item.imageUrl}" alt="Flashcard" loading="lazy" />
-          </div>
-        \`;
-      } else {
-        inner = \`
-          <div class="slide-text-container">
-            <div class="slide-word-title">\${escapeHtml(item.word || '---')}</div>
-            <div class="slide-word-trans">\${escapeHtml(item.translation || '')}</div>
-            <div class="slide-notes-card">\${escapeHtml(item.notes || 'Chưa có ghi chú ví dụ.')}</div>
-          </div>
-        \`;
-      }
-
-      const tagText = item.level ? \`Level \${item.level}\` : 'IELTS Mastery';
-
-      return \`
-        <div class="slide-body">
-          \${inner}
-        </div>
-        <div class="slide-bottom-overlay">
-          <div class="slide-tag-row">
-            <span class="slide-tag">\${tagText}</span>
-            <span class="slide-index-tag">Thẻ \${index + 1} / \${total}</span>
-          </div>
-          <div class="slide-caption-title">\${escapeHtml(item.word || '🖼️ Thẻ ảnh')}</div>
-          <div class="slide-caption-trans">\${escapeHtml(item.translation || (item.imageUrl ? 'Chạm ảnh để phóng to toàn màn hình' : ''))}</div>
-        </div>
-      \`;
+      document.getElementById('cntAll').textContent = allCount;
+      document.getElementById('cntDue').textContent = dueCount;
+      document.getElementById('cntMastered').textContent = mastCount;
+      document.getElementById('cntImage').textContent = imgCount;
     }
 
-    // Render 3 Slides (Prev, Current, Next)
-    const slidePrev = document.getElementById('slidePrev');
-    const slideCurrent = document.getElementById('slideCurrent');
-    const slideNext = document.getElementById('slideNext');
-    const sliderTrack = document.getElementById('sliderTrack');
-    const btnSideMastered = document.getElementById('btnSideMastered');
-    const btnSideTiktok = document.getElementById('btnSideTiktok');
-    const lblNavCounter = document.getElementById('lblNavCounter');
-
-    function renderDeck() {
-      const list = getFilteredList();
+    function updateCard() {
+      updateCounts();
+      const list = getFiltered();
       const total = list.length;
+      const badge = document.getElementById('counterBadge');
+      const imgEl = document.getElementById('cardImg');
+      const placeholder = document.getElementById('imgPlaceholder');
+      const wordEl = document.getElementById('cardWord');
+      const transEl = document.getElementById('cardTrans');
+      const notesEl = document.getElementById('cardNotes');
+      const btnLike = document.getElementById('btnLike');
+
       if (total === 0) {
-        if (slideCurrent) slideCurrent.innerHTML = buildSlideContent(null, 0, 0);
-        if (slidePrev) slidePrev.innerHTML = '';
-        if (slideNext) slideNext.innerHTML = '';
-        if (lblNavCounter) lblNavCounter.textContent = 'Thẻ 0 / 0';
+        if (badge) badge.textContent = '0 / 0';
+        if (imgEl) imgEl.style.display = 'none';
+        if (placeholder) {
+          placeholder.style.display = 'block';
+          placeholder.textContent = 'Chưa có thẻ nào trong mục này.';
+        }
+        if (wordEl) wordEl.textContent = '---';
+        if (transEl) transEl.textContent = '';
+        if (notesEl) notesEl.style.display = 'none';
+        if (btnLike) btnLike.classList.remove('liked');
         return;
       }
 
-      if (currentIndex < 0) currentIndex = 0;
-      if (currentIndex >= total) currentIndex = total - 1;
+      if (curIndex < 0) curIndex = 0;
+      if (curIndex >= total) curIndex = total - 1;
 
-      const prevIdx = (currentIndex - 1 + total) % total;
-      const nextIdx = (currentIndex + 1) % total;
+      const item = list[curIndex];
+      if (badge) badge.textContent = \`\${curIndex + 1} / \${total}\`;
 
-      const currentItem = list[currentIndex];
-      const prevItem = list[prevIdx];
-      const nextItem = list[nextIdx];
-
-      if (slidePrev) slidePrev.innerHTML = buildSlideContent(prevItem, prevIdx, total);
-      if (slideCurrent) slideCurrent.innerHTML = buildSlideContent(currentItem, currentIndex, total);
-      if (slideNext) slideNext.innerHTML = buildSlideContent(nextItem, nextIdx, total);
-
-      // Positioning 3 slides vertically with 3D hardware acceleration
-      if (slidePrev) slidePrev.style.transform = 'translate3d(0, -100%, 0)';
-      if (slideCurrent) slideCurrent.style.transform = 'translate3d(0, 0, 0)';
-      if (slideNext) slideNext.style.transform = 'translate3d(0, 100%, 0)';
-      if (sliderTrack) sliderTrack.style.transform = 'translate3d(0, 0, 0)';
-
-      // Update Nav counter pill
-      if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
-
-      // Side action buttons status
-      if (btnSideMastered) {
-        if (masteredIds.has(currentItem.id)) {
-          btnSideMastered.classList.add('active-like');
-        } else {
-          btnSideMastered.classList.remove('active-like');
+      if (item.imageUrl) {
+        if (imgEl) {
+          imgEl.src = item.imageUrl;
+          imgEl.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+      } else {
+        if (imgEl) imgEl.style.display = 'none';
+        if (placeholder) {
+          placeholder.style.display = 'block';
+          placeholder.textContent = '🖼️ (Thẻ không có ảnh)';
         }
       }
 
-      if (btnSideTiktok) {
-        const tkUrl = currentItem.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(currentItem.word || '')}\`);
-        btnSideTiktok.href = tkUrl;
+      if (wordEl) wordEl.textContent = item.word || '---';
+      if (transEl) transEl.textContent = item.translation || '';
+      if (notesEl) {
+        if (item.notes) {
+          notesEl.textContent = item.notes;
+          notesEl.style.display = 'block';
+        } else {
+          notesEl.style.display = 'none';
+        }
       }
 
-      // Bind image zoom click
-      if (slideCurrent) {
-        slideCurrent.querySelectorAll('.slide-img-container img').forEach(imgEl => {
-          imgEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (imgEl.src) {
-              const fullImg = document.getElementById('fullscreenImg');
-              const fullModal = document.getElementById('imgFullscreenModal');
-              if (fullImg) fullImg.src = imgEl.src;
-              if (fullModal) fullModal.classList.add('active');
-            }
-          });
-        });
+      if (btnLike) {
+        if (masteredSet.has(item.id)) {
+          btnLike.classList.add('liked');
+        } else {
+          btnLike.classList.remove('liked');
+        }
       }
 
       saveState();
     }
 
-    // =========================================================================
-    // ROBUST TRANSITION & MANUAL NAVIGATION FUNCTIONS (120FPS GPU ACCELERATED)
-    // =========================================================================
-    let isAnimating = false;
-    let animSafetyTimer = null;
-
-    function finishAnimation(newIdx) {
-      if (animSafetyTimer) clearTimeout(animSafetyTimer);
-      const list = getFilteredList();
-      if (list.length > 0) {
-        currentIndex = (newIdx + list.length) % list.length;
-        renderDeck();
-      }
-      sliderTrack.style.transition = 'none';
-      sliderTrack.style.transform = 'translate3d(0, 0, 0)';
-      isAnimating = false;
+    function updateUI() {
+      updateCounts();
+      updateCard();
     }
 
-    function goToNextCard() {
-      const list = getFilteredList();
+    function nextCard() {
+      const list = getFiltered();
       if (list.length <= 1) return;
-      if (isAnimating) {
-        // Fast skip if already in motion
-        finishAnimation(currentIndex + 1);
-        return;
-      }
-      isAnimating = true;
-      sliderTrack.style.transition = 'transform 0.26s cubic-bezier(0.25, 1, 0.5, 1)';
-      sliderTrack.style.transform = 'translate3d(0, -100%, 0)';
-
-      animSafetyTimer = setTimeout(() => {
-        finishAnimation(currentIndex + 1);
-        if (autoScrollSeconds > 0) speakCurrentWord();
-      }, 260);
+      curIndex = (curIndex + 1) % list.length;
+      updateCard();
     }
 
-    function goToPrevCard() {
-      const list = getFilteredList();
+    function prevCard() {
+      const list = getFiltered();
       if (list.length <= 1) return;
-      if (isAnimating) {
-        finishAnimation(currentIndex - 1);
-        return;
-      }
-      isAnimating = true;
-      sliderTrack.style.transition = 'transform 0.26s cubic-bezier(0.25, 1, 0.5, 1)';
-      sliderTrack.style.transform = 'translate3d(0, 100%, 0)';
-
-      animSafetyTimer = setTimeout(() => {
-        finishAnimation(currentIndex - 1);
-      }, 260);
+      curIndex = (curIndex - 1 + list.length) % list.length;
+      updateCard();
     }
 
-    // =========================================================================
-    // UNIFIED GESTURE ENGINE (NO COLLISION & INSTANT 1:1 TRACKING)
-    // =========================================================================
-    const viewport = document.getElementById('tiktokViewport');
-    let isDragging = false;
-    let startY = 0;
-    let currentY = 0;
-    let startTime = 0;
-    let lastTapTime = 0;
-
-    function onDragStart(y) {
-      if (isAnimating) {
-        if (animSafetyTimer) clearTimeout(animSafetyTimer);
-        isAnimating = false;
-        sliderTrack.style.transition = 'none';
-        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
-      }
-      isDragging = true;
-      startY = y;
-      currentY = y;
-      startTime = Date.now();
-      sliderTrack.style.transition = 'none';
-    }
-
-    function onDragMove(y) {
-      if (!isDragging) return;
-      currentY = y;
-      const deltaY = currentY - startY;
-      sliderTrack.style.transform = \`translate3d(0, \${deltaY}px, 0)\`;
-    }
-
-    function onDragEnd() {
-      if (!isDragging) return;
-      isDragging = false;
-
-      const deltaY = currentY - startY;
-      const duration = Date.now() - startTime;
-      const threshold = Math.min(window.innerHeight * 0.12, 60);
-      const velocity = Math.abs(deltaY) / (duration || 1);
-
-      // Check double tap for like
-      const now = Date.now();
-      if (now - lastTapTime < 260 && Math.abs(deltaY) < 10) {
-        toggleMastered();
-      }
-      lastTapTime = now;
-
-      const list = getFilteredList();
-      if (list.length <= 1) {
-        sliderTrack.style.transition = 'transform 0.22s ease-out';
-        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
-        return;
-      }
-
-      if (deltaY < -threshold || (deltaY < -20 && velocity > 0.3)) {
-        goToNextCard();
-      } else if (deltaY > threshold || (deltaY > 20 && velocity > 0.3)) {
-        goToPrevCard();
+    function toggleMastered() {
+      const list = getFiltered();
+      if (list.length === 0) return;
+      const item = list[curIndex];
+      if (masteredSet.has(item.id)) {
+        masteredSet.delete(item.id);
+        showToast('🔄 Đã chuyển về Cần ôn');
       } else {
-        // Snap back instantly
-        sliderTrack.style.transition = 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1)';
-        sliderTrack.style.transform = 'translate3d(0, 0, 0)';
+        masteredSet.add(item.id);
+        dueSet.delete(item.id);
+        showToast('❤️ Đã đánh dấu Thuộc');
       }
+      updateCard();
     }
 
-    // Unified Event Binding (Pointer Events if supported, Touch if not)
-    if (window.PointerEvent) {
-      viewport.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.side-btn') || e.target.closest('.tiktok-side-actions') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('textarea')) return;
-        onDragStart(e.clientY);
-        try { viewport.setPointerCapture(e.pointerId); } catch(err) {}
-      }, { passive: true });
+    // Image Zoom Click
+    document.getElementById('cardImgWrap').addEventListener('click', () => {
+      const imgEl = document.getElementById('cardImg');
+      if (imgEl && imgEl.src && imgEl.style.display !== 'none') {
+        document.getElementById('fullImg').src = imgEl.src;
+        document.getElementById('fullImgModal').classList.add('active');
+      }
+    });
 
-      viewport.addEventListener('pointermove', (e) => {
-        onDragMove(e.clientY);
-      }, { passive: true });
+    // Touch Swipe Navigation
+    let touchStartY = 0;
+    let touchStartX = 0;
+    const vp = document.getElementById('viewport');
+    vp.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
 
-      viewport.addEventListener('pointerup', (e) => {
-        try { viewport.releasePointerCapture(e.pointerId); } catch(err) {}
-        onDragEnd();
-      }, { passive: true });
-
-      viewport.addEventListener('pointercancel', (e) => {
-        try { viewport.releasePointerCapture(e.pointerId); } catch(err) {}
-        onDragEnd();
-      }, { passive: true });
-    } else {
-      // Touch fallback for older browsers
-      viewport.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.side-btn') || e.target.closest('.tiktok-side-actions') || e.target.closest('.bottom-nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
-        if (e.touches && e.touches[0]) onDragStart(e.touches[0].clientY);
-      }, { passive: true });
-
-      viewport.addEventListener('touchmove', (e) => {
-        if (e.touches && e.touches[0]) onDragMove(e.touches[0].clientY);
-      }, { passive: true });
-
-      viewport.addEventListener('touchend', onDragEnd, { passive: true });
-      viewport.addEventListener('touchcancel', onDragEnd, { passive: true });
-    }
-
-    // Mouse Wheel Scroll (for desktop mouse wheel flick)
-    let wheelDebounce = false;
-    viewport.addEventListener('wheel', (e) => {
-      if (wheelDebounce) return;
-      if (Math.abs(e.deltaY) > 15) {
-        wheelDebounce = true;
-        if (e.deltaY > 0) {
-          goToNextCard();
-        } else {
-          goToPrevCard();
-        }
-        setTimeout(() => { wheelDebounce = false; }, 280);
+    vp.addEventListener('touchend', e => {
+      const deltaY = e.changedTouches[0].clientY - touchStartY;
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaY) > 40 && Math.abs(deltaY) > Math.abs(deltaX)) {
+        if (deltaY < 0) nextCard();
+        else prevCard();
+      } else if (Math.abs(deltaX) > 50) {
+        if (deltaX < 0) nextCard();
+        else prevCard();
       }
     }, { passive: true });
 
-    // Keyboard navigation
-    window.addEventListener('keydown', (e) => {
-      if (document.getElementById('searchModal').classList.contains('active') ||
-          document.getElementById('cloudSyncModal').classList.contains('active') ||
-          document.getElementById('newCardModal').classList.contains('active') ||
-          document.getElementById('examplesDrawer').classList.contains('active')) return;
-      
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'j') {
-        goToNextCard();
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'k') {
-        goToPrevCard();
-      } else if (e.key === 's' || e.key === 'S') {
-        speakCurrentWord();
+    // Keyboard Navigation
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextCard();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevCard();
       }
     });
 
-    // Toast Notification Utility
-    function showToast(msg) {
-      const existing = document.getElementById('pwaToast');
-      if (existing) existing.remove();
-      const toast = document.createElement('div');
-      toast.id = 'pwaToast';
-      toast.style.cssText = 'position: fixed; top: 110px; left: 50%; transform: translateX(-50%); background: rgba(19, 23, 34, 0.95); backdrop-filter: blur(12px); border: 1.5px solid #00f2fe; color: #fff; padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 800; z-index: 200; box-shadow: 0 8px 30px rgba(0,0,0,0.8); pointer-events: none; transition: opacity 0.3s;';
-      toast.innerHTML = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 1500);
+    // ZIP Bulk Import
+    function triggerZipUpload() {
+      document.getElementById('zipInput').click();
     }
 
-    // TTS Audio Pronunciation
-    function speakCurrentWord() {
-      const list = getFilteredList();
-      const item = list[currentIndex];
-      if (!item || !item.word) return;
+    document.getElementById('zipInput').addEventListener('change', async e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      showToast('⏳ Đang đọc file ZIP...');
 
-      const cleanWord = item.word.replace(/\\(.*?\\)/g, '').replace(/[^a-zA-Z0-9\\s']/g, '').trim();
-      if (!cleanWord) return;
+      try {
+        const zip = new JSZip();
+        const zipData = await zip.loadAsync(file);
+        const validExt = /\\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i;
+        const entries = [];
 
-      const btn = document.getElementById('btnSideSpeak');
-      if (btn) {
-        btn.style.transform = 'scale(1.25)';
-        btn.style.borderColor = '#00f2fe';
-        setTimeout(() => {
-          btn.style.transform = '';
-          btn.style.borderColor = '';
-        }, 250);
-      }
+        zipData.forEach((relPath, entry) => {
+          if (entry.dir) return;
+          const normPath = relPath.split('\\\\').join('/');
+          const parts = normPath.split('/');
+          const fileName = parts[parts.length - 1];
+          const isHidden = parts.some(p => p.startsWith('.') || p === '__MACOSX');
 
-      if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel();
-          setTimeout(() => {
-            const utter = new SpeechSynthesisUtterance(cleanWord);
-            utter.lang = 'en-US';
-            utter.rate = 0.92;
-            window.speechSynthesis.speak(utter);
-          }, 30);
-        } catch(err) {
-          console.warn('Speech synthesis error:', err);
-        }
-      }
-    }
-
-    // Double Tap Like Animation
-    function triggerHeartAnim(x, y) {
-      const heart = document.createElement('div');
-      heart.className = 'floating-heart';
-      heart.innerHTML = '❤️';
-      heart.style.left = (x || window.innerWidth / 2) + 'px';
-      heart.style.top = (y || window.innerHeight / 2) + 'px';
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 800);
-    }
-
-    // Toggle Mastered
-    function toggleMastered() {
-      const list = getFilteredList();
-      const item = list[currentIndex];
-      if (!item || !item.id) return;
-
-      if (masteredIds.has(item.id)) {
-        masteredIds.delete(item.id);
-        showToast('🔄 Đã bỏ đánh dấu Đã thuộc');
-      } else {
-        masteredIds.add(item.id);
-        dueIds.delete(item.id);
-        triggerHeartAnim(window.innerWidth / 2, window.innerHeight / 2);
-        showToast('💚 Đã chuyển thẻ vào mục Đã thuộc!');
-      }
-      updateBadges();
-      renderDeck();
-    }
-
-    // Auto-Scroll Feature
-    const autoScrollLevels = [0, 3, 5, 7];
-    let autoScrollIdx = 0;
-
-    function toggleAutoScroll() {
-      autoScrollIdx = (autoScrollIdx + 1) % autoScrollLevels.length;
-      autoScrollSeconds = autoScrollLevels[autoScrollIdx];
-      const lbl = document.getElementById('lblAutoScroll');
-      const badge = document.getElementById('btnAutoScroll');
-
-      if (autoScrollInterval) {
-        clearInterval(autoScrollInterval);
-        autoScrollInterval = null;
-      }
-
-      if (autoScrollSeconds === 0) {
-        lbl.innerHTML = 'Tự lướt: <b>TẮT</b>';
-        badge.classList.remove('active');
-      } else {
-        lbl.innerHTML = 'Tự lướt: <b>' + autoScrollSeconds + 's</b>';
-        badge.classList.add('active');
-        speakCurrentWord();
-        autoScrollInterval = setInterval(() => {
-          goToNextCard();
-          speakCurrentWord();
-        }, autoScrollSeconds * 1000);
-      }
-    }
-
-    // Open Examples / Context Drawer
-    function openDrawer(targetTab = 'context') {
-      const list = getFilteredList();
-      const item = list[currentIndex];
-      if (!item) return;
-
-      const drawer = document.getElementById('examplesDrawer');
-      const title = document.getElementById('drawerTitle');
-      const content = document.getElementById('drawerContent');
-
-      const cleanWord = (item.word || '').replace(/\\s*\\([^)]*\\)/g, '').trim();
-      title.textContent = cleanWord ? ('📖 ' + cleanWord) : '📖 Chi tiết từ vựng';
-
-      const rawNotes = (item.notes || '').trim();
-      const lines = rawNotes.split('\\n').map(l => l.trim()).filter(Boolean);
-
-      const contextItems = [];
-      const speakingItems = [];
-      const writingItems = [];
-      let otherItems = [];
-
-      let currentSection = 'context';
-      let currentCard = null;
-
-      lines.forEach(line => {
-        if (line.includes('Câu dẫn') || line.startsWith('🧩') || line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
-          if (line.includes('KHUNG CÂU DẪN') || line.includes('SENTENCE STARTER')) {
-            currentSection = 'context';
-            return;
-          }
-          currentSection = 'context';
-          if (currentCard) {
-            if (currentCard.section === 'context') contextItems.push(currentCard);
-            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'context', en: line.replace(/^🧩\\s*(?:Câu dẫn|Khung câu)\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('Speaking') || line.startsWith('🗣️')) {
-          currentSection = 'speaking';
-          if (currentCard) {
-            if (currentCard.section === 'context') contextItems.push(currentCard);
-            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'speaking', en: line.replace(/^🗣️\\s*Speaking\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('Writing') || line.startsWith('✍️')) {
-          currentSection = 'writing';
-          if (currentCard) {
-            if (currentCard.section === 'context') contextItems.push(currentCard);
-            else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-            else writingItems.push(currentCard);
-          }
-          currentCard = { section: 'writing', en: line.replace(/^✍️\\s*Writing\\s*\\d*[:.]*\\s*/i, '').replace(/^"|"$/g, '').trim(), vi: '' };
-        } else if (line.includes('👉 Dịch:') || line.includes('Dịch:')) {
-          if (currentCard) {
-            currentCard.vi = line.replace(/.*(?:👉\\s*Dịch:|Dịch:)\\s*/i, '').trim();
-          } else {
-            otherItems.push({ en: '', vi: line });
-          }
-        } else {
-          if (currentCard && !currentCard.vi) {
-            currentCard.en += ' ' + line;
-          } else {
-            if (currentCard) {
-              if (currentCard.section === 'context') contextItems.push(currentCard);
-              else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-              else writingItems.push(currentCard);
-              currentCard = null;
-            }
-            otherItems.push({ en: line, vi: '' });
-          }
-        }
-      });
-
-      if (currentCard) {
-        if (currentCard.section === 'context') contextItems.push(currentCard);
-        else if (currentCard.section === 'speaking') speakingItems.push(currentCard);
-        else writingItems.push(currentCard);
-      }
-
-      let html = '<div style="background: rgba(255,255,255,0.05); padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">' +
-        '<div style="font-size: 22px; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">' + escapeHtml(item.word || '') + '</div>' +
-        '<div style="font-size: 16px; font-weight: 700; color: #34d399; margin-top: 4px;">' + escapeHtml(item.translation || '(Chưa có bản dịch)') + '</div>' +
-        '</div>';
-
-      // 1. Context Starters Section
-      if (contextItems.length > 0) {
-        html += '<div style="margin-bottom: 18px;">' +
-          '<div style="font-size: 13.5px; font-weight: 900; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
-          '🧩 5 KHUNG CÂU DẪN MỞ ĐẦU (SENTENCE STARTERS)' +
-          '</div>' +
-          '<div style="display: flex; flex-direction: column; gap: 8px;">';
-
-        contextItems.forEach((c, idx) => {
-          let formattedEn = escapeHtml(c.en);
-          const slotHtml = '<span style="background: rgba(0, 242, 254, 0.22); color: #00f2fe; padding: 2px 7px; border-radius: 6px; font-weight: 800; border: 1px dashed #00f2fe;">... (' + escapeHtml(cleanWord) + ')</span>';
-          formattedEn = formattedEn.replace(/\\.\\.\\./g, slotHtml);
-          const speakText = c.en.replace(/\\.\\.\\./g, cleanWord || '');
-
-          html += '<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;">' +
-            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
-            '<div style="font-weight: 700; font-size: 13.5px; color: #f8fafc; line-height: 1.4;">' + (idx + 1) + '. "' + formattedEn + '"</div>' +
-            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(speakText) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(0,242,254,0.15); border-color: #00f2fe; color: #00f2fe;" title="Phát âm câu này">🔊</button>' +
-            '</div>' +
-            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px; font-weight: 600;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
-            '</div>';
-        });
-        html += '</div></div>';
-      }
-
-      // Helper to highlight target word in sentences
-      const highlightWord = (enText) => {
-        if (!enText) return '';
-        const word = cleanWord || '';
-        if (!word) return escapeHtml(enText);
-
-        const escaped = escapeHtml(enText);
-        const root = word.replace(/(?:ing|ed|es|s|ies|e)$/i, '');
-        const cleanSafe = (s) => (s || '').replace(/[-\\/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&');
-        const escapedRoot = cleanSafe(root);
-        const escapedWord = cleanSafe(word);
-        const pattern = new RegExp('\\\\b(' + escapedWord + '|' + escapedRoot + '[a-zA-Z]*)\\\\b', 'gi');
-
-        return escaped.replace(pattern, (match) => {
-          return '<span style="background: rgba(253, 224, 71, 0.25); color: #fde047; padding: 1px 6px; border-radius: 5px; font-weight: 900; border-bottom: 2px solid #eab308; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);">' + match + '</span>';
-        });
-      };
-
-      // 2. Speaking Section
-      if (speakingItems.length > 0) {
-        html += '<div style="margin-bottom: 18px;">' +
-          '<div style="font-size: 13.5px; font-weight: 900; color: #a78bfa; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
-          '🗣️ 5 CÂU VÍ DỤ IELTS SPEAKING THỰC TẾ' +
-          '</div>' +
-          '<div style="display: flex; flex-direction: column; gap: 8px;">';
-
-        speakingItems.forEach((c, idx) => {
-          const highlightedEn = highlightWord(c.en);
-          html += '<div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 12px 14px;">' +
-            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
-            '<div style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">' + (idx + 1) + '. "' + highlightedEn + '"</div>' +
-            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(c.en) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(255,255,255,0.1); color: #fff;" title="Phát âm câu này">🔊</button>' +
-            '</div>' +
-            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px; font-style: italic;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
-            '</div>';
-        });
-        html += '</div></div>';
-      }
-
-      // 3. Writing Section
-      if (writingItems.length > 0) {
-        html += '<div style="margin-bottom: 18px;">' +
-          '<div style="font-size: 13.5px; font-weight: 900; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">' +
-          '✍️ 5 CÂU VÍ DỤ IELTS WRITING HỌC THUẬT' +
-          '</div>' +
-          '<div style="display: flex; flex-direction: column; gap: 8px;">';
-
-        writingItems.forEach((c, idx) => {
-          const highlightedEn = highlightWord(c.en);
-          html += '<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px;">' +
-            '<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">' +
-            '<div style="font-weight: 700; font-size: 13.5px; color: #fff; line-height: 1.4;">' + (idx + 1) + '. "' + highlightedEn + '"</div>' +
-            '<button type="button" class="icon-btn btn-drawer-speak-row" data-speak="' + escapeHtml(c.en) + '" style="width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; background: rgba(255,255,255,0.1); color: #fff;" title="Phát âm câu này">🔊</button>' +
-            '</div>' +
-            (c.vi ? '<div style="font-size: 12.5px; color: #34d399; margin-top: 4px;">👉 Dịch: ' + escapeHtml(c.vi) + '</div>' : '') +
-            '</div>';
-        });
-        html += '</div></div>';
-      }
-
-      html += '<div style="margin-top: 16px; display: flex; gap: 10px;">' +
-        '<button type="button" class="pwa-install-btn" id="btnDrawerSpeak" style="flex: 1; height: 42px; font-size: 13px; justify-content: center;">🔊 Phát âm từ này</button>' +
-        '<button type="button" class="pwa-install-btn" id="btnDrawerCopyPrompt" style="flex: 1; height: 42px; font-size: 13px; justify-content: center; background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #38bdf8;">📋 Copy Prompt AI</button>' +
-        '</div>';
-
-      content.innerHTML = html;
-      drawer.classList.add('active');
-
-      const btnDrawerSpeak = document.getElementById('btnDrawerSpeak');
-      if (btnDrawerSpeak) btnDrawerSpeak.addEventListener('click', speakCurrentWord);
-
-      const btnDrawerCopyPrompt = document.getElementById('btnDrawerCopyPrompt');
-      if (btnDrawerCopyPrompt) btnDrawerCopyPrompt.addEventListener('click', copyPromptForAI);
-
-      content.querySelectorAll('.btn-drawer-speak-row').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const t = btn.getAttribute('data-speak');
-          if (t && 'speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'en-US';
-            u.rate = 0.95;
-            window.speechSynthesis.speak(u);
+          if (!isHidden && validExt.test(fileName)) {
+            entries.push({ path: normPath, entry, fileName });
           }
         });
-      });
-    }
 
-    document.getElementById('btnCloseDrawer').addEventListener('click', () => {
-      document.getElementById('examplesDrawer').classList.remove('active');
-    });
-
-    // Copy Prompt for AI
-    function copyPromptForAI() {
-      const list = getFilteredList();
-      const item = list[currentIndex];
-      if (!item) return;
-
-      const cleanWord = (item.word || '').replace(/\s*\([^)]*\)/g, '').trim();
-      const promptLines = [
-        'Hãy tạo thông tin học từ vựng IELTS toàn diện cho từ/cụm từ: "' + cleanWord + '" (Nghĩa: "' + (item.translation || '') + '").',
-        'Yêu cầu đặc biệt quan trọng:',
-        '1. 5 KHUNG CÂU DẪN MỞ ĐẦU (Sentence Starters): BẮT BUỘC là các câu ví dụ THỰC TẾ, CỰC KỲ TỰ NHIÊN trong đời sống / giao tiếp gắn liền với từ "' + cleanWord + '", chứa chỗ trống "..." để điền từ vào (giúp người nói/viết mở đầu câu tự nhiên band 8.0). Tuyệt đối không dùng mẫu rập khuôn chung chung.',
-        '2. 5 câu Speaking tự nhiên trong giao tiếp/phỏng vấn IELTS.',
-        '3. 5 câu Writing học thuật chuẩn band 8.0.',
-        '4. Mỗi câu BẮT BUỘC có dịch nghĩa tiếng Việt chi tiết kèm ngay bên dưới.'
-      ];
-      const promptText = promptLines.join('\\n');
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(promptText).then(() => {
-          alert('✅ Đã copy prompt! Hãy dán vào Gemini / ChatGPT để học thêm nhé.');
-        });
-      }
-    }
-
-    // Zoom Image Modal Close
-    document.getElementById('btnCloseImgModal').addEventListener('click', () => {
-      document.getElementById('imgFullscreenModal').classList.remove('active');
-    });
-
-    // =========================================================================
-    // ADD NEW FLASHCARD / PHOTO CARD MODAL LOGIC
-    // =========================================================================
-    const newCardModal = document.getElementById('newCardModal');
-    const inpAddCardFile = document.getElementById('inpAddCardFile');
-    const newCardImgBase64 = document.getElementById('newCardImgBase64');
-    const previewImgBox = document.getElementById('previewImgBox');
-    const previewImgEl = document.getElementById('previewImgEl');
-    const btnRemovePreview = document.getElementById('btnRemovePreview');
-    const newCardWord = document.getElementById('newCardWord');
-    const newCardTrans = document.getElementById('newCardTrans');
-    const newCardNotes = document.getElementById('newCardNotes');
-    const newCardTiktokUrl = document.getElementById('newCardTiktokUrl');
-    const btnSaveNewCard = document.getElementById('btnSaveNewCard');
-
-    function openAddCardModal(preloadedImg = null) {
-      newCardWord.value = '';
-      newCardTrans.value = '';
-      newCardNotes.value = '';
-      newCardTiktokUrl.value = '';
-      
-      if (preloadedImg) {
-        newCardImgBase64.value = preloadedImg;
-        previewImgEl.src = preloadedImg;
-        previewImgBox.style.display = 'flex';
-        newCardWord.placeholder = \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + 1}\`;
-      } else {
-        newCardImgBase64.value = '';
-        previewImgBox.style.display = 'none';
-        newCardWord.placeholder = 'Ví dụ: resilient, consequence...';
-      }
-
-      newCardModal.classList.add('active');
-      setTimeout(() => newCardWord.focus(), 150);
-    }
-
-    window.openAddCardModal = openAddCardModal;
-
-    document.getElementById('btnOpenNewCardModal').addEventListener('click', () => openAddCardModal());
-    document.getElementById('btnSideAddCard').addEventListener('click', () => openAddCardModal());
-    document.getElementById('btnCloseNewCardModal').addEventListener('click', () => {
-      newCardModal.classList.remove('active');
-    });
-
-    // Trigger file upload
-    document.getElementById('btnTriggerUpload').addEventListener('click', (e) => {
-      e.stopPropagation();
-      inpAddCardFile.click();
-    });
-
-    // Trigger Zip Upload
-    const btnTriggerZip = document.getElementById('btnTriggerZip');
-    const inpAddZipFile = document.getElementById('inpAddZipFile');
-    if (btnTriggerZip && inpAddZipFile) {
-      btnTriggerZip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        inpAddZipFile.click();
-      });
-
-      inpAddZipFile.addEventListener('change', async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-        if (typeof JSZip === 'undefined') {
-          alert('Không tìm thấy thư viện giải nén JSZip!');
+        if (entries.length === 0) {
+          alert('Không tìm thấy ảnh nào trong file ZIP này.');
           return;
         }
 
-        try {
-          const zip = new JSZip();
-          const zipData = await zip.loadAsync(file);
-          const validExt = /\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i;
-          const imgEntries = [];
+        entries.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
 
-          zipData.forEach((relPath, entry) => {
-            if (entry.dir) return;
-            const normPath = relPath.split('\\\\').join('/');
-            const parts = normPath.split('/');
-            const fileName = parts[parts.length - 1];
-            const isHiddenOrMeta = parts.some(p => p.startsWith('.') || p === '__MACOSX');
+        const newItems = [];
+        const now = new Date().toISOString();
 
-            if (!isHiddenOrMeta && validExt.test(fileName)) {
-              imgEntries.push({ path: normPath, entry, fileName });
-            }
+        for (let i = 0; i < entries.length; i++) {
+          const item = entries[i];
+          const base64 = await item.entry.async('base64');
+          const ext = item.fileName.split('.').pop().toLowerCase();
+          const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : (ext === 'webp' ? 'image/webp' : 'image/png');
+          const name = item.fileName.replace(/\\.[^/.]+$/, '').trim();
+
+          newItems.push({
+            id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6) + '_' + i,
+            word: name || ('🖼️ Thẻ ảnh #' + (ALL_ITEMS.length + i + 1)),
+            translation: '',
+            notes: '',
+            imageUrl: 'data:' + mime + ';base64,' + base64,
+            createdAt: now
           });
-
-          if (imgEntries.length === 0) {
-            alert('⚠️ Không tìm thấy file ảnh nào trong các thư mục của file ZIP này!');
-            return;
-          }
-
-          imgEntries.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
-
-          const newCards = [];
-          const nowStr = new Date().toISOString();
-          const todayStr = nowStr.split('T')[0];
-
-          for (let i = 0; i < imgEntries.length; i++) {
-            const item = imgEntries[i];
-            const base64Data = await item.entry.async('base64');
-            const ext = item.fileName.split('.').pop().toLowerCase();
-            let mime = 'image/png';
-            if (ext === 'jpg' || ext === 'jpeg') mime = 'image/jpeg';
-            else if (ext === 'webp') mime = 'image/webp';
-            else if (ext === 'gif') mime = 'image/gif';
-            else if (ext === 'svg') mime = 'image/svg+xml';
-            else if (ext === 'bmp') mime = 'image/bmp';
-            else if (ext === 'avif') mime = 'image/avif';
-
-            const dataUrl = \`data:\${mime};base64,\${base64Data}\`;
-            const fileName = item.path.split('/').pop().replace(/\.[^/.]+$/, '').trim();
-
-            newCards.push({
-              id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7) + '_' + i,
-              word: fileName || \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + i + 1}\`,
-              translation: '',
-              notes: '',
-              imageUrl: dataUrl,
-              tiktokUrl: 'https://www.tiktok.com',
-              level: 1,
-              interval: 1,
-              nextReviewDate: todayStr,
-              createdAt: nowStr
-            });
-          }
-
-          RAW_ITEMS.unshift(...newCards);
-          saveUserCardsToStorage();
-          filterCards();
-          renderCard(0);
-          newCardModal.classList.remove('active');
-          alert(\`🎉 Đã nạp thành công \${newCards.length} thẻ ảnh từ file ZIP!\`);
-        } catch (err) {
-          console.error(err);
-          alert('Lỗi khi đọc file ZIP: ' + err.message);
         }
-        inpAddZipFile.value = '';
-      });
+
+        ALL_ITEMS.unshift(...newItems);
+        curIndex = 0;
+        updateUI();
+        showToast('🎉 Đã nạp thành công ' + newItems.length + ' ảnh!');
+
+        try {
+          localStorage.setItem('fc_items_cache', JSON.stringify(ALL_ITEMS.slice(0, 100)));
+        } catch(e) {}
+      } catch(err) {
+        alert('Lỗi đọc ZIP: ' + err.message);
+      }
+      e.target.value = '';
+    });
+
+    // Add Card Dialog
+    function openAddModal() {
+      document.getElementById('addWord').value = '';
+      document.getElementById('addTrans').value = '';
+      document.getElementById('addNotes').value = '';
+      document.getElementById('addImgFile').value = '';
+      document.getElementById('addCardModal').classList.add('active');
     }
 
-    document.getElementById('addImgDropzone').addEventListener('click', () => {
-      inpAddCardFile.click();
-    });
+    async function saveNewCard() {
+      const word = (document.getElementById('addWord').value || '').trim();
+      const trans = (document.getElementById('addTrans').value || '').trim();
+      const notes = (document.getElementById('addNotes').value || '').trim();
+      const file = document.getElementById('addImgFile').files?.[0];
 
-    inpAddCardFile.addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const base64 = ev.target.result;
-        newCardImgBase64.value = base64;
-        previewImgEl.src = base64;
-        previewImgBox.style.display = 'flex';
-        if (!newCardWord.value.trim()) {
-          newCardWord.value = \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + 1}\`;
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Trigger paste from clipboard
-    document.getElementById('btnTriggerPaste').addEventListener('click', async (e) => {
-      e.stopPropagation();
-      try {
-        if (navigator.clipboard && navigator.clipboard.read) {
-          const items = await navigator.clipboard.read();
-          for (const item of items) {
-            for (const type of item.types) {
-              if (type.startsWith('image/')) {
-                const blob = await item.getType(type);
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  const base64 = ev.target.result;
-                  newCardImgBase64.value = base64;
-                  previewImgEl.src = base64;
-                  previewImgBox.style.display = 'flex';
-                  if (!newCardWord.value.trim()) {
-                    newCardWord.value = \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + 1}\`;
-                  }
-                  alert('✅ Đã dán ảnh từ Clipboard thành công!');
-                };
-                reader.readAsDataURL(blob);
-                return;
-              }
-            }
-          }
-          alert('Không tìm thấy hình ảnh nào trong Clipboard. Hãy thử Copy ảnh trước nhé!');
-        } else {
-          alert('Hãy nhấn Ctrl+V trên bàn phím để dán ảnh!');
-        }
-      } catch (err) {
-        alert('Không thể đọc Clipboard: ' + err.message + '. Bạn có thể nhấn Ctrl+V để dán trực tiếp.');
+      let imgUrl = '';
+      if (file) {
+        imgUrl = await new Promise(r => {
+          const fr = new FileReader();
+          fr.onload = ev => r(ev.target.result);
+          fr.readAsDataURL(file);
+        });
       }
-    });
 
-    // Remove preview image
-    btnRemovePreview.addEventListener('click', (e) => {
-      e.stopPropagation();
-      newCardImgBase64.value = '';
-      previewImgBox.style.display = 'none';
-      previewImgEl.src = '';
-      inpAddCardFile.value = '';
-    });
-
-    // Global Paste (Ctrl+V) listener
-    window.addEventListener('paste', (e) => {
-      if (e.clipboardData && e.clipboardData.items) {
-        const items = e.clipboardData.items;
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].type.indexOf('image') !== -1) {
-            const blob = items[i].getAsFile();
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              const base64 = ev.target.result;
-              openAddCardModal(base64);
-            };
-            reader.readAsDataURL(blob);
-            break;
-          }
-        }
-      }
-    });
-
-    // Mobile Auto Fetch & Translate
-    document.getElementById('btnMobileAutoFetch').addEventListener('click', async () => {
-      const word = (newCardWord.value || '').trim();
-      if (!word) {
-        alert('Vui lòng nhập từ tiếng Anh trước khi bấm Dịch & Tạo!');
-        newCardWord.focus();
+      if (!word && !imgUrl) {
+        alert('Vui lòng nhập từ vựng hoặc chọn 1 hình ảnh!');
         return;
       }
 
-      const btn = document.getElementById('btnMobileAutoFetch');
-      btn.textContent = '⏳ Đang dịch...';
-      btn.disabled = true;
-
-      let viTrans = '';
-      try {
-        const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=' + encodeURIComponent(word);
-        const tr = await fetch(transUrl, { signal: AbortSignal.timeout(3500) });
-        if (tr.ok) {
-          const td = await tr.json();
-          if (td && td[0]) {
-            viTrans = td[0].map(s => s[0]).join('').trim();
-            if (viTrans) newCardTrans.value = viTrans;
-          }
-        }
-      } catch (e) {}
-
-      if (!viTrans) {
-        try {
-          const myMemUrl = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(word) + '&langpair=en|vi';
-          const mr = await fetch(myMemUrl, { signal: AbortSignal.timeout(3000) });
-          if (mr.ok) {
-            const md = await mr.json();
-            if (md && md.responseData && md.responseData.translatedText) {
-              const mt = md.responseData.translatedText.trim();
-              if (mt && !mt.toLowerCase().includes('mymemory')) {
-                viTrans = mt;
-                newCardTrans.value = viTrans;
-              }
-            }
-          }
-        } catch (e) {}
-      }
-
-      // Generate context starters template
-      const template = '🧩 KHUNG CÂU DẪN & NGỮ CẢNH SỬ DỤNG (SENTENCE STARTERS):\\n' +
-        '🧩 Câu dẫn 1: "When it comes to ..., there are several key factors we should carefully evaluate."\\n' +
-        '   👉 Dịch: Khi đề cập đến ..., có một số yếu tố then chốt mà chúng ta nên đánh giá một cách cẩn trọng.\\n' +
-        '🧩 Câu dẫn 2: "In real-life communication, many people encounter confusion regarding ... because of different cultural contexts."\\n' +
-        '   👉 Dịch: Trong giao tiếp thực tế, nhiều người gặp phải sự nhầm lẫn liên quan đến ... do các bối cảnh văn hóa khác nhau.\\n' +
-        '🧩 Câu dẫn 3: "One important dimension of ... that concerns me the most is how it influences personal decision-making."\\n' +
-        '   👉 Dịch: Một khía cạnh quan trọng của ... khiến tôi suy ngẫm nhiều nhất là cách nó tác động đến việc ra quyết định của cá nhân.\\n' +
-        '🧩 Câu dẫn 4: "In academic discussions, effectively utilizing ... demonstrates a high level of language proficiency."\\n' +
-        '   👉 Dịch: Trong các cuộc thảo luận học thuật, việc sử dụng hiệu quả ... thể hiện trình độ ngôn ngữ ở band điểm cao.\\n' +
-        '🧩 Câu dẫn 5: "From my perspective, developing a comprehensive grasp of ... enables clearer and more persuasive expression."\\n' +
-        '   👉 Dịch: Theo quan điểm của tôi, việc nắm vững toàn diện ... giúp diễn đạt ý tưởng mạch lạc và thuyết phục hơn nhiều.\\n\\n' +
-        '🗣️ Speaking 1: "In daily conversations, understanding ' + word + ' is remarkably helpful."\\n' +
-        '   👉 Dịch: Trong giao tiếp hàng ngày, việc hiểu ' + (viTrans || word) + ' là vô cùng hữu ích.\\n' +
-        '✍️ Writing 1: "Academic studies consistently emphasize the profound impact of ' + word + '."\\n' +
-        '   👉 Dịch: Các nghiên cứu học thuật luôn nhấn mạnh tác động sâu sắc của ' + (viTrans || word) + '.';
-
-      if (!newCardNotes.value.trim()) {
-        newCardNotes.value = template;
-      }
-
-      btn.textContent = '✨ Dịch & Tạo';
-      btn.disabled = false;
-    });
-
-    // Save New Card Action
-    btnSaveNewCard.addEventListener('click', () => {
-      let wordVal = newCardWord.value.trim();
-      const transVal = newCardTrans.value.trim();
-      const notesVal = newCardNotes.value.trim();
-      const tiktokVal = newCardTiktokUrl.value.trim();
-      const imgVal = newCardImgBase64.value.trim();
-
-      if (!wordVal && !imgVal) {
-        alert('Vui lòng nhập từ tiếng Anh hoặc tải/dán một hình ảnh!');
-        return;
-      }
-
-      if (!wordVal && imgVal) {
-        wordVal = \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + 1}\`;
-      }
-
-      const newId = 'tk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-      const newCard = {
-        id: newId,
-        word: wordVal,
-        translation: transVal,
-        notes: notesVal,
-        tiktokUrl: tiktokVal || undefined,
-        imageUrl: imgVal || undefined,
-        level: 1,
+      const newItem = {
+        id: 'tk_' + Date.now(),
+        word: word || ('🖼️ Thẻ ảnh #' + (ALL_ITEMS.length + 1)),
+        translation: trans,
+        notes: notes,
+        imageUrl: imgUrl,
         createdAt: new Date().toISOString()
       };
 
-      // Add to beginning of items
-      RAW_ITEMS.unshift(newCard);
-      currentIndex = 0;
-      saveState();
-      updateBadges();
-      renderDeck();
-      newCardModal.classList.remove('active');
-      alert(\`🎉 Đã thêm thành công thẻ "\${wordVal}" vào bộ flashcard!\`);
-    });
-
-    // =========================================================================
-    // 1-DIGIT CLOUD SYNC LOGIC (0 - 9)
-    // =========================================================================
-    let mobileActiveSlot = '1';
-    const cloudSyncModal = document.getElementById('cloudSyncModal');
-    const lblMobileSelectedSlot = document.getElementById('lblMobileSelectedSlot');
-    const lblMobileSlotInfo = document.getElementById('lblMobileSlotInfo');
-    const btnMobileDownloadSlot = document.getElementById('btnMobileDownloadSlot');
-
-    function updateMobileSlotUI() {
-      if (lblMobileSelectedSlot) lblMobileSelectedSlot.textContent = \`[ \${mobileActiveSlot} ]\`;
-      document.querySelectorAll('#mobileSlotKeypad .slot-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.slot === mobileActiveSlot);
-      });
-      document.querySelectorAll('.mobile-slot-num').forEach(el => el.textContent = mobileActiveSlot);
+      ALL_ITEMS.unshift(newItem);
+      curIndex = 0;
+      document.getElementById('addCardModal').classList.remove('active');
+      updateUI();
+      showToast('✅ Đã thêm thẻ mới!');
     }
 
-    document.getElementById('btnOpenCloudSync').addEventListener('click', () => {
-      updateMobileSlotUI();
-      cloudSyncModal.classList.add('active');
-    });
-
-    document.getElementById('btnCloseCloudModal').addEventListener('click', () => {
-      cloudSyncModal.classList.remove('active');
-    });
-
-    document.querySelectorAll('#mobileSlotKeypad .slot-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        mobileActiveSlot = btn.dataset.slot || '1';
-        updateMobileSlotUI();
-      });
-    });
-
-    // Download / Restore from Cloud Slot on Mobile
-    btnMobileDownloadSlot.addEventListener('click', async () => {
-      const origHtml = btnMobileDownloadSlot.innerHTML;
-      btnMobileDownloadSlot.disabled = true;
-      btnMobileDownloadSlot.innerHTML = '⏳ Đang tải dữ liệu từ Cloud...';
-
-      try {
-        const slotUrl = \`./data/slot_\${mobileActiveSlot}.json?t=\${Date.now()}\`;
-        const res = await fetch(slotUrl);
-        if (!res.ok) {
-          throw new Error(\`Mã [\${mobileActiveSlot}] chưa có bản sao lưu trên Cloud (Mã lỗi \${res.status}). Hãy sao lưu từ máy tính trước nhé!\`);
-        }
-        const data = await res.json();
-        const downloadedItems = data.items || [];
-        if (downloadedItems.length === 0) {
-          alert(\`Mã Cloud [\${mobileActiveSlot}] rỗng (chưa có thẻ nào).\`);
-        } else {
-          RAW_ITEMS = downloadedItems;
-          localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
-          if (Array.isArray(data.masteredIds)) {
-            data.masteredIds.forEach(id => masteredIds.add(id));
-          }
-          if (Array.isArray(data.dueIds)) {
-            data.dueIds.forEach(id => dueIds.add(id));
-          }
-          currentIndex = 0;
-          updateBadges();
-          renderDeck();
-          alert(\`✅ Đồng bộ thành công \${downloadedItems.length} thẻ từ Mã Cloud [\${mobileActiveSlot}]!\`);
-          cloudSyncModal.classList.remove('active');
-        }
-      } catch (err) {
-        console.error('Download slot error:', err);
-        alert(err.message || 'Không thể kết nối đến máy chủ Cloud.');
-      } finally {
-        btnMobileDownloadSlot.disabled = false;
-        btnMobileDownloadSlot.innerHTML = origHtml;
-      }
-    });
-
-    // Search Logic
-    const searchModal = document.getElementById('searchModal');
-    const searchInput = document.getElementById('searchInput');
-    const searchResultsList = document.getElementById('searchResultsList');
-
-    document.getElementById('btnOpenSearch').addEventListener('click', () => {
-      searchModal.classList.add('active');
-      searchInput.value = '';
-      renderSearchResults('');
-      setTimeout(() => searchInput.focus(), 150);
-    });
-
-    document.getElementById('btnCloseSearch').addEventListener('click', () => {
-      searchModal.classList.remove('active');
-    });
-
-    function renderSearchResults(query) {
-      const q = (query || '').toLowerCase().trim();
-      const results = RAW_ITEMS.filter(item => {
-        if (!q) return true;
-        return (item.word && item.word.toLowerCase().includes(q)) ||
-               (item.translation && item.translation.toLowerCase().includes(q)) ||
-               (item.notes && item.notes.toLowerCase().includes(q));
-      }).slice(0, 40);
-
-      searchResultsList.innerHTML = '';
-      if (results.length === 0) {
-        searchResultsList.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Không tìm thấy thẻ nào phù hợp.</div>';
-        return;
-      }
-
-      results.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'search-item';
-        div.innerHTML = \`
-          <div>
-            <div style="font-size: 15px; font-weight: 800; color: #fff;">\${item.word || '🖼️ Thẻ ảnh'}</div>
-            <div style="font-size: 12.5px; color: #6ee7b7; margin-top: 2px;">\${item.translation || (item.imageUrl ? 'Thẻ ảnh' : '')}</div>
-          </div>
-          <div style="font-size: 11px; color: var(--primary); font-weight: bold;">Học ngay ▶</div>
-        \`;
-        div.addEventListener('click', () => {
-          searchModal.classList.remove('active');
-          activeFilter = 'all';
-          document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === 'all'));
-          const idx = RAW_ITEMS.findIndex(x => x.id === item.id);
-          if (idx >= 0) currentIndex = idx;
-          renderDeck();
-        });
-        searchResultsList.appendChild(div);
-      });
-    }
-
-    searchInput.addEventListener('input', (e) => {
-      renderSearchResults(e.target.value);
-    });
-
-    // Filter Buttons
-    document.querySelectorAll('.filter-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        activeFilter = pill.dataset.filter;
-        currentIndex = 0;
-        renderDeck();
-      });
-    });
-
-    // Shuffle Button
-    document.getElementById('btnShuffle').addEventListener('click', () => {
-      for (let i = RAW_ITEMS.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [RAW_ITEMS[i], RAW_ITEMS[j]] = [RAW_ITEMS[j], RAW_ITEMS[i]];
-      }
-      currentIndex = 0;
-      renderDeck();
-      alert('🎲 Đã trộn ngẫu nhiên toàn bộ thẻ!');
-    });
-
-    // Close on backdrop click / Escape
-    searchModal.addEventListener('click', (e) => {
-      if (e.target === searchModal) searchModal.classList.remove('active');
-    });
-
-    cloudSyncModal.addEventListener('click', (e) => {
-      if (e.target === cloudSyncModal) cloudSyncModal.classList.remove('active');
-    });
-
-    newCardModal.addEventListener('click', (e) => {
-      if (e.target === newCardModal) newCardModal.classList.remove('active');
-    });
-
-    const iosPwaModal = document.getElementById('iosPwaModal');
-    iosPwaModal.addEventListener('click', (e) => {
-      if (e.target === iosPwaModal) iosPwaModal.classList.remove('active');
-    });
-
-    const imgFullscreenModal = document.getElementById('imgFullscreenModal');
-    imgFullscreenModal.addEventListener('click', (e) => {
-      if (e.target === imgFullscreenModal) imgFullscreenModal.classList.remove('active');
-    });
-
-    const examplesDrawer = document.getElementById('examplesDrawer');
-    window.addEventListener('click', (e) => {
-      if (examplesDrawer.classList.contains('active') && !examplesDrawer.contains(e.target) && !e.target.closest('.side-btn') && !e.target.closest('#examplesDrawer')) {
-        examplesDrawer.classList.remove('active');
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        searchModal.classList.remove('active');
-        cloudSyncModal.classList.remove('active');
-        newCardModal.classList.remove('active');
-        iosPwaModal.classList.remove('active');
-        imgFullscreenModal.classList.remove('active');
-        examplesDrawer.classList.remove('active');
-      }
-    });
-
-    // Navigation Buttons Event Listeners
-    document.getElementById('btnNavPrev').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goToPrevCard();
-    });
-    document.getElementById('btnNavNext').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goToNextCard();
-    });
-    document.getElementById('btnSideNavPrev').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goToPrevCard();
-    });
-    document.getElementById('btnSideNavNext').addEventListener('click', (e) => {
-      e.stopPropagation();
-      goToNextCard();
-    });
-
-    // Side Action Toolbar Listeners (Robust Click & Touch)
-    document.getElementById('btnSideSpeak').addEventListener('click', (e) => {
-      e.stopPropagation();
-      speakCurrentWord();
-    });
-    document.getElementById('btnSideContext').addEventListener('click', (e) => {
-      e.stopPropagation();
-      openDrawer('context');
-    });
-    document.getElementById('btnSideDrawer').addEventListener('click', (e) => {
-      e.stopPropagation();
-      openDrawer('all');
-    });
-    document.getElementById('btnSidePrompt').addEventListener('click', (e) => {
-      e.stopPropagation();
-      copyPromptForAI();
-    });
-    document.getElementById('btnSideMastered').addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleMastered();
-    });
-    document.getElementById('btnAutoScroll').addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleAutoScroll();
-    });
-    document.getElementById('btnCloseIosModal').addEventListener('click', () => {
-      document.getElementById('iosPwaModal').classList.remove('active');
-    });
-
-    // Hide swipe hint after 4 seconds
-    setTimeout(() => {
-      const hint = document.getElementById('swipeHint');
-      if (hint) {
-        hint.style.transition = 'opacity 0.6s';
-        hint.style.opacity = '0';
-        setTimeout(() => hint.remove(), 600);
-      }
-    }, 4000);
-
-    // Initialize
-    updateBadges();
-    renderDeck();
+    // Startup Load
+    loadData();
   </script>
 </body>
 </html>`;
 }
 
 function writeWebFiles(data, rootDir) {
-  const html = generateMobileHtml(data);
+  const html = generateMobileHtml();
 
   // 1. Generate PWA Icons
   const rootIconsDir = path.join(rootDir, 'icons');
   const docsIconsDir = path.join(rootDir, 'docs', 'icons');
   generateIcons([rootIconsDir, docsIconsDir]);
 
-  // 2. Generate Manifest and SW in root
+  // 2. Generate Manifest and SW
   const manifestJson = JSON.stringify({
-    name: "TikTok Flashcard - Học Từ Vựng IELTS",
-    short_name: "TikTok Flash",
-    description: "App Flashcard TikTok học từ vựng IELTS với feed ảnh to rõ, nút Thẻ trên/Thẻ dưới, thêm thẻ mới, phát âm, lướt vuốt cực mượt trên điện thoại",
+    name: "Flashcard Học Từ Vựng",
+    short_name: "Flashcard",
+    description: "Ứng dụng Flashcard học từ vựng nhanh, nhẹ, mượt mà và tự động đồng bộ.",
     start_url: "./index.html",
     scope: "./",
     display: "standalone",
@@ -2547,125 +806,44 @@ function writeWebFiles(data, rootDir) {
     theme_color: "#0b0d14",
     orientation: "portrait",
     icons: [
-      {
-        src: "icons/icon-192.png",
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "any maskable"
-      },
-      {
-        src: "icons/icon-512.png",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "any maskable"
-      },
-      {
-        src: "icons/icon.svg",
-        sizes: "512x512",
-        type: "image/svg+xml",
-        purpose: "any maskable"
-      },
-      {
-        src: "icons/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png"
-      }
-    ],
-    categories: ["education", "productivity"]
+      { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }
+    ]
   }, null, 2);
 
-  const swJs = `// sw.js - Service Worker for TikTok Flashcard PWA (v9 - zero lag cache)
-const CACHE_NAME = 'tiktok-flashcard-v9';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon.svg',
-  './icons/apple-touch-icon.png'
-];
+  const swJs = `// Minimal Service Worker
+self.addEventListener('install', (e) => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
+self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
+`;
 
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  if (event.request.url.includes('/data/')) {
-    event.respondWith(fetch(event.request));
-    return;
-  }
-  event.respondWith(
-    fetch(event.request)
-      .then((res) => {
-        if (res && res.status === 200 && res.type === 'basic') {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html')))
-  );
-});`;
-
-  // 3. Write Root files
+  // 3. Write lightweight HTML and PWA files to Root
   const rootIndex = path.join(rootDir, 'index.html');
   fs.writeFileSync(rootIndex, html, 'utf8');
   fs.writeFileSync(path.join(rootDir, 'manifest.json'), manifestJson, 'utf8');
   fs.writeFileSync(path.join(rootDir, 'sw.js'), swJs, 'utf8');
 
-  // 4. Write Docs files
+  // 4. Write to Docs for GitHub Pages
   const docsDir = path.join(rootDir, 'docs');
-  if (!fs.existsSync(docsDir)) {
-    fs.mkdirSync(docsDir, { recursive: true });
-  }
+  if (!fs.existsSync(docsDir)) fs.mkdirSync(docsDir, { recursive: true });
   const docsIndex = path.join(docsDir, 'index.html');
   fs.writeFileSync(docsIndex, html, 'utf8');
   fs.writeFileSync(path.join(docsDir, 'manifest.json'), manifestJson, 'utf8');
   fs.writeFileSync(path.join(docsDir, 'sw.js'), swJs, 'utf8');
 
-  // 5. Ensure all 10 default slot files exist in docs/data and data/
+  // 5. Write pure flashcards.json and slot_1.json data files (fast, clean, separate from HTML!)
   const docsDataDir = path.join(docsDir, 'data');
   const rootDataDir = path.join(rootDir, 'data');
   if (!fs.existsSync(docsDataDir)) fs.mkdirSync(docsDataDir, { recursive: true });
   if (!fs.existsSync(rootDataDir)) fs.mkdirSync(rootDataDir, { recursive: true });
 
-  const itemsList = data.items || [];
-  for (let i = 0; i <= 9; i++) {
-    const slotPathDocs = path.join(docsDataDir, `slot_${i}.json`);
-    const slotPathRoot = path.join(rootDataDir, `slot_${i}.json`);
-    if (!fs.existsSync(slotPathDocs)) {
-      const initSlot = {
-        slot: i.toString(),
-        updatedAt: new Date().toISOString(),
-        count: itemsList.length,
-        items: itemsList,
-        masteredIds: [],
-        dueIds: []
-      };
-      const json = JSON.stringify(initSlot, null, 2);
-      fs.writeFileSync(slotPathDocs, json, 'utf8');
-      fs.writeFileSync(slotPathRoot, json, 'utf8');
-    }
-  }
+  const cleanPayload = JSON.stringify(data, null, 2);
+  fs.writeFileSync(path.join(docsDataDir, 'flashcards.json'), cleanPayload, 'utf8');
+  fs.writeFileSync(path.join(rootDataDir, 'flashcards.json'), cleanPayload, 'utf8');
+  fs.writeFileSync(path.join(docsDataDir, 'slot_1.json'), cleanPayload, 'utf8');
+  fs.writeFileSync(path.join(rootDataDir, 'slot_1.json'), cleanPayload, 'utf8');
 
-  console.log('[SYNC] Successfully generated mobile PWA files at root and docs/');
+  console.log('[SYNC] Successfully generated clean, lightweight PWA files and data at root and docs/');
   return { rootIndex, docsIndex };
 }
 
