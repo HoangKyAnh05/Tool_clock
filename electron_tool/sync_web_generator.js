@@ -595,18 +595,51 @@ function generateMobileHtml() {
       updateCard();
     }
 
+    let isNavigating = false;
     function nextCard() {
       const list = getFiltered();
-      if (list.length <= 1) return;
-      curIndex = (curIndex + 1) % list.length;
-      updateCard();
+      if (list.length <= 1 || isNavigating) return;
+      isNavigating = true;
+      const box = document.getElementById('cardBox');
+      if (box) {
+        box.style.transition = 'transform 0.16s ease, opacity 0.16s ease';
+        box.style.transform = 'translateY(-24px)';
+        box.style.opacity = '0.6';
+      }
+      setTimeout(() => {
+        curIndex = (curIndex + 1) % list.length;
+        updateCard();
+        if (box) {
+          box.style.transform = 'translateY(24px)';
+          box.offsetHeight; // reflow
+          box.style.transform = 'translateY(0)';
+          box.style.opacity = '1';
+        }
+        setTimeout(() => { isNavigating = false; }, 160);
+      }, 120);
     }
 
     function prevCard() {
       const list = getFiltered();
-      if (list.length <= 1) return;
-      curIndex = (curIndex - 1 + list.length) % list.length;
-      updateCard();
+      if (list.length <= 1 || isNavigating) return;
+      isNavigating = true;
+      const box = document.getElementById('cardBox');
+      if (box) {
+        box.style.transition = 'transform 0.16s ease, opacity 0.16s ease';
+        box.style.transform = 'translateY(24px)';
+        box.style.opacity = '0.6';
+      }
+      setTimeout(() => {
+        curIndex = (curIndex - 1 + list.length) % list.length;
+        updateCard();
+        if (box) {
+          box.style.transform = 'translateY(-24px)';
+          box.offsetHeight; // reflow
+          box.style.transform = 'translateY(0)';
+          box.style.opacity = '1';
+        }
+        setTimeout(() => { isNavigating = false; }, 160);
+      }, 120);
     }
 
     function toggleMastered() {
@@ -633,29 +666,73 @@ function generateMobileHtml() {
       }
     });
 
-    // Touch Swipe Navigation
-    let touchStartY = 0;
-    let touchStartX = 0;
-    const vp = document.getElementById('viewport');
-    vp.addEventListener('touchstart', e => {
-      touchStartY = e.touches[0].clientY;
-      touchStartX = e.touches[0].clientX;
+    // Unified Gesture Engine (Swipe Up / Down, Drag, Mouse Wheel)
+    let startY = 0;
+    let startX = 0;
+    let isMouseDown = false;
+    let lastWheelTime = 0;
+
+    // Touch Swipe (Mobile)
+    window.addEventListener('touchstart', e => {
+      if (e.target.closest('.modal') || e.target.closest('.top-bar') || e.target.closest('.bottom-bar')) return;
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
     }, { passive: true });
 
-    vp.addEventListener('touchend', e => {
-      const deltaY = e.changedTouches[0].clientY - touchStartY;
-      const deltaX = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(deltaY) > 40 && Math.abs(deltaY) > Math.abs(deltaX)) {
+    window.addEventListener('touchend', e => {
+      if (e.target.closest('.modal') || e.target.closest('.top-bar') || e.target.closest('.bottom-bar')) return;
+      const deltaY = e.changedTouches[0].clientY - startY;
+      const deltaX = e.changedTouches[0].clientX - startX;
+      
+      // Vertical swipe priority (Swipe Up -> Next Card, Swipe Down -> Prev Card)
+      if (Math.abs(deltaY) > 30 && Math.abs(deltaY) >= Math.abs(deltaX)) {
         if (deltaY < 0) nextCard();
         else prevCard();
-      } else if (Math.abs(deltaX) > 50) {
+      } else if (Math.abs(deltaX) > 45) {
         if (deltaX < 0) nextCard();
         else prevCard();
       }
     }, { passive: true });
 
+    // Mouse Drag (Desktop)
+    window.addEventListener('mousedown', e => {
+      if (e.target.closest('.modal') || e.target.closest('.top-bar') || e.target.closest('.bottom-bar') || e.target.closest('button')) return;
+      isMouseDown = true;
+      startY = e.clientY;
+      startX = e.clientX;
+    });
+
+    window.addEventListener('mouseup', e => {
+      if (!isMouseDown) return;
+      isMouseDown = false;
+      const deltaY = e.clientY - startY;
+      const deltaX = e.clientX - startX;
+      if (Math.abs(deltaY) > 30 && Math.abs(deltaY) >= Math.abs(deltaX)) {
+        if (deltaY < 0) nextCard();
+        else prevCard();
+      } else if (Math.abs(deltaX) > 45) {
+        if (deltaX < 0) nextCard();
+        else prevCard();
+      }
+    });
+
+    // Mouse Wheel Scroll
+    window.addEventListener('wheel', e => {
+      if (e.target.closest('.card-notes') || e.target.closest('.modal')) return;
+      const now = Date.now();
+      if (now - lastWheelTime < 280) return;
+      if (e.deltaY > 20) {
+        lastWheelTime = now;
+        nextCard();
+      } else if (e.deltaY < -20) {
+        lastWheelTime = now;
+        prevCard();
+      }
+    }, { passive: true });
+
     // Keyboard Navigation
     window.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
         nextCard();
