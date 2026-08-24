@@ -2014,7 +2014,7 @@ ${jsonData}
 
           zipData.forEach((relPath, entry) => {
             if (entry.dir) return;
-            const normPath = relPath.replace(/\\/g, '/');
+            const normPath = relPath.split('\\\\').join('/');
             const parts = normPath.split('/');
             const fileName = parts[parts.length - 1];
             const isHiddenOrMeta = parts.some(p => p.startsWith('.') || p === '__MACOSX');
