@@ -32,6 +32,7 @@ function generateMobileHtml(data) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <style>
     :root {
@@ -1041,10 +1042,12 @@ function generateMobileHtml(data) {
           <span style="font-size: 30px;">🖼️</span>
           <div style="font-size: 13px; font-weight: 800; color: #00f2fe;">Chạm để Tải ảnh / Chụp ảnh hoặc Dán ảnh (Ctrl+V)</div>
           <div style="font-size: 11px; color: var(--text-muted);">Hỗ trợ ảnh chụp màn hình, ảnh từ thư viện, camera hoặc clipboard</div>
-          <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; justify-content: center;">
             <button type="button" class="pwa-install-btn" id="btnTriggerUpload" style="background: rgba(0,242,254,0.2); border: 1px solid #00f2fe; color: #00f2fe;">📁 Chọn ảnh</button>
+            <button type="button" class="pwa-install-btn" id="btnTriggerZip" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: none; color: #fff; font-weight: 700;">📦 Nạp Zip Ảnh</button>
             <button type="button" class="pwa-install-btn" id="btnTriggerPaste" style="background: rgba(255,0,80,0.2); border: 1px solid #ff0050; color: #ff0050;">📋 Dán từ Clipboard</button>
           </div>
+          <input type="file" id="inpAddZipFile" accept=".zip,application/zip,application/x-zip-compressed" style="display: none;" />
         </div>
 
         <!-- Input Fields -->
@@ -1956,6 +1959,95 @@ ${jsonData}
       e.stopPropagation();
       inpAddCardFile.click();
     });
+
+    // Trigger Zip Upload
+    const btnTriggerZip = document.getElementById('btnTriggerZip');
+    const inpAddZipFile = document.getElementById('inpAddZipFile');
+    if (btnTriggerZip && inpAddZipFile) {
+      btnTriggerZip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inpAddZipFile.click();
+      });
+
+      inpAddZipFile.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (typeof JSZip === 'undefined') {
+          alert('Không tìm thấy thư viện giải nén JSZip!');
+          return;
+        }
+
+        try {
+          const zip = new JSZip();
+          const zipData = await zip.loadAsync(file);
+          const validExt = /\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i;
+          const imgEntries = [];
+
+          zipData.forEach((relPath, entry) => {
+            if (entry.dir) return;
+            const normPath = relPath.replace(/\\/g, '/');
+            const parts = normPath.split('/');
+            const fileName = parts[parts.length - 1];
+            const isHiddenOrMeta = parts.some(p => p.startsWith('.') || p === '__MACOSX');
+
+            if (!isHiddenOrMeta && validExt.test(fileName)) {
+              imgEntries.push({ path: normPath, entry, fileName });
+            }
+          });
+
+          if (imgEntries.length === 0) {
+            alert('⚠️ Không tìm thấy file ảnh nào trong các thư mục của file ZIP này!');
+            return;
+          }
+
+          imgEntries.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
+
+          const newCards = [];
+          const nowStr = new Date().toISOString();
+          const todayStr = nowStr.split('T')[0];
+
+          for (let i = 0; i < imgEntries.length; i++) {
+            const item = imgEntries[i];
+            const base64Data = await item.entry.async('base64');
+            const ext = item.fileName.split('.').pop().toLowerCase();
+            let mime = 'image/png';
+            if (ext === 'jpg' || ext === 'jpeg') mime = 'image/jpeg';
+            else if (ext === 'webp') mime = 'image/webp';
+            else if (ext === 'gif') mime = 'image/gif';
+            else if (ext === 'svg') mime = 'image/svg+xml';
+            else if (ext === 'bmp') mime = 'image/bmp';
+            else if (ext === 'avif') mime = 'image/avif';
+
+            const dataUrl = \`data:\${mime};base64,\${base64Data}\`;
+            const fileName = item.path.split('/').pop().replace(/\.[^/.]+$/, '').trim();
+
+            newCards.push({
+              id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7) + '_' + i,
+              word: fileName || \`🖼️ Thẻ ảnh #\${RAW_ITEMS.length + i + 1}\`,
+              translation: '',
+              notes: '',
+              imageUrl: dataUrl,
+              tiktokUrl: 'https://www.tiktok.com',
+              level: 1,
+              interval: 1,
+              nextReviewDate: todayStr,
+              createdAt: nowStr
+            });
+          }
+
+          RAW_ITEMS.unshift(...newCards);
+          saveUserCardsToStorage();
+          filterCards();
+          renderCard(0);
+          newCardModal.classList.remove('active');
+          alert(\`🎉 Đã nạp thành công \${newCards.length} thẻ ảnh từ file ZIP!\`);
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi khi đọc file ZIP: ' + err.message);
+        }
+        inpAddZipFile.value = '';
+      });
+    }
 
     document.getElementById('addImgDropzone').addEventListener('click', () => {
       inpAddCardFile.click();

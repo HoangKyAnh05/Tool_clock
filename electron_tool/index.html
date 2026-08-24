@@ -1226,11 +1226,17 @@
             title="Dán nhanh ảnh từ clipboard vào thẻ đang chọn (hoặc nhấn Ctrl+V)">
             📋 Dán ảnh (Ctrl+V)
           </button>
-          <input type="file" id="tkQuickImgFileInput" accept="image/*" style="display: none;" />
+          <input type="file" id="tkQuickImgFileInput" accept="image/*" multiple style="display: none;" />
           <button type="button" id="btnTkQuickUploadImg" class="btn-modal"
             style="height: 32px; font-size: 11.5px; padding: 0 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;"
-            title="Tải ảnh từ tệp trên máy tính">
+            title="Tải 1 hoặc nhiều ảnh từ máy tính">
             📁 Tải ảnh
+          </button>
+          <input type="file" id="tkZipFileInput" accept=".zip,application/zip,application/x-zip-compressed,multipart/x-zip" style="display: none;" />
+          <button type="button" id="btnTkImportZip" class="btn-modal"
+            style="height: 32px; font-size: 11.5px; padding: 0 12px; background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border: none; color: #fff; font-weight: 700; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.35);"
+            title="Nạp file ZIP chứa nhiều ảnh để tạo hàng loạt Thẻ Flashcard TikTok">
+            📦 Nạp Zip Ảnh
           </button>
         </div>
 
@@ -3835,6 +3841,7 @@
     </div>
   </div>
 
+  <script src="jszip.min.js"></script>
   <script defer src="renderer.js"></script>
 </body>
 

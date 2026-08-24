@@ -24,7 +24,12 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true
     },
-    "files": ["**/*"],
+    "files": [
+      "**/*"
+    ],
     "extraResources": []
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
   }
 }

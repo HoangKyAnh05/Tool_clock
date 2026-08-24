@@ -8037,6 +8037,216 @@ function toggleTkSplitView() {
   }
 }
 
+function showTkToast(msg, duration = 3000) {
+  let toast = document.getElementById('tkFloatingToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'tkFloatingToast';
+    toast.style.cssText = `
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+      color: #00f2fe;
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 242, 254, 0.25);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+    `;
+    document.body.appendChild(toast);
+  }
+
+  toast.innerHTML = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+  }, duration);
+}
+
+// Bulk import an array of { name: string, dataUrl: string } into TikTok Flashcards
+async function batchAddTkFlashcardImages(images, sourceName = 'ảnh') {
+  if (!images || images.length === 0) return;
+
+  const defaultMusicUrl = tkLastChosenMusicUrl || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : '') || 'https://www.tiktok.com';
+  const todayStr = new Date().toISOString().split('T')[0];
+  const nowStr = new Date().toISOString();
+
+  if (!tkFlashcardData) tkFlashcardData = { items: [] };
+  if (!Array.isArray(tkFlashcardData.items)) tkFlashcardData.items = [];
+
+  const newCards = [];
+  const baseCount = tkFlashcardData.items.length;
+
+  for (let i = 0; i < images.length; i++) {
+    const imgObj = images[i];
+    let cleanWord = '';
+    if (imgObj.name) {
+      // Remove extension and clean up
+      cleanWord = imgObj.name.replace(/\.[^/.]+$/, '').trim();
+    }
+    if (!cleanWord) {
+      cleanWord = `🖼️ Thẻ ảnh #${baseCount + i + 1}`;
+    }
+
+    const newCard = {
+      id: 'tk_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7) + '_' + i,
+      word: cleanWord,
+      translation: '',
+      notes: '',
+      imageUrl: imgObj.dataUrl,
+      tiktokUrl: defaultMusicUrl,
+      level: 1,
+      interval: 1,
+      nextReviewDate: todayStr,
+      createdAt: nowStr
+    };
+    newCards.push(newCard);
+  }
+
+  // Prepend new cards to top of list
+  tkFlashcardData.items.unshift(...newCards);
+  activeTkCardId = newCards[0].id;
+
+  await saveTkFlashcardData();
+  updateTkDashboardStats();
+  renderTkFlashcardList();
+  renderTkCurrentCard(getActiveTkItem());
+
+  if (typeof playTone === 'function') playTone(880, 0.15, 'sine', 0.2);
+  showTkToast(`🎉 Đã nạp thành công ${newCards.length} thẻ ảnh ${sourceName} vào Flashcard TikTok!`, 4000);
+}
+
+// Handle .ZIP file extraction and bulk import
+async function handleZipFileInput(file) {
+  if (!file) return;
+  if (typeof JSZip === 'undefined') {
+    alert('Không tìm thấy thư viện JSZip để giải nén!');
+    return;
+  }
+
+  showTkToast(`⏳ Đang giải nén file ZIP "${file.name}"...`, 3000);
+
+  try {
+    const zip = new JSZip();
+    const zipData = await zip.loadAsync(file);
+
+    const validExtensions = /\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i;
+    const imageEntries = [];
+
+    // Recursively scan all entries including all nested folders
+    zipData.forEach((relativePath, zipEntry) => {
+      if (zipEntry.dir) return;
+
+      const normalizedPath = relativePath.replace(/\\/g, '/');
+      const parts = normalizedPath.split('/');
+      const fileName = parts[parts.length - 1];
+
+      // Ignore __MACOSX system metadata folder and hidden dot files/folders (.DS_Store, ._file, etc.)
+      const isHiddenOrMeta = parts.some(p => p.startsWith('.') || p === '__MACOSX');
+
+      if (!isHiddenOrMeta && validExtensions.test(fileName)) {
+        imageEntries.push({
+          path: normalizedPath,
+          entry: zipEntry,
+          fileName: fileName
+        });
+      }
+    });
+
+    if (imageEntries.length === 0) {
+      alert('⚠️ Không tìm thấy file hình ảnh (.png, .jpg, .webp, .gif...) nào trong các thư mục của file ZIP này!');
+      return;
+    }
+
+    // Sort entries naturally by path across all folders (e.g. Folder1/1.jpg, Folder1/2.jpg, Folder2/1.jpg)
+    imageEntries.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
+
+    showTkToast(`⏳ Tìm thấy ${imageEntries.length} ảnh trong ZIP. Đang tải vào Flashcard...`, 3000);
+
+    const extractedImages = [];
+    for (const item of imageEntries) {
+      const base64Data = await item.entry.async('base64');
+      const ext = item.fileName.split('.').pop().toLowerCase();
+      let mime = 'image/png';
+      if (ext === 'jpg' || ext === 'jpeg') mime = 'image/jpeg';
+      else if (ext === 'webp') mime = 'image/webp';
+      else if (ext === 'gif') mime = 'image/gif';
+      else if (ext === 'svg') mime = 'image/svg+xml';
+      else if (ext === 'bmp') mime = 'image/bmp';
+      else if (ext === 'avif') mime = 'image/avif';
+
+      const dataUrl = `data:${mime};base64,${base64Data}`;
+      extractedImages.push({
+        name: item.fileName,
+        dataUrl: dataUrl
+      });
+    }
+
+    await batchAddTkFlashcardImages(extractedImages, `từ ${imageEntries.length} ảnh trong file ZIP "${file.name}"`);
+  } catch (err) {
+    console.error('Lỗi khi giải nén ZIP:', err);
+    alert('Lỗi khi đọc file ZIP: ' + err.message);
+  }
+}
+
+// Handle multiple image files from File input
+async function handleImageFilesInput(files) {
+  if (!files || files.length === 0) return;
+
+  const formState = document.getElementById('tkFormState');
+  const isFormOpen = formState && formState.style.display !== 'none';
+
+  if (files.length === 1 && isFormOpen) {
+    const reader = new FileReader();
+    reader.onload = (e) => handleImagePasteOrFile(e.target.result);
+    reader.readAsDataURL(files[0]);
+    return;
+  }
+
+  if (files.length === 1 && !isFormOpen) {
+    const reader = new FileReader();
+    reader.onload = (e) => handleImagePasteOrFile(e.target.result);
+    reader.readAsDataURL(files[0]);
+    return;
+  }
+
+  // Multiple image files
+  const images = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (file.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i.test(file.name)) {
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+      images.push({
+        name: file.name,
+        dataUrl
+      });
+    }
+  }
+
+  if (images.length > 0) {
+    await batchAddTkFlashcardImages(images, 'đã chọn');
+  }
+}
+
 async function handleImagePasteOrFile(dataUrl) {
   if (!dataUrl) return;
 
@@ -8057,36 +8267,64 @@ async function handleImagePasteOrFile(dataUrl) {
   } else {
     const curItem = getActiveTkItem();
     if (!curItem) {
-      alert('Chưa có thẻ nào để gắn ảnh!');
+      const nextNum = (tkFlashcardData.items?.length || 0) + 1;
+      const defaultMusicUrl = tkLastChosenMusicUrl || (tkSavedMusicList[0] ? tkSavedMusicList[0].url : '') || 'https://www.tiktok.com';
+      const newItem = {
+        id: 'tk_' + Date.now(),
+        word: '🖼️ Thẻ ảnh #' + nextNum,
+        translation: '',
+        notes: '',
+        imageUrl: dataUrl,
+        tiktokUrl: defaultMusicUrl,
+        level: 1,
+        interval: 1,
+        nextReviewDate: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString()
+      };
+      if (!tkFlashcardData.items) tkFlashcardData.items = [];
+      tkFlashcardData.items.unshift(newItem);
+      activeTkCardId = newItem.id;
+      await saveTkFlashcardData();
+      updateTkDashboardStats();
+      renderTkFlashcardList();
+      renderTkCurrentCard(newItem);
+      showTkToast('✅ Đã tạo thẻ ảnh mới thành công!');
+      if (typeof playTone === 'function') playTone(780, 0.1, 'sine', 0.15);
       return;
     }
     curItem.imageUrl = dataUrl;
     await saveTkFlashcardData();
     renderTkCurrentCard(curItem);
+    showTkToast('✅ Đã gắn ảnh vào thẻ hiện tại!');
     if (typeof playTone === 'function') playTone(780, 0.1, 'sine', 0.15);
   }
 }
 
 function setupImageDropAndPaste() {
-  window.addEventListener('paste', async (e) => {
-    const pane = document.getElementById('paneTiktokFlashcard');
-    if (!pane || !pane.classList.contains('active')) return;
-
-    if (e.clipboardData && e.clipboardData.items) {
-      for (const item of e.clipboardData.items) {
-        if (item.type.indexOf('image') !== -1) {
-          e.preventDefault();
-          const file = item.getAsFile();
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => handleImagePasteOrFile(event.target.result);
-            reader.readAsDataURL(file);
-            return;
-          }
-        }
+  const btnImportZip = document.getElementById('btnTkImportZip');
+  const zipFileInput = document.getElementById('tkZipFileInput');
+  if (btnImportZip && zipFileInput) {
+    btnImportZip.addEventListener('click', () => zipFileInput.click());
+    zipFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        await handleZipFileInput(file);
       }
-    }
-  });
+      zipFileInput.value = '';
+    });
+  }
+
+  const btnQuickUpload = document.getElementById('btnTkQuickUploadImg');
+  const quickImgFileInput = document.getElementById('tkQuickImgFileInput');
+  if (btnQuickUpload && quickImgFileInput) {
+    btnQuickUpload.addEventListener('click', () => quickImgFileInput.click());
+    quickImgFileInput.addEventListener('change', async (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        await handleImageFilesInput(Array.from(e.target.files));
+      }
+      quickImgFileInput.value = '';
+    });
+  }
 
   const btnQuickPaste = document.getElementById('btnTkQuickPasteImg');
   if (btnQuickPaste) {
@@ -8105,6 +8343,87 @@ function setupImageDropAndPaste() {
           }
         }
       } catch (err) { alert('Vui lòng copy 1 ảnh (Ctrl+C) rồi bấm nút này!'); }
+    });
+  }
+
+  // Form image upload & paste
+  const btnFormUpload = document.getElementById('btnTkFormUploadImg');
+  const formFileInput = document.getElementById('tkFormFileInput');
+  if (btnFormUpload && formFileInput) {
+    btnFormUpload.addEventListener('click', () => formFileInput.click());
+    formFileInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => handleImagePasteOrFile(ev.target.result);
+        reader.readAsDataURL(file);
+      }
+      formFileInput.value = '';
+    });
+  }
+
+  const btnFormPaste = document.getElementById('btnTkFormPasteImg');
+  if (btnFormPaste) {
+    btnFormPaste.addEventListener('click', async () => {
+      try {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              const blob = await item.getType(type);
+              const reader = new FileReader();
+              reader.onload = (e) => handleImagePasteOrFile(e.target.result);
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+        }
+      } catch (err) { alert('Vui lòng copy 1 ảnh (Ctrl+C) rồi bấm nút này!'); }
+    });
+  }
+
+  const btnFormRemove = document.getElementById('btnTkFormRemoveImg');
+  if (btnFormRemove) {
+    btnFormRemove.addEventListener('click', () => {
+      const formImgUrl = document.getElementById('tkFormImageUrl');
+      const previewWrap = document.getElementById('tkFormImagePreviewWrap');
+      const previewImg = document.getElementById('tkFormPreviewImg');
+      const dropzoneEmpty = document.getElementById('tkFormDropzoneEmpty');
+      if (formImgUrl) formImgUrl.value = '';
+      if (previewImg) previewImg.src = '';
+      if (previewWrap) previewWrap.style.display = 'none';
+      if (dropzoneEmpty) dropzoneEmpty.style.display = 'flex';
+      if (typeof playTone === 'function') playTone(500, 0.05, 'sine', 0.1);
+    });
+  }
+
+  // Global drag & drop on TikTok pane
+  const pane = document.getElementById('paneTiktokFlashcard');
+  if (pane) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      pane.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+    pane.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!e.dataTransfer || !e.dataTransfer.files) return;
+      const files = Array.from(e.dataTransfer.files);
+      const zipFile = files.find(f => f.name.endsWith('.zip') || f.type.includes('zip'));
+      if (zipFile) {
+        await handleZipFileInput(zipFile);
+        return;
+      }
+      const imgFiles = files.filter(f => f.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|bmp|svg|avif)$/i.test(f.name));
+      if (imgFiles.length > 1) {
+        await handleImageFilesInput(imgFiles);
+      } else if (imgFiles.length === 1) {
+        const reader = new FileReader();
+        reader.onload = (ev) => handleImagePasteOrFile(ev.target.result);
+        reader.readAsDataURL(imgFiles[0]);
+      }
     });
   }
 }
@@ -8856,7 +9175,7 @@ function initTiktokFlashcardTab() {
     if (typeof playTone === 'function') playTone(900, 0.08, 'sine', 0.15);
   }
 
-  function setupImageDropAndPaste() {
+  function setupBlankOverlayListeners() {
     const blankDropzone = document.getElementById('tkBlankDropzone');
     const blankFileInput = document.getElementById('tkBlankFileInput');
     const btnBlankPick = document.getElementById('btnTkBlankPickFile');
@@ -8917,7 +9236,7 @@ function initTiktokFlashcardTab() {
       });
     }
 
-    // Window Paste listener
+    // Window Paste listener for Blank Overlay
     window.addEventListener('paste', async (e) => {
       const blankOverlay = document.getElementById('tkFeedBlankNewOverlay');
       const isBlankOpen = blankOverlay && blankOverlay.style.display !== 'none';
@@ -8945,9 +9264,8 @@ function initTiktokFlashcardTab() {
                   if (previewWrap) previewWrap.style.display = 'flex';
                   if (dropzoneEmpty) dropzoneEmpty.style.display = 'none';
                 } else {
-                  // When in main feed, auto-open blank card and populate!
-                  openTkBlankNewOverlay();
-                  setTkBlankImage(dataUrl);
+                  // When in main feed, update current card image
+                  handleImagePasteOrFile(dataUrl);
                 }
               };
               reader.readAsDataURL(file);
@@ -8974,8 +9292,13 @@ function initTiktokFlashcardTab() {
           blankDropzone.classList.remove('dragover');
         });
       });
-      blankDropzone.addEventListener('drop', (e) => {
+      blankDropzone.addEventListener('drop', async (e) => {
         const file = e.dataTransfer.files?.[0];
+        if (file && (file.name.endsWith('.zip') || file.type.includes('zip'))) {
+          await handleZipFileInput(file);
+          closeTkBlankNewOverlay();
+          return;
+        }
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (ev) => setTkBlankImage(ev.target.result);
@@ -8986,6 +9309,7 @@ function initTiktokFlashcardTab() {
   }
 
   setupImageDropAndPaste();
+  setupBlankOverlayListeners();
 
   const btnNew = document.getElementById('btnTkNewWord');
   if (btnNew) btnNew.addEventListener('click', () => openTkForm(null));
