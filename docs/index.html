@@ -407,9 +407,12 @@
   <!-- Hidden File Input for ZIP -->
   <input type="file" id="zipInput" accept=".zip,application/zip" style="display: none;" />
 
-  <!-- Fullscreen Image Modal -->
-  <div class="modal" id="fullImgModal" onclick="this.classList.remove('active')">
-    <img id="fullImg" src="" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px;" />
+  <!-- Fullscreen Interactive Image Modal with Pinch-To-Zoom & Pan -->
+  <div class="modal" id="fullImgModal" style="background: rgba(0,0,0,0.96); padding: 0; touch-action: none;">
+    <button type="button" id="btnCloseFullImg" style="position: absolute; top: max(16px, calc(env(safe-area-inset-top, 0px) + 12px)); right: 16px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100002;">✕</button>
+    <div id="fullImgContainer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+      <img id="fullImg" src="" style="max-width: 95%; max-height: 95%; object-fit: contain; transform-origin: center center; will-change: transform; transition: transform 0.08s ease-out; user-select: none;" />
+    </div>
   </div>
 
   <!-- Add Card Modal -->
@@ -660,14 +663,177 @@
       updateCard();
     }
 
-    // Image Zoom Click
+    // Image Fullscreen Interactive Zoom & Pan (2-finger Pinch, Double-tap, Mouse Wheel, Drag)
+    let zoomScale = 1;
+    let panX = 0;
+    let panY = 0;
+    let lastTapTime = 0;
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let initialPinchDist = 0;
+    let initialZoomScale = 1;
+
+    const fullModal = document.getElementById('fullImgModal');
+    const fullImg = document.getElementById('fullImg');
+    const fullContainer = document.getElementById('fullImgContainer');
+    const btnCloseFullImg = document.getElementById('btnCloseFullImg');
+
+    function applyZoomTransform(animate = false) {
+      if (!fullImg) return;
+      if (animate) {
+        fullImg.style.transition = 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      } else {
+        fullImg.style.transition = 'none';
+      }
+      fullImg.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${zoomScale})`;
+    }
+
+    function resetZoom() {
+      zoomScale = 1;
+      panX = 0;
+      panY = 0;
+      applyZoomTransform(true);
+    }
+
+    function closeFullscreen() {
+      resetZoom();
+      if (fullModal) fullModal.classList.remove('active');
+    }
+
+    if (btnCloseFullImg) {
+      btnCloseFullImg.addEventListener('click', e => {
+        e.stopPropagation();
+        closeFullscreen();
+      });
+    }
+
+    // Image Zoom Click Trigger
     document.getElementById('cardImgWrap').addEventListener('click', () => {
       const imgEl = document.getElementById('cardImg');
       if (imgEl && imgEl.src && imgEl.style.display !== 'none') {
-        document.getElementById('fullImg').src = imgEl.src;
-        document.getElementById('fullImgModal').classList.add('active');
+        if (fullImg) fullImg.src = imgEl.src;
+        resetZoom();
+        if (fullModal) fullModal.classList.add('active');
       }
     });
+
+    if (fullContainer) {
+      // Touch Handling (Pinch-to-zoom & Pan)
+      fullContainer.addEventListener('touchstart', e => {
+        if (e.touches.length === 2) {
+          initialPinchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          initialZoomScale = zoomScale;
+        } else if (e.touches.length === 1) {
+          const now = Date.now();
+          if (now - lastTapTime < 280) {
+            if (zoomScale > 1.2) {
+              zoomScale = 1;
+              panX = 0;
+              panY = 0;
+            } else {
+              zoomScale = 2.5;
+            }
+            applyZoomTransform(true);
+            lastTapTime = 0;
+            return;
+          }
+          lastTapTime = now;
+
+          if (zoomScale > 1) {
+            isPanning = true;
+            panStartX = e.touches[0].clientX - panX;
+            panStartY = e.touches[0].clientY - panY;
+          }
+        }
+      }, { passive: false });
+
+      fullContainer.addEventListener('touchmove', e => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (initialPinchDist > 0) {
+            const factor = dist / initialPinchDist;
+            zoomScale = Math.min(Math.max(initialZoomScale * factor, 1), 5);
+            if (zoomScale <= 1) {
+              panX = 0;
+              panY = 0;
+            }
+            applyZoomTransform(false);
+          }
+        } else if (e.touches.length === 1 && isPanning && zoomScale > 1) {
+          e.preventDefault();
+          panX = e.touches[0].clientX - panStartX;
+          panY = e.touches[0].clientY - panStartY;
+          applyZoomTransform(false);
+        }
+      }, { passive: false });
+
+      fullContainer.addEventListener('touchend', e => {
+        if (e.touches.length < 2) {
+          initialPinchDist = 0;
+        }
+        if (e.touches.length === 0) {
+          isPanning = false;
+          if (zoomScale < 1) {
+            resetZoom();
+          }
+        }
+      });
+
+      // Mouse Drag Pan (Desktop)
+      fullContainer.addEventListener('mousedown', e => {
+        if (zoomScale > 1) {
+          isPanning = true;
+          panStartX = e.clientX - panX;
+          panStartY = e.clientY - panY;
+          fullContainer.style.cursor = 'grabbing';
+        }
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (isPanning && zoomScale > 1) {
+          panX = e.clientX - panStartX;
+          panY = e.clientY - panStartY;
+          applyZoomTransform(false);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isPanning = false;
+        if (fullContainer) fullContainer.style.cursor = zoomScale > 1 ? 'grab' : 'default';
+      });
+
+      // Mouse Wheel Zoom (Desktop)
+      fullContainer.addEventListener('wheel', e => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.3 : 0.3;
+        zoomScale = Math.min(Math.max(zoomScale + delta, 1), 5);
+        if (zoomScale <= 1) {
+          panX = 0;
+          panY = 0;
+        }
+        applyZoomTransform(true);
+      }, { passive: false });
+
+      // Double click to zoom on Desktop
+      fullContainer.addEventListener('dblclick', () => {
+        if (zoomScale > 1.2) {
+          zoomScale = 1;
+          panX = 0;
+          panY = 0;
+        } else {
+          zoomScale = 2.5;
+        }
+        applyZoomTransform(true);
+      });
+    }
 
     // Unified Gesture Engine (Swipe Up / Down, Drag, Mouse Wheel)
     let startY = 0;
