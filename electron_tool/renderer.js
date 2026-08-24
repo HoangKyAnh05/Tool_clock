@@ -6680,28 +6680,12 @@ ${wordLines}
 function updateTkSelectionUI() {
   const bar = document.getElementById('tkSelectionBar');
   const countEl = document.getElementById('tkSelectedCount');
-  const btnSync = document.getElementById('btnTkSyncWeb');
-  const btnPlayerSync = document.getElementById('btnTkPlayerSyncWeb');
 
   if (selectedTkCardIds.size > 1) {
     if (bar) bar.style.display = 'flex';
     if (countEl) countEl.textContent = selectedTkCardIds.size;
-    if (btnSync) {
-      btnSync.innerHTML = `🌐 Đẩy ${selectedTkCardIds.size} từ đã chọn lên Web`;
-      btnSync.style.background = 'linear-gradient(135deg, #00f2fe 0%, #10b981 100%)';
-    }
-    if (btnPlayerSync) {
-      btnPlayerSync.innerHTML = `🌐 Đẩy ${selectedTkCardIds.size} từ`;
-    }
   } else {
     if (bar) bar.style.display = 'none';
-    if (btnSync) {
-      btnSync.innerHTML = '🌐 Đẩy lên Web Mobile';
-      btnSync.style.background = 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)';
-    }
-    if (btnPlayerSync) {
-      btnPlayerSync.innerHTML = '🌐 Web Mobile';
-    }
   }
 }
 
@@ -10066,8 +10050,19 @@ YÊU CẦU ĐẶC BIỆT QUAN TRỌNG:
     }
   }
 
-  const btnSyncWeb = document.getElementById('btnTkSyncWeb');
-  if (btnSyncWeb) btnSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);
+  const btnOpenWebGithub = document.getElementById('btnTkOpenWebGithub') || document.getElementById('btnTkSyncWeb');
+  if (btnOpenWebGithub) {
+    btnOpenWebGithub.addEventListener('click', () => {
+      const targetUrl = 'https://hoangkyanh05.github.io/Tool_clock/';
+      if (window.taskAPI && window.taskAPI.openExternal) {
+        window.taskAPI.openExternal(targetUrl);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+      showTkToast('🌐 Đang mở Web GitHub Pages trên trình duyệt...', 3000);
+      if (typeof playTone === 'function') playTone(750, 0.08, 'sine', 0.15);
+    });
+  }
 
   const btnPlayerSyncWeb = document.getElementById('btnTkPlayerSyncWeb');
   if (btnPlayerSyncWeb) btnPlayerSyncWeb.addEventListener('click', handleSyncFlashcardsToWeb);

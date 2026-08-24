@@ -1234,10 +1234,16 @@ ${jsonData}
     }
 
     // Local Storage State
-    let masteredIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_mastered') || '[]'));
-    let dueIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_due') || '[]'));
-    let activeFilter = localStorage.getItem('pwa_tk_filter') || 'all';
-    let currentIndex = parseInt(localStorage.getItem('pwa_tk_index') || '0', 10);
+    let masteredIds = new Set();
+    let dueIds = new Set();
+    let activeFilter = 'all';
+    let currentIndex = 0;
+    try {
+      masteredIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_mastered') || '[]'));
+      dueIds = new Set(JSON.parse(localStorage.getItem('pwa_tk_due') || '[]'));
+      activeFilter = localStorage.getItem('pwa_tk_filter') || 'all';
+      currentIndex = parseInt(localStorage.getItem('pwa_tk_index') || '0', 10);
+    } catch (e) {}
     let autoScrollInterval = null;
     let autoScrollSeconds = 0; // 0 = off, 3, 5, 7
 
@@ -1247,11 +1253,21 @@ ${jsonData}
     if (activeFilter === 'image' && RAW_ITEMS.filter(x => !!x.imageUrl).length === 0) activeFilter = 'all';
 
     function saveState() {
-      localStorage.setItem('pwa_tk_mastered', JSON.stringify([...masteredIds]));
-      localStorage.setItem('pwa_tk_due', JSON.stringify([...dueIds]));
-      localStorage.setItem('pwa_tk_filter', activeFilter);
-      localStorage.setItem('pwa_tk_index', currentIndex.toString());
-      localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
+      try {
+        localStorage.setItem('pwa_tk_mastered', JSON.stringify([...masteredIds]));
+        localStorage.setItem('pwa_tk_due', JSON.stringify([...dueIds]));
+        localStorage.setItem('pwa_tk_filter', activeFilter);
+        localStorage.setItem('pwa_tk_index', currentIndex.toString());
+      } catch (e) {}
+    }
+
+    function saveUserCardsToStorage() {
+      try {
+        localStorage.setItem('pwa_tk_custom_items', JSON.stringify(RAW_ITEMS));
+      } catch (e) {
+        console.warn('LocalStorage quota limit reached for images:', e);
+      }
+      saveState();
     }
 
     function getFilteredList() {
@@ -1269,34 +1285,40 @@ ${jsonData}
       const masteredCount = RAW_ITEMS.filter(x => masteredIds.has(x.id)).length;
       const imageCount = RAW_ITEMS.filter(x => !!x.imageUrl).length;
 
-      document.getElementById('badgeAll').textContent = allCount;
-      document.getElementById('badgeDue').textContent = dueCount;
-      document.getElementById('badgeMastered').textContent = masteredCount;
-      document.getElementById('badgeImage').textContent = imageCount;
+      const badgeAll = document.getElementById('badgeAll');
+      const badgeDue = document.getElementById('badgeDue');
+      const badgeMastered = document.getElementById('badgeMastered');
+      const badgeImage = document.getElementById('badgeImage');
+      const progressText = document.getElementById('headerProgressText');
+
+      if (badgeAll) badgeAll.textContent = allCount;
+      if (badgeDue) badgeDue.textContent = dueCount;
+      if (badgeMastered) badgeMastered.textContent = masteredCount;
+      if (badgeImage) badgeImage.textContent = imageCount;
       
       const pct = allCount > 0 ? Math.round((masteredCount / allCount) * 100) : 0;
-      document.getElementById('headerProgressText').textContent = \`\${allCount} thẻ • Đã thuộc \${pct}%\`;
+      if (progressText) progressText.textContent = \`\${allCount} thẻ • Đã thuộc \${pct}%\`;
     }
 
     // Slide HTML Builder
     function buildSlideContent(item, index, total) {
       if (!item) {
-        return '<div class="slide-body"><div style="color: #94a3b8; text-align: center;">Chưa có thẻ nào trong mục này.<br><br><button type="button" class="add-card-header-btn" onclick="openAddCardModal()" style="margin: auto;">➕ Thêm thẻ đầu tiên</button></div></div>';
+        return '<div class="slide-body"><div style="color: #94a3b8; text-align: center; padding: 20px;">Chưa có thẻ nào trong mục này.<br><br><button type="button" class="add-card-header-btn" onclick="openAddCardModal()" style="margin: auto;">➕ Thêm thẻ đầu tiên</button></div></div>';
       }
 
       let inner = '';
       if (item.imageUrl) {
         inner = \`
-          <div class="slide-img-container" data-img="\${item.imageUrl}">
+          <div class="slide-img-container">
             <img src="\${item.imageUrl}" alt="Flashcard" loading="lazy" />
           </div>
         \`;
       } else {
         inner = \`
           <div class="slide-text-container">
-            <div class="slide-word-title">\${item.word || '---'}</div>
-            <div class="slide-word-trans">\${item.translation || ''}</div>
-            <div class="slide-notes-card">\${item.notes || 'Chưa có ghi chú ví dụ.'}</div>
+            <div class="slide-word-title">\${escapeHtml(item.word || '---')}</div>
+            <div class="slide-word-trans">\${escapeHtml(item.translation || '')}</div>
+            <div class="slide-notes-card">\${escapeHtml(item.notes || 'Chưa có ghi chú ví dụ.')}</div>
           </div>
         \`;
       }
@@ -1312,8 +1334,8 @@ ${jsonData}
             <span class="slide-tag">\${tagText}</span>
             <span class="slide-index-tag">Thẻ \${index + 1} / \${total}</span>
           </div>
-          <div class="slide-caption-title">\${item.word || '🖼️ Thẻ ảnh'}</div>
-          <div class="slide-caption-trans">\${item.translation || (item.imageUrl ? 'Chạm ảnh để phóng to toàn màn hình' : '')}</div>
+          <div class="slide-caption-title">\${escapeHtml(item.word || '🖼️ Thẻ ảnh')}</div>
+          <div class="slide-caption-trans">\${escapeHtml(item.translation || (item.imageUrl ? 'Chạm ảnh để phóng to toàn màn hình' : ''))}</div>
         </div>
       \`;
     }
@@ -1331,9 +1353,9 @@ ${jsonData}
       const list = getFilteredList();
       const total = list.length;
       if (total === 0) {
-        slideCurrent.innerHTML = buildSlideContent(null, 0, 0);
-        slidePrev.innerHTML = '';
-        slideNext.innerHTML = '';
+        if (slideCurrent) slideCurrent.innerHTML = buildSlideContent(null, 0, 0);
+        if (slidePrev) slidePrev.innerHTML = '';
+        if (slideNext) slideNext.innerHTML = '';
         if (lblNavCounter) lblNavCounter.textContent = 'Thẻ 0 / 0';
         return;
       }
@@ -1348,40 +1370,47 @@ ${jsonData}
       const prevItem = list[prevIdx];
       const nextItem = list[nextIdx];
 
-      slidePrev.innerHTML = buildSlideContent(prevItem, prevIdx, total);
-      slideCurrent.innerHTML = buildSlideContent(currentItem, currentIndex, total);
-      slideNext.innerHTML = buildSlideContent(nextItem, nextIdx, total);
+      if (slidePrev) slidePrev.innerHTML = buildSlideContent(prevItem, prevIdx, total);
+      if (slideCurrent) slideCurrent.innerHTML = buildSlideContent(currentItem, currentIndex, total);
+      if (slideNext) slideNext.innerHTML = buildSlideContent(nextItem, nextIdx, total);
 
       // Positioning 3 slides vertically with 3D hardware acceleration
-      slidePrev.style.transform = 'translate3d(0, -100%, 0)';
-      slideCurrent.style.transform = 'translate3d(0, 0, 0)';
-      slideNext.style.transform = 'translate3d(0, 100%, 0)';
-      sliderTrack.style.transform = 'translate3d(0, 0, 0)';
+      if (slidePrev) slidePrev.style.transform = 'translate3d(0, -100%, 0)';
+      if (slideCurrent) slideCurrent.style.transform = 'translate3d(0, 0, 0)';
+      if (slideNext) slideNext.style.transform = 'translate3d(0, 100%, 0)';
+      if (sliderTrack) sliderTrack.style.transform = 'translate3d(0, 0, 0)';
 
       // Update Nav counter pill
       if (lblNavCounter) lblNavCounter.textContent = \`Thẻ \${currentIndex + 1} / \${total}\`;
 
       // Side action buttons status
-      if (masteredIds.has(currentItem.id)) {
-        btnSideMastered.classList.add('active-like');
-      } else {
-        btnSideMastered.classList.remove('active-like');
+      if (btnSideMastered) {
+        if (masteredIds.has(currentItem.id)) {
+          btnSideMastered.classList.add('active-like');
+        } else {
+          btnSideMastered.classList.remove('active-like');
+        }
       }
 
-      const tkUrl = currentItem.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(currentItem.word || '')}\`);
-      btnSideTiktok.href = tkUrl;
+      if (btnSideTiktok) {
+        const tkUrl = currentItem.tiktokUrl || (\`https://www.tiktok.com/search?q=\${encodeURIComponent(currentItem.word || '')}\`);
+        btnSideTiktok.href = tkUrl;
+      }
 
       // Bind image zoom click
-      slideCurrent.querySelectorAll('.slide-img-container').forEach(el => {
-        el.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const src = el.getAttribute('data-img');
-          if (src) {
-            document.getElementById('fullscreenImg').src = src;
-            document.getElementById('imgFullscreenModal').classList.add('active');
-          }
+      if (slideCurrent) {
+        slideCurrent.querySelectorAll('.slide-img-container img').forEach(imgEl => {
+          imgEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (imgEl.src) {
+              const fullImg = document.getElementById('fullscreenImg');
+              const fullModal = document.getElementById('imgFullscreenModal');
+              if (fullImg) fullImg.src = imgEl.src;
+              if (fullModal) fullModal.classList.add('active');
+            }
+          });
         });
-      });
+      }
 
       saveState();
     }
