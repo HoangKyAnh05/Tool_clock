@@ -65,14 +65,17 @@
       position: relative;
     }
 
-    /* Top Bar */
+    /* Top Bar - Optimized for iPhone Notch (Tai Thỏ) & Dynamic Island */
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: rgba(19, 23, 34, 0.85);
-      backdrop-filter: blur(10px);
+      padding-top: max(20px, calc(env(safe-area-inset-top, 0px) + 14px));
+      padding-bottom: 12px;
+      padding-left: max(14px, env(safe-area-inset-left, 0px));
+      padding-right: max(14px, env(safe-area-inset-right, 0px));
+      background: rgba(19, 23, 34, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       z-index: 20;
       gap: 8px;
@@ -233,8 +236,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: rgba(19, 23, 34, 0.9);
+      padding-top: 10px;
+      padding-bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+      padding-left: max(14px, env(safe-area-inset-left, 0px));
+      padding-right: max(14px, env(safe-area-inset-right, 0px));
+      background: rgba(19, 23, 34, 0.95);
       border-top: 1px solid var(--border);
       z-index: 20;
       gap: 8px;
