@@ -14,12 +14,16 @@ function generateMobileHtml() {
   <meta name="description" content="Ứng dụng Flashcard học từ vựng nhanh, nhẹ, mượt mà và tự động đồng bộ.">
   <meta name="theme-color" content="#0f172a">
   
-  <!-- PWA Meta Tags -->
+  <!-- PWA & Favicon Meta Tags -->
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="shortcut icon" href="icons/favicon.ico">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 
   <!-- Fonts & Libraries -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -863,13 +867,18 @@ function generateMobileHtml() {
 </html>`;
 }
 
-function writeWebFiles(data, rootDir) {
+async function writeWebFiles(data, rootDir) {
   const html = generateMobileHtml();
 
   // 1. Generate PWA Icons
   const rootIconsDir = path.join(rootDir, 'icons');
   const docsIconsDir = path.join(rootDir, 'docs', 'icons');
-  generateIcons([rootIconsDir, docsIconsDir]);
+  await generateIcons([
+    rootDir,
+    path.join(rootDir, 'docs'),
+    rootIconsDir,
+    docsIconsDir
+  ]);
 
   // 2. Generate Manifest and SW
   const manifestJson = JSON.stringify({
