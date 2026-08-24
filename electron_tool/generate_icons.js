@@ -1,5 +1,5 @@
 // generate_icons.js
-// Generates standard PWA icons (PNG and SVG)
+// Generates standard AI PWA and Desktop application icons (PNG, SVG, ICO)
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
@@ -72,47 +72,80 @@ function getSvgContent() {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b0d14"/>
-      <stop offset="100%" stop-color="#181c2b"/>
+      <stop offset="0%" stop-color="#070a12"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
     </linearGradient>
-    <linearGradient id="tkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff0050"/>
-      <stop offset="50%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#00f2fe"/>
+    <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe"/>
+      <stop offset="35%" stop-color="#38bdf8"/>
+      <stop offset="70%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="16" result="blur" />
+    <linearGradient id="coreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="20" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
+  
+  <!-- Base App Tile -->
   <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
-  <rect x="16" y="16" width="480" height="480" rx="116" fill="none" stroke="url(#tkGrad)" stroke-width="8" opacity="0.6"/>
+  <rect x="12" y="12" width="488" height="488" rx="120" fill="none" stroke="url(#aiGrad)" stroke-width="6" opacity="0.75"/>
   
-  <!-- Outer glowing card -->
-  <rect x="80" y="80" width="352" height="352" rx="60" fill="url(#tkGrad)" filter="url(#glow)" opacity="0.25"/>
-  <rect x="96" y="96" width="320" height="320" rx="50" fill="#131722" stroke="url(#tkGrad)" stroke-width="4"/>
+  <!-- Glowing Background Nebula -->
+  <circle cx="256" cy="256" r="140" fill="url(#aiGrad)" filter="url(#glow)" opacity="0.35"/>
   
-  <!-- TikTok note + Flashcard Symbol -->
-  <g transform="translate(256, 230) scale(1.4)">
-    <path d="M-10,-60 L15,-60 C25,-60 38,-45 42,-25 C45,-5 42,0 42,0 L42,15 C35,15 25,5 20,-5 L20,35 C20,60 -5,75 -30,65 C-50,55 -55,30 -45,10 C-35,-10 -10,-10 -10,15 L-10,-60 Z" fill="url(#tkGrad)"/>
-    <circle cx="-25" cy="40" r="16" fill="#00f2fe"/>
+  <!-- AI Neural Orbit Ring -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="url(#aiGrad)" stroke-width="3" stroke-dasharray="16 12" opacity="0.45"/>
+  
+  <!-- Central Gemini AI 4-Point Star -->
+  <g transform="translate(256, 256)">
+    <!-- Outer Star Glow -->
+    <path d="M0,-150 Q0,0 -150,0 Q0,0 0,150 Q0,0 150,0 Q0,0 0,-150 Z" fill="url(#aiGrad)" filter="url(#glow)" opacity="0.9"/>
+    <!-- Inner Core Star -->
+    <path d="M0,-120 Q0,0 -120,0 Q0,0 0,120 Q0,0 120,0 Q0,0 0,-120 Z" fill="url(#coreGrad)"/>
+    <!-- Secondary AI Sparkles -->
+    <path d="M75,-85 Q75,-45 35,-45 Q75,-45 75,-5 Q75,-45 115,-45 Q75,-45 75,-85 Z" fill="#ffffff" opacity="0.95"/>
+    <path d="M-80,75 Q-80,45 -50,45 Q-80,45 -80,15 Q-80,45 -110,45 Q-80,45 -80,75 Z" fill="#38bdf8" opacity="0.9"/>
   </g>
-  
-  <!-- Text Label -->
-  <text x="256" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">FLASHCARD</text>
 </svg>`;
+}
+
+function createIcoFromPng(pngBuffer) {
+  // Simple single-image ICO wrapper for 256x256 / PNG
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0); // Reserved
+  header.writeUInt16LE(1, 2); // ICO type
+  header.writeUInt16LE(1, 4); // 1 image
+
+  const entry = Buffer.alloc(16);
+  entry.writeUInt8(0, 0); // 0 = 256px
+  entry.writeUInt8(0, 1); // 0 = 256px
+  entry.writeUInt8(0, 2); // palette
+  entry.writeUInt8(0, 3); // reserved
+  entry.writeUInt16LE(1, 4); // color planes
+  entry.writeUInt16LE(32, 6); // bpp
+  entry.writeUInt32LE(pngBuffer.length, 8); // size
+  entry.writeUInt32LE(22, 12); // offset
+
+  return Buffer.concat([header, entry, pngBuffer]);
 }
 
 function generateIcons(targetDirs) {
   const svg = getSvgContent();
   
+  // AI Sparkle Star Pixel Shader for High-Res PNG
   const iconPixelFn = (x, y, w, h) => {
     const cx = w / 2, cy = h / 2;
     const dx = x - cx;
     const dy = y - cy;
 
     // Rounded rectangle corner check
-    const cornerR = w * 0.22;
+    const cornerR = w * 0.24;
     const qx = Math.abs(dx) - (w / 2 - cornerR);
     const qy = Math.abs(dy) - (h / 2 - cornerR);
     let inCard = true;
@@ -124,23 +157,51 @@ function generateIcons(targetDirs) {
       return [0, 0, 0, 0];
     }
 
-    const u = x / w, v = y / h;
-    const isBorder = (x < w * 0.05 || x > w * 0.95 || y < h * 0.05 || y > h * 0.95);
-    if (isBorder) {
-      const r = Math.floor(255 * (1 - u));
-      const g = Math.floor(242 * u);
-      const b = 254;
+    const dist = Math.hypot(dx, dy);
+    const maxR = w * 0.35;
+
+    // AI Star 4-point shape math: |dx|^0.5 + |dy|^0.5 < threshold
+    const normX = Math.abs(dx) / maxR;
+    const normY = Math.abs(dy) / maxR;
+    const starDist = Math.sqrt(normX) + Math.sqrt(normY);
+
+    if (starDist <= 1.0) {
+      // Inside AI Star
+      const factor = 1.0 - starDist;
+      const r = Math.floor(180 + 75 * factor);
+      const g = Math.floor(220 + 35 * factor);
+      const b = 255;
       return [r, g, b, 255];
     }
 
-    const r = Math.floor(15 + 40 * (1 - u) * (1 - v));
-    const g = Math.floor(18 + 20 * v);
-    const b = Math.floor(30 + 50 * u * v);
+    if (starDist <= 1.35) {
+      // Glowing aura around AI Star
+      const glowFactor = (1.35 - starDist) / 0.35;
+      const r = Math.floor(139 * glowFactor);
+      const g = Math.floor(92 * glowFactor);
+      const b = Math.floor(246 * glowFactor + 40);
+      return [r, g, b, 255];
+    }
+
+    // Border glowing stroke
+    const isBorder = (x < w * 0.04 || x > w * 0.96 || y < h * 0.04 || y > h * 0.96);
+    if (isBorder) {
+      const u = x / w;
+      return [Math.floor(0 + 236 * u), Math.floor(242 - 170 * u), 254, 255];
+    }
+
+    // Deep AI Cyber background
+    const bgFactor = 1.0 - (dist / (w * 0.7));
+    const r = Math.floor(11 + 20 * bgFactor);
+    const g = Math.floor(15 + 25 * bgFactor);
+    const b = Math.floor(26 + 60 * bgFactor);
     return [r, g, b, 255];
   };
 
   const png192 = createPng(192, 192, iconPixelFn);
+  const png256 = createPng(256, 256, iconPixelFn);
   const png512 = createPng(512, 512, iconPixelFn);
+  const icoData = createIcoFromPng(png256);
 
   targetDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -150,7 +211,9 @@ function generateIcons(targetDirs) {
     fs.writeFileSync(path.join(dir, 'icon-192.png'), png192);
     fs.writeFileSync(path.join(dir, 'icon-512.png'), png512);
     fs.writeFileSync(path.join(dir, 'apple-touch-icon.png'), png192);
-    console.log(`[ICONS] Generated PWA icons in ${dir}`);
+    fs.writeFileSync(path.join(dir, 'icon.ico'), icoData);
+    fs.writeFileSync(path.join(dir, 'icon.png'), png256);
+    console.log(`[ICONS] Generated AI icons in ${dir}`);
   });
 }
 
@@ -162,6 +225,8 @@ module.exports = {
 if (require.main === module) {
   const rootDir = path.join(__dirname, '..');
   generateIcons([
+    rootDir,
+    path.join(rootDir, 'electron_tool'),
     path.join(rootDir, 'icons'),
     path.join(rootDir, 'docs', 'icons')
   ]);
