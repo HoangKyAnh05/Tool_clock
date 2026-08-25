@@ -45,68 +45,77 @@ async function captureAndCopy(targetTab) {
     await new Promise((resolve) => setTimeout(resolve, 40));
 
     // 2. Chụp toàn bộ viewport tab đang active với màu gốc, độ phân giải gốc
-    chrome.tabs.captureVisibleTab(tab.windowId || null, { format: "png" }, async (dataUrl) => {
-      // 3. Khôi phục lại giao diện & tạo hiệu ứng flash báo hiệu SAU KHI chụp
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          document.documentElement.removeAttribute("data-tab-capturing");
+    const captureTabSafe = (windowId, retries = 5) => {
+      chrome.tabs.captureVisibleTab(windowId, { format: "png" }, async (dataUrl) => {
+        // 3. Khôi phục lại giao diện & tạo hiệu ứng flash báo hiệu SAU KHI chụp
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => {
+            document.documentElement.removeAttribute("data-tab-capturing");
 
-          let flash = document.getElementById("tab-capture-flash-overlay");
-          if (!flash) {
-            flash = document.createElement("div");
-            flash.id = "tab-capture-flash-overlay";
-            document.body.appendChild(flash);
+            let flash = document.getElementById("tab-capture-flash-overlay");
+            if (!flash) {
+              flash = document.createElement("div");
+              flash.id = "tab-capture-flash-overlay";
+              document.body.appendChild(flash);
+            }
+            flash.classList.remove("active");
+            void flash.offsetWidth; // Trigger reflow
+            flash.classList.add("active");
+            setTimeout(() => { flash.classList.remove("active"); }, 200);
           }
-          flash.classList.remove("active");
-          void flash.offsetWidth; // Trigger reflow
-          flash.classList.add("active");
-          setTimeout(() => { flash.classList.remove("active"); }, 200);
+        }).catch(() => {});
+
+        if (chrome.runtime.lastError || !dataUrl) {
+          const errMsg = chrome.runtime.lastError ? chrome.runtime.lastError.message : "No data";
+          if (retries > 0 && errMsg.includes("MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND")) {
+            setTimeout(() => captureTabSafe(windowId, retries - 1), 700);
+            return;
+          }
+          console.error("Lỗi khi chụp tab:", chrome.runtime.lastError);
+          return;
         }
-      }).catch(() => {});
 
-      if (chrome.runtime.lastError || !dataUrl) {
-        console.error("Lỗi khi chụp tab:", chrome.runtime.lastError);
-        return;
-      }
+        // 4. Tự động lưu file ảnh về máy
+        const now = new Date();
+        const timeStr = `${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
+        const sanitizedTitle = (tab.title || "tab").replace(/[\\/:*?"<>|]/g, "_").substring(0, 30);
+        const filename = `Capture_${sanitizedTitle}_${timeStr}.png`;
 
-      // 4. Tự động lưu file ảnh về máy
-      const now = new Date();
-      const timeStr = `${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
-      const sanitizedTitle = (tab.title || "tab").replace(/[\\/:*?"<>|]/g, "_").substring(0, 30);
-      const filename = `Capture_${sanitizedTitle}_${timeStr}.png`;
+        chrome.downloads.download({
+          url: dataUrl,
+          filename: filename,
+          saveAs: false
+        });
 
-      chrome.downloads.download({
-        url: dataUrl,
-        filename: filename,
-        saveAs: false
+        // 5. Tự động ghi ảnh vào Clipboard của tab đó
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: (base64Image) => {
+            fetch(base64Image)
+              .then((r) => r.blob())
+              .then((blob) => {
+                const item = new ClipboardItem({ "image/png": blob });
+                navigator.clipboard.write([item]).then(() => {
+                  let toast = document.getElementById("capture-toast-notify");
+                  if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "capture-toast-notify";
+                    document.body.appendChild(toast);
+                  }
+                  toast.innerHTML = `✅ <b>ĐÃ CHỤP & COPY FULL TAB!</b><br><span style="font-size:11.5px;color:#cbd5e1">Bấm <b>Ctrl + V</b> để dán ảnh gốc</span>`;
+                  toast.className = "show";
+                  setTimeout(() => { toast.className = ""; }, 3500);
+                });
+              })
+              .catch((err) => console.error("Lỗi clipboard:", err));
+          },
+          args: [dataUrl]
+        }).catch((e) => console.error("Lỗi inject script copy:", e));
       });
+    };
 
-      // 5. Tự động ghi ảnh vào Clipboard của tab đó
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: (base64Image) => {
-          fetch(base64Image)
-            .then((r) => r.blob())
-            .then((blob) => {
-              const item = new ClipboardItem({ "image/png": blob });
-              navigator.clipboard.write([item]).then(() => {
-                let toast = document.getElementById("capture-toast-notify");
-                if (!toast) {
-                  toast = document.createElement("div");
-                  toast.id = "capture-toast-notify";
-                  document.body.appendChild(toast);
-                }
-                toast.innerHTML = `✅ <b>ĐÃ CHỤP & COPY FULL TAB!</b><br><span style="font-size:11.5px;color:#cbd5e1">Bấm <b>Ctrl + V</b> để dán ảnh gốc</span>`;
-                toast.className = "show";
-                setTimeout(() => { toast.className = ""; }, 3500);
-              });
-            })
-            .catch((err) => console.error("Lỗi clipboard:", err));
-        },
-        args: [dataUrl]
-      }).catch((e) => console.error("Lỗi inject script copy:", e));
-    });
+    captureTabSafe(tab.windowId || null);
   } catch (err) {
     console.error("Lỗi trong captureAndCopy:", err);
   }

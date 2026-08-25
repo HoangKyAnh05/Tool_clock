@@ -1,7 +1,18 @@
 // ==========================================
-// 1. LẮNG NGHE NÚT CHUỘT SƯỜN TRÊN (FORWARD BUTTON)
+// 1. LẮNG NGHE NÚT CHUỘT SƯỜN TRÊN & PHÍM NUMLOCK
 // ==========================================
 let lastTriggerTime = 0;
+
+// Lắng nghe phím NumLock
+window.addEventListener("keydown", (e) => {
+  if (e.code === "NumLock" || e.key === "NumLock" || e.keyCode === 144) {
+    const now = Date.now();
+    if (now - lastTriggerTime > 800) {
+      lastTriggerTime = now;
+      triggerCaptureNow();
+    }
+  }
+}, true);
 
 function handleForwardClick(e) {
   // e.button === 4 là nút Go Forward (nút sườn trên)

@@ -144,6 +144,12 @@ function generateMobileHtml() {
       color: #fff;
       transition: all 0.2s;
     }
+    .btn-sync {
+      background: linear-gradient(135deg, #0284c7 0%, #00f2fe 100%);
+      color: #04131f;
+      border: none;
+      font-weight: 800;
+    }
     .btn-zip {
       background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
       border: none;
@@ -380,6 +386,7 @@ function generateMobileHtml() {
         <button type="button" class="tab-pill" id="tabImage" onclick="setFilter('image')">🖼️ Ảnh (<span id="cntImage">0</span>)</button>
       </div>
       <div class="action-btns">
+        <button type="button" class="btn-action btn-sync" id="btnSyncCloud" onclick="openSyncModal()" title="Sao lưu & Đồng bộ dữ liệu Cloud">☁️ Đồng bộ</button>
         <button type="button" class="btn-action btn-zip" id="btnZip" onclick="triggerZipUpload()">📦 ZIP</button>
         <button type="button" class="btn-action" id="btnAdd" onclick="openAddModal()">➕ Thêm</button>
       </div>
@@ -434,6 +441,56 @@ function generateMobileHtml() {
         <button type="button" class="btn-action" onclick="document.getElementById('addCardModal').classList.remove('active')">Hủy</button>
         <button type="button" class="btn-action btn-zip" onclick="saveNewCard()">Lưu thẻ</button>
       </div>
+    </div>
+  </div>
+
+  
+  <!-- Cloud Sync & Backup Modal -->
+  <div class="modal" id="syncModal">
+    <div class="modal-box" style="max-width: 400px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h3 style="font-size: 15px; color: #fff; display: flex; align-items: center; gap: 6px;">
+          ☁️ <span>Đồng Bộ & Sao Lưu Cloud</span>
+        </h3>
+        <button type="button" onclick="closeSyncModal()" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <p style="font-size: 12px; color: #94a3b8; line-height: 1.4;">
+        Đồng bộ dữ liệu học tập giữa máy tính (Electron PC) và điện thoại (GitHub Page).
+      </p>
+
+      <div>
+        <label style="font-size: 11.5px; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">Chọn Kênh / Mã Slot Cloud:</label>
+        <select id="selSyncSlot" class="inp" style="background: #0f172a; color: #f8fafc; cursor: pointer;">
+          <option value="slot_1" selected>📦 Slot 1 (Dữ liệu chính - slot_1.json)</option>
+          <option value="flashcards">📁 flashcards.json (Dữ liệu gốc)</option>
+          <option value="slot_2">📦 Slot 2 (slot_2.json)</option>
+          <option value="slot_3">📦 Slot 3 (slot_3.json)</option>
+          <option value="slot_4">📦 Slot 4 (slot_4.json)</option>
+          <option value="slot_5">📦 Slot 5 (slot_5.json)</option>
+          <option value="slot_6">📦 Slot 6 (slot_6.json)</option>
+          <option value="slot_7">📦 Slot 7 (slot_7.json)</option>
+          <option value="slot_8">📦 Slot 8 (slot_8.json)</option>
+          <option value="slot_9">📦 Slot 9 (slot_9.json)</option>
+          <option value="slot_0">📦 Slot 0 (slot_0.json)</option>
+        </select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+        <button type="button" class="btn-action" id="btnDownloadFromCloud" onclick="downloadFromCloud()" style="width: 100%; height: 38px; background: linear-gradient(135deg, #0284c7, #00f2fe); color: #04131f; font-weight: 800; justify-content: center; gap: 8px; border-radius: 8px; font-size: 12.5px;">
+          📥 Tải & Đồng bộ từ GitHub Cloud
+        </button>
+
+        <button type="button" class="btn-action" onclick="exportBackupJson()" style="width: 100%; height: 36px; background: #1e293b; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); justify-content: center; gap: 6px; border-radius: 8px; font-size: 12px;">
+          📤 Xuất file sao lưu (Backup .JSON)
+        </button>
+
+        <button type="button" class="btn-action" onclick="document.getElementById('importJsonInput').click()" style="width: 100%; height: 36px; background: #1e293b; color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.4); justify-content: center; gap: 6px; border-radius: 8px; font-size: 12px;">
+          📥 Nhập từ file sao lưu .JSON
+        </button>
+      </div>
+
+      <input type="file" id="importJsonInput" accept=".json,application/json" style="display: none;" onchange="importBackupJson(event)" />
     </div>
   </div>
 
@@ -917,6 +974,122 @@ function generateMobileHtml() {
         prevCard();
       }
     });
+
+    
+    // Cloud Sync & Backup Functions
+    function openSyncModal() {
+      document.getElementById('syncModal').classList.add('active');
+    }
+
+    function closeSyncModal() {
+      document.getElementById('syncModal').classList.remove('active');
+    }
+
+    async function downloadFromCloud() {
+      const sel = document.getElementById('selSyncSlot');
+      const slot = sel ? sel.value : 'slot_1';
+      const fileName = (slot === 'flashcards' ? 'flashcards.json' : slot + '.json');
+      const btn = document.getElementById('btnDownloadFromCloud');
+      const origText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Đang tải dữ liệu từ Cloud...';
+      }
+
+      try {
+        const res = await fetch('./data/' + fileName + '?t=' + Date.now());
+        if (!res.ok) {
+          throw new Error('Không tìm thấy file ' + fileName + ' trên Cloud (HTTP ' + res.status + '). Hãy đảm bảo đã đẩy dữ liệu lên GitHub trước nhé!');
+        }
+        const data = await res.json();
+        const items = data.items || (Array.isArray(data) ? data : []);
+        if (!Array.isArray(items) || items.length === 0) {
+          showToast('⚠️ Kênh ' + slot + ' chưa có thẻ nào.');
+        } else {
+          ALL_ITEMS = items;
+          try {
+            localStorage.setItem('fc_items_cache', JSON.stringify(ALL_ITEMS.slice(0, 150)));
+          } catch(e) {}
+          if (Array.isArray(data.masteredIds)) {
+            data.masteredIds.forEach(id => masteredSet.add(id));
+          }
+          if (Array.isArray(data.dueIds)) {
+            data.dueIds.forEach(id => dueSet.add(id));
+          }
+          curIndex = 0;
+          saveState();
+          updateUI();
+          showToast('✅ Đã đồng bộ thành công ' + items.length + ' thẻ từ Cloud (' + slot + ')!');
+          closeSyncModal();
+        }
+      } catch(err) {
+        console.error('Download Cloud error:', err);
+        showToast('❌ Lỗi: ' + (err.message || 'Không thể kết nối Cloud'));
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = origText;
+        }
+      }
+    }
+
+    function exportBackupJson() {
+      if (ALL_ITEMS.length === 0) {
+        return showToast('⚠️ Chưa có thẻ nào để xuất dữ liệu.');
+      }
+      const backupPayload = {
+        exportDate: new Date().toISOString(),
+        totalItems: ALL_ITEMS.length,
+        masteredIds: Array.from(masteredSet),
+        dueIds: Array.from(dueSet),
+        items: ALL_ITEMS
+      };
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Flashcard_Backup_' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('📤 Đã xuất file sao lưu (' + ALL_ITEMS.length + ' thẻ)!');
+    }
+
+    function importBackupJson(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          const items = data.items || (Array.isArray(data) ? data : []);
+          if (Array.isArray(items) && items.length > 0) {
+            ALL_ITEMS = items;
+            try {
+              localStorage.setItem('fc_items_cache', JSON.stringify(ALL_ITEMS.slice(0, 150)));
+            } catch(err) {}
+            if (Array.isArray(data.masteredIds)) {
+              data.masteredIds.forEach(id => masteredSet.add(id));
+            }
+            if (Array.isArray(data.dueIds)) {
+              data.dueIds.forEach(id => dueSet.add(id));
+            }
+            curIndex = 0;
+            saveState();
+            updateUI();
+            showToast('✅ Đã nạp ' + items.length + ' thẻ từ file sao lưu!');
+            closeSyncModal();
+          } else {
+            showToast('❌ File JSON không chứa danh sách thẻ hợp lệ.');
+          }
+        } catch(err) {
+          showToast('❌ Lỗi đọc file JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
 
     // ZIP Bulk Import
     function triggerZipUpload() {
