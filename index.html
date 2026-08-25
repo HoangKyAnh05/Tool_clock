@@ -379,7 +379,7 @@
         <button type="button" class="tab-pill" id="tabImage" onclick="setFilter('image')">🖼️ Ảnh (<span id="cntImage">0</span>)</button>
       </div>
       <div class="action-btns">
-        <button type="button" class="btn-action btn-sync" id="btnSyncCloud" onclick="openSyncModal()" title="Sao lưu & Đồng bộ dữ liệu Cloud">☁️ Đồng bộ</button>
+        <button type="button" class="btn-action btn-sync" id="btnSyncCloud" onclick="quickSyncCloud(event)" title="1-Click Đồng bộ tức thì từ Cloud (Bấm để tải ngay, Giữ 1s để chọn Slot khác)">☁️ Đồng bộ</button>
         <button type="button" class="btn-action btn-zip" id="btnZip" onclick="triggerZipUpload()">📦 ZIP</button>
         <button type="button" class="btn-action" id="btnAdd" onclick="openAddModal()">➕ Thêm</button>
       </div>
@@ -530,18 +530,42 @@
       } catch(e) {}
     }
 
-    // Fetch Flashcard Data Dynamically
+    // Fetch Flashcard Data Dynamically (Tự động nạp nhanh nhất từ Cloud slot_1 / flashcards)
     async function loadData() {
+      let loaded = false;
+
+      // 1. Thử nạp nhanh từ Slot 1 (kênh chính thường xuyên cập nhật nhất)
       try {
-        const res = await fetch('./data/flashcards.json?t=' + Date.now());
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.items) && data.items.length > 0) {
-            ALL_ITEMS = data.items;
+        const res1 = await fetch('./data/slot_1.json?t=' + Date.now());
+        if (res1.ok) {
+          const data1 = await res1.json();
+          const items1 = data1.items || (Array.isArray(data1) ? data1 : []);
+          if (Array.isArray(items1) && items1.length > 0) {
+            ALL_ITEMS = items1;
+            loaded = true;
+            if (Array.isArray(data1.masteredIds)) data1.masteredIds.forEach(id => masteredSet.add(id));
+            if (Array.isArray(data1.dueIds)) data1.dueIds.forEach(id => dueSet.add(id));
           }
         }
-      } catch(err) {
-        console.warn('Dynamic fetch failed, falling back to local storage:', err);
+      } catch(e) {}
+
+      // 2. Nếu chưa có, nạp từ flashcards.json
+      if (!loaded) {
+        try {
+          const res = await fetch('./data/flashcards.json?t=' + Date.now());
+          if (res.ok) {
+            const data = await res.json();
+            const items = data.items || (Array.isArray(data) ? data : []);
+            if (Array.isArray(items) && items.length > 0) {
+              ALL_ITEMS = items;
+              loaded = true;
+              if (Array.isArray(data.masteredIds)) data.masteredIds.forEach(id => masteredSet.add(id));
+              if (Array.isArray(data.dueIds)) data.dueIds.forEach(id => dueSet.add(id));
+            }
+          }
+        } catch(err) {
+          console.warn('Dynamic fetch failed, falling back to cache:', err);
+        }
       }
 
       if (ALL_ITEMS.length === 0) {
@@ -969,6 +993,46 @@
     });
 
     
+    
+    // 1-Click Quick Sync (Tự động đồng bộ ngay trong 0.3s)
+    let syncPressTimer = null;
+    async function quickSyncCloud(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnSyncCloud');
+      const origText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Đang đồng bộ...';
+      }
+
+      showToast('☁️ Đang đồng bộ 982 thẻ từ Cloud...');
+      try {
+        const res = await fetch('./data/slot_1.json?t=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const items = data.items || (Array.isArray(data) ? data : []);
+        if (items.length > 0) {
+          ALL_ITEMS = items;
+          if (Array.isArray(data.masteredIds)) data.masteredIds.forEach(id => masteredSet.add(id));
+          if (Array.isArray(data.dueIds)) data.dueIds.forEach(id => dueSet.add(id));
+          curIndex = 0;
+          saveState();
+          updateUI();
+          showToast('✅ Đã đồng bộ thành công ' + items.length + ' thẻ từ App PC!');
+        } else {
+          openSyncModal();
+        }
+      } catch(err) {
+        console.warn('Quick sync error, opening slot menu:', err);
+        openSyncModal();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origText;
+        }
+      }
+    }
+
     // Cloud Sync & Backup Functions
     function openSyncModal() {
       document.getElementById('syncModal').classList.add('active');
