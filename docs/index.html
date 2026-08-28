@@ -530,41 +530,45 @@
       } catch(e) {}
     }
 
-    // Fetch Flashcard Data Dynamically (Tự động nạp nhanh nhất từ Cloud slot_1 / flashcards)
+    // Helper to get image from card item
+    function getCardImg(it) {
+      if (!it) return '';
+      return it.imageUrl || it.image || (it.fields && it.fields.image) || '';
+    }
+
+    // Fetch Flashcard Data Dynamically (Nạp nhanh, tự động xử lý UTF-8 BOM)
     async function loadData() {
       let loaded = false;
 
-      // 1. Thử nạp nhanh từ Slot 1 (kênh chính thường xuyên cập nhật nhất)
-      try {
-        const res1 = await fetch('./data/slot_1.json?t=' + Date.now());
-        if (res1.ok) {
-          const data1 = await res1.json();
-          const items1 = data1.items || (Array.isArray(data1) ? data1 : []);
-          if (Array.isArray(items1) && items1.length > 0) {
-            ALL_ITEMS = items1;
-            loaded = true;
-            if (Array.isArray(data1.masteredIds)) data1.masteredIds.forEach(id => masteredSet.add(id));
-            if (Array.isArray(data1.dueIds)) data1.dueIds.forEach(id => dueSet.add(id));
-          }
-        }
-      } catch(e) {}
+      const dataSources = [
+        './data/slot_1.json',
+        './data/flashcards.json',
+        'data/slot_1.json',
+        'data/flashcards.json'
+      ];
 
-      // 2. Nếu chưa có, nạp từ flashcards.json
-      if (!loaded) {
+      for (const src of dataSources) {
+        if (loaded) break;
         try {
-          const res = await fetch('./data/flashcards.json?t=' + Date.now());
+          const res = await fetch(src + '?t=' + Date.now());
           if (res.ok) {
-            const data = await res.json();
-            const items = data.items || (Array.isArray(data) ? data : []);
-            if (Array.isArray(items) && items.length > 0) {
-              ALL_ITEMS = items;
-              loaded = true;
-              if (Array.isArray(data.masteredIds)) data.masteredIds.forEach(id => masteredSet.add(id));
-              if (Array.isArray(data.dueIds)) data.dueIds.forEach(id => dueSet.add(id));
+            const rawText = await res.text();
+            const cleanText = rawText.replace(/^﻿/, '').trim();
+            if (cleanText.startsWith('{') || cleanText.startsWith('[')) {
+              const data = JSON.parse(cleanText);
+              const items = data.items || (Array.isArray(data) ? data : []);
+              if (Array.isArray(items) && items.length > 0) {
+                ALL_ITEMS = items;
+                loaded = true;
+                if (Array.isArray(data.masteredIds)) data.masteredIds.forEach(id => masteredSet.add(id));
+                if (Array.isArray(data.dueIds)) data.dueIds.forEach(id => dueSet.add(id));
+                console.log('Loaded ' + items.length + ' flashcards from ' + src);
+                break;
+              }
             }
           }
-        } catch(err) {
-          console.warn('Dynamic fetch failed, falling back to cache:', err);
+        } catch (e) {
+          console.warn('Fetch error from ' + src + ':', e);
         }
       }
 
@@ -582,7 +586,7 @@
       return ALL_ITEMS.filter(it => {
         if (curFilter === 'due') return dueSet.has(it.id);
         if (curFilter === 'mastered') return masteredSet.has(it.id);
-        if (curFilter === 'image') return !!it.imageUrl;
+        if (curFilter === 'image') return !!getCardImg(it);
         return true;
       });
     }
@@ -601,12 +605,17 @@
       const allCount = ALL_ITEMS.length;
       const dueCount = ALL_ITEMS.filter(x => dueSet.has(x.id)).length;
       const mastCount = ALL_ITEMS.filter(x => masteredSet.has(x.id)).length;
-      const imgCount = ALL_ITEMS.filter(x => !!x.imageUrl).length;
+      const imgCount = ALL_ITEMS.filter(x => !!getCardImg(x)).length;
 
-      document.getElementById('cntAll').textContent = allCount;
-      document.getElementById('cntDue').textContent = dueCount;
-      document.getElementById('cntMastered').textContent = mastCount;
-      document.getElementById('cntImage').textContent = imgCount;
+      const cntAll = document.getElementById('cntAll');
+      const cntDue = document.getElementById('cntDue');
+      const cntMast = document.getElementById('cntMastered');
+      const cntImg = document.getElementById('cntImage');
+
+      if (cntAll) cntAll.textContent = allCount;
+      if (cntDue) cntDue.textContent = dueCount;
+      if (cntMast) cntMast.textContent = mastCount;
+      if (cntImg) cntImg.textContent = imgCount;
     }
 
     function updateCard() {
@@ -623,7 +632,10 @@
 
       if (total === 0) {
         if (badge) badge.textContent = '0 / 0';
-        if (imgEl) imgEl.style.display = 'none';
+        if (imgEl) {
+          imgEl.src = '';
+          imgEl.style.display = 'none';
+        }
         if (placeholder) {
           placeholder.style.display = 'block';
           placeholder.textContent = 'Chưa có thẻ nào trong mục này.';
@@ -639,16 +651,20 @@
       if (curIndex >= total) curIndex = total - 1;
 
       const item = list[curIndex];
-      if (badge) badge.textContent = `${curIndex + 1} / ${total}`;
+      if (badge) badge.textContent = (curIndex + 1) + ' / ' + total;
 
-      if (item.imageUrl) {
+      const cardImgSrc = getCardImg(item);
+      if (cardImgSrc) {
         if (imgEl) {
-          imgEl.src = item.imageUrl;
+          imgEl.src = cardImgSrc;
           imgEl.style.display = 'block';
         }
         if (placeholder) placeholder.style.display = 'none';
       } else {
-        if (imgEl) imgEl.style.display = 'none';
+        if (imgEl) {
+          imgEl.src = '';
+          imgEl.style.display = 'none';
+        }
         if (placeholder) {
           placeholder.style.display = 'block';
           placeholder.textContent = '🖼️ (Thẻ không có ảnh)';

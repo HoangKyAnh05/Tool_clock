@@ -1,0 +1,21 @@
+{
+  "name": "flashcard-pwa-web",
+  "version": "1.0.0",
+  "description": "Flashcard Vocabulary PWA App with 982 Flashcards",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node sync_build.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "flashcard",
+    "pwa",
+    "vocabulary",
+    "learning"
+  ],
+  "author": "",
+  "license": "ISC"
+}

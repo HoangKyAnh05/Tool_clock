@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: flashcard-web
+    env: node
+    plan: free
+    buildCommand: node sync_build.js
+    startCommand: node server.js
+    healthCheckPath: /
