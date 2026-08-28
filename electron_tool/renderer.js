@@ -6825,6 +6825,8 @@ function getTkFilteredItems() {
     items = items.filter(x => !x.nextReviewDate || x.nextReviewDate <= today);
   } else if (filterStatus === 'mastered') {
     items = items.filter(x => (x.level || 1) >= 5);
+  } else if (filterStatus === 'has_image') {
+    items = items.filter(x => !!(x.imageUrl || x.image || (x.fields && x.fields.image)));
   }
 
   if (query) {
@@ -6900,6 +6902,7 @@ function renderTkFlashcardList() {
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden;">
           ${isSelected ? '<span style="font-size: 13px; color: #00f2fe; flex-shrink: 0;">☑️</span>' : ''}
+          ${(item.imageUrl || item.image || (item.fields && item.fields.image)) ? '<span style="font-size: 12px; flex-shrink: 0;" title="Thẻ có kèm hình ảnh">🖼️</span>' : ''}
           <span style="font-weight: 700; font-size: 13.5px; color: ${isSelected ? '#00f2fe' : '#fff'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.word)}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
@@ -7866,6 +7869,49 @@ function renderTkPlayer(item) {
     const frontText = isEnFirst ? (item.word || '---') : (item.translation || '(Chưa có bản dịch)');
     wordEl.textContent = frontText;
     wordEl.style.color = isEnFirst ? '#fff' : '#6ee7b7';
+  }
+
+  // Render Image for 3D Flashcard if available
+  const imgSrc = item.imageUrl || item.image || (item.fields && item.fields.image) || '';
+  const playerImgWrap = document.getElementById('tkPlayerImgWrap');
+  const playerImg = document.getElementById('tkPlayerImg');
+  const playerBackImgWrap = document.getElementById('tkPlayerBackImgWrap');
+  const playerBackImg = document.getElementById('tkPlayerBackImg');
+
+  if (imgSrc && imgSrc.trim()) {
+    if (playerImgWrap && playerImg) {
+      playerImg.src = imgSrc;
+      playerImgWrap.style.display = 'flex';
+      playerImgWrap.onclick = (e) => {
+        e.stopPropagation();
+        openTkImageLightbox(imgSrc, `${item.word || ''} ${item.translation ? '— ' + item.translation : ''}`);
+      };
+    }
+    if (playerBackImgWrap && playerBackImg) {
+      playerBackImg.src = imgSrc;
+      playerBackImgWrap.style.display = 'flex';
+      playerBackImgWrap.onclick = (e) => {
+        e.stopPropagation();
+        openTkImageLightbox(imgSrc, `${item.word || ''} ${item.translation ? '— ' + item.translation : ''}`);
+      };
+    }
+    if (wordEl) {
+      wordEl.style.fontSize = '18px';
+      wordEl.style.marginTop = '6px';
+    }
+  } else {
+    if (playerImgWrap) {
+      playerImgWrap.style.display = 'none';
+      if (playerImg) playerImg.src = '';
+    }
+    if (playerBackImgWrap) {
+      playerBackImgWrap.style.display = 'none';
+      if (playerBackImg) playerBackImg.src = '';
+    }
+    if (wordEl) {
+      wordEl.style.fontSize = '26px';
+      wordEl.style.marginTop = '0';
+    }
   }
 
   const backWordMini = document.getElementById('lblTkBackWordMini');
